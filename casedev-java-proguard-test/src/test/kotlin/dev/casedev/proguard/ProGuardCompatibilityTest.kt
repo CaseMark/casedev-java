@@ -1,0 +1,112 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package dev.casedev.proguard
+
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import dev.casedev.client.okhttp.CasedevOkHttpClient
+import dev.casedev.core.JsonValue
+import dev.casedev.core.jsonMapper
+import dev.casedev.models.compute.v1.invoke.InvokeRunResponse
+import dev.casedev.models.vault.VaultCreateResponse
+import java.time.OffsetDateTime
+import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.jvm.javaMethod
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+
+internal class ProGuardCompatibilityTest {
+
+    companion object {
+
+        @JvmStatic
+        fun main(args: Array<String>) {
+            // To debug that we're using the right JAR.
+            val jarPath = this::class.java.getProtectionDomain().codeSource.location
+            println("JAR being used: $jarPath")
+
+            // We have to manually run the test methods instead of using the JUnit runner because it
+            // seems impossible to get working with R8.
+            val test = ProGuardCompatibilityTest()
+            test::class
+                .memberFunctions
+                .asSequence()
+                .filter { function ->
+                    function.javaMethod?.isAnnotationPresent(Test::class.java) == true
+                }
+                .forEach { it.call(test) }
+        }
+    }
+
+    @Test
+    fun proguardRules() {
+        val rulesFile =
+            javaClass.classLoader.getResourceAsStream("META-INF/proguard/casedev-java-core.pro")
+
+        assertThat(rulesFile).isNotNull()
+    }
+
+    @Test
+    fun client() {
+        val client = CasedevOkHttpClient.builder().apiKey("My API Key").build()
+
+        assertThat(client).isNotNull()
+        assertThat(client.actions()).isNotNull()
+        assertThat(client.compute()).isNotNull()
+        assertThat(client.convert()).isNotNull()
+        assertThat(client.format()).isNotNull()
+        assertThat(client.llm()).isNotNull()
+        assertThat(client.ocr()).isNotNull()
+        assertThat(client.search()).isNotNull()
+        assertThat(client.vault()).isNotNull()
+        assertThat(client.voice()).isNotNull()
+        assertThat(client.webhooks()).isNotNull()
+        assertThat(client.workflows()).isNotNull()
+    }
+
+    @Test
+    fun vaultCreateResponseRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val vaultCreateResponse =
+            VaultCreateResponse.builder()
+                .id("id")
+                .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .description("description")
+                .filesBucket("filesBucket")
+                .indexName("indexName")
+                .name("name")
+                .region("region")
+                .vectorBucket("vectorBucket")
+                .build()
+
+        val roundtrippedVaultCreateResponse =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(vaultCreateResponse),
+                jacksonTypeRef<VaultCreateResponse>(),
+            )
+
+        assertThat(roundtrippedVaultCreateResponse).isEqualTo(vaultCreateResponse)
+    }
+
+    @Test
+    fun invokeRunResponseRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val invokeRunResponse =
+            InvokeRunResponse.ofSynchronous(
+                InvokeRunResponse.SynchronousResponse.builder()
+                    .duration(0.0)
+                    .error("error")
+                    .output(JsonValue.from(mapOf<String, Any>()))
+                    .runId("runId")
+                    .status(InvokeRunResponse.SynchronousResponse.Status.COMPLETED)
+                    .build()
+            )
+
+        val roundtrippedInvokeRunResponse =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(invokeRunResponse),
+                jacksonTypeRef<InvokeRunResponse>(),
+            )
+
+        assertThat(roundtrippedInvokeRunResponse).isEqualTo(invokeRunResponse)
+    }
+}
