@@ -21,6 +21,8 @@ import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultCreateResponse
 import dev.casedev.models.vault.VaultIngestParams
 import dev.casedev.models.vault.VaultIngestResponse
+import dev.casedev.models.vault.VaultListParams
+import dev.casedev.models.vault.VaultListResponse
 import dev.casedev.models.vault.VaultRetrieveParams
 import dev.casedev.models.vault.VaultSearchParams
 import dev.casedev.models.vault.VaultSearchResponse
@@ -67,6 +69,13 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
     ): CompletableFuture<Void?> =
         // get /vault/{id}
         withRawResponse().retrieve(params, requestOptions).thenAccept {}
+
+    override fun list(
+        params: VaultListParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<VaultListResponse> =
+        // get /vault
+        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun ingest(
         params: VaultIngestParams,
@@ -167,6 +176,36 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response.use { retrieveHandler.handle(it) }
+                    }
+                }
+        }
+
+        private val listHandler: Handler<VaultListResponse> =
+            jsonHandler<VaultListResponse>(clientOptions.jsonMapper)
+
+        override fun list(
+            params: VaultListParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VaultListResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("vault")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { listHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

@@ -11,12 +11,9 @@ internal class V1ListParamsTest {
     @Test
     fun create() {
         V1ListParams.builder()
-            .category("category")
-            .limit(1L)
+            .limit(100L)
             .offset(0L)
-            .published(true)
-            .subCategory("sub_category")
-            .type("type")
+            .visibility(V1ListParams.Visibility.PRIVATE)
             .build()
     }
 
@@ -24,12 +21,9 @@ internal class V1ListParamsTest {
     fun queryParams() {
         val params =
             V1ListParams.builder()
-                .category("category")
-                .limit(1L)
+                .limit(100L)
                 .offset(0L)
-                .published(true)
-                .subCategory("sub_category")
-                .type("type")
+                .visibility(V1ListParams.Visibility.PRIVATE)
                 .build()
 
         val queryParams = params._queryParams()
@@ -37,12 +31,9 @@ internal class V1ListParamsTest {
         assertThat(queryParams)
             .isEqualTo(
                 QueryParams.builder()
-                    .put("category", "category")
-                    .put("limit", "1")
+                    .put("limit", "100")
                     .put("offset", "0")
-                    .put("published", "true")
-                    .put("sub_category", "sub_category")
-                    .put("type", "type")
+                    .put("visibility", "private")
                     .build()
             )
     }

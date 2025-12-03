@@ -10,6 +10,8 @@ import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultCreateResponse
 import dev.casedev.models.vault.VaultIngestParams
 import dev.casedev.models.vault.VaultIngestResponse
+import dev.casedev.models.vault.VaultListParams
+import dev.casedev.models.vault.VaultListResponse
 import dev.casedev.models.vault.VaultRetrieveParams
 import dev.casedev.models.vault.VaultSearchParams
 import dev.casedev.models.vault.VaultSearchResponse
@@ -85,6 +87,27 @@ interface VaultServiceAsync {
     /** @see retrieve */
     fun retrieve(id: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
         retrieve(id, VaultRetrieveParams.none(), requestOptions)
+
+    /**
+     * List all vaults for the authenticated organization. Returns vault metadata including storage
+     * configuration and usage statistics.
+     */
+    fun list(): CompletableFuture<VaultListResponse> = list(VaultListParams.none())
+
+    /** @see list */
+    fun list(
+        params: VaultListParams = VaultListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VaultListResponse>
+
+    /** @see list */
+    fun list(
+        params: VaultListParams = VaultListParams.none()
+    ): CompletableFuture<VaultListResponse> = list(params, RequestOptions.none())
+
+    /** @see list */
+    fun list(requestOptions: RequestOptions): CompletableFuture<VaultListResponse> =
+        list(VaultListParams.none(), requestOptions)
 
     /**
      * Triggers OCR ingestion workflow for a vault object to extract text, generate chunks, and
@@ -231,6 +254,31 @@ interface VaultServiceAsync {
         /** @see retrieve */
         fun retrieve(id: String, requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
             retrieve(id, VaultRetrieveParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /vault`, but is otherwise the same as
+         * [VaultServiceAsync.list].
+         */
+        fun list(): CompletableFuture<HttpResponseFor<VaultListResponse>> =
+            list(VaultListParams.none())
+
+        /** @see list */
+        fun list(
+            params: VaultListParams = VaultListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VaultListResponse>>
+
+        /** @see list */
+        fun list(
+            params: VaultListParams = VaultListParams.none()
+        ): CompletableFuture<HttpResponseFor<VaultListResponse>> =
+            list(params, RequestOptions.none())
+
+        /** @see list */
+        fun list(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<VaultListResponse>> =
+            list(VaultListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /vault/{id}/ingest/{objectId}`, but is otherwise

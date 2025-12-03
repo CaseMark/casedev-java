@@ -11,6 +11,8 @@ import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultCreateResponse
 import dev.casedev.models.vault.VaultIngestParams
 import dev.casedev.models.vault.VaultIngestResponse
+import dev.casedev.models.vault.VaultListParams
+import dev.casedev.models.vault.VaultListResponse
 import dev.casedev.models.vault.VaultRetrieveParams
 import dev.casedev.models.vault.VaultSearchParams
 import dev.casedev.models.vault.VaultSearchResponse
@@ -82,6 +84,26 @@ interface VaultService {
     /** @see retrieve */
     fun retrieve(id: String, requestOptions: RequestOptions) =
         retrieve(id, VaultRetrieveParams.none(), requestOptions)
+
+    /**
+     * List all vaults for the authenticated organization. Returns vault metadata including storage
+     * configuration and usage statistics.
+     */
+    fun list(): VaultListResponse = list(VaultListParams.none())
+
+    /** @see list */
+    fun list(
+        params: VaultListParams = VaultListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): VaultListResponse
+
+    /** @see list */
+    fun list(params: VaultListParams = VaultListParams.none()): VaultListResponse =
+        list(params, RequestOptions.none())
+
+    /** @see list */
+    fun list(requestOptions: RequestOptions): VaultListResponse =
+        list(VaultListParams.none(), requestOptions)
 
     /**
      * Triggers OCR ingestion workflow for a vault object to extract text, generate chunks, and
@@ -225,6 +247,30 @@ interface VaultService {
         @MustBeClosed
         fun retrieve(id: String, requestOptions: RequestOptions): HttpResponse =
             retrieve(id, VaultRetrieveParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /vault`, but is otherwise the same as
+         * [VaultService.list].
+         */
+        @MustBeClosed fun list(): HttpResponseFor<VaultListResponse> = list(VaultListParams.none())
+
+        /** @see list */
+        @MustBeClosed
+        fun list(
+            params: VaultListParams = VaultListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<VaultListResponse>
+
+        /** @see list */
+        @MustBeClosed
+        fun list(
+            params: VaultListParams = VaultListParams.none()
+        ): HttpResponseFor<VaultListResponse> = list(params, RequestOptions.none())
+
+        /** @see list */
+        @MustBeClosed
+        fun list(requestOptions: RequestOptions): HttpResponseFor<VaultListResponse> =
+            list(VaultListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /vault/{id}/ingest/{objectId}`, but is otherwise

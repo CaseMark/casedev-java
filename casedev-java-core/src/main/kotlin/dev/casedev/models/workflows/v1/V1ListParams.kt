@@ -2,49 +2,35 @@
 
 package dev.casedev.models.workflows.v1
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import dev.casedev.core.Enum
+import dev.casedev.core.JsonField
 import dev.casedev.core.Params
 import dev.casedev.core.http.Headers
 import dev.casedev.core.http.QueryParams
+import dev.casedev.errors.CasedevInvalidDataException
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * Retrieve a paginated list of available workflows with optional filtering by category,
- * subcategory, type, and publication status. Workflows are pre-built document processing pipelines
- * optimized for legal use cases.
- */
+/** List all workflows for the authenticated organization. */
 class V1ListParams
 private constructor(
-    private val category: String?,
     private val limit: Long?,
     private val offset: Long?,
-    private val published: Boolean?,
-    private val subCategory: String?,
-    private val type: String?,
+    private val visibility: Visibility?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /** Filter workflows by category (e.g., 'legal', 'compliance', 'contract') */
-    fun category(): Optional<String> = Optional.ofNullable(category)
-
-    /** Maximum number of workflows to return */
+    /** Maximum number of results */
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
 
-    /** Number of workflows to skip for pagination */
+    /** Offset for pagination */
     fun offset(): Optional<Long> = Optional.ofNullable(offset)
 
-    /** Include only published workflows */
-    fun published(): Optional<Boolean> = Optional.ofNullable(published)
-
-    /** Filter workflows by subcategory (e.g., 'due-diligence', 'litigation', 'mergers') */
-    fun subCategory(): Optional<String> = Optional.ofNullable(subCategory)
-
-    /**
-     * Filter workflows by type (e.g., 'document-review', 'contract-analysis', 'compliance-check')
-     */
-    fun type(): Optional<String> = Optional.ofNullable(type)
+    /** Filter by visibility */
+    fun visibility(): Optional<Visibility> = Optional.ofNullable(visibility)
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -65,34 +51,22 @@ private constructor(
     /** A builder for [V1ListParams]. */
     class Builder internal constructor() {
 
-        private var category: String? = null
         private var limit: Long? = null
         private var offset: Long? = null
-        private var published: Boolean? = null
-        private var subCategory: String? = null
-        private var type: String? = null
+        private var visibility: Visibility? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(v1ListParams: V1ListParams) = apply {
-            category = v1ListParams.category
             limit = v1ListParams.limit
             offset = v1ListParams.offset
-            published = v1ListParams.published
-            subCategory = v1ListParams.subCategory
-            type = v1ListParams.type
+            visibility = v1ListParams.visibility
             additionalHeaders = v1ListParams.additionalHeaders.toBuilder()
             additionalQueryParams = v1ListParams.additionalQueryParams.toBuilder()
         }
 
-        /** Filter workflows by category (e.g., 'legal', 'compliance', 'contract') */
-        fun category(category: String?) = apply { this.category = category }
-
-        /** Alias for calling [Builder.category] with `category.orElse(null)`. */
-        fun category(category: Optional<String>) = category(category.getOrNull())
-
-        /** Maximum number of workflows to return */
+        /** Maximum number of results */
         fun limit(limit: Long?) = apply { this.limit = limit }
 
         /**
@@ -105,7 +79,7 @@ private constructor(
         /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
-        /** Number of workflows to skip for pagination */
+        /** Offset for pagination */
         fun offset(offset: Long?) = apply { this.offset = offset }
 
         /**
@@ -118,33 +92,11 @@ private constructor(
         /** Alias for calling [Builder.offset] with `offset.orElse(null)`. */
         fun offset(offset: Optional<Long>) = offset(offset.getOrNull())
 
-        /** Include only published workflows */
-        fun published(published: Boolean?) = apply { this.published = published }
+        /** Filter by visibility */
+        fun visibility(visibility: Visibility?) = apply { this.visibility = visibility }
 
-        /**
-         * Alias for [Builder.published].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun published(published: Boolean) = published(published as Boolean?)
-
-        /** Alias for calling [Builder.published] with `published.orElse(null)`. */
-        fun published(published: Optional<Boolean>) = published(published.getOrNull())
-
-        /** Filter workflows by subcategory (e.g., 'due-diligence', 'litigation', 'mergers') */
-        fun subCategory(subCategory: String?) = apply { this.subCategory = subCategory }
-
-        /** Alias for calling [Builder.subCategory] with `subCategory.orElse(null)`. */
-        fun subCategory(subCategory: Optional<String>) = subCategory(subCategory.getOrNull())
-
-        /**
-         * Filter workflows by type (e.g., 'document-review', 'contract-analysis',
-         * 'compliance-check')
-         */
-        fun type(type: String?) = apply { this.type = type }
-
-        /** Alias for calling [Builder.type] with `type.orElse(null)`. */
-        fun type(type: Optional<String>) = type(type.getOrNull())
+        /** Alias for calling [Builder.visibility] with `visibility.orElse(null)`. */
+        fun visibility(visibility: Optional<Visibility>) = visibility(visibility.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -251,12 +203,9 @@ private constructor(
          */
         fun build(): V1ListParams =
             V1ListParams(
-                category,
                 limit,
                 offset,
-                published,
-                subCategory,
-                type,
+                visibility,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -267,15 +216,146 @@ private constructor(
     override fun _queryParams(): QueryParams =
         QueryParams.builder()
             .apply {
-                category?.let { put("category", it) }
                 limit?.let { put("limit", it.toString()) }
                 offset?.let { put("offset", it.toString()) }
-                published?.let { put("published", it.toString()) }
-                subCategory?.let { put("sub_category", it) }
-                type?.let { put("type", it) }
+                visibility?.let { put("visibility", it.toString()) }
                 putAll(additionalQueryParams)
             }
             .build()
+
+    /** Filter by visibility */
+    class Visibility @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val PRIVATE = of("private")
+
+            @JvmField val ORG = of("org")
+
+            @JvmField val PUBLIC = of("public")
+
+            @JvmStatic fun of(value: String) = Visibility(JsonField.of(value))
+        }
+
+        /** An enum containing [Visibility]'s known values. */
+        enum class Known {
+            PRIVATE,
+            ORG,
+            PUBLIC,
+        }
+
+        /**
+         * An enum containing [Visibility]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Visibility] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            PRIVATE,
+            ORG,
+            PUBLIC,
+            /**
+             * An enum member indicating that [Visibility] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                PRIVATE -> Value.PRIVATE
+                ORG -> Value.ORG
+                PUBLIC -> Value.PUBLIC
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                PRIVATE -> Known.PRIVATE
+                ORG -> Known.ORG
+                PUBLIC -> Known.PUBLIC
+                else -> throw CasedevInvalidDataException("Unknown Visibility: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { CasedevInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Visibility = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: CasedevInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Visibility && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -283,28 +363,16 @@ private constructor(
         }
 
         return other is V1ListParams &&
-            category == other.category &&
             limit == other.limit &&
             offset == other.offset &&
-            published == other.published &&
-            subCategory == other.subCategory &&
-            type == other.type &&
+            visibility == other.visibility &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            category,
-            limit,
-            offset,
-            published,
-            subCategory,
-            type,
-            additionalHeaders,
-            additionalQueryParams,
-        )
+        Objects.hash(limit, offset, visibility, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "V1ListParams{category=$category, limit=$limit, offset=$offset, published=$published, subCategory=$subCategory, type=$type, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "V1ListParams{limit=$limit, offset=$offset, visibility=$visibility, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

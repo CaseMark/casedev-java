@@ -21,6 +21,8 @@ import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultCreateResponse
 import dev.casedev.models.vault.VaultIngestParams
 import dev.casedev.models.vault.VaultIngestResponse
+import dev.casedev.models.vault.VaultListParams
+import dev.casedev.models.vault.VaultListResponse
 import dev.casedev.models.vault.VaultRetrieveParams
 import dev.casedev.models.vault.VaultSearchParams
 import dev.casedev.models.vault.VaultSearchResponse
@@ -64,6 +66,10 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
         // get /vault/{id}
         withRawResponse().retrieve(params, requestOptions)
     }
+
+    override fun list(params: VaultListParams, requestOptions: RequestOptions): VaultListResponse =
+        // get /vault
+        withRawResponse().list(params, requestOptions).parse()
 
     override fun ingest(
         params: VaultIngestParams,
@@ -159,6 +165,33 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
                 response.use { retrieveHandler.handle(it) }
+            }
+        }
+
+        private val listHandler: Handler<VaultListResponse> =
+            jsonHandler<VaultListResponse>(clientOptions.jsonMapper)
+
+        override fun list(
+            params: VaultListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VaultListResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("vault")
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
 
