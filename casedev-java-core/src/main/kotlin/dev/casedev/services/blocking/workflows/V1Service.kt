@@ -12,7 +12,6 @@ import dev.casedev.models.workflows.v1.V1ExecuteResponse
 import dev.casedev.models.workflows.v1.V1ListParams
 import dev.casedev.models.workflows.v1.V1RetrieveExecutionParams
 import dev.casedev.models.workflows.v1.V1RetrieveParams
-import dev.casedev.models.workflows.v1.V1SearchParams
 import java.util.function.Consumer
 
 interface V1Service {
@@ -138,15 +137,6 @@ interface V1Service {
     /** @see retrieveExecution */
     fun retrieveExecution(id: String, requestOptions: RequestOptions) =
         retrieveExecution(id, V1RetrieveExecutionParams.none(), requestOptions)
-
-    /**
-     * Perform semantic search across available workflows to find the most relevant pre-built
-     * document processing pipelines for your legal use case.
-     */
-    fun search(params: V1SearchParams) = search(params, RequestOptions.none())
-
-    /** @see search */
-    fun search(params: V1SearchParams, requestOptions: RequestOptions = RequestOptions.none())
 
     /** A view of [V1Service] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -285,19 +275,5 @@ interface V1Service {
         @MustBeClosed
         fun retrieveExecution(id: String, requestOptions: RequestOptions): HttpResponse =
             retrieveExecution(id, V1RetrieveExecutionParams.none(), requestOptions)
-
-        /**
-         * Returns a raw HTTP response for `post /workflows/v1/search`, but is otherwise the same as
-         * [V1Service.search].
-         */
-        @MustBeClosed
-        fun search(params: V1SearchParams): HttpResponse = search(params, RequestOptions.none())
-
-        /** @see search */
-        @MustBeClosed
-        fun search(
-            params: V1SearchParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
     }
 }

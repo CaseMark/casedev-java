@@ -18,6 +18,8 @@ import dev.casedev.services.blocking.OcrService
 import dev.casedev.services.blocking.OcrServiceImpl
 import dev.casedev.services.blocking.SearchService
 import dev.casedev.services.blocking.SearchServiceImpl
+import dev.casedev.services.blocking.TemplateService
+import dev.casedev.services.blocking.TemplateServiceImpl
 import dev.casedev.services.blocking.VaultService
 import dev.casedev.services.blocking.VaultServiceImpl
 import dev.casedev.services.blocking.VoiceService
@@ -65,6 +67,10 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
     private val webhooks: WebhookService by lazy { WebhookServiceImpl(clientOptionsWithUserAgent) }
 
+    private val templates: TemplateService by lazy {
+        TemplateServiceImpl(clientOptionsWithUserAgent)
+    }
+
     private val workflows: WorkflowService by lazy {
         WorkflowServiceImpl(clientOptionsWithUserAgent)
     }
@@ -95,6 +101,8 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
     override fun voice(): VoiceService = voice
 
     override fun webhooks(): WebhookService = webhooks
+
+    override fun templates(): TemplateService = templates
 
     override fun workflows(): WorkflowService = workflows
 
@@ -143,6 +151,10 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
             WebhookServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val templates: TemplateService.WithRawResponse by lazy {
+            TemplateServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val workflows: WorkflowService.WithRawResponse by lazy {
             WorkflowServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -173,6 +185,8 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
         override fun voice(): VoiceService.WithRawResponse = voice
 
         override fun webhooks(): WebhookService.WithRawResponse = webhooks
+
+        override fun templates(): TemplateService.WithRawResponse = templates
 
         override fun workflows(): WorkflowService.WithRawResponse = workflows
     }

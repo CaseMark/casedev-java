@@ -10,6 +10,7 @@ import dev.casedev.services.blocking.FormatService
 import dev.casedev.services.blocking.LlmService
 import dev.casedev.services.blocking.OcrService
 import dev.casedev.services.blocking.SearchService
+import dev.casedev.services.blocking.TemplateService
 import dev.casedev.services.blocking.VaultService
 import dev.casedev.services.blocking.VoiceService
 import dev.casedev.services.blocking.WebhookService
@@ -72,6 +73,8 @@ interface CasedevClient {
 
     fun webhooks(): WebhookService
 
+    fun templates(): TemplateService
+
     fun workflows(): WorkflowService
 
     /**
@@ -116,6 +119,8 @@ interface CasedevClient {
         fun voice(): VoiceService.WithRawResponse
 
         fun webhooks(): WebhookService.WithRawResponse
+
+        fun templates(): TemplateService.WithRawResponse
 
         fun workflows(): WorkflowService.WithRawResponse
     }

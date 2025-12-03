@@ -22,7 +22,6 @@ import dev.casedev.models.workflows.v1.V1ExecuteResponse
 import dev.casedev.models.workflows.v1.V1ListParams
 import dev.casedev.models.workflows.v1.V1RetrieveExecutionParams
 import dev.casedev.models.workflows.v1.V1RetrieveParams
-import dev.casedev.models.workflows.v1.V1SearchParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -66,13 +65,6 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     ): CompletableFuture<Void?> =
         // get /workflows/v1/executions/{id}
         withRawResponse().retrieveExecution(params, requestOptions).thenAccept {}
-
-    override fun search(
-        params: V1SearchParams,
-        requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
-        // post /workflows/v1/search
-        withRawResponse().search(params, requestOptions).thenAccept {}
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         V1ServiceAsync.WithRawResponse {
@@ -192,30 +184,6 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response.use { retrieveExecutionHandler.handle(it) }
-                    }
-                }
-        }
-
-        private val searchHandler: Handler<Void?> = emptyHandler()
-
-        override fun search(
-            params: V1SearchParams,
-            requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("workflows", "v1", "search")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response.use { searchHandler.handle(it) }
                     }
                 }
         }

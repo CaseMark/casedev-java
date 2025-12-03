@@ -18,6 +18,8 @@ import dev.casedev.services.async.OcrServiceAsync
 import dev.casedev.services.async.OcrServiceAsyncImpl
 import dev.casedev.services.async.SearchServiceAsync
 import dev.casedev.services.async.SearchServiceAsyncImpl
+import dev.casedev.services.async.TemplateServiceAsync
+import dev.casedev.services.async.TemplateServiceAsyncImpl
 import dev.casedev.services.async.VaultServiceAsync
 import dev.casedev.services.async.VaultServiceAsyncImpl
 import dev.casedev.services.async.VoiceServiceAsync
@@ -81,6 +83,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         WebhookServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val templates: TemplateServiceAsync by lazy {
+        TemplateServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val workflows: WorkflowServiceAsync by lazy {
         WorkflowServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -111,6 +117,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
     override fun voice(): VoiceServiceAsync = voice
 
     override fun webhooks(): WebhookServiceAsync = webhooks
+
+    override fun templates(): TemplateServiceAsync = templates
 
     override fun workflows(): WorkflowServiceAsync = workflows
 
@@ -159,6 +167,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
             WebhookServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val templates: TemplateServiceAsync.WithRawResponse by lazy {
+            TemplateServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val workflows: WorkflowServiceAsync.WithRawResponse by lazy {
             WorkflowServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -189,6 +201,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         override fun voice(): VoiceServiceAsync.WithRawResponse = voice
 
         override fun webhooks(): WebhookServiceAsync.WithRawResponse = webhooks
+
+        override fun templates(): TemplateServiceAsync.WithRawResponse = templates
 
         override fun workflows(): WorkflowServiceAsync.WithRawResponse = workflows
     }
