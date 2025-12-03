@@ -9,10 +9,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * Retrieve metadata for a published workflow by ID. Returns workflow configuration including
- * input/output schemas, but excludes the prompt template for security.
- */
+/** Get a specific workflow by ID with full configuration. */
 class V1RetrieveParams
 private constructor(
     private val id: String?,

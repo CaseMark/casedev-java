@@ -9,14 +9,14 @@ internal class V1RetrieveExecutionParamsTest {
 
     @Test
     fun create() {
-        V1RetrieveExecutionParams.builder().id("exec_abc123def456").build()
+        V1RetrieveExecutionParams.builder().id("id").build()
     }
 
     @Test
     fun pathParams() {
-        val params = V1RetrieveExecutionParams.builder().id("exec_abc123def456").build()
+        val params = V1RetrieveExecutionParams.builder().id("id").build()
 
-        assertThat(params._pathParam(0)).isEqualTo("exec_abc123def456")
+        assertThat(params._pathParam(0)).isEqualTo("id")
         // out-of-bound path param
         assertThat(params._pathParam(1)).isEqualTo("")
     }

@@ -20,25 +20,44 @@ import kotlin.jvm.optionals.getOrNull
 class V1ExecuteResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
-    private val result: JsonValue,
+    private val duration: JsonField<Long>,
+    private val error: JsonField<String>,
+    private val executionId: JsonField<String>,
+    private val outputs: JsonValue,
     private val status: JsonField<Status>,
-    private val usage: JsonField<Usage>,
-    private val workflowName: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("result") @ExcludeMissing result: JsonValue = JsonMissing.of(),
-        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-        @JsonProperty("usage") @ExcludeMissing usage: JsonField<Usage> = JsonMissing.of(),
-        @JsonProperty("workflow_name")
+        @JsonProperty("duration") @ExcludeMissing duration: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("error") @ExcludeMissing error: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("executionId")
         @ExcludeMissing
-        workflowName: JsonField<String> = JsonMissing.of(),
-    ) : this(result, status, usage, workflowName, mutableMapOf())
+        executionId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("outputs") @ExcludeMissing outputs: JsonValue = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+    ) : this(duration, error, executionId, outputs, status, mutableMapOf())
 
-    /** Workflow output (structure varies by workflow type) */
-    @JsonProperty("result") @ExcludeMissing fun _result(): JsonValue = result
+    /**
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun duration(): Optional<Long> = duration.getOptional("duration")
+
+    /**
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun error(): Optional<String> = error.getOptional("error")
+
+    /**
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun executionId(): Optional<String> = executionId.getOptional("executionId")
+
+    @JsonProperty("outputs") @ExcludeMissing fun _outputs(): JsonValue = outputs
 
     /**
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -47,18 +66,25 @@ private constructor(
     fun status(): Optional<Status> = status.getOptional("status")
 
     /**
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the raw JSON value of [duration].
+     *
+     * Unlike [duration], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun usage(): Optional<Usage> = usage.getOptional("usage")
+    @JsonProperty("duration") @ExcludeMissing fun _duration(): JsonField<Long> = duration
 
     /**
-     * Name of the executed workflow
+     * Returns the raw JSON value of [error].
      *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun workflowName(): Optional<String> = workflowName.getOptional("workflow_name")
+    @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<String> = error
+
+    /**
+     * Returns the raw JSON value of [executionId].
+     *
+     * Unlike [executionId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("executionId") @ExcludeMissing fun _executionId(): JsonField<String> = executionId
 
     /**
      * Returns the raw JSON value of [status].
@@ -66,22 +92,6 @@ private constructor(
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
-
-    /**
-     * Returns the raw JSON value of [usage].
-     *
-     * Unlike [usage], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<Usage> = usage
-
-    /**
-     * Returns the raw JSON value of [workflowName].
-     *
-     * Unlike [workflowName], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("workflow_name")
-    @ExcludeMissing
-    fun _workflowName(): JsonField<String> = workflowName
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -104,23 +114,55 @@ private constructor(
     /** A builder for [V1ExecuteResponse]. */
     class Builder internal constructor() {
 
-        private var result: JsonValue = JsonMissing.of()
+        private var duration: JsonField<Long> = JsonMissing.of()
+        private var error: JsonField<String> = JsonMissing.of()
+        private var executionId: JsonField<String> = JsonMissing.of()
+        private var outputs: JsonValue = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()
-        private var usage: JsonField<Usage> = JsonMissing.of()
-        private var workflowName: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(v1ExecuteResponse: V1ExecuteResponse) = apply {
-            result = v1ExecuteResponse.result
+            duration = v1ExecuteResponse.duration
+            error = v1ExecuteResponse.error
+            executionId = v1ExecuteResponse.executionId
+            outputs = v1ExecuteResponse.outputs
             status = v1ExecuteResponse.status
-            usage = v1ExecuteResponse.usage
-            workflowName = v1ExecuteResponse.workflowName
             additionalProperties = v1ExecuteResponse.additionalProperties.toMutableMap()
         }
 
-        /** Workflow output (structure varies by workflow type) */
-        fun result(result: JsonValue) = apply { this.result = result }
+        fun duration(duration: Long) = duration(JsonField.of(duration))
+
+        /**
+         * Sets [Builder.duration] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.duration] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun duration(duration: JsonField<Long>) = apply { this.duration = duration }
+
+        fun error(error: String) = error(JsonField.of(error))
+
+        /**
+         * Sets [Builder.error] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.error] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun error(error: JsonField<String>) = apply { this.error = error }
+
+        fun executionId(executionId: String) = executionId(JsonField.of(executionId))
+
+        /**
+         * Sets [Builder.executionId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.executionId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun executionId(executionId: JsonField<String>) = apply { this.executionId = executionId }
+
+        fun outputs(outputs: JsonValue) = apply { this.outputs = outputs }
 
         fun status(status: Status) = status(JsonField.of(status))
 
@@ -131,30 +173,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
-
-        fun usage(usage: Usage) = usage(JsonField.of(usage))
-
-        /**
-         * Sets [Builder.usage] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.usage] with a well-typed [Usage] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun usage(usage: JsonField<Usage>) = apply { this.usage = usage }
-
-        /** Name of the executed workflow */
-        fun workflowName(workflowName: String) = workflowName(JsonField.of(workflowName))
-
-        /**
-         * Sets [Builder.workflowName] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.workflowName] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun workflowName(workflowName: JsonField<String>) = apply {
-            this.workflowName = workflowName
-        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -182,10 +200,11 @@ private constructor(
          */
         fun build(): V1ExecuteResponse =
             V1ExecuteResponse(
-                result,
+                duration,
+                error,
+                executionId,
+                outputs,
                 status,
-                usage,
-                workflowName,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -197,9 +216,10 @@ private constructor(
             return@apply
         }
 
+        duration()
+        error()
+        executionId()
         status().ifPresent { it.validate() }
-        usage().ifPresent { it.validate() }
-        workflowName()
         validated = true
     }
 
@@ -218,9 +238,10 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (status.asKnown().getOrNull()?.validity() ?: 0) +
-            (usage.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (workflowName.asKnown().isPresent) 1 else 0)
+        (if (duration.asKnown().isPresent) 1 else 0) +
+            (if (error.asKnown().isPresent) 1 else 0) +
+            (if (executionId.asKnown().isPresent) 1 else 0) +
+            (status.asKnown().getOrNull()?.validity() ?: 0)
 
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -347,289 +368,26 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    class Usage
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val completionTokens: JsonField<Long>,
-        private val cost: JsonField<Double>,
-        private val promptTokens: JsonField<Long>,
-        private val totalTokens: JsonField<Long>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("completion_tokens")
-            @ExcludeMissing
-            completionTokens: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("cost") @ExcludeMissing cost: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("prompt_tokens")
-            @ExcludeMissing
-            promptTokens: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("total_tokens")
-            @ExcludeMissing
-            totalTokens: JsonField<Long> = JsonMissing.of(),
-        ) : this(completionTokens, cost, promptTokens, totalTokens, mutableMapOf())
-
-        /**
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun completionTokens(): Optional<Long> = completionTokens.getOptional("completion_tokens")
-
-        /**
-         * Total cost in USD
-         *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun cost(): Optional<Double> = cost.getOptional("cost")
-
-        /**
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun promptTokens(): Optional<Long> = promptTokens.getOptional("prompt_tokens")
-
-        /**
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun totalTokens(): Optional<Long> = totalTokens.getOptional("total_tokens")
-
-        /**
-         * Returns the raw JSON value of [completionTokens].
-         *
-         * Unlike [completionTokens], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("completion_tokens")
-        @ExcludeMissing
-        fun _completionTokens(): JsonField<Long> = completionTokens
-
-        /**
-         * Returns the raw JSON value of [cost].
-         *
-         * Unlike [cost], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("cost") @ExcludeMissing fun _cost(): JsonField<Double> = cost
-
-        /**
-         * Returns the raw JSON value of [promptTokens].
-         *
-         * Unlike [promptTokens], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("prompt_tokens")
-        @ExcludeMissing
-        fun _promptTokens(): JsonField<Long> = promptTokens
-
-        /**
-         * Returns the raw JSON value of [totalTokens].
-         *
-         * Unlike [totalTokens], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("total_tokens")
-        @ExcludeMissing
-        fun _totalTokens(): JsonField<Long> = totalTokens
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Usage]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Usage]. */
-        class Builder internal constructor() {
-
-            private var completionTokens: JsonField<Long> = JsonMissing.of()
-            private var cost: JsonField<Double> = JsonMissing.of()
-            private var promptTokens: JsonField<Long> = JsonMissing.of()
-            private var totalTokens: JsonField<Long> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(usage: Usage) = apply {
-                completionTokens = usage.completionTokens
-                cost = usage.cost
-                promptTokens = usage.promptTokens
-                totalTokens = usage.totalTokens
-                additionalProperties = usage.additionalProperties.toMutableMap()
-            }
-
-            fun completionTokens(completionTokens: Long) =
-                completionTokens(JsonField.of(completionTokens))
-
-            /**
-             * Sets [Builder.completionTokens] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.completionTokens] with a well-typed [Long] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun completionTokens(completionTokens: JsonField<Long>) = apply {
-                this.completionTokens = completionTokens
-            }
-
-            /** Total cost in USD */
-            fun cost(cost: Double) = cost(JsonField.of(cost))
-
-            /**
-             * Sets [Builder.cost] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.cost] with a well-typed [Double] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun cost(cost: JsonField<Double>) = apply { this.cost = cost }
-
-            fun promptTokens(promptTokens: Long) = promptTokens(JsonField.of(promptTokens))
-
-            /**
-             * Sets [Builder.promptTokens] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.promptTokens] with a well-typed [Long] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun promptTokens(promptTokens: JsonField<Long>) = apply {
-                this.promptTokens = promptTokens
-            }
-
-            fun totalTokens(totalTokens: Long) = totalTokens(JsonField.of(totalTokens))
-
-            /**
-             * Sets [Builder.totalTokens] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.totalTokens] with a well-typed [Long] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun totalTokens(totalTokens: JsonField<Long>) = apply { this.totalTokens = totalTokens }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Usage].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Usage =
-                Usage(
-                    completionTokens,
-                    cost,
-                    promptTokens,
-                    totalTokens,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): Usage = apply {
-            if (validated) {
-                return@apply
-            }
-
-            completionTokens()
-            cost()
-            promptTokens()
-            totalTokens()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: CasedevInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (completionTokens.asKnown().isPresent) 1 else 0) +
-                (if (cost.asKnown().isPresent) 1 else 0) +
-                (if (promptTokens.asKnown().isPresent) 1 else 0) +
-                (if (totalTokens.asKnown().isPresent) 1 else 0)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Usage &&
-                completionTokens == other.completionTokens &&
-                cost == other.cost &&
-                promptTokens == other.promptTokens &&
-                totalTokens == other.totalTokens &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(completionTokens, cost, promptTokens, totalTokens, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Usage{completionTokens=$completionTokens, cost=$cost, promptTokens=$promptTokens, totalTokens=$totalTokens, additionalProperties=$additionalProperties}"
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
         return other is V1ExecuteResponse &&
-            result == other.result &&
+            duration == other.duration &&
+            error == other.error &&
+            executionId == other.executionId &&
+            outputs == other.outputs &&
             status == other.status &&
-            usage == other.usage &&
-            workflowName == other.workflowName &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(result, status, usage, workflowName, additionalProperties)
+        Objects.hash(duration, error, executionId, outputs, status, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "V1ExecuteResponse{result=$result, status=$status, usage=$usage, workflowName=$workflowName, additionalProperties=$additionalProperties}"
+        "V1ExecuteResponse{duration=$duration, error=$error, executionId=$executionId, outputs=$outputs, status=$status, additionalProperties=$additionalProperties}"
 }

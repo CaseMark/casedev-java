@@ -9,11 +9,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * Retrieves the status and details of a workflow execution. This endpoint is designed for future
- * asynchronous execution support and currently returns a 501 Not Implemented status since all
- * executions are synchronous.
- */
+/** Get detailed information about a workflow execution. */
 class V1RetrieveExecutionParams
 private constructor(
     private val id: String?,

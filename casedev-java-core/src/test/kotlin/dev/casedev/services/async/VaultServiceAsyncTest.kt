@@ -56,6 +56,22 @@ internal class VaultServiceAsyncTest {
 
     @Disabled("Prism tests are disabled")
     @Test
+    fun list() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val vaultServiceAsync = client.vault()
+
+        val vaultsFuture = vaultServiceAsync.list()
+
+        val vaults = vaultsFuture.get()
+        vaults.validate()
+    }
+
+    @Disabled("Prism tests are disabled")
+    @Test
     fun ingest() {
         val client =
             CasedevOkHttpClientAsync.builder()

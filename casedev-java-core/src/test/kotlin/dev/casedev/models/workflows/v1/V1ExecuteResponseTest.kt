@@ -14,31 +14,18 @@ internal class V1ExecuteResponseTest {
     fun create() {
         val v1ExecuteResponse =
             V1ExecuteResponse.builder()
-                .result(JsonValue.from(mapOf<String, Any>()))
+                .duration(0L)
+                .error("error")
+                .executionId("executionId")
+                .outputs(JsonValue.from(mapOf<String, Any>()))
                 .status(V1ExecuteResponse.Status.COMPLETED)
-                .usage(
-                    V1ExecuteResponse.Usage.builder()
-                        .completionTokens(0L)
-                        .cost(0.0)
-                        .promptTokens(0L)
-                        .totalTokens(0L)
-                        .build()
-                )
-                .workflowName("workflow_name")
                 .build()
 
-        assertThat(v1ExecuteResponse._result()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(v1ExecuteResponse.duration()).contains(0L)
+        assertThat(v1ExecuteResponse.error()).contains("error")
+        assertThat(v1ExecuteResponse.executionId()).contains("executionId")
+        assertThat(v1ExecuteResponse._outputs()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(v1ExecuteResponse.status()).contains(V1ExecuteResponse.Status.COMPLETED)
-        assertThat(v1ExecuteResponse.usage())
-            .contains(
-                V1ExecuteResponse.Usage.builder()
-                    .completionTokens(0L)
-                    .cost(0.0)
-                    .promptTokens(0L)
-                    .totalTokens(0L)
-                    .build()
-            )
-        assertThat(v1ExecuteResponse.workflowName()).contains("workflow_name")
     }
 
     @Test
@@ -46,17 +33,11 @@ internal class V1ExecuteResponseTest {
         val jsonMapper = jsonMapper()
         val v1ExecuteResponse =
             V1ExecuteResponse.builder()
-                .result(JsonValue.from(mapOf<String, Any>()))
+                .duration(0L)
+                .error("error")
+                .executionId("executionId")
+                .outputs(JsonValue.from(mapOf<String, Any>()))
                 .status(V1ExecuteResponse.Status.COMPLETED)
-                .usage(
-                    V1ExecuteResponse.Usage.builder()
-                        .completionTokens(0L)
-                        .cost(0.0)
-                        .promptTokens(0L)
-                        .totalTokens(0L)
-                        .build()
-                )
-                .workflowName("workflow_name")
                 .build()
 
         val roundtrippedV1ExecuteResponse =
