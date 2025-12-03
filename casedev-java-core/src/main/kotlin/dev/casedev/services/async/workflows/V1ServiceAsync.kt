@@ -11,7 +11,6 @@ import dev.casedev.models.workflows.v1.V1ExecuteResponse
 import dev.casedev.models.workflows.v1.V1ListParams
 import dev.casedev.models.workflows.v1.V1RetrieveExecutionParams
 import dev.casedev.models.workflows.v1.V1RetrieveParams
-import dev.casedev.models.workflows.v1.V1SearchParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -151,19 +150,6 @@ interface V1ServiceAsync {
     fun retrieveExecution(id: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
         retrieveExecution(id, V1RetrieveExecutionParams.none(), requestOptions)
 
-    /**
-     * Perform semantic search across available workflows to find the most relevant pre-built
-     * document processing pipelines for your legal use case.
-     */
-    fun search(params: V1SearchParams): CompletableFuture<Void?> =
-        search(params, RequestOptions.none())
-
-    /** @see search */
-    fun search(
-        params: V1SearchParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
-
     /** A view of [V1ServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -296,18 +282,5 @@ interface V1ServiceAsync {
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> =
             retrieveExecution(id, V1RetrieveExecutionParams.none(), requestOptions)
-
-        /**
-         * Returns a raw HTTP response for `post /workflows/v1/search`, but is otherwise the same as
-         * [V1ServiceAsync.search].
-         */
-        fun search(params: V1SearchParams): CompletableFuture<HttpResponse> =
-            search(params, RequestOptions.none())
-
-        /** @see search */
-        fun search(
-            params: V1SearchParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
     }
 }

@@ -22,7 +22,6 @@ import dev.casedev.models.workflows.v1.V1ExecuteResponse
 import dev.casedev.models.workflows.v1.V1ListParams
 import dev.casedev.models.workflows.v1.V1RetrieveExecutionParams
 import dev.casedev.models.workflows.v1.V1RetrieveParams
-import dev.casedev.models.workflows.v1.V1SearchParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -60,11 +59,6 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     ) {
         // get /workflows/v1/executions/{id}
         withRawResponse().retrieveExecution(params, requestOptions)
-    }
-
-    override fun search(params: V1SearchParams, requestOptions: RequestOptions) {
-        // post /workflows/v1/search
-        withRawResponse().search(params, requestOptions)
     }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -171,24 +165,6 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
                 response.use { retrieveExecutionHandler.handle(it) }
-            }
-        }
-
-        private val searchHandler: Handler<Void?> = emptyHandler()
-
-        override fun search(params: V1SearchParams, requestOptions: RequestOptions): HttpResponse {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("workflows", "v1", "search")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepare(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.execute(request, requestOptions)
-            return errorHandler.handle(response).parseable {
-                response.use { searchHandler.handle(it) }
             }
         }
     }

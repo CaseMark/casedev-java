@@ -10,6 +10,7 @@ import dev.casedev.services.async.FormatServiceAsync
 import dev.casedev.services.async.LlmServiceAsync
 import dev.casedev.services.async.OcrServiceAsync
 import dev.casedev.services.async.SearchServiceAsync
+import dev.casedev.services.async.TemplateServiceAsync
 import dev.casedev.services.async.VaultServiceAsync
 import dev.casedev.services.async.VoiceServiceAsync
 import dev.casedev.services.async.WebhookServiceAsync
@@ -72,6 +73,8 @@ interface CasedevClientAsync {
 
     fun webhooks(): WebhookServiceAsync
 
+    fun templates(): TemplateServiceAsync
+
     fun workflows(): WorkflowServiceAsync
 
     /**
@@ -120,6 +123,8 @@ interface CasedevClientAsync {
         fun voice(): VoiceServiceAsync.WithRawResponse
 
         fun webhooks(): WebhookServiceAsync.WithRawResponse
+
+        fun templates(): TemplateServiceAsync.WithRawResponse
 
         fun workflows(): WorkflowServiceAsync.WithRawResponse
     }

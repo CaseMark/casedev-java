@@ -7,7 +7,6 @@ import dev.casedev.client.okhttp.CasedevOkHttpClientAsync
 import dev.casedev.core.JsonValue
 import dev.casedev.models.workflows.v1.V1ExecuteParams
 import dev.casedev.models.workflows.v1.V1ListParams
-import dev.casedev.models.workflows.v1.V1SearchParams
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -94,24 +93,6 @@ internal class V1ServiceAsyncTest {
         val v1ServiceAsync = client.workflows().v1()
 
         val future = v1ServiceAsync.retrieveExecution("exec_abc123def456")
-
-        val response = future.get()
-    }
-
-    @Disabled("Prism tests are disabled")
-    @Test
-    fun search() {
-        val client =
-            CasedevOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .build()
-        val v1ServiceAsync = client.workflows().v1()
-
-        val future =
-            v1ServiceAsync.search(
-                V1SearchParams.builder().query("query").category("category").limit(1L).build()
-            )
 
         val response = future.get()
     }
