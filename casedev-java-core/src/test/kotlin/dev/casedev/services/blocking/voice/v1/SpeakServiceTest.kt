@@ -11,7 +11,6 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import dev.casedev.TestServerExtension
 import dev.casedev.client.okhttp.CasedevOkHttpClient
 import dev.casedev.models.voice.v1.speak.SpeakCreateParams
-import dev.casedev.models.voice.v1.speak.SpeakStreamParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -58,43 +57,5 @@ internal class SpeakServiceTest {
             )
 
         assertThat(speak.body()).hasContent("abc")
-    }
-
-    @Test
-    fun stream(wmRuntimeInfo: WireMockRuntimeInfo) {
-        val client =
-            CasedevOkHttpClient.builder()
-                .baseUrl(wmRuntimeInfo.httpBaseUrl)
-                .apiKey("My API Key")
-                .build()
-        val speakService = client.voice().v1().speak()
-        stubFor(post(anyUrl()).willReturn(ok().withBody("abc")))
-
-        val response =
-            speakService.stream(
-                SpeakStreamParams.builder()
-                    .text("text")
-                    .applyTextNormalization(true)
-                    .enableLogging(true)
-                    .languageCode("language_code")
-                    .modelId(SpeakStreamParams.ModelId.ELEVEN_MONOLINGUAL_V1)
-                    .nextText("next_text")
-                    .optimizeStreamingLatency(0L)
-                    .outputFormat(SpeakStreamParams.OutputFormat.MP3_44100_128)
-                    .previousText("previous_text")
-                    .seed(0L)
-                    .voiceId("voice_id")
-                    .voiceSettings(
-                        SpeakStreamParams.VoiceSettings.builder()
-                            .similarityBoost(0.0)
-                            .stability(0.0)
-                            .style(0.0)
-                            .useSpeakerBoost(true)
-                            .build()
-                    )
-                    .build()
-            )
-
-        assertThat(response.body()).hasContent("abc")
     }
 }

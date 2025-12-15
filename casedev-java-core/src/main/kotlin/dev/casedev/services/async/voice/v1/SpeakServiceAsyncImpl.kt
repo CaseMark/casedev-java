@@ -13,7 +13,6 @@ import dev.casedev.core.http.HttpResponse.Handler
 import dev.casedev.core.http.json
 import dev.casedev.core.prepareAsync
 import dev.casedev.models.voice.v1.speak.SpeakCreateParams
-import dev.casedev.models.voice.v1.speak.SpeakStreamParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -35,13 +34,6 @@ class SpeakServiceAsyncImpl internal constructor(private val clientOptions: Clie
     ): CompletableFuture<HttpResponse> =
         // post /voice/v1/speak
         withRawResponse().create(params, requestOptions)
-
-    override fun stream(
-        params: SpeakStreamParams,
-        requestOptions: RequestOptions,
-    ): CompletableFuture<HttpResponse> =
-        // post /voice/v1/speak/stream
-        withRawResponse().stream(params, requestOptions)
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         SpeakServiceAsync.WithRawResponse {
@@ -65,24 +57,6 @@ class SpeakServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("voice", "v1", "speak")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response -> errorHandler.handle(response) }
-        }
-
-        override fun stream(
-            params: SpeakStreamParams,
-            requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("voice", "v1", "speak", "stream")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepareAsync(clientOptions, params)
