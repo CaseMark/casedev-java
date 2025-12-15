@@ -6,7 +6,6 @@ import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.http.HttpResponse
 import dev.casedev.models.voice.v1.speak.SpeakCreateParams
-import dev.casedev.models.voice.v1.speak.SpeakStreamParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -38,20 +37,6 @@ interface SpeakServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<HttpResponse>
 
-    /**
-     * Convert text to speech using ElevenLabs AI voices with streaming for real-time playback.
-     * Returns audio data as an MP3 stream for immediate playback with minimal latency. Perfect for
-     * legal document narration, client presentations, or accessibility features.
-     */
-    fun stream(params: SpeakStreamParams): CompletableFuture<HttpResponse> =
-        stream(params, RequestOptions.none())
-
-    /** @see stream */
-    fun stream(
-        params: SpeakStreamParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<HttpResponse>
-
     /** A view of [SpeakServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -74,19 +59,6 @@ interface SpeakServiceAsync {
         /** @see create */
         fun create(
             params: SpeakCreateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
-
-        /**
-         * Returns a raw HTTP response for `post /voice/v1/speak/stream`, but is otherwise the same
-         * as [SpeakServiceAsync.stream].
-         */
-        fun stream(params: SpeakStreamParams): CompletableFuture<HttpResponse> =
-            stream(params, RequestOptions.none())
-
-        /** @see stream */
-        fun stream(
-            params: SpeakStreamParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse>
     }
