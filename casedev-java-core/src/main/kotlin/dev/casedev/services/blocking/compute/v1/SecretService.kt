@@ -69,10 +69,9 @@ interface SecretService {
     fun list(requestOptions: RequestOptions) = list(SecretListParams.none(), requestOptions)
 
     /**
-     * Delete an entire secret group or a specific key within a secret group. Automatically syncs
-     * the deletion to Modal compute infrastructure. When deleting a specific key, the remaining
-     * secrets in the group are re-synced. When deleting the entire group, all secrets and the group
-     * itself are removed from both the database and Modal.
+     * Delete an entire secret group or a specific key within a secret group. When deleting a
+     * specific key, the remaining secrets in the group are preserved. When deleting the entire
+     * group, all secrets and the group itself are removed.
      */
     fun deleteGroup(group: String) = deleteGroup(group, SecretDeleteGroupParams.none())
 
@@ -136,9 +135,8 @@ interface SecretService {
         retrieveGroup(group, SecretRetrieveGroupParams.none(), requestOptions)
 
     /**
-     * Set or update secrets in a compute secret group. Secrets are encrypted with AES-256-GCM and
-     * synced to compute infrastructure in real-time. Use this to manage environment variables and
-     * API keys for your compute workloads.
+     * Set or update secrets in a compute secret group. Secrets are encrypted with AES-256-GCM. Use
+     * this to manage environment variables and API keys for your compute workloads.
      */
     fun updateGroup(group: String, params: SecretUpdateGroupParams) =
         updateGroup(group, params, RequestOptions.none())

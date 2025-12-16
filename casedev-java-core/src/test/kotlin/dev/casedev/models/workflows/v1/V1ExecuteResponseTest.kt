@@ -15,17 +15,19 @@ internal class V1ExecuteResponseTest {
         val v1ExecuteResponse =
             V1ExecuteResponse.builder()
                 .duration(0L)
-                .error("error")
+                .executionArn("executionArn")
                 .executionId("executionId")
-                .outputs(JsonValue.from(mapOf<String, Any>()))
-                .status(V1ExecuteResponse.Status.COMPLETED)
+                .mode(V1ExecuteResponse.Mode.FIRE_AND_FORGET)
+                .output(JsonValue.from(mapOf<String, Any>()))
+                .status(V1ExecuteResponse.Status.RUNNING)
                 .build()
 
         assertThat(v1ExecuteResponse.duration()).contains(0L)
-        assertThat(v1ExecuteResponse.error()).contains("error")
+        assertThat(v1ExecuteResponse.executionArn()).contains("executionArn")
         assertThat(v1ExecuteResponse.executionId()).contains("executionId")
-        assertThat(v1ExecuteResponse._outputs()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(v1ExecuteResponse.status()).contains(V1ExecuteResponse.Status.COMPLETED)
+        assertThat(v1ExecuteResponse.mode()).contains(V1ExecuteResponse.Mode.FIRE_AND_FORGET)
+        assertThat(v1ExecuteResponse._output()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(v1ExecuteResponse.status()).contains(V1ExecuteResponse.Status.RUNNING)
     }
 
     @Test
@@ -34,10 +36,11 @@ internal class V1ExecuteResponseTest {
         val v1ExecuteResponse =
             V1ExecuteResponse.builder()
                 .duration(0L)
-                .error("error")
+                .executionArn("executionArn")
                 .executionId("executionId")
-                .outputs(JsonValue.from(mapOf<String, Any>()))
-                .status(V1ExecuteResponse.Status.COMPLETED)
+                .mode(V1ExecuteResponse.Mode.FIRE_AND_FORGET)
+                .output(JsonValue.from(mapOf<String, Any>()))
+                .status(V1ExecuteResponse.Status.RUNNING)
                 .build()
 
         val roundtrippedV1ExecuteResponse =

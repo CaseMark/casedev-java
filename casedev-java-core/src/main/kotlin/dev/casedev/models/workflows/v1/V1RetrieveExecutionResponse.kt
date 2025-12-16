@@ -10,10 +10,13 @@ import dev.casedev.core.ExcludeMissing
 import dev.casedev.core.JsonField
 import dev.casedev.core.JsonMissing
 import dev.casedev.core.JsonValue
+import dev.casedev.core.checkKnown
+import dev.casedev.core.toImmutable
 import dev.casedev.errors.CasedevInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 class V1RetrieveExecutionResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -22,10 +25,12 @@ private constructor(
     private val completedAt: JsonField<String>,
     private val durationMs: JsonField<Long>,
     private val error: JsonField<String>,
+    private val executionArn: JsonField<String>,
     private val input: JsonValue,
     private val output: JsonValue,
     private val startedAt: JsonField<String>,
     private val status: JsonField<String>,
+    private val steps: JsonField<List<JsonValue>>,
     private val triggerType: JsonField<String>,
     private val workflowId: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -39,10 +44,14 @@ private constructor(
         completedAt: JsonField<String> = JsonMissing.of(),
         @JsonProperty("durationMs") @ExcludeMissing durationMs: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("error") @ExcludeMissing error: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("executionArn")
+        @ExcludeMissing
+        executionArn: JsonField<String> = JsonMissing.of(),
         @JsonProperty("input") @ExcludeMissing input: JsonValue = JsonMissing.of(),
         @JsonProperty("output") @ExcludeMissing output: JsonValue = JsonMissing.of(),
         @JsonProperty("startedAt") @ExcludeMissing startedAt: JsonField<String> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("steps") @ExcludeMissing steps: JsonField<List<JsonValue>> = JsonMissing.of(),
         @JsonProperty("triggerType")
         @ExcludeMissing
         triggerType: JsonField<String> = JsonMissing.of(),
@@ -52,10 +61,12 @@ private constructor(
         completedAt,
         durationMs,
         error,
+        executionArn,
         input,
         output,
         startedAt,
         status,
+        steps,
         triggerType,
         workflowId,
         mutableMapOf(),
@@ -85,6 +96,12 @@ private constructor(
      */
     fun error(): Optional<String> = error.getOptional("error")
 
+    /**
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun executionArn(): Optional<String> = executionArn.getOptional("executionArn")
+
     @JsonProperty("input") @ExcludeMissing fun _input(): JsonValue = input
 
     @JsonProperty("output") @ExcludeMissing fun _output(): JsonValue = output
@@ -100,6 +117,12 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun status(): Optional<String> = status.getOptional("status")
+
+    /**
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun steps(): Optional<List<JsonValue>> = steps.getOptional("steps")
 
     /**
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -142,6 +165,15 @@ private constructor(
     @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<String> = error
 
     /**
+     * Returns the raw JSON value of [executionArn].
+     *
+     * Unlike [executionArn], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("executionArn")
+    @ExcludeMissing
+    fun _executionArn(): JsonField<String> = executionArn
+
+    /**
      * Returns the raw JSON value of [startedAt].
      *
      * Unlike [startedAt], this method doesn't throw if the JSON field has an unexpected type.
@@ -154,6 +186,13 @@ private constructor(
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<String> = status
+
+    /**
+     * Returns the raw JSON value of [steps].
+     *
+     * Unlike [steps], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("steps") @ExcludeMissing fun _steps(): JsonField<List<JsonValue>> = steps
 
     /**
      * Returns the raw JSON value of [triggerType].
@@ -196,10 +235,12 @@ private constructor(
         private var completedAt: JsonField<String> = JsonMissing.of()
         private var durationMs: JsonField<Long> = JsonMissing.of()
         private var error: JsonField<String> = JsonMissing.of()
+        private var executionArn: JsonField<String> = JsonMissing.of()
         private var input: JsonValue = JsonMissing.of()
         private var output: JsonValue = JsonMissing.of()
         private var startedAt: JsonField<String> = JsonMissing.of()
         private var status: JsonField<String> = JsonMissing.of()
+        private var steps: JsonField<MutableList<JsonValue>>? = null
         private var triggerType: JsonField<String> = JsonMissing.of()
         private var workflowId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -210,10 +251,12 @@ private constructor(
             completedAt = v1RetrieveExecutionResponse.completedAt
             durationMs = v1RetrieveExecutionResponse.durationMs
             error = v1RetrieveExecutionResponse.error
+            executionArn = v1RetrieveExecutionResponse.executionArn
             input = v1RetrieveExecutionResponse.input
             output = v1RetrieveExecutionResponse.output
             startedAt = v1RetrieveExecutionResponse.startedAt
             status = v1RetrieveExecutionResponse.status
+            steps = v1RetrieveExecutionResponse.steps.map { it.toMutableList() }
             triggerType = v1RetrieveExecutionResponse.triggerType
             workflowId = v1RetrieveExecutionResponse.workflowId
             additionalProperties = v1RetrieveExecutionResponse.additionalProperties.toMutableMap()
@@ -260,6 +303,19 @@ private constructor(
          */
         fun error(error: JsonField<String>) = apply { this.error = error }
 
+        fun executionArn(executionArn: String) = executionArn(JsonField.of(executionArn))
+
+        /**
+         * Sets [Builder.executionArn] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.executionArn] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun executionArn(executionArn: JsonField<String>) = apply {
+            this.executionArn = executionArn
+        }
+
         fun input(input: JsonValue) = apply { this.input = input }
 
         fun output(output: JsonValue) = apply { this.output = output }
@@ -284,6 +340,29 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<String>) = apply { this.status = status }
+
+        fun steps(steps: List<JsonValue>) = steps(JsonField.of(steps))
+
+        /**
+         * Sets [Builder.steps] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.steps] with a well-typed `List<JsonValue>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun steps(steps: JsonField<List<JsonValue>>) = apply {
+            this.steps = steps.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [JsonValue] to [steps].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addStep(step: JsonValue) = apply {
+            steps =
+                (steps ?: JsonField.of(mutableListOf())).also { checkKnown("steps", it).add(step) }
+        }
 
         fun triggerType(triggerType: String) = triggerType(JsonField.of(triggerType))
 
@@ -337,10 +416,12 @@ private constructor(
                 completedAt,
                 durationMs,
                 error,
+                executionArn,
                 input,
                 output,
                 startedAt,
                 status,
+                (steps ?: JsonMissing.of()).map { it.toImmutable() },
                 triggerType,
                 workflowId,
                 additionalProperties.toMutableMap(),
@@ -358,8 +439,10 @@ private constructor(
         completedAt()
         durationMs()
         error()
+        executionArn()
         startedAt()
         status()
+        steps()
         triggerType()
         workflowId()
         validated = true
@@ -384,8 +467,10 @@ private constructor(
             (if (completedAt.asKnown().isPresent) 1 else 0) +
             (if (durationMs.asKnown().isPresent) 1 else 0) +
             (if (error.asKnown().isPresent) 1 else 0) +
+            (if (executionArn.asKnown().isPresent) 1 else 0) +
             (if (startedAt.asKnown().isPresent) 1 else 0) +
             (if (status.asKnown().isPresent) 1 else 0) +
+            (steps.asKnown().getOrNull()?.size ?: 0) +
             (if (triggerType.asKnown().isPresent) 1 else 0) +
             (if (workflowId.asKnown().isPresent) 1 else 0)
 
@@ -399,10 +484,12 @@ private constructor(
             completedAt == other.completedAt &&
             durationMs == other.durationMs &&
             error == other.error &&
+            executionArn == other.executionArn &&
             input == other.input &&
             output == other.output &&
             startedAt == other.startedAt &&
             status == other.status &&
+            steps == other.steps &&
             triggerType == other.triggerType &&
             workflowId == other.workflowId &&
             additionalProperties == other.additionalProperties
@@ -414,10 +501,12 @@ private constructor(
             completedAt,
             durationMs,
             error,
+            executionArn,
             input,
             output,
             startedAt,
             status,
+            steps,
             triggerType,
             workflowId,
             additionalProperties,
@@ -427,5 +516,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "V1RetrieveExecutionResponse{id=$id, completedAt=$completedAt, durationMs=$durationMs, error=$error, input=$input, output=$output, startedAt=$startedAt, status=$status, triggerType=$triggerType, workflowId=$workflowId, additionalProperties=$additionalProperties}"
+        "V1RetrieveExecutionResponse{id=$id, completedAt=$completedAt, durationMs=$durationMs, error=$error, executionArn=$executionArn, input=$input, output=$output, startedAt=$startedAt, status=$status, steps=$steps, triggerType=$triggerType, workflowId=$workflowId, additionalProperties=$additionalProperties}"
 }

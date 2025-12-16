@@ -6,13 +6,24 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import dev.casedev.core.BaseDeserializer
+import dev.casedev.core.BaseSerializer
 import dev.casedev.core.Enum
 import dev.casedev.core.ExcludeMissing
 import dev.casedev.core.JsonField
 import dev.casedev.core.JsonMissing
 import dev.casedev.core.JsonValue
 import dev.casedev.core.Params
+import dev.casedev.core.allMaxBy
 import dev.casedev.core.checkRequired
+import dev.casedev.core.getOrThrow
 import dev.casedev.core.http.Headers
 import dev.casedev.core.http.QueryParams
 import dev.casedev.core.toImmutable
@@ -46,7 +57,7 @@ private constructor(
     fun query(): String = body.query()
 
     /**
-     * Additional filters to apply to search results
+     * Filters to narrow search results to specific documents
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -165,7 +176,7 @@ private constructor(
          */
         fun query(query: JsonField<String>) = apply { body.query(query) }
 
-        /** Additional filters to apply to search results */
+        /** Filters to narrow search results to specific documents */
         fun filters(filters: Filters) = apply { body.filters(filters) }
 
         /**
@@ -378,7 +389,7 @@ private constructor(
         fun query(): String = query.getRequired("query")
 
         /**
-         * Additional filters to apply to search results
+         * Filters to narrow search results to specific documents
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -485,7 +496,7 @@ private constructor(
              */
             fun query(query: JsonField<String>) = apply { this.query = query }
 
-            /** Additional filters to apply to search results */
+            /** Filters to narrow search results to specific documents */
             fun filters(filters: Filters) = filters(JsonField.of(filters))
 
             /**
@@ -623,17 +634,45 @@ private constructor(
             "Body{query=$query, filters=$filters, method=$method, topK=$topK, additionalProperties=$additionalProperties}"
     }
 
-    /** Additional filters to apply to search results */
+    /** Filters to narrow search results to specific documents */
     class Filters
-    @JsonCreator
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        @com.fasterxml.jackson.annotation.JsonValue
-        private val additionalProperties: Map<String, JsonValue>
+        private val objectId: JsonField<ObjectId>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("object_id")
+            @ExcludeMissing
+            objectId: JsonField<ObjectId> = JsonMissing.of()
+        ) : this(objectId, mutableMapOf())
+
+        /**
+         * Filter to specific document(s) by object ID. Accepts a single ID or array of IDs.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun objectId(): Optional<ObjectId> = objectId.getOptional("object_id")
+
+        /**
+         * Returns the raw JSON value of [objectId].
+         *
+         * Unlike [objectId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("object_id") @ExcludeMissing fun _objectId(): JsonField<ObjectId> = objectId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -646,12 +685,32 @@ private constructor(
         /** A builder for [Filters]. */
         class Builder internal constructor() {
 
+            private var objectId: JsonField<ObjectId> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(filters: Filters) = apply {
+                objectId = filters.objectId
                 additionalProperties = filters.additionalProperties.toMutableMap()
             }
+
+            /** Filter to specific document(s) by object ID. Accepts a single ID or array of IDs. */
+            fun objectId(objectId: ObjectId) = objectId(JsonField.of(objectId))
+
+            /**
+             * Sets [Builder.objectId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectId] with a well-typed [ObjectId] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun objectId(objectId: JsonField<ObjectId>) = apply { this.objectId = objectId }
+
+            /** Alias for calling [objectId] with `ObjectId.ofString(string)`. */
+            fun objectId(string: String) = objectId(ObjectId.ofString(string))
+
+            /** Alias for calling [objectId] with `ObjectId.ofStrings(strings)`. */
+            fun objectIdOfStrings(strings: List<String>) = objectId(ObjectId.ofStrings(strings))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -677,7 +736,7 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Filters = Filters(additionalProperties.toImmutable())
+            fun build(): Filters = Filters(objectId, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -687,6 +746,7 @@ private constructor(
                 return@apply
             }
 
+            objectId().ifPresent { it.validate() }
             validated = true
         }
 
@@ -705,22 +765,196 @@ private constructor(
          * Used for best match union deserialization.
          */
         @JvmSynthetic
-        internal fun validity(): Int =
-            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+        internal fun validity(): Int = (objectId.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** Filter to specific document(s) by object ID. Accepts a single ID or array of IDs. */
+        @JsonDeserialize(using = ObjectId.Deserializer::class)
+        @JsonSerialize(using = ObjectId.Serializer::class)
+        class ObjectId
+        private constructor(
+            private val string: String? = null,
+            private val strings: List<String>? = null,
+            private val _json: JsonValue? = null,
+        ) {
+
+            fun string(): Optional<String> = Optional.ofNullable(string)
+
+            fun strings(): Optional<List<String>> = Optional.ofNullable(strings)
+
+            fun isString(): Boolean = string != null
+
+            fun isStrings(): Boolean = strings != null
+
+            fun asString(): String = string.getOrThrow("string")
+
+            fun asStrings(): List<String> = strings.getOrThrow("strings")
+
+            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
+                    string != null -> visitor.visitString(string)
+                    strings != null -> visitor.visitStrings(strings)
+                    else -> visitor.unknown(_json)
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): ObjectId = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitString(string: String) {}
+
+                        override fun visitStrings(strings: List<String>) {}
+                    }
+                )
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: CasedevInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitString(string: String) = 1
+
+                        override fun visitStrings(strings: List<String>) = strings.size
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is ObjectId && string == other.string && strings == other.strings
+            }
+
+            override fun hashCode(): Int = Objects.hash(string, strings)
+
+            override fun toString(): String =
+                when {
+                    string != null -> "ObjectId{string=$string}"
+                    strings != null -> "ObjectId{strings=$strings}"
+                    _json != null -> "ObjectId{_unknown=$_json}"
+                    else -> throw IllegalStateException("Invalid ObjectId")
+                }
+
+            companion object {
+
+                @JvmStatic fun ofString(string: String) = ObjectId(string = string)
+
+                @JvmStatic
+                fun ofStrings(strings: List<String>) = ObjectId(strings = strings.toImmutable())
+            }
+
+            /**
+             * An interface that defines how to map each variant of [ObjectId] to a value of type
+             * [T].
+             */
+            interface Visitor<out T> {
+
+                fun visitString(string: String): T
+
+                fun visitStrings(strings: List<String>): T
+
+                /**
+                 * Maps an unknown variant of [ObjectId] to a value of type [T].
+                 *
+                 * An instance of [ObjectId] can contain an unknown variant if it was deserialized
+                 * from data that doesn't match any known variant. For example, if the SDK is on an
+                 * older version than the API, then the API may respond with new variants that the
+                 * SDK is unaware of.
+                 *
+                 * @throws CasedevInvalidDataException in the default implementation.
+                 */
+                fun unknown(json: JsonValue?): T {
+                    throw CasedevInvalidDataException("Unknown ObjectId: $json")
+                }
+            }
+
+            internal class Deserializer : BaseDeserializer<ObjectId>(ObjectId::class) {
+
+                override fun ObjectCodec.deserialize(node: JsonNode): ObjectId {
+                    val json = JsonValue.fromJsonNode(node)
+
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                    ObjectId(string = it, _json = json)
+                                },
+                                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
+                                    ObjectId(strings = it, _json = json)
+                                },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        // This can happen if what we're deserializing is completely incompatible
+                        // with all the possible variants (e.g. deserializing from object).
+                        0 -> ObjectId(_json = json)
+                        1 -> bestMatches.single()
+                        // If there's more than one match with the highest validity, then use the
+                        // first completely valid match, or simply the first match if none are
+                        // completely valid.
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                    }
+                }
+            }
+
+            internal class Serializer : BaseSerializer<ObjectId>(ObjectId::class) {
+
+                override fun serialize(
+                    value: ObjectId,
+                    generator: JsonGenerator,
+                    provider: SerializerProvider,
+                ) {
+                    when {
+                        value.string != null -> generator.writeObject(value.string)
+                        value.strings != null -> generator.writeObject(value.strings)
+                        value._json != null -> generator.writeObject(value._json)
+                        else -> throw IllegalStateException("Invalid ObjectId")
+                    }
+                }
+            }
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Filters && additionalProperties == other.additionalProperties
+            return other is Filters &&
+                objectId == other.objectId &&
+                additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(objectId, additionalProperties) }
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Filters{additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Filters{objectId=$objectId, additionalProperties=$additionalProperties}"
     }
 
     /**

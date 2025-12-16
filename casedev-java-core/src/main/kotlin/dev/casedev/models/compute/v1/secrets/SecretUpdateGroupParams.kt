@@ -22,9 +22,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Set or update secrets in a compute secret group. Secrets are encrypted with AES-256-GCM and
- * synced to compute infrastructure in real-time. Use this to manage environment variables and API
- * keys for your compute workloads.
+ * Set or update secrets in a compute secret group. Secrets are encrypted with AES-256-GCM. Use this
+ * to manage environment variables and API keys for your compute workloads.
  */
 class SecretUpdateGroupParams
 private constructor(

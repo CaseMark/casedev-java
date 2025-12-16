@@ -104,11 +104,7 @@ internal class VaultServiceAsyncTest {
                 VaultSearchParams.builder()
                     .id("id")
                     .query("query")
-                    .filters(
-                        VaultSearchParams.Filters.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("bar"))
-                            .build()
-                    )
+                    .filters(VaultSearchParams.Filters.builder().objectId("string").build())
                     .method(VaultSearchParams.Method.VECTOR)
                     .topK(1L)
                     .build()

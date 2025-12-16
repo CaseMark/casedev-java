@@ -11,7 +11,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Stop a deployed workflow and release its webhook URL. */
+/** Stop a deployed workflow and delete its Step Functions state machine. */
 class V1UndeployParams
 private constructor(
     private val id: String?,

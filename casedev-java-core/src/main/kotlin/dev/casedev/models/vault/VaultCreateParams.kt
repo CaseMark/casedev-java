@@ -21,8 +21,8 @@ import java.util.Optional
 
 /**
  * Creates a new secure vault with dedicated S3 storage and vector search capabilities. Each vault
- * provides isolated document storage with semantic search, OCR processing, and optional knowledge
- * graph features for legal document analysis and discovery.
+ * provides isolated document storage with semantic search, OCR processing, and optional GraphRAG
+ * knowledge graph features for legal document analysis and discovery.
  */
 class VaultCreateParams
 private constructor(

@@ -19,6 +19,7 @@ class V1DeployResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val message: JsonField<String>,
+    private val stateMachineArn: JsonField<String>,
     private val success: JsonField<Boolean>,
     private val webhookSecret: JsonField<String>,
     private val webhookUrl: JsonField<String>,
@@ -28,18 +29,27 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("stateMachineArn")
+        @ExcludeMissing
+        stateMachineArn: JsonField<String> = JsonMissing.of(),
         @JsonProperty("success") @ExcludeMissing success: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("webhookSecret")
         @ExcludeMissing
         webhookSecret: JsonField<String> = JsonMissing.of(),
         @JsonProperty("webhookUrl") @ExcludeMissing webhookUrl: JsonField<String> = JsonMissing.of(),
-    ) : this(message, success, webhookSecret, webhookUrl, mutableMapOf())
+    ) : this(message, stateMachineArn, success, webhookSecret, webhookUrl, mutableMapOf())
 
     /**
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun message(): Optional<String> = message.getOptional("message")
+
+    /**
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun stateMachineArn(): Optional<String> = stateMachineArn.getOptional("stateMachineArn")
 
     /**
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -67,6 +77,15 @@ private constructor(
      * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
+
+    /**
+     * Returns the raw JSON value of [stateMachineArn].
+     *
+     * Unlike [stateMachineArn], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("stateMachineArn")
+    @ExcludeMissing
+    fun _stateMachineArn(): JsonField<String> = stateMachineArn
 
     /**
      * Returns the raw JSON value of [success].
@@ -113,6 +132,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var message: JsonField<String> = JsonMissing.of()
+        private var stateMachineArn: JsonField<String> = JsonMissing.of()
         private var success: JsonField<Boolean> = JsonMissing.of()
         private var webhookSecret: JsonField<String> = JsonMissing.of()
         private var webhookUrl: JsonField<String> = JsonMissing.of()
@@ -121,6 +141,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(v1DeployResponse: V1DeployResponse) = apply {
             message = v1DeployResponse.message
+            stateMachineArn = v1DeployResponse.stateMachineArn
             success = v1DeployResponse.success
             webhookSecret = v1DeployResponse.webhookSecret
             webhookUrl = v1DeployResponse.webhookUrl
@@ -136,6 +157,20 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun message(message: JsonField<String>) = apply { this.message = message }
+
+        fun stateMachineArn(stateMachineArn: String) =
+            stateMachineArn(JsonField.of(stateMachineArn))
+
+        /**
+         * Sets [Builder.stateMachineArn] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.stateMachineArn] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun stateMachineArn(stateMachineArn: JsonField<String>) = apply {
+            this.stateMachineArn = stateMachineArn
+        }
 
         fun success(success: Boolean) = success(JsonField.of(success))
 
@@ -199,6 +234,7 @@ private constructor(
         fun build(): V1DeployResponse =
             V1DeployResponse(
                 message,
+                stateMachineArn,
                 success,
                 webhookSecret,
                 webhookUrl,
@@ -214,6 +250,7 @@ private constructor(
         }
 
         message()
+        stateMachineArn()
         success()
         webhookSecret()
         webhookUrl()
@@ -236,6 +273,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (message.asKnown().isPresent) 1 else 0) +
+            (if (stateMachineArn.asKnown().isPresent) 1 else 0) +
             (if (success.asKnown().isPresent) 1 else 0) +
             (if (webhookSecret.asKnown().isPresent) 1 else 0) +
             (if (webhookUrl.asKnown().isPresent) 1 else 0)
@@ -247,6 +285,7 @@ private constructor(
 
         return other is V1DeployResponse &&
             message == other.message &&
+            stateMachineArn == other.stateMachineArn &&
             success == other.success &&
             webhookSecret == other.webhookSecret &&
             webhookUrl == other.webhookUrl &&
@@ -254,11 +293,18 @@ private constructor(
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(message, success, webhookSecret, webhookUrl, additionalProperties)
+        Objects.hash(
+            message,
+            stateMachineArn,
+            success,
+            webhookSecret,
+            webhookUrl,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "V1DeployResponse{message=$message, success=$success, webhookSecret=$webhookSecret, webhookUrl=$webhookUrl, additionalProperties=$additionalProperties}"
+        "V1DeployResponse{message=$message, stateMachineArn=$stateMachineArn, success=$success, webhookSecret=$webhookSecret, webhookUrl=$webhookUrl, additionalProperties=$additionalProperties}"
 }

@@ -12,7 +12,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Deploy a workflow to Modal compute. Returns a webhook URL and secret for triggering the workflow.
+ * Deploy a workflow to AWS Step Functions. Returns a webhook URL and secret for triggering the
+ * workflow.
  */
 class V1DeployParams
 private constructor(

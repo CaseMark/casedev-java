@@ -43,7 +43,7 @@ interface VaultServiceAsync {
     /**
      * Creates a new secure vault with dedicated S3 storage and vector search capabilities. Each
      * vault provides isolated document storage with semantic search, OCR processing, and optional
-     * knowledge graph features for legal document analysis and discovery.
+     * GraphRAG knowledge graph features for legal document analysis and discovery.
      */
     fun create(params: VaultCreateParams): CompletableFuture<VaultCreateResponse> =
         create(params, RequestOptions.none())
@@ -89,8 +89,8 @@ interface VaultServiceAsync {
         retrieve(id, VaultRetrieveParams.none(), requestOptions)
 
     /**
-     * List all vaults for the authenticated organization. Returns vault metadata including storage
-     * configuration and usage statistics.
+     * List all vaults for the authenticated organization. Returns vault metadata including name,
+     * description, storage configuration, and usage statistics.
      */
     fun list(): CompletableFuture<VaultListResponse> = list(VaultListParams.none())
 
