@@ -7,17 +7,12 @@ import dev.casedev.core.RequestOptions
 import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
-import dev.casedev.core.handlers.jsonHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponse.Handler
-import dev.casedev.core.http.HttpResponseFor
-import dev.casedev.core.http.json
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepareAsync
-import dev.casedev.models.compute.v1.V1DeployParams
-import dev.casedev.models.compute.v1.V1DeployResponse
 import dev.casedev.models.compute.v1.V1GetPricingParams
 import dev.casedev.models.compute.v1.V1GetUsageParams
 import dev.casedev.services.async.compute.v1.EnvironmentServiceAsync
@@ -66,13 +61,6 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun runs(): RunServiceAsync = runs
 
     override fun secrets(): SecretServiceAsync = secrets
-
-    override fun deploy(
-        params: V1DeployParams,
-        requestOptions: RequestOptions,
-    ): CompletableFuture<V1DeployResponse> =
-        // post /compute/v1/deploy
-        withRawResponse().deploy(params, requestOptions).thenApply { it.parse() }
 
     override fun getPricing(
         params: V1GetPricingParams,
@@ -130,37 +118,6 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
         override fun runs(): RunServiceAsync.WithRawResponse = runs
 
         override fun secrets(): SecretServiceAsync.WithRawResponse = secrets
-
-        private val deployHandler: Handler<V1DeployResponse> =
-            jsonHandler<V1DeployResponse>(clientOptions.jsonMapper)
-
-        override fun deploy(
-            params: V1DeployParams,
-            requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<V1DeployResponse>> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("compute", "v1", "deploy")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { deployHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
-                    }
-                }
-        }
 
         private val getPricingHandler: Handler<Void?> = emptyHandler()
 

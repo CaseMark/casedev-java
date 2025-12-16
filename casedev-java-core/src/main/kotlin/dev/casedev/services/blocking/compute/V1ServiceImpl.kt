@@ -7,17 +7,12 @@ import dev.casedev.core.RequestOptions
 import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
-import dev.casedev.core.handlers.jsonHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponse.Handler
-import dev.casedev.core.http.HttpResponseFor
-import dev.casedev.core.http.json
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepare
-import dev.casedev.models.compute.v1.V1DeployParams
-import dev.casedev.models.compute.v1.V1DeployResponse
 import dev.casedev.models.compute.v1.V1GetPricingParams
 import dev.casedev.models.compute.v1.V1GetUsageParams
 import dev.casedev.services.blocking.compute.v1.EnvironmentService
@@ -62,10 +57,6 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     override fun runs(): RunService = runs
 
     override fun secrets(): SecretService = secrets
-
-    override fun deploy(params: V1DeployParams, requestOptions: RequestOptions): V1DeployResponse =
-        // post /compute/v1/deploy
-        withRawResponse().deploy(params, requestOptions).parse()
 
     override fun getPricing(params: V1GetPricingParams, requestOptions: RequestOptions) {
         // get /compute/v1/pricing
@@ -119,34 +110,6 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
         override fun runs(): RunService.WithRawResponse = runs
 
         override fun secrets(): SecretService.WithRawResponse = secrets
-
-        private val deployHandler: Handler<V1DeployResponse> =
-            jsonHandler<V1DeployResponse>(clientOptions.jsonMapper)
-
-        override fun deploy(
-            params: V1DeployParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<V1DeployResponse> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("compute", "v1", "deploy")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepare(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.execute(request, requestOptions)
-            return errorHandler.handle(response).parseable {
-                response
-                    .use { deployHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-        }
 
         private val getPricingHandler: Handler<Void?> = emptyHandler()
 
