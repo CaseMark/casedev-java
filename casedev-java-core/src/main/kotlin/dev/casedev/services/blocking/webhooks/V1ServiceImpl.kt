@@ -3,27 +3,7 @@
 package dev.casedev.services.blocking.webhooks
 
 import dev.casedev.core.ClientOptions
-import dev.casedev.core.RequestOptions
-import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
-import dev.casedev.core.handlers.errorBodyHandler
-import dev.casedev.core.handlers.errorHandler
-import dev.casedev.core.handlers.jsonHandler
-import dev.casedev.core.http.HttpMethod
-import dev.casedev.core.http.HttpRequest
-import dev.casedev.core.http.HttpResponse
-import dev.casedev.core.http.HttpResponse.Handler
-import dev.casedev.core.http.HttpResponseFor
-import dev.casedev.core.http.json
-import dev.casedev.core.http.parseable
-import dev.casedev.core.prepare
-import dev.casedev.models.webhooks.v1.V1CreateParams
-import dev.casedev.models.webhooks.v1.V1CreateResponse
-import dev.casedev.models.webhooks.v1.V1DeleteParams
-import dev.casedev.models.webhooks.v1.V1ListParams
-import dev.casedev.models.webhooks.v1.V1RetrieveParams
 import java.util.function.Consumer
-import kotlin.jvm.optionals.getOrNull
 
 class V1ServiceImpl internal constructor(private val clientOptions: ClientOptions) : V1Service {
 
@@ -36,30 +16,8 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service =
         V1ServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun create(params: V1CreateParams, requestOptions: RequestOptions): V1CreateResponse =
-        // post /webhooks/v1
-        withRawResponse().create(params, requestOptions).parse()
-
-    override fun retrieve(params: V1RetrieveParams, requestOptions: RequestOptions) {
-        // get /webhooks/v1/{id}
-        withRawResponse().retrieve(params, requestOptions)
-    }
-
-    override fun list(params: V1ListParams, requestOptions: RequestOptions) {
-        // get /webhooks/v1
-        withRawResponse().list(params, requestOptions)
-    }
-
-    override fun delete(params: V1DeleteParams, requestOptions: RequestOptions) {
-        // delete /webhooks/v1/{id}
-        withRawResponse().delete(params, requestOptions)
-    }
-
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         V1Service.WithRawResponse {
-
-        private val errorHandler: Handler<HttpResponse> =
-            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -67,94 +25,5 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             V1ServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
-
-        private val createHandler: Handler<V1CreateResponse> =
-            jsonHandler<V1CreateResponse>(clientOptions.jsonMapper)
-
-        override fun create(
-            params: V1CreateParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<V1CreateResponse> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("webhooks", "v1")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepare(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.execute(request, requestOptions)
-            return errorHandler.handle(response).parseable {
-                response
-                    .use { createHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-        }
-
-        private val retrieveHandler: Handler<Void?> = emptyHandler()
-
-        override fun retrieve(
-            params: V1RetrieveParams,
-            requestOptions: RequestOptions,
-        ): HttpResponse {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("id", params.id().getOrNull())
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("webhooks", "v1", params._pathParam(0))
-                    .build()
-                    .prepare(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.execute(request, requestOptions)
-            return errorHandler.handle(response).parseable {
-                response.use { retrieveHandler.handle(it) }
-            }
-        }
-
-        private val listHandler: Handler<Void?> = emptyHandler()
-
-        override fun list(params: V1ListParams, requestOptions: RequestOptions): HttpResponse {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("webhooks", "v1")
-                    .build()
-                    .prepare(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.execute(request, requestOptions)
-            return errorHandler.handle(response).parseable {
-                response.use { listHandler.handle(it) }
-            }
-        }
-
-        private val deleteHandler: Handler<Void?> = emptyHandler()
-
-        override fun delete(params: V1DeleteParams, requestOptions: RequestOptions): HttpResponse {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("id", params.id().getOrNull())
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.DELETE)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("webhooks", "v1", params._pathParam(0))
-                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
-                    .build()
-                    .prepare(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.execute(request, requestOptions)
-            return errorHandler.handle(response).parseable {
-                response.use { deleteHandler.handle(it) }
-            }
-        }
     }
 }

@@ -9,7 +9,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Get detailed information about a workflow execution. */
+/** Get detailed information about a workflow execution, including live Step Functions status. */
 class V1RetrieveExecutionParams
 private constructor(
     private val id: String?,

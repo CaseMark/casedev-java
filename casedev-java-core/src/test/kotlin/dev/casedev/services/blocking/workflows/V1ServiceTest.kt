@@ -151,7 +151,11 @@ internal class V1ServiceTest {
             v1Service.execute(
                 V1ExecuteParams.builder()
                     .id("id")
-                    .body(JsonValue.from(mapOf<String, Any>()))
+                    .callbackHeaders(JsonValue.from(mapOf<String, Any>()))
+                    .callbackUrl("callbackUrl")
+                    .input(JsonValue.from(mapOf<String, Any>()))
+                    .timeout("timeout")
+                    .wait(true)
                     .build()
             )
 

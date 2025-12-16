@@ -2,7 +2,6 @@
 
 package dev.casedev.models.vault
 
-import dev.casedev.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -13,11 +12,7 @@ internal class VaultSearchParamsTest {
         VaultSearchParams.builder()
             .id("id")
             .query("query")
-            .filters(
-                VaultSearchParams.Filters.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                    .build()
-            )
+            .filters(VaultSearchParams.Filters.builder().objectId("string").build())
             .method(VaultSearchParams.Method.VECTOR)
             .topK(1L)
             .build()
@@ -38,11 +33,7 @@ internal class VaultSearchParamsTest {
             VaultSearchParams.builder()
                 .id("id")
                 .query("query")
-                .filters(
-                    VaultSearchParams.Filters.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
+                .filters(VaultSearchParams.Filters.builder().objectId("string").build())
                 .method(VaultSearchParams.Method.VECTOR)
                 .topK(1L)
                 .build()
@@ -51,11 +42,7 @@ internal class VaultSearchParamsTest {
 
         assertThat(body.query()).isEqualTo("query")
         assertThat(body.filters())
-            .contains(
-                VaultSearchParams.Filters.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                    .build()
-            )
+            .contains(VaultSearchParams.Filters.builder().objectId("string").build())
         assertThat(body.method()).contains(VaultSearchParams.Method.VECTOR)
         assertThat(body.topK()).contains(1L)
     }

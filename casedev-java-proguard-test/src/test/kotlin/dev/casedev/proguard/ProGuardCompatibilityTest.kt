@@ -4,9 +4,7 @@ package dev.casedev.proguard
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import dev.casedev.client.okhttp.CasedevOkHttpClient
-import dev.casedev.core.JsonValue
 import dev.casedev.core.jsonMapper
-import dev.casedev.models.compute.v1.invoke.InvokeRunResponse
 import dev.casedev.models.vault.VaultCreateResponse
 import java.time.OffsetDateTime
 import kotlin.reflect.full.memberFunctions
@@ -86,28 +84,5 @@ internal class ProGuardCompatibilityTest {
             )
 
         assertThat(roundtrippedVaultCreateResponse).isEqualTo(vaultCreateResponse)
-    }
-
-    @Test
-    fun invokeRunResponseRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val invokeRunResponse =
-            InvokeRunResponse.ofSynchronous(
-                InvokeRunResponse.SynchronousResponse.builder()
-                    .duration(0.0)
-                    .error("error")
-                    .output(JsonValue.from(mapOf<String, Any>()))
-                    .runId("runId")
-                    .status(InvokeRunResponse.SynchronousResponse.Status.COMPLETED)
-                    .build()
-            )
-
-        val roundtrippedInvokeRunResponse =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(invokeRunResponse),
-                jacksonTypeRef<InvokeRunResponse>(),
-            )
-
-        assertThat(roundtrippedInvokeRunResponse).isEqualTo(invokeRunResponse)
     }
 }

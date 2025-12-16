@@ -10,7 +10,14 @@ internal class V1ExecuteParamsTest {
 
     @Test
     fun create() {
-        V1ExecuteParams.builder().id("id").body(JsonValue.from(mapOf<String, Any>())).build()
+        V1ExecuteParams.builder()
+            .id("id")
+            .callbackHeaders(JsonValue.from(mapOf<String, Any>()))
+            .callbackUrl("callbackUrl")
+            .input(JsonValue.from(mapOf<String, Any>()))
+            .timeout("timeout")
+            .wait(true)
+            .build()
     }
 
     @Test
@@ -25,11 +32,22 @@ internal class V1ExecuteParamsTest {
     @Test
     fun body() {
         val params =
-            V1ExecuteParams.builder().id("id").body(JsonValue.from(mapOf<String, Any>())).build()
+            V1ExecuteParams.builder()
+                .id("id")
+                .callbackHeaders(JsonValue.from(mapOf<String, Any>()))
+                .callbackUrl("callbackUrl")
+                .input(JsonValue.from(mapOf<String, Any>()))
+                .timeout("timeout")
+                .wait(true)
+                .build()
 
         val body = params._body()
 
-        assertThat(body).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body._callbackHeaders()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.callbackUrl()).contains("callbackUrl")
+        assertThat(body._input()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.timeout()).contains("timeout")
+        assertThat(body.wait()).contains(true)
     }
 
     @Test

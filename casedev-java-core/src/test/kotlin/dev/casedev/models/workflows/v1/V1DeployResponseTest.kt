@@ -14,12 +14,14 @@ internal class V1DeployResponseTest {
         val v1DeployResponse =
             V1DeployResponse.builder()
                 .message("message")
+                .stateMachineArn("stateMachineArn")
                 .success(true)
                 .webhookSecret("webhookSecret")
                 .webhookUrl("webhookUrl")
                 .build()
 
         assertThat(v1DeployResponse.message()).contains("message")
+        assertThat(v1DeployResponse.stateMachineArn()).contains("stateMachineArn")
         assertThat(v1DeployResponse.success()).contains(true)
         assertThat(v1DeployResponse.webhookSecret()).contains("webhookSecret")
         assertThat(v1DeployResponse.webhookUrl()).contains("webhookUrl")
@@ -31,6 +33,7 @@ internal class V1DeployResponseTest {
         val v1DeployResponse =
             V1DeployResponse.builder()
                 .message("message")
+                .stateMachineArn("stateMachineArn")
                 .success(true)
                 .webhookSecret("webhookSecret")
                 .webhookUrl("webhookUrl")

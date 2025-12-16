@@ -21,9 +21,10 @@ class V1ExecuteResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val duration: JsonField<Long>,
-    private val error: JsonField<String>,
+    private val executionArn: JsonField<String>,
     private val executionId: JsonField<String>,
-    private val outputs: JsonValue,
+    private val mode: JsonField<Mode>,
+    private val output: JsonValue,
     private val status: JsonField<Status>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -31,13 +32,16 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("duration") @ExcludeMissing duration: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("error") @ExcludeMissing error: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("executionArn")
+        @ExcludeMissing
+        executionArn: JsonField<String> = JsonMissing.of(),
         @JsonProperty("executionId")
         @ExcludeMissing
         executionId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("outputs") @ExcludeMissing outputs: JsonValue = JsonMissing.of(),
+        @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
+        @JsonProperty("output") @ExcludeMissing output: JsonValue = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-    ) : this(duration, error, executionId, outputs, status, mutableMapOf())
+    ) : this(duration, executionArn, executionId, mode, output, status, mutableMapOf())
 
     /**
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -49,7 +53,7 @@ private constructor(
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun error(): Optional<String> = error.getOptional("error")
+    fun executionArn(): Optional<String> = executionArn.getOptional("executionArn")
 
     /**
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -57,7 +61,13 @@ private constructor(
      */
     fun executionId(): Optional<String> = executionId.getOptional("executionId")
 
-    @JsonProperty("outputs") @ExcludeMissing fun _outputs(): JsonValue = outputs
+    /**
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun mode(): Optional<Mode> = mode.getOptional("mode")
+
+    @JsonProperty("output") @ExcludeMissing fun _output(): JsonValue = output
 
     /**
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -73,11 +83,13 @@ private constructor(
     @JsonProperty("duration") @ExcludeMissing fun _duration(): JsonField<Long> = duration
 
     /**
-     * Returns the raw JSON value of [error].
+     * Returns the raw JSON value of [executionArn].
      *
-     * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [executionArn], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<String> = error
+    @JsonProperty("executionArn")
+    @ExcludeMissing
+    fun _executionArn(): JsonField<String> = executionArn
 
     /**
      * Returns the raw JSON value of [executionId].
@@ -85,6 +97,13 @@ private constructor(
      * Unlike [executionId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("executionId") @ExcludeMissing fun _executionId(): JsonField<String> = executionId
+
+    /**
+     * Returns the raw JSON value of [mode].
+     *
+     * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
 
     /**
      * Returns the raw JSON value of [status].
@@ -115,18 +134,20 @@ private constructor(
     class Builder internal constructor() {
 
         private var duration: JsonField<Long> = JsonMissing.of()
-        private var error: JsonField<String> = JsonMissing.of()
+        private var executionArn: JsonField<String> = JsonMissing.of()
         private var executionId: JsonField<String> = JsonMissing.of()
-        private var outputs: JsonValue = JsonMissing.of()
+        private var mode: JsonField<Mode> = JsonMissing.of()
+        private var output: JsonValue = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(v1ExecuteResponse: V1ExecuteResponse) = apply {
             duration = v1ExecuteResponse.duration
-            error = v1ExecuteResponse.error
+            executionArn = v1ExecuteResponse.executionArn
             executionId = v1ExecuteResponse.executionId
-            outputs = v1ExecuteResponse.outputs
+            mode = v1ExecuteResponse.mode
+            output = v1ExecuteResponse.output
             status = v1ExecuteResponse.status
             additionalProperties = v1ExecuteResponse.additionalProperties.toMutableMap()
         }
@@ -141,15 +162,18 @@ private constructor(
          */
         fun duration(duration: JsonField<Long>) = apply { this.duration = duration }
 
-        fun error(error: String) = error(JsonField.of(error))
+        fun executionArn(executionArn: String) = executionArn(JsonField.of(executionArn))
 
         /**
-         * Sets [Builder.error] to an arbitrary JSON value.
+         * Sets [Builder.executionArn] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.error] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * You should usually call [Builder.executionArn] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun error(error: JsonField<String>) = apply { this.error = error }
+        fun executionArn(executionArn: JsonField<String>) = apply {
+            this.executionArn = executionArn
+        }
 
         fun executionId(executionId: String) = executionId(JsonField.of(executionId))
 
@@ -162,7 +186,17 @@ private constructor(
          */
         fun executionId(executionId: JsonField<String>) = apply { this.executionId = executionId }
 
-        fun outputs(outputs: JsonValue) = apply { this.outputs = outputs }
+        fun mode(mode: Mode) = mode(JsonField.of(mode))
+
+        /**
+         * Sets [Builder.mode] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.mode] with a well-typed [Mode] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
+
+        fun output(output: JsonValue) = apply { this.output = output }
 
         fun status(status: Status) = status(JsonField.of(status))
 
@@ -201,9 +235,10 @@ private constructor(
         fun build(): V1ExecuteResponse =
             V1ExecuteResponse(
                 duration,
-                error,
+                executionArn,
                 executionId,
-                outputs,
+                mode,
+                output,
                 status,
                 additionalProperties.toMutableMap(),
             )
@@ -217,8 +252,9 @@ private constructor(
         }
 
         duration()
-        error()
+        executionArn()
         executionId()
+        mode().ifPresent { it.validate() }
         status().ifPresent { it.validate() }
         validated = true
     }
@@ -239,9 +275,141 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (duration.asKnown().isPresent) 1 else 0) +
-            (if (error.asKnown().isPresent) 1 else 0) +
+            (if (executionArn.asKnown().isPresent) 1 else 0) +
             (if (executionId.asKnown().isPresent) 1 else 0) +
+            (mode.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0)
+
+    class Mode @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val FIRE_AND_FORGET = of("fire-and-forget")
+
+            @JvmField val CALLBACK = of("callback")
+
+            @JvmField val SYNC = of("sync")
+
+            @JvmStatic fun of(value: String) = Mode(JsonField.of(value))
+        }
+
+        /** An enum containing [Mode]'s known values. */
+        enum class Known {
+            FIRE_AND_FORGET,
+            CALLBACK,
+            SYNC,
+        }
+
+        /**
+         * An enum containing [Mode]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Mode] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            FIRE_AND_FORGET,
+            CALLBACK,
+            SYNC,
+            /** An enum member indicating that [Mode] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                FIRE_AND_FORGET -> Value.FIRE_AND_FORGET
+                CALLBACK -> Value.CALLBACK
+                SYNC -> Value.SYNC
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                FIRE_AND_FORGET -> Known.FIRE_AND_FORGET
+                CALLBACK -> Known.CALLBACK
+                SYNC -> Known.SYNC
+                else -> throw CasedevInvalidDataException("Unknown Mode: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { CasedevInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Mode = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: CasedevInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Mode && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -257,6 +425,8 @@ private constructor(
 
         companion object {
 
+            @JvmField val RUNNING = of("running")
+
             @JvmField val COMPLETED = of("completed")
 
             @JvmField val FAILED = of("failed")
@@ -266,6 +436,7 @@ private constructor(
 
         /** An enum containing [Status]'s known values. */
         enum class Known {
+            RUNNING,
             COMPLETED,
             FAILED,
         }
@@ -280,6 +451,7 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            RUNNING,
             COMPLETED,
             FAILED,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
@@ -295,6 +467,7 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                RUNNING -> Value.RUNNING
                 COMPLETED -> Value.COMPLETED
                 FAILED -> Value.FAILED
                 else -> Value._UNKNOWN
@@ -311,6 +484,7 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                RUNNING -> Known.RUNNING
                 COMPLETED -> Known.COMPLETED
                 FAILED -> Known.FAILED
                 else -> throw CasedevInvalidDataException("Unknown Status: $value")
@@ -375,19 +549,28 @@ private constructor(
 
         return other is V1ExecuteResponse &&
             duration == other.duration &&
-            error == other.error &&
+            executionArn == other.executionArn &&
             executionId == other.executionId &&
-            outputs == other.outputs &&
+            mode == other.mode &&
+            output == other.output &&
             status == other.status &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(duration, error, executionId, outputs, status, additionalProperties)
+        Objects.hash(
+            duration,
+            executionArn,
+            executionId,
+            mode,
+            output,
+            status,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "V1ExecuteResponse{duration=$duration, error=$error, executionId=$executionId, outputs=$outputs, status=$status, additionalProperties=$additionalProperties}"
+        "V1ExecuteResponse{duration=$duration, executionArn=$executionArn, executionId=$executionId, mode=$mode, output=$output, status=$status, additionalProperties=$additionalProperties}"
 }

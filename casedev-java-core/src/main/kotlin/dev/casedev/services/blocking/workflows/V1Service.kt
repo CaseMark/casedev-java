@@ -153,7 +153,7 @@ interface V1Service {
         delete(id, V1DeleteParams.none(), requestOptions)
 
     /**
-     * Deploy a workflow to Modal compute. Returns a webhook URL and secret for triggering the
+     * Deploy a workflow to AWS Step Functions. Returns a webhook URL and secret for triggering the
      * workflow.
      */
     fun deploy(id: String): V1DeployResponse = deploy(id, V1DeployParams.none())
@@ -182,7 +182,13 @@ interface V1Service {
     fun deploy(id: String, requestOptions: RequestOptions): V1DeployResponse =
         deploy(id, V1DeployParams.none(), requestOptions)
 
-    /** Execute a workflow for testing. This runs the workflow synchronously without deployment. */
+    /**
+     * Execute a deployed workflow. Supports three modes:
+     * - **Fire-and-forget** (default): Returns immediately with executionId. Poll /executions/{id}
+     *   for status.
+     * - **Callback**: Returns immediately, POSTs result to callbackUrl when workflow completes.
+     * - **Sync wait**: Blocks until workflow completes (max 5 minutes).
+     */
     fun execute(id: String): V1ExecuteResponse = execute(id, V1ExecuteParams.none())
 
     /** @see execute */
@@ -240,7 +246,9 @@ interface V1Service {
     fun listExecutions(id: String, requestOptions: RequestOptions): V1ListExecutionsResponse =
         listExecutions(id, V1ListExecutionsParams.none(), requestOptions)
 
-    /** Get detailed information about a workflow execution. */
+    /**
+     * Get detailed information about a workflow execution, including live Step Functions status.
+     */
     fun retrieveExecution(id: String): V1RetrieveExecutionResponse =
         retrieveExecution(id, V1RetrieveExecutionParams.none())
 
@@ -272,7 +280,7 @@ interface V1Service {
     fun retrieveExecution(id: String, requestOptions: RequestOptions): V1RetrieveExecutionResponse =
         retrieveExecution(id, V1RetrieveExecutionParams.none(), requestOptions)
 
-    /** Stop a deployed workflow and release its webhook URL. */
+    /** Stop a deployed workflow and delete its Step Functions state machine. */
     fun undeploy(id: String): V1UndeployResponse = undeploy(id, V1UndeployParams.none())
 
     /** @see undeploy */

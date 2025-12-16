@@ -5,6 +5,7 @@ package dev.casedev.models.workflows.v1
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import dev.casedev.core.JsonValue
 import dev.casedev.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -18,10 +19,12 @@ internal class V1RetrieveExecutionResponseTest {
                 .completedAt("completedAt")
                 .durationMs(0L)
                 .error("error")
+                .executionArn("executionArn")
                 .input(JsonValue.from(mapOf<String, Any>()))
                 .output(JsonValue.from(mapOf<String, Any>()))
                 .startedAt("startedAt")
                 .status("status")
+                .addStep(JsonValue.from(mapOf<String, Any>()))
                 .triggerType("triggerType")
                 .workflowId("workflowId")
                 .build()
@@ -30,12 +33,15 @@ internal class V1RetrieveExecutionResponseTest {
         assertThat(v1RetrieveExecutionResponse.completedAt()).contains("completedAt")
         assertThat(v1RetrieveExecutionResponse.durationMs()).contains(0L)
         assertThat(v1RetrieveExecutionResponse.error()).contains("error")
+        assertThat(v1RetrieveExecutionResponse.executionArn()).contains("executionArn")
         assertThat(v1RetrieveExecutionResponse._input())
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(v1RetrieveExecutionResponse._output())
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(v1RetrieveExecutionResponse.startedAt()).contains("startedAt")
         assertThat(v1RetrieveExecutionResponse.status()).contains("status")
+        assertThat(v1RetrieveExecutionResponse.steps().getOrNull())
+            .containsExactly(JsonValue.from(mapOf<String, Any>()))
         assertThat(v1RetrieveExecutionResponse.triggerType()).contains("triggerType")
         assertThat(v1RetrieveExecutionResponse.workflowId()).contains("workflowId")
     }
@@ -49,10 +55,12 @@ internal class V1RetrieveExecutionResponseTest {
                 .completedAt("completedAt")
                 .durationMs(0L)
                 .error("error")
+                .executionArn("executionArn")
                 .input(JsonValue.from(mapOf<String, Any>()))
                 .output(JsonValue.from(mapOf<String, Any>()))
                 .startedAt("startedAt")
                 .status("status")
+                .addStep(JsonValue.from(mapOf<String, Any>()))
                 .triggerType("triggerType")
                 .workflowId("workflowId")
                 .build()

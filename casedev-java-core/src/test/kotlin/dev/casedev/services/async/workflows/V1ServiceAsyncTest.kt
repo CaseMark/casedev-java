@@ -157,7 +157,11 @@ internal class V1ServiceAsyncTest {
             v1ServiceAsync.execute(
                 V1ExecuteParams.builder()
                     .id("id")
-                    .body(JsonValue.from(mapOf<String, Any>()))
+                    .callbackHeaders(JsonValue.from(mapOf<String, Any>()))
+                    .callbackUrl("callbackUrl")
+                    .input(JsonValue.from(mapOf<String, Any>()))
+                    .timeout("timeout")
+                    .wait(true)
                     .build()
             )
 

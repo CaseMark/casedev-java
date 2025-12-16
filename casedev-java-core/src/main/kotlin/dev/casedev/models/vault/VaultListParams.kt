@@ -8,8 +8,8 @@ import dev.casedev.core.http.QueryParams
 import java.util.Objects
 
 /**
- * List all vaults for the authenticated organization. Returns vault metadata including storage
- * configuration and usage statistics.
+ * List all vaults for the authenticated organization. Returns vault metadata including name,
+ * description, storage configuration, and usage statistics.
  */
 class VaultListParams
 private constructor(
