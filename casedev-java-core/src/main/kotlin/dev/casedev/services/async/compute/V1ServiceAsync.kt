@@ -5,9 +5,6 @@ package dev.casedev.services.async.compute
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.http.HttpResponse
-import dev.casedev.core.http.HttpResponseFor
-import dev.casedev.models.compute.v1.V1DeployParams
-import dev.casedev.models.compute.v1.V1DeployResponse
 import dev.casedev.models.compute.v1.V1GetPricingParams
 import dev.casedev.models.compute.v1.V1GetUsageParams
 import dev.casedev.services.async.compute.v1.EnvironmentServiceAsync
@@ -41,20 +38,6 @@ interface V1ServiceAsync {
     fun runs(): RunServiceAsync
 
     fun secrets(): SecretServiceAsync
-
-    /**
-     * Deploy code to Case.dev's serverless compute infrastructure powered by Modal. Supports
-     * Python, Dockerfile, and container image runtimes with GPU acceleration for AI/ML workloads.
-     * Code is deployed as tasks (batch jobs) or services (web endpoints) with automatic scaling.
-     */
-    fun deploy(params: V1DeployParams): CompletableFuture<V1DeployResponse> =
-        deploy(params, RequestOptions.none())
-
-    /** @see deploy */
-    fun deploy(
-        params: V1DeployParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<V1DeployResponse>
 
     /**
      * Returns current pricing for GPU and CPU compute resources. This public endpoint provides
@@ -118,19 +101,6 @@ interface V1ServiceAsync {
         fun runs(): RunServiceAsync.WithRawResponse
 
         fun secrets(): SecretServiceAsync.WithRawResponse
-
-        /**
-         * Returns a raw HTTP response for `post /compute/v1/deploy`, but is otherwise the same as
-         * [V1ServiceAsync.deploy].
-         */
-        fun deploy(params: V1DeployParams): CompletableFuture<HttpResponseFor<V1DeployResponse>> =
-            deploy(params, RequestOptions.none())
-
-        /** @see deploy */
-        fun deploy(
-            params: V1DeployParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<V1DeployResponse>>
 
         /**
          * Returns a raw HTTP response for `get /compute/v1/pricing`, but is otherwise the same as

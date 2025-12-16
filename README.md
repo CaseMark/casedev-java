@@ -486,10 +486,10 @@ To set undocumented parameters on _nested_ headers, query params, or body classe
 
 ```java
 import dev.casedev.core.JsonValue;
-import dev.casedev.models.compute.v1.V1DeployParams;
+import dev.casedev.models.convert.v1.V1WebhookParams;
 
-V1DeployParams params = V1DeployParams.builder()
-    .config(V1DeployParams.Config.builder()
+V1WebhookParams params = V1WebhookParams.builder()
+    .result(V1WebhookParams.Result.builder()
         .putAdditionalProperty("secretProperty", JsonValue.from("42"))
         .build())
     .build();
