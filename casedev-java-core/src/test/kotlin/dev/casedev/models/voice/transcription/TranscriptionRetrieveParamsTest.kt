@@ -9,15 +9,14 @@ internal class TranscriptionRetrieveParamsTest {
 
     @Test
     fun create() {
-        TranscriptionRetrieveParams.builder().id("5551902f-fc65-4a61-81b2-e002d4e464e5").build()
+        TranscriptionRetrieveParams.builder().id("tr_abc123def456").build()
     }
 
     @Test
     fun pathParams() {
-        val params =
-            TranscriptionRetrieveParams.builder().id("5551902f-fc65-4a61-81b2-e002d4e464e5").build()
+        val params = TranscriptionRetrieveParams.builder().id("tr_abc123def456").build()
 
-        assertThat(params._pathParam(0)).isEqualTo("5551902f-fc65-4a61-81b2-e002d4e464e5")
+        assertThat(params._pathParam(0)).isEqualTo("tr_abc123def456")
         // out-of-bound path param
         assertThat(params._pathParam(1)).isEqualTo("")
     }

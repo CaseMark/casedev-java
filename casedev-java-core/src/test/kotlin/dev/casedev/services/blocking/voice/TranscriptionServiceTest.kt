@@ -26,12 +26,18 @@ internal class TranscriptionServiceTest {
             TranscriptionCreateParams.builder()
                 .audioUrl("audio_url")
                 .autoHighlights(true)
+                .boostParam(TranscriptionCreateParams.BoostParam.LOW)
                 .contentSafetyLabels(true)
+                .format(TranscriptionCreateParams.Format.JSON)
                 .formatText(true)
                 .languageCode("language_code")
                 .languageDetection(true)
+                .objectId("object_id")
                 .punctuate(true)
                 .speakerLabels(true)
+                .speakersExpected(0L)
+                .vaultId("vault_id")
+                .addWordBoost("string")
                 .build()
         )
     }
@@ -46,7 +52,7 @@ internal class TranscriptionServiceTest {
                 .build()
         val transcriptionService = client.voice().transcription()
 
-        val transcription = transcriptionService.retrieve("5551902f-fc65-4a61-81b2-e002d4e464e5")
+        val transcription = transcriptionService.retrieve("tr_abc123def456")
 
         transcription.validate()
     }

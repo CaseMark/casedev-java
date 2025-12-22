@@ -28,8 +28,12 @@ private constructor(
     private val audioDuration: JsonField<Double>,
     private val confidence: JsonField<Double>,
     private val error: JsonField<String>,
+    private val resultObjectId: JsonField<String>,
+    private val sourceObjectId: JsonField<String>,
     private val text: JsonField<String>,
-    private val words: JsonField<List<Word>>,
+    private val vaultId: JsonField<String>,
+    private val wordCount: JsonField<Long>,
+    private val words: JsonField<List<JsonValue>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -44,9 +48,30 @@ private constructor(
         @ExcludeMissing
         confidence: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("error") @ExcludeMissing error: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("result_object_id")
+        @ExcludeMissing
+        resultObjectId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("source_object_id")
+        @ExcludeMissing
+        sourceObjectId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("words") @ExcludeMissing words: JsonField<List<Word>> = JsonMissing.of(),
-    ) : this(id, status, audioDuration, confidence, error, text, words, mutableMapOf())
+        @JsonProperty("vault_id") @ExcludeMissing vaultId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("word_count") @ExcludeMissing wordCount: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("words") @ExcludeMissing words: JsonField<List<JsonValue>> = JsonMissing.of(),
+    ) : this(
+        id,
+        status,
+        audioDuration,
+        confidence,
+        error,
+        resultObjectId,
+        sourceObjectId,
+        text,
+        vaultId,
+        wordCount,
+        words,
+        mutableMapOf(),
+    )
 
     /**
      * Unique transcription job ID
@@ -73,7 +98,7 @@ private constructor(
     fun audioDuration(): Optional<Double> = audioDuration.getOptional("audio_duration")
 
     /**
-     * Overall confidence score for the transcription
+     * Overall confidence score (0-100)
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -81,7 +106,7 @@ private constructor(
     fun confidence(): Optional<Double> = confidence.getOptional("confidence")
 
     /**
-     * Error message (only present when status is error)
+     * Error message (only present when status is failed)
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -89,7 +114,23 @@ private constructor(
     fun error(): Optional<String> = error.getOptional("error")
 
     /**
-     * Full transcription text (only present when status is completed)
+     * Result transcript object ID (vault-based jobs, when completed)
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun resultObjectId(): Optional<String> = resultObjectId.getOptional("result_object_id")
+
+    /**
+     * Source audio object ID (vault-based jobs only)
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun sourceObjectId(): Optional<String> = sourceObjectId.getOptional("source_object_id")
+
+    /**
+     * Full transcription text (legacy direct URL jobs only)
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -97,12 +138,28 @@ private constructor(
     fun text(): Optional<String> = text.getOptional("text")
 
     /**
-     * Word-level timestamps and confidence scores
+     * Vault ID (vault-based jobs only)
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun words(): Optional<List<Word>> = words.getOptional("words")
+    fun vaultId(): Optional<String> = vaultId.getOptional("vault_id")
+
+    /**
+     * Number of words in the transcript
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun wordCount(): Optional<Long> = wordCount.getOptional("word_count")
+
+    /**
+     * Word-level timestamps (legacy direct URL jobs only)
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun words(): Optional<List<JsonValue>> = words.getOptional("words")
 
     /**
      * Returns the raw JSON value of [id].
@@ -142,6 +199,24 @@ private constructor(
     @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<String> = error
 
     /**
+     * Returns the raw JSON value of [resultObjectId].
+     *
+     * Unlike [resultObjectId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("result_object_id")
+    @ExcludeMissing
+    fun _resultObjectId(): JsonField<String> = resultObjectId
+
+    /**
+     * Returns the raw JSON value of [sourceObjectId].
+     *
+     * Unlike [sourceObjectId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("source_object_id")
+    @ExcludeMissing
+    fun _sourceObjectId(): JsonField<String> = sourceObjectId
+
+    /**
      * Returns the raw JSON value of [text].
      *
      * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
@@ -149,11 +224,25 @@ private constructor(
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     /**
+     * Returns the raw JSON value of [vaultId].
+     *
+     * Unlike [vaultId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("vault_id") @ExcludeMissing fun _vaultId(): JsonField<String> = vaultId
+
+    /**
+     * Returns the raw JSON value of [wordCount].
+     *
+     * Unlike [wordCount], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("word_count") @ExcludeMissing fun _wordCount(): JsonField<Long> = wordCount
+
+    /**
      * Returns the raw JSON value of [words].
      *
      * Unlike [words], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("words") @ExcludeMissing fun _words(): JsonField<List<Word>> = words
+    @JsonProperty("words") @ExcludeMissing fun _words(): JsonField<List<JsonValue>> = words
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -190,8 +279,12 @@ private constructor(
         private var audioDuration: JsonField<Double> = JsonMissing.of()
         private var confidence: JsonField<Double> = JsonMissing.of()
         private var error: JsonField<String> = JsonMissing.of()
+        private var resultObjectId: JsonField<String> = JsonMissing.of()
+        private var sourceObjectId: JsonField<String> = JsonMissing.of()
         private var text: JsonField<String> = JsonMissing.of()
-        private var words: JsonField<MutableList<Word>>? = null
+        private var vaultId: JsonField<String> = JsonMissing.of()
+        private var wordCount: JsonField<Long> = JsonMissing.of()
+        private var words: JsonField<MutableList<JsonValue>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -201,7 +294,11 @@ private constructor(
             audioDuration = transcriptionRetrieveResponse.audioDuration
             confidence = transcriptionRetrieveResponse.confidence
             error = transcriptionRetrieveResponse.error
+            resultObjectId = transcriptionRetrieveResponse.resultObjectId
+            sourceObjectId = transcriptionRetrieveResponse.sourceObjectId
             text = transcriptionRetrieveResponse.text
+            vaultId = transcriptionRetrieveResponse.vaultId
+            wordCount = transcriptionRetrieveResponse.wordCount
             words = transcriptionRetrieveResponse.words.map { it.toMutableList() }
             additionalProperties = transcriptionRetrieveResponse.additionalProperties.toMutableMap()
         }
@@ -242,7 +339,7 @@ private constructor(
             this.audioDuration = audioDuration
         }
 
-        /** Overall confidence score for the transcription */
+        /** Overall confidence score (0-100) */
         fun confidence(confidence: Double) = confidence(JsonField.of(confidence))
 
         /**
@@ -254,7 +351,7 @@ private constructor(
          */
         fun confidence(confidence: JsonField<Double>) = apply { this.confidence = confidence }
 
-        /** Error message (only present when status is error) */
+        /** Error message (only present when status is failed) */
         fun error(error: String) = error(JsonField.of(error))
 
         /**
@@ -265,7 +362,35 @@ private constructor(
          */
         fun error(error: JsonField<String>) = apply { this.error = error }
 
-        /** Full transcription text (only present when status is completed) */
+        /** Result transcript object ID (vault-based jobs, when completed) */
+        fun resultObjectId(resultObjectId: String) = resultObjectId(JsonField.of(resultObjectId))
+
+        /**
+         * Sets [Builder.resultObjectId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.resultObjectId] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun resultObjectId(resultObjectId: JsonField<String>) = apply {
+            this.resultObjectId = resultObjectId
+        }
+
+        /** Source audio object ID (vault-based jobs only) */
+        fun sourceObjectId(sourceObjectId: String) = sourceObjectId(JsonField.of(sourceObjectId))
+
+        /**
+         * Sets [Builder.sourceObjectId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sourceObjectId] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun sourceObjectId(sourceObjectId: JsonField<String>) = apply {
+            this.sourceObjectId = sourceObjectId
+        }
+
+        /** Full transcription text (legacy direct URL jobs only) */
         fun text(text: String) = text(JsonField.of(text))
 
         /**
@@ -276,26 +401,48 @@ private constructor(
          */
         fun text(text: JsonField<String>) = apply { this.text = text }
 
-        /** Word-level timestamps and confidence scores */
-        fun words(words: List<Word>) = words(JsonField.of(words))
+        /** Vault ID (vault-based jobs only) */
+        fun vaultId(vaultId: String) = vaultId(JsonField.of(vaultId))
+
+        /**
+         * Sets [Builder.vaultId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vaultId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun vaultId(vaultId: JsonField<String>) = apply { this.vaultId = vaultId }
+
+        /** Number of words in the transcript */
+        fun wordCount(wordCount: Long) = wordCount(JsonField.of(wordCount))
+
+        /**
+         * Sets [Builder.wordCount] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.wordCount] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun wordCount(wordCount: JsonField<Long>) = apply { this.wordCount = wordCount }
+
+        /** Word-level timestamps (legacy direct URL jobs only) */
+        fun words(words: List<JsonValue>) = words(JsonField.of(words))
 
         /**
          * Sets [Builder.words] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.words] with a well-typed `List<Word>` value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.words] with a well-typed `List<JsonValue>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun words(words: JsonField<List<Word>>) = apply {
+        fun words(words: JsonField<List<JsonValue>>) = apply {
             this.words = words.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [Word] to [words].
+         * Adds a single [JsonValue] to [words].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addWord(word: Word) = apply {
+        fun addWord(word: JsonValue) = apply {
             words =
                 (words ?: JsonField.of(mutableListOf())).also { checkKnown("words", it).add(word) }
         }
@@ -339,7 +486,11 @@ private constructor(
                 audioDuration,
                 confidence,
                 error,
+                resultObjectId,
+                sourceObjectId,
                 text,
+                vaultId,
+                wordCount,
                 (words ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
             )
@@ -357,8 +508,12 @@ private constructor(
         audioDuration()
         confidence()
         error()
+        resultObjectId()
+        sourceObjectId()
         text()
-        words().ifPresent { it.forEach { it.validate() } }
+        vaultId()
+        wordCount()
+        words()
         validated = true
     }
 
@@ -382,8 +537,12 @@ private constructor(
             (if (audioDuration.asKnown().isPresent) 1 else 0) +
             (if (confidence.asKnown().isPresent) 1 else 0) +
             (if (error.asKnown().isPresent) 1 else 0) +
+            (if (resultObjectId.asKnown().isPresent) 1 else 0) +
+            (if (sourceObjectId.asKnown().isPresent) 1 else 0) +
             (if (text.asKnown().isPresent) 1 else 0) +
-            (words.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+            (if (vaultId.asKnown().isPresent) 1 else 0) +
+            (if (wordCount.asKnown().isPresent) 1 else 0) +
+            (words.asKnown().getOrNull()?.size ?: 0)
 
     /** Current status of the transcription job */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -406,7 +565,7 @@ private constructor(
 
             @JvmField val COMPLETED = of("completed")
 
-            @JvmField val ERROR = of("error")
+            @JvmField val FAILED = of("failed")
 
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
@@ -416,7 +575,7 @@ private constructor(
             QUEUED,
             PROCESSING,
             COMPLETED,
-            ERROR,
+            FAILED,
         }
 
         /**
@@ -432,7 +591,7 @@ private constructor(
             QUEUED,
             PROCESSING,
             COMPLETED,
-            ERROR,
+            FAILED,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -449,7 +608,7 @@ private constructor(
                 QUEUED -> Value.QUEUED
                 PROCESSING -> Value.PROCESSING
                 COMPLETED -> Value.COMPLETED
-                ERROR -> Value.ERROR
+                FAILED -> Value.FAILED
                 else -> Value._UNKNOWN
             }
 
@@ -467,7 +626,7 @@ private constructor(
                 QUEUED -> Known.QUEUED
                 PROCESSING -> Known.PROCESSING
                 COMPLETED -> Known.COMPLETED
-                ERROR -> Known.ERROR
+                FAILED -> Known.FAILED
                 else -> throw CasedevInvalidDataException("Unknown Status: $value")
             }
 
@@ -523,246 +682,6 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    class Word
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val confidence: JsonField<Double>,
-        private val end: JsonField<Double>,
-        private val start: JsonField<Double>,
-        private val text: JsonField<String>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("confidence")
-            @ExcludeMissing
-            confidence: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("end") @ExcludeMissing end: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("start") @ExcludeMissing start: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
-        ) : this(confidence, end, start, text, mutableMapOf())
-
-        /**
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun confidence(): Optional<Double> = confidence.getOptional("confidence")
-
-        /**
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun end(): Optional<Double> = end.getOptional("end")
-
-        /**
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun start(): Optional<Double> = start.getOptional("start")
-
-        /**
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun text(): Optional<String> = text.getOptional("text")
-
-        /**
-         * Returns the raw JSON value of [confidence].
-         *
-         * Unlike [confidence], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("confidence")
-        @ExcludeMissing
-        fun _confidence(): JsonField<Double> = confidence
-
-        /**
-         * Returns the raw JSON value of [end].
-         *
-         * Unlike [end], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("end") @ExcludeMissing fun _end(): JsonField<Double> = end
-
-        /**
-         * Returns the raw JSON value of [start].
-         *
-         * Unlike [start], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("start") @ExcludeMissing fun _start(): JsonField<Double> = start
-
-        /**
-         * Returns the raw JSON value of [text].
-         *
-         * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Word]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Word]. */
-        class Builder internal constructor() {
-
-            private var confidence: JsonField<Double> = JsonMissing.of()
-            private var end: JsonField<Double> = JsonMissing.of()
-            private var start: JsonField<Double> = JsonMissing.of()
-            private var text: JsonField<String> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(word: Word) = apply {
-                confidence = word.confidence
-                end = word.end
-                start = word.start
-                text = word.text
-                additionalProperties = word.additionalProperties.toMutableMap()
-            }
-
-            fun confidence(confidence: Double) = confidence(JsonField.of(confidence))
-
-            /**
-             * Sets [Builder.confidence] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.confidence] with a well-typed [Double] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun confidence(confidence: JsonField<Double>) = apply { this.confidence = confidence }
-
-            fun end(end: Double) = end(JsonField.of(end))
-
-            /**
-             * Sets [Builder.end] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.end] with a well-typed [Double] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun end(end: JsonField<Double>) = apply { this.end = end }
-
-            fun start(start: Double) = start(JsonField.of(start))
-
-            /**
-             * Sets [Builder.start] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.start] with a well-typed [Double] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun start(start: JsonField<Double>) = apply { this.start = start }
-
-            fun text(text: String) = text(JsonField.of(text))
-
-            /**
-             * Sets [Builder.text] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.text] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun text(text: JsonField<String>) = apply { this.text = text }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Word].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Word =
-                Word(confidence, end, start, text, additionalProperties.toMutableMap())
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): Word = apply {
-            if (validated) {
-                return@apply
-            }
-
-            confidence()
-            end()
-            start()
-            text()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: CasedevInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (confidence.asKnown().isPresent) 1 else 0) +
-                (if (end.asKnown().isPresent) 1 else 0) +
-                (if (start.asKnown().isPresent) 1 else 0) +
-                (if (text.asKnown().isPresent) 1 else 0)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Word &&
-                confidence == other.confidence &&
-                end == other.end &&
-                start == other.start &&
-                text == other.text &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(confidence, end, start, text, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Word{confidence=$confidence, end=$end, start=$start, text=$text, additionalProperties=$additionalProperties}"
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -774,7 +693,11 @@ private constructor(
             audioDuration == other.audioDuration &&
             confidence == other.confidence &&
             error == other.error &&
+            resultObjectId == other.resultObjectId &&
+            sourceObjectId == other.sourceObjectId &&
             text == other.text &&
+            vaultId == other.vaultId &&
+            wordCount == other.wordCount &&
             words == other.words &&
             additionalProperties == other.additionalProperties
     }
@@ -786,7 +709,11 @@ private constructor(
             audioDuration,
             confidence,
             error,
+            resultObjectId,
+            sourceObjectId,
             text,
+            vaultId,
+            wordCount,
             words,
             additionalProperties,
         )
@@ -795,5 +722,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "TranscriptionRetrieveResponse{id=$id, status=$status, audioDuration=$audioDuration, confidence=$confidence, error=$error, text=$text, words=$words, additionalProperties=$additionalProperties}"
+        "TranscriptionRetrieveResponse{id=$id, status=$status, audioDuration=$audioDuration, confidence=$confidence, error=$error, resultObjectId=$resultObjectId, sourceObjectId=$sourceObjectId, text=$text, vaultId=$vaultId, wordCount=$wordCount, words=$words, additionalProperties=$additionalProperties}"
 }

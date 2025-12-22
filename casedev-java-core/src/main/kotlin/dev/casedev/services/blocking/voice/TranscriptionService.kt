@@ -27,21 +27,33 @@ interface TranscriptionService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranscriptionService
 
     /**
-     * Creates an asynchronous transcription job for audio files. Supports various audio formats and
-     * advanced features like speaker identification, content moderation, and automatic highlights.
-     * Returns a job ID for checking transcription status and retrieving results.
+     * Creates an asynchronous transcription job for audio files. Supports two modes:
+     *
+     * **Vault-based (recommended)**: Pass `vault_id` and `object_id` to transcribe audio from your
+     * vault. The transcript will automatically be saved back to the vault when complete.
+     *
+     * **Direct URL (legacy)**: Pass `audio_url` for direct transcription without automatic storage.
      */
-    fun create(params: TranscriptionCreateParams) = create(params, RequestOptions.none())
+    fun create() = create(TranscriptionCreateParams.none())
 
     /** @see create */
     fun create(
-        params: TranscriptionCreateParams,
+        params: TranscriptionCreateParams = TranscriptionCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     )
 
+    /** @see create */
+    fun create(params: TranscriptionCreateParams = TranscriptionCreateParams.none()) =
+        create(params, RequestOptions.none())
+
+    /** @see create */
+    fun create(requestOptions: RequestOptions) =
+        create(TranscriptionCreateParams.none(), requestOptions)
+
     /**
-     * Retrieve the status and result of an audio transcription job. Returns the transcription text
-     * when complete, or status information for pending jobs.
+     * Retrieve the status and result of an audio transcription job. For vault-based jobs, returns
+     * status and result_object_id when complete. For legacy direct URL jobs, returns the full
+     * transcription data.
      */
     fun retrieve(id: String): TranscriptionRetrieveResponse =
         retrieve(id, TranscriptionRetrieveParams.none())
@@ -91,16 +103,25 @@ interface TranscriptionService {
          * Returns a raw HTTP response for `post /voice/transcription`, but is otherwise the same as
          * [TranscriptionService.create].
          */
-        @MustBeClosed
-        fun create(params: TranscriptionCreateParams): HttpResponse =
-            create(params, RequestOptions.none())
+        @MustBeClosed fun create(): HttpResponse = create(TranscriptionCreateParams.none())
 
         /** @see create */
         @MustBeClosed
         fun create(
-            params: TranscriptionCreateParams,
+            params: TranscriptionCreateParams = TranscriptionCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponse
+
+        /** @see create */
+        @MustBeClosed
+        fun create(
+            params: TranscriptionCreateParams = TranscriptionCreateParams.none()
+        ): HttpResponse = create(params, RequestOptions.none())
+
+        /** @see create */
+        @MustBeClosed
+        fun create(requestOptions: RequestOptions): HttpResponse =
+            create(TranscriptionCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /voice/transcription/{id}`, but is otherwise the
