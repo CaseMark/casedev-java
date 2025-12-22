@@ -3,6 +3,7 @@
 package dev.casedev.models.voice.transcription
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import dev.casedev.core.JsonValue
 import dev.casedev.core.jsonMapper
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -19,15 +20,12 @@ internal class TranscriptionRetrieveResponseTest {
                 .audioDuration(0.0)
                 .confidence(0.0)
                 .error("error")
+                .resultObjectId("result_object_id")
+                .sourceObjectId("source_object_id")
                 .text("text")
-                .addWord(
-                    TranscriptionRetrieveResponse.Word.builder()
-                        .confidence(0.0)
-                        .end(0.0)
-                        .start(0.0)
-                        .text("text")
-                        .build()
-                )
+                .vaultId("vault_id")
+                .wordCount(0L)
+                .addWord(JsonValue.from(mapOf<String, Any>()))
                 .build()
 
         assertThat(transcriptionRetrieveResponse.id()).isEqualTo("id")
@@ -36,16 +34,13 @@ internal class TranscriptionRetrieveResponseTest {
         assertThat(transcriptionRetrieveResponse.audioDuration()).contains(0.0)
         assertThat(transcriptionRetrieveResponse.confidence()).contains(0.0)
         assertThat(transcriptionRetrieveResponse.error()).contains("error")
+        assertThat(transcriptionRetrieveResponse.resultObjectId()).contains("result_object_id")
+        assertThat(transcriptionRetrieveResponse.sourceObjectId()).contains("source_object_id")
         assertThat(transcriptionRetrieveResponse.text()).contains("text")
+        assertThat(transcriptionRetrieveResponse.vaultId()).contains("vault_id")
+        assertThat(transcriptionRetrieveResponse.wordCount()).contains(0L)
         assertThat(transcriptionRetrieveResponse.words().getOrNull())
-            .containsExactly(
-                TranscriptionRetrieveResponse.Word.builder()
-                    .confidence(0.0)
-                    .end(0.0)
-                    .start(0.0)
-                    .text("text")
-                    .build()
-            )
+            .containsExactly(JsonValue.from(mapOf<String, Any>()))
     }
 
     @Test
@@ -58,15 +53,12 @@ internal class TranscriptionRetrieveResponseTest {
                 .audioDuration(0.0)
                 .confidence(0.0)
                 .error("error")
+                .resultObjectId("result_object_id")
+                .sourceObjectId("source_object_id")
                 .text("text")
-                .addWord(
-                    TranscriptionRetrieveResponse.Word.builder()
-                        .confidence(0.0)
-                        .end(0.0)
-                        .start(0.0)
-                        .text("text")
-                        .build()
-                )
+                .vaultId("vault_id")
+                .wordCount(0L)
+                .addWord(JsonValue.from(mapOf<String, Any>()))
                 .build()
 
         val roundtrippedTranscriptionRetrieveResponse =

@@ -10,8 +10,9 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Retrieve the status and result of an audio transcription job. Returns the transcription text when
- * complete, or status information for pending jobs.
+ * Retrieve the status and result of an audio transcription job. For vault-based jobs, returns
+ * status and result_object_id when complete. For legacy direct URL jobs, returns the full
+ * transcription data.
  */
 class TranscriptionRetrieveParams
 private constructor(
