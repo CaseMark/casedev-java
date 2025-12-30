@@ -124,6 +124,7 @@ internal class VaultServiceTest {
                     .filename("filename")
                     .autoIndex(true)
                     .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .relativePath("relative_path")
                     .sizeBytes(0.0)
                     .build()
             )

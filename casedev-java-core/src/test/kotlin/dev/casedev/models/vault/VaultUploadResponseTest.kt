@@ -25,6 +25,7 @@ internal class VaultUploadResponseTest {
                 )
                 .nextStep("next_step")
                 .objectId("objectId")
+                .relativePath("relative_path")
                 .s3Key("s3Key")
                 .uploadUrl("uploadUrl")
                 .build()
@@ -41,6 +42,7 @@ internal class VaultUploadResponseTest {
             )
         assertThat(vaultUploadResponse.nextStep()).contains("next_step")
         assertThat(vaultUploadResponse.objectId()).contains("objectId")
+        assertThat(vaultUploadResponse.relativePath()).contains("relative_path")
         assertThat(vaultUploadResponse.s3Key()).contains("s3Key")
         assertThat(vaultUploadResponse.uploadUrl()).contains("uploadUrl")
     }
@@ -61,6 +63,7 @@ internal class VaultUploadResponseTest {
                 )
                 .nextStep("next_step")
                 .objectId("objectId")
+                .relativePath("relative_path")
                 .s3Key("s3Key")
                 .uploadUrl("uploadUrl")
                 .build()
