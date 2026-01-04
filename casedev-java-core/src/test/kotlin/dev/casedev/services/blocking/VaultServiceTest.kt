@@ -32,6 +32,9 @@ internal class VaultServiceTest {
                     .name("Contract Review Archive")
                     .description("Repository for all client contract reviews and analysis")
                     .enableGraph(true)
+                    .metadata(
+                        JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
+                    )
                     .build()
             )
 
