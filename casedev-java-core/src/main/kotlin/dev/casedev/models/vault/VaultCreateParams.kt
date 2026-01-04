@@ -56,6 +56,12 @@ private constructor(
     fun enableGraph(): Optional<Boolean> = body.enableGraph()
 
     /**
+     * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA compliance
+     * tracking)
+     */
+    fun _metadata(): JsonValue = body._metadata()
+
+    /**
      * Returns the raw JSON value of [name].
      *
      * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
@@ -121,6 +127,7 @@ private constructor(
          * - [name]
          * - [description]
          * - [enableGraph]
+         * - [metadata]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -158,6 +165,12 @@ private constructor(
          * value.
          */
         fun enableGraph(enableGraph: JsonField<Boolean>) = apply { body.enableGraph(enableGraph) }
+
+        /**
+         * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA
+         * compliance tracking)
+         */
+        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -308,6 +321,7 @@ private constructor(
         private val name: JsonField<String>,
         private val description: JsonField<String>,
         private val enableGraph: JsonField<Boolean>,
+        private val metadata: JsonValue,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -320,7 +334,8 @@ private constructor(
             @JsonProperty("enableGraph")
             @ExcludeMissing
             enableGraph: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(name, description, enableGraph, mutableMapOf())
+            @JsonProperty("metadata") @ExcludeMissing metadata: JsonValue = JsonMissing.of(),
+        ) : this(name, description, enableGraph, metadata, mutableMapOf())
 
         /**
          * Display name for the vault
@@ -345,6 +360,12 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun enableGraph(): Optional<Boolean> = enableGraph.getOptional("enableGraph")
+
+        /**
+         * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA
+         * compliance tracking)
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
         /**
          * Returns the raw JSON value of [name].
@@ -402,6 +423,7 @@ private constructor(
             private var name: JsonField<String>? = null
             private var description: JsonField<String> = JsonMissing.of()
             private var enableGraph: JsonField<Boolean> = JsonMissing.of()
+            private var metadata: JsonValue = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -409,6 +431,7 @@ private constructor(
                 name = body.name
                 description = body.description
                 enableGraph = body.enableGraph
+                metadata = body.metadata
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -452,6 +475,12 @@ private constructor(
                 this.enableGraph = enableGraph
             }
 
+            /**
+             * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA
+             * compliance tracking)
+             */
+            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -488,6 +517,7 @@ private constructor(
                     checkRequired("name", name),
                     description,
                     enableGraph,
+                    metadata,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -534,17 +564,18 @@ private constructor(
                 name == other.name &&
                 description == other.description &&
                 enableGraph == other.enableGraph &&
+                metadata == other.metadata &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(name, description, enableGraph, additionalProperties)
+            Objects.hash(name, description, enableGraph, metadata, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{name=$name, description=$description, enableGraph=$enableGraph, additionalProperties=$additionalProperties}"
+            "Body{name=$name, description=$description, enableGraph=$enableGraph, metadata=$metadata, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

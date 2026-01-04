@@ -48,6 +48,7 @@ internal class ServiceParamsTest {
                 .name("Contract Review Archive")
                 .description("Repository for all client contract reviews and analysis")
                 .enableGraph(true)
+                .metadata(JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true)))
                 .putAdditionalHeader("Secret-Header", "42")
                 .putAdditionalQueryParam("secret_query_param", "42")
                 .putAdditionalBodyProperty("secretProperty", JsonValue.from("42"))
