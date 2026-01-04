@@ -70,7 +70,7 @@ private constructor(
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun relativePath(): Optional<String> = body.relativePath()
+    fun path(): Optional<String> = body.path()
 
     /**
      * Estimated file size in bytes for cost calculation
@@ -102,11 +102,11 @@ private constructor(
     fun _autoIndex(): JsonField<Boolean> = body._autoIndex()
 
     /**
-     * Returns the raw JSON value of [relativePath].
+     * Returns the raw JSON value of [path].
      *
-     * Unlike [relativePath], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [path], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _relativePath(): JsonField<String> = body._relativePath()
+    fun _path(): JsonField<String> = body._path()
 
     /**
      * Returns the raw JSON value of [sizeBytes].
@@ -169,7 +169,7 @@ private constructor(
          * - [filename]
          * - [autoIndex]
          * - [metadata]
-         * - [relativePath]
+         * - [path]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -217,18 +217,15 @@ private constructor(
          * folder structure from systems like NetDocs, Clio, or Smokeball. Example:
          * '/Discovery/Depositions/2024'
          */
-        fun relativePath(relativePath: String) = apply { body.relativePath(relativePath) }
+        fun path(path: String) = apply { body.path(path) }
 
         /**
-         * Sets [Builder.relativePath] to an arbitrary JSON value.
+         * Sets [Builder.path] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.relativePath] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.path] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun relativePath(relativePath: JsonField<String>) = apply {
-            body.relativePath(relativePath)
-        }
+        fun path(path: JsonField<String>) = apply { body.path(path) }
 
         /** Estimated file size in bytes for cost calculation */
         fun sizeBytes(sizeBytes: Double) = apply { body.sizeBytes(sizeBytes) }
@@ -400,7 +397,7 @@ private constructor(
         private val filename: JsonField<String>,
         private val autoIndex: JsonField<Boolean>,
         private val metadata: JsonValue,
-        private val relativePath: JsonField<String>,
+        private val path: JsonField<String>,
         private val sizeBytes: JsonField<Double>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -417,21 +414,11 @@ private constructor(
             @ExcludeMissing
             autoIndex: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("metadata") @ExcludeMissing metadata: JsonValue = JsonMissing.of(),
-            @JsonProperty("relative_path")
-            @ExcludeMissing
-            relativePath: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("path") @ExcludeMissing path: JsonField<String> = JsonMissing.of(),
             @JsonProperty("sizeBytes")
             @ExcludeMissing
             sizeBytes: JsonField<Double> = JsonMissing.of(),
-        ) : this(
-            contentType,
-            filename,
-            autoIndex,
-            metadata,
-            relativePath,
-            sizeBytes,
-            mutableMapOf(),
-        )
+        ) : this(contentType, filename, autoIndex, metadata, path, sizeBytes, mutableMapOf())
 
         /**
          * MIME type of the file (e.g., application/pdf, image/jpeg)
@@ -468,7 +455,7 @@ private constructor(
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun relativePath(): Optional<String> = relativePath.getOptional("relative_path")
+        fun path(): Optional<String> = path.getOptional("path")
 
         /**
          * Estimated file size in bytes for cost calculation
@@ -502,14 +489,11 @@ private constructor(
         @JsonProperty("auto_index") @ExcludeMissing fun _autoIndex(): JsonField<Boolean> = autoIndex
 
         /**
-         * Returns the raw JSON value of [relativePath].
+         * Returns the raw JSON value of [path].
          *
-         * Unlike [relativePath], this method doesn't throw if the JSON field has an unexpected
-         * type.
+         * Unlike [path], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("relative_path")
-        @ExcludeMissing
-        fun _relativePath(): JsonField<String> = relativePath
+        @JsonProperty("path") @ExcludeMissing fun _path(): JsonField<String> = path
 
         /**
          * Returns the raw JSON value of [sizeBytes].
@@ -551,7 +535,7 @@ private constructor(
             private var filename: JsonField<String>? = null
             private var autoIndex: JsonField<Boolean> = JsonMissing.of()
             private var metadata: JsonValue = JsonMissing.of()
-            private var relativePath: JsonField<String> = JsonMissing.of()
+            private var path: JsonField<String> = JsonMissing.of()
             private var sizeBytes: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -561,7 +545,7 @@ private constructor(
                 filename = body.filename
                 autoIndex = body.autoIndex
                 metadata = body.metadata
-                relativePath = body.relativePath
+                path = body.path
                 sizeBytes = body.sizeBytes
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -612,18 +596,16 @@ private constructor(
              * source folder structure from systems like NetDocs, Clio, or Smokeball. Example:
              * '/Discovery/Depositions/2024'
              */
-            fun relativePath(relativePath: String) = relativePath(JsonField.of(relativePath))
+            fun path(path: String) = path(JsonField.of(path))
 
             /**
-             * Sets [Builder.relativePath] to an arbitrary JSON value.
+             * Sets [Builder.path] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.relativePath] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.path] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
-            fun relativePath(relativePath: JsonField<String>) = apply {
-                this.relativePath = relativePath
-            }
+            fun path(path: JsonField<String>) = apply { this.path = path }
 
             /** Estimated file size in bytes for cost calculation */
             fun sizeBytes(sizeBytes: Double) = sizeBytes(JsonField.of(sizeBytes))
@@ -675,7 +657,7 @@ private constructor(
                     checkRequired("filename", filename),
                     autoIndex,
                     metadata,
-                    relativePath,
+                    path,
                     sizeBytes,
                     additionalProperties.toMutableMap(),
                 )
@@ -691,7 +673,7 @@ private constructor(
             contentType()
             filename()
             autoIndex()
-            relativePath()
+            path()
             sizeBytes()
             validated = true
         }
@@ -715,7 +697,7 @@ private constructor(
             (if (contentType.asKnown().isPresent) 1 else 0) +
                 (if (filename.asKnown().isPresent) 1 else 0) +
                 (if (autoIndex.asKnown().isPresent) 1 else 0) +
-                (if (relativePath.asKnown().isPresent) 1 else 0) +
+                (if (path.asKnown().isPresent) 1 else 0) +
                 (if (sizeBytes.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
@@ -728,7 +710,7 @@ private constructor(
                 filename == other.filename &&
                 autoIndex == other.autoIndex &&
                 metadata == other.metadata &&
-                relativePath == other.relativePath &&
+                path == other.path &&
                 sizeBytes == other.sizeBytes &&
                 additionalProperties == other.additionalProperties
         }
@@ -739,7 +721,7 @@ private constructor(
                 filename,
                 autoIndex,
                 metadata,
-                relativePath,
+                path,
                 sizeBytes,
                 additionalProperties,
             )
@@ -748,7 +730,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{contentType=$contentType, filename=$filename, autoIndex=$autoIndex, metadata=$metadata, relativePath=$relativePath, sizeBytes=$sizeBytes, additionalProperties=$additionalProperties}"
+            "Body{contentType=$contentType, filename=$filename, autoIndex=$autoIndex, metadata=$metadata, path=$path, sizeBytes=$sizeBytes, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

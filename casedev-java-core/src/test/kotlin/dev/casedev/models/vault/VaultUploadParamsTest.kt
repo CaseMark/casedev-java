@@ -16,7 +16,7 @@ internal class VaultUploadParamsTest {
             .filename("filename")
             .autoIndex(true)
             .metadata(JsonValue.from(mapOf<String, Any>()))
-            .relativePath("relative_path")
+            .path("path")
             .sizeBytes(0.0)
             .build()
     }
@@ -44,7 +44,7 @@ internal class VaultUploadParamsTest {
                 .filename("filename")
                 .autoIndex(true)
                 .metadata(JsonValue.from(mapOf<String, Any>()))
-                .relativePath("relative_path")
+                .path("path")
                 .sizeBytes(0.0)
                 .build()
 
@@ -54,7 +54,7 @@ internal class VaultUploadParamsTest {
         assertThat(body.filename()).isEqualTo("filename")
         assertThat(body.autoIndex()).contains(true)
         assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(body.relativePath()).contains("relative_path")
+        assertThat(body.path()).contains("path")
         assertThat(body.sizeBytes()).contains(0.0)
     }
 

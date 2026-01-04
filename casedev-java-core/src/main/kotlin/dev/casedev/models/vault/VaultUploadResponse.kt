@@ -24,7 +24,7 @@ private constructor(
     private val instructions: JsonField<Instructions>,
     private val nextStep: JsonField<String>,
     private val objectId: JsonField<String>,
-    private val relativePath: JsonField<String>,
+    private val path: JsonField<String>,
     private val s3Key: JsonField<String>,
     private val uploadUrl: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -41,9 +41,7 @@ private constructor(
         instructions: JsonField<Instructions> = JsonMissing.of(),
         @JsonProperty("next_step") @ExcludeMissing nextStep: JsonField<String> = JsonMissing.of(),
         @JsonProperty("objectId") @ExcludeMissing objectId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("relative_path")
-        @ExcludeMissing
-        relativePath: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("path") @ExcludeMissing path: JsonField<String> = JsonMissing.of(),
         @JsonProperty("s3Key") @ExcludeMissing s3Key: JsonField<String> = JsonMissing.of(),
         @JsonProperty("uploadUrl") @ExcludeMissing uploadUrl: JsonField<String> = JsonMissing.of(),
     ) : this(
@@ -52,7 +50,7 @@ private constructor(
         instructions,
         nextStep,
         objectId,
-        relativePath,
+        path,
         s3Key,
         uploadUrl,
         mutableMapOf(),
@@ -102,7 +100,7 @@ private constructor(
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun relativePath(): Optional<String> = relativePath.getOptional("relative_path")
+    fun path(): Optional<String> = path.getOptional("path")
 
     /**
      * S3 object key for the file
@@ -158,13 +156,11 @@ private constructor(
     @JsonProperty("objectId") @ExcludeMissing fun _objectId(): JsonField<String> = objectId
 
     /**
-     * Returns the raw JSON value of [relativePath].
+     * Returns the raw JSON value of [path].
      *
-     * Unlike [relativePath], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [path], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("relative_path")
-    @ExcludeMissing
-    fun _relativePath(): JsonField<String> = relativePath
+    @JsonProperty("path") @ExcludeMissing fun _path(): JsonField<String> = path
 
     /**
      * Returns the raw JSON value of [s3Key].
@@ -206,7 +202,7 @@ private constructor(
         private var instructions: JsonField<Instructions> = JsonMissing.of()
         private var nextStep: JsonField<String> = JsonMissing.of()
         private var objectId: JsonField<String> = JsonMissing.of()
-        private var relativePath: JsonField<String> = JsonMissing.of()
+        private var path: JsonField<String> = JsonMissing.of()
         private var s3Key: JsonField<String> = JsonMissing.of()
         private var uploadUrl: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -218,7 +214,7 @@ private constructor(
             instructions = vaultUploadResponse.instructions
             nextStep = vaultUploadResponse.nextStep
             objectId = vaultUploadResponse.objectId
-            relativePath = vaultUploadResponse.relativePath
+            path = vaultUploadResponse.path
             s3Key = vaultUploadResponse.s3Key
             uploadUrl = vaultUploadResponse.uploadUrl
             additionalProperties = vaultUploadResponse.additionalProperties.toMutableMap()
@@ -287,21 +283,18 @@ private constructor(
         fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
 
         /** Folder path for hierarchy if provided */
-        fun relativePath(relativePath: String?) = relativePath(JsonField.ofNullable(relativePath))
+        fun path(path: String?) = path(JsonField.ofNullable(path))
 
-        /** Alias for calling [Builder.relativePath] with `relativePath.orElse(null)`. */
-        fun relativePath(relativePath: Optional<String>) = relativePath(relativePath.getOrNull())
+        /** Alias for calling [Builder.path] with `path.orElse(null)`. */
+        fun path(path: Optional<String>) = path(path.getOrNull())
 
         /**
-         * Sets [Builder.relativePath] to an arbitrary JSON value.
+         * Sets [Builder.path] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.relativePath] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.path] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun relativePath(relativePath: JsonField<String>) = apply {
-            this.relativePath = relativePath
-        }
+        fun path(path: JsonField<String>) = apply { this.path = path }
 
         /** S3 object key for the file */
         fun s3Key(s3Key: String) = s3Key(JsonField.of(s3Key))
@@ -357,7 +350,7 @@ private constructor(
                 instructions,
                 nextStep,
                 objectId,
-                relativePath,
+                path,
                 s3Key,
                 uploadUrl,
                 additionalProperties.toMutableMap(),
@@ -376,7 +369,7 @@ private constructor(
         instructions().ifPresent { it.validate() }
         nextStep()
         objectId()
-        relativePath()
+        path()
         s3Key()
         uploadUrl()
         validated = true
@@ -402,7 +395,7 @@ private constructor(
             (instructions.asKnown().getOrNull()?.validity() ?: 0) +
             (if (nextStep.asKnown().isPresent) 1 else 0) +
             (if (objectId.asKnown().isPresent) 1 else 0) +
-            (if (relativePath.asKnown().isPresent) 1 else 0) +
+            (if (path.asKnown().isPresent) 1 else 0) +
             (if (s3Key.asKnown().isPresent) 1 else 0) +
             (if (uploadUrl.asKnown().isPresent) 1 else 0)
 
@@ -599,7 +592,7 @@ private constructor(
             instructions == other.instructions &&
             nextStep == other.nextStep &&
             objectId == other.objectId &&
-            relativePath == other.relativePath &&
+            path == other.path &&
             s3Key == other.s3Key &&
             uploadUrl == other.uploadUrl &&
             additionalProperties == other.additionalProperties
@@ -612,7 +605,7 @@ private constructor(
             instructions,
             nextStep,
             objectId,
-            relativePath,
+            path,
             s3Key,
             uploadUrl,
             additionalProperties,
@@ -622,5 +615,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "VaultUploadResponse{autoIndex=$autoIndex, expiresIn=$expiresIn, instructions=$instructions, nextStep=$nextStep, objectId=$objectId, relativePath=$relativePath, s3Key=$s3Key, uploadUrl=$uploadUrl, additionalProperties=$additionalProperties}"
+        "VaultUploadResponse{autoIndex=$autoIndex, expiresIn=$expiresIn, instructions=$instructions, nextStep=$nextStep, objectId=$objectId, path=$path, s3Key=$s3Key, uploadUrl=$uploadUrl, additionalProperties=$additionalProperties}"
 }
