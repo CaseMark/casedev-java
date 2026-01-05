@@ -107,8 +107,9 @@ interface VaultService {
 
     /**
      * Triggers OCR ingestion workflow for a vault object to extract text, generate chunks, and
-     * create embeddings. Processing happens asynchronously with GraphRAG support if enabled on the
-     * vault. Returns immediately with workflow tracking information.
+     * create embeddings. Processing happens asynchronously. GraphRAG indexing must be triggered
+     * separately via POST /vault/:id/graphrag/:objectId. Returns immediately with workflow tracking
+     * information.
      */
     fun ingest(objectId: String, params: VaultIngestParams): VaultIngestResponse =
         ingest(objectId, params, RequestOptions.none())

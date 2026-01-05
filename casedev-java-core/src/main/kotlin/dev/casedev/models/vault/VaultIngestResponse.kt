@@ -40,7 +40,7 @@ private constructor(
     ) : this(enableGraphRag, message, objectId, status, workflowId, mutableMapOf())
 
     /**
-     * Whether GraphRAG is enabled for this vault
+     * Always false - GraphRAG must be triggered separately via POST /vault/:id/graphrag/:objectId
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -165,7 +165,10 @@ private constructor(
             additionalProperties = vaultIngestResponse.additionalProperties.toMutableMap()
         }
 
-        /** Whether GraphRAG is enabled for this vault */
+        /**
+         * Always false - GraphRAG must be triggered separately via POST
+         * /vault/:id/graphrag/:objectId
+         */
         fun enableGraphRag(enableGraphRag: Boolean) = enableGraphRag(JsonField.of(enableGraphRag))
 
         /**
