@@ -20,7 +20,6 @@ class VaultUploadResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val autoIndex: JsonField<Boolean>,
-    private val enableIndexing: JsonField<Boolean>,
     private val expiresIn: JsonField<Double>,
     private val instructions: JsonField<Instructions>,
     private val nextStep: JsonField<String>,
@@ -36,9 +35,6 @@ private constructor(
         @JsonProperty("auto_index")
         @ExcludeMissing
         autoIndex: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("enableIndexing")
-        @ExcludeMissing
-        enableIndexing: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("expiresIn") @ExcludeMissing expiresIn: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("instructions")
         @ExcludeMissing
@@ -50,7 +46,6 @@ private constructor(
         @JsonProperty("uploadUrl") @ExcludeMissing uploadUrl: JsonField<String> = JsonMissing.of(),
     ) : this(
         autoIndex,
-        enableIndexing,
         expiresIn,
         instructions,
         nextStep,
@@ -68,14 +63,6 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun autoIndex(): Optional<Boolean> = autoIndex.getOptional("auto_index")
-
-    /**
-     * Whether the vault supports indexing. False for storage-only vaults.
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun enableIndexing(): Optional<Boolean> = enableIndexing.getOptional("enableIndexing")
 
     /**
      * URL expiration time in seconds
@@ -137,15 +124,6 @@ private constructor(
      * Unlike [autoIndex], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("auto_index") @ExcludeMissing fun _autoIndex(): JsonField<Boolean> = autoIndex
-
-    /**
-     * Returns the raw JSON value of [enableIndexing].
-     *
-     * Unlike [enableIndexing], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("enableIndexing")
-    @ExcludeMissing
-    fun _enableIndexing(): JsonField<Boolean> = enableIndexing
 
     /**
      * Returns the raw JSON value of [expiresIn].
@@ -220,7 +198,6 @@ private constructor(
     class Builder internal constructor() {
 
         private var autoIndex: JsonField<Boolean> = JsonMissing.of()
-        private var enableIndexing: JsonField<Boolean> = JsonMissing.of()
         private var expiresIn: JsonField<Double> = JsonMissing.of()
         private var instructions: JsonField<Instructions> = JsonMissing.of()
         private var nextStep: JsonField<String> = JsonMissing.of()
@@ -233,7 +210,6 @@ private constructor(
         @JvmSynthetic
         internal fun from(vaultUploadResponse: VaultUploadResponse) = apply {
             autoIndex = vaultUploadResponse.autoIndex
-            enableIndexing = vaultUploadResponse.enableIndexing
             expiresIn = vaultUploadResponse.expiresIn
             instructions = vaultUploadResponse.instructions
             nextStep = vaultUploadResponse.nextStep
@@ -255,20 +231,6 @@ private constructor(
          * value.
          */
         fun autoIndex(autoIndex: JsonField<Boolean>) = apply { this.autoIndex = autoIndex }
-
-        /** Whether the vault supports indexing. False for storage-only vaults. */
-        fun enableIndexing(enableIndexing: Boolean) = enableIndexing(JsonField.of(enableIndexing))
-
-        /**
-         * Sets [Builder.enableIndexing] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.enableIndexing] with a well-typed [Boolean] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun enableIndexing(enableIndexing: JsonField<Boolean>) = apply {
-            this.enableIndexing = enableIndexing
-        }
 
         /** URL expiration time in seconds */
         fun expiresIn(expiresIn: Double) = expiresIn(JsonField.of(expiresIn))
@@ -384,7 +346,6 @@ private constructor(
         fun build(): VaultUploadResponse =
             VaultUploadResponse(
                 autoIndex,
-                enableIndexing,
                 expiresIn,
                 instructions,
                 nextStep,
@@ -404,7 +365,6 @@ private constructor(
         }
 
         autoIndex()
-        enableIndexing()
         expiresIn()
         instructions().ifPresent { it.validate() }
         nextStep()
@@ -431,7 +391,6 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (autoIndex.asKnown().isPresent) 1 else 0) +
-            (if (enableIndexing.asKnown().isPresent) 1 else 0) +
             (if (expiresIn.asKnown().isPresent) 1 else 0) +
             (instructions.asKnown().getOrNull()?.validity() ?: 0) +
             (if (nextStep.asKnown().isPresent) 1 else 0) +
@@ -629,7 +588,6 @@ private constructor(
 
         return other is VaultUploadResponse &&
             autoIndex == other.autoIndex &&
-            enableIndexing == other.enableIndexing &&
             expiresIn == other.expiresIn &&
             instructions == other.instructions &&
             nextStep == other.nextStep &&
@@ -643,7 +601,6 @@ private constructor(
     private val hashCode: Int by lazy {
         Objects.hash(
             autoIndex,
-            enableIndexing,
             expiresIn,
             instructions,
             nextStep,
@@ -658,5 +615,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "VaultUploadResponse{autoIndex=$autoIndex, enableIndexing=$enableIndexing, expiresIn=$expiresIn, instructions=$instructions, nextStep=$nextStep, objectId=$objectId, path=$path, s3Key=$s3Key, uploadUrl=$uploadUrl, additionalProperties=$additionalProperties}"
+        "VaultUploadResponse{autoIndex=$autoIndex, expiresIn=$expiresIn, instructions=$instructions, nextStep=$nextStep, objectId=$objectId, path=$path, s3Key=$s3Key, uploadUrl=$uploadUrl, additionalProperties=$additionalProperties}"
 }

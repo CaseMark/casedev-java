@@ -4,12 +4,8 @@ package dev.casedev.client
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.getPackageVersion
-import dev.casedev.services.blocking.ActionService
-import dev.casedev.services.blocking.ActionServiceImpl
 import dev.casedev.services.blocking.ComputeService
 import dev.casedev.services.blocking.ComputeServiceImpl
-import dev.casedev.services.blocking.ConvertService
-import dev.casedev.services.blocking.ConvertServiceImpl
 import dev.casedev.services.blocking.FormatService
 import dev.casedev.services.blocking.FormatServiceImpl
 import dev.casedev.services.blocking.LlmService
@@ -18,16 +14,12 @@ import dev.casedev.services.blocking.OcrService
 import dev.casedev.services.blocking.OcrServiceImpl
 import dev.casedev.services.blocking.SearchService
 import dev.casedev.services.blocking.SearchServiceImpl
-import dev.casedev.services.blocking.TemplateService
-import dev.casedev.services.blocking.TemplateServiceImpl
 import dev.casedev.services.blocking.VaultService
 import dev.casedev.services.blocking.VaultServiceImpl
 import dev.casedev.services.blocking.VoiceService
 import dev.casedev.services.blocking.VoiceServiceImpl
 import dev.casedev.services.blocking.WebhookService
 import dev.casedev.services.blocking.WebhookServiceImpl
-import dev.casedev.services.blocking.WorkflowService
-import dev.casedev.services.blocking.WorkflowServiceImpl
 import java.util.function.Consumer
 
 class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClient {
@@ -47,11 +39,7 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
         WithRawResponseImpl(clientOptions)
     }
 
-    private val actions: ActionService by lazy { ActionServiceImpl(clientOptionsWithUserAgent) }
-
     private val compute: ComputeService by lazy { ComputeServiceImpl(clientOptionsWithUserAgent) }
-
-    private val convert: ConvertService by lazy { ConvertServiceImpl(clientOptionsWithUserAgent) }
 
     private val format: FormatService by lazy { FormatServiceImpl(clientOptionsWithUserAgent) }
 
@@ -67,14 +55,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
     private val webhooks: WebhookService by lazy { WebhookServiceImpl(clientOptionsWithUserAgent) }
 
-    private val templates: TemplateService by lazy {
-        TemplateServiceImpl(clientOptionsWithUserAgent)
-    }
-
-    private val workflows: WorkflowService by lazy {
-        WorkflowServiceImpl(clientOptionsWithUserAgent)
-    }
-
     override fun async(): CasedevClientAsync = async
 
     override fun withRawResponse(): CasedevClient.WithRawResponse = withRawResponse
@@ -82,11 +62,7 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClient =
         CasedevClientImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun actions(): ActionService = actions
-
     override fun compute(): ComputeService = compute
-
-    override fun convert(): ConvertService = convert
 
     override fun format(): FormatService = format
 
@@ -102,25 +78,13 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
     override fun webhooks(): WebhookService = webhooks
 
-    override fun templates(): TemplateService = templates
-
-    override fun workflows(): WorkflowService = workflows
-
     override fun close() = clientOptions.close()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CasedevClient.WithRawResponse {
 
-        private val actions: ActionService.WithRawResponse by lazy {
-            ActionServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
         private val compute: ComputeService.WithRawResponse by lazy {
             ComputeServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val convert: ConvertService.WithRawResponse by lazy {
-            ConvertServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val format: FormatService.WithRawResponse by lazy {
@@ -151,14 +115,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
             WebhookServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val templates: TemplateService.WithRawResponse by lazy {
-            TemplateServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val workflows: WorkflowService.WithRawResponse by lazy {
-            WorkflowServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): CasedevClient.WithRawResponse =
@@ -166,11 +122,7 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        override fun actions(): ActionService.WithRawResponse = actions
-
         override fun compute(): ComputeService.WithRawResponse = compute
-
-        override fun convert(): ConvertService.WithRawResponse = convert
 
         override fun format(): FormatService.WithRawResponse = format
 
@@ -185,9 +137,5 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
         override fun voice(): VoiceService.WithRawResponse = voice
 
         override fun webhooks(): WebhookService.WithRawResponse = webhooks
-
-        override fun templates(): TemplateService.WithRawResponse = templates
-
-        override fun workflows(): WorkflowService.WithRawResponse = workflows
     }
 }

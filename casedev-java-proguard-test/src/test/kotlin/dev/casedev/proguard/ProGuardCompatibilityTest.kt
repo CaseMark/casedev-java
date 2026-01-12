@@ -48,9 +48,7 @@ internal class ProGuardCompatibilityTest {
         val client = CasedevOkHttpClient.builder().apiKey("My API Key").build()
 
         assertThat(client).isNotNull()
-        assertThat(client.actions()).isNotNull()
         assertThat(client.compute()).isNotNull()
-        assertThat(client.convert()).isNotNull()
         assertThat(client.format()).isNotNull()
         assertThat(client.llm()).isNotNull()
         assertThat(client.ocr()).isNotNull()
@@ -58,8 +56,6 @@ internal class ProGuardCompatibilityTest {
         assertThat(client.vault()).isNotNull()
         assertThat(client.voice()).isNotNull()
         assertThat(client.webhooks()).isNotNull()
-        assertThat(client.templates()).isNotNull()
-        assertThat(client.workflows()).isNotNull()
     }
 
     @Test
@@ -70,7 +66,6 @@ internal class ProGuardCompatibilityTest {
                 .id("id")
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .description("description")
-                .enableIndexing(true)
                 .filesBucket("filesBucket")
                 .indexName("indexName")
                 .name("name")

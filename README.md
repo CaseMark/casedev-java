@@ -188,9 +188,13 @@ These methods return [`HttpResponse`](casedev-java-core/src/main/kotlin/dev/case
 
 ```java
 import dev.casedev.core.http.HttpResponse;
-import dev.casedev.models.convert.v1.V1DownloadParams;
+import dev.casedev.models.format.v1.V1CreateDocumentParams;
 
-HttpResponse response = client.convert().v1().download("id");
+V1CreateDocumentParams params = V1CreateDocumentParams.builder()
+    .content("content")
+    .outputFormat(V1CreateDocumentParams.OutputFormat.PDF)
+    .build();
+HttpResponse response = client.format().v1().createDocument(params);
 ```
 
 To save the response content to a file, use the [`Files.copy(...)`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#copy-java.io.InputStream-java.nio.file.Path-java.nio.file.CopyOption...-) method:
@@ -201,7 +205,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-try (HttpResponse response = client.convert().v1().download(params)) {
+try (HttpResponse response = client.format().v1().createDocument(params)) {
     Files.copy(
         response.body(),
         Paths.get(path),
@@ -220,7 +224,7 @@ import dev.casedev.core.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-try (HttpResponse response = client.convert().v1().download(params)) {
+try (HttpResponse response = client.format().v1().createDocument(params)) {
     response.body().transferTo(Files.newOutputStream(Paths.get(path)));
 } catch (Exception e) {
     System.out.println("Something went wrong!");
@@ -486,10 +490,10 @@ To set undocumented parameters on _nested_ headers, query params, or body classe
 
 ```java
 import dev.casedev.core.JsonValue;
-import dev.casedev.models.convert.v1.V1WebhookParams;
+import dev.casedev.models.format.v1.V1CreateDocumentParams;
 
-V1WebhookParams params = V1WebhookParams.builder()
-    .result(V1WebhookParams.Result.builder()
+V1CreateDocumentParams params = V1CreateDocumentParams.builder()
+    .options(V1CreateDocumentParams.Options.builder()
         .putAdditionalProperty("secretProperty", JsonValue.from("42"))
         .build())
     .build();
