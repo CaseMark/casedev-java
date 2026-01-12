@@ -15,6 +15,7 @@ import java.time.OffsetDateTime
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 class VaultCreateResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -22,6 +23,7 @@ private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<OffsetDateTime>,
     private val description: JsonField<String>,
+    private val enableIndexing: JsonField<Boolean>,
     private val filesBucket: JsonField<String>,
     private val indexName: JsonField<String>,
     private val name: JsonField<String>,
@@ -39,6 +41,9 @@ private constructor(
         @JsonProperty("description")
         @ExcludeMissing
         description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("enableIndexing")
+        @ExcludeMissing
+        enableIndexing: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("filesBucket")
         @ExcludeMissing
         filesBucket: JsonField<String> = JsonMissing.of(),
@@ -52,6 +57,7 @@ private constructor(
         id,
         createdAt,
         description,
+        enableIndexing,
         filesBucket,
         indexName,
         name,
@@ -85,6 +91,14 @@ private constructor(
     fun description(): Optional<String> = description.getOptional("description")
 
     /**
+     * Whether vector indexing is enabled for this vault
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun enableIndexing(): Optional<Boolean> = enableIndexing.getOptional("enableIndexing")
+
+    /**
      * S3 bucket name for document storage
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -93,7 +107,7 @@ private constructor(
     fun filesBucket(): Optional<String> = filesBucket.getOptional("filesBucket")
 
     /**
-     * Vector search index name
+     * Vector search index name. Null for storage-only vaults.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -117,7 +131,7 @@ private constructor(
     fun region(): Optional<String> = region.getOptional("region")
 
     /**
-     * S3 bucket name for vector embeddings
+     * S3 bucket name for vector embeddings. Null for storage-only vaults.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -146,6 +160,15 @@ private constructor(
      * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("description") @ExcludeMissing fun _description(): JsonField<String> = description
+
+    /**
+     * Returns the raw JSON value of [enableIndexing].
+     *
+     * Unlike [enableIndexing], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("enableIndexing")
+    @ExcludeMissing
+    fun _enableIndexing(): JsonField<Boolean> = enableIndexing
 
     /**
      * Returns the raw JSON value of [filesBucket].
@@ -208,6 +231,7 @@ private constructor(
         private var id: JsonField<String> = JsonMissing.of()
         private var createdAt: JsonField<OffsetDateTime> = JsonMissing.of()
         private var description: JsonField<String> = JsonMissing.of()
+        private var enableIndexing: JsonField<Boolean> = JsonMissing.of()
         private var filesBucket: JsonField<String> = JsonMissing.of()
         private var indexName: JsonField<String> = JsonMissing.of()
         private var name: JsonField<String> = JsonMissing.of()
@@ -220,6 +244,7 @@ private constructor(
             id = vaultCreateResponse.id
             createdAt = vaultCreateResponse.createdAt
             description = vaultCreateResponse.description
+            enableIndexing = vaultCreateResponse.enableIndexing
             filesBucket = vaultCreateResponse.filesBucket
             indexName = vaultCreateResponse.indexName
             name = vaultCreateResponse.name
@@ -263,6 +288,20 @@ private constructor(
          */
         fun description(description: JsonField<String>) = apply { this.description = description }
 
+        /** Whether vector indexing is enabled for this vault */
+        fun enableIndexing(enableIndexing: Boolean) = enableIndexing(JsonField.of(enableIndexing))
+
+        /**
+         * Sets [Builder.enableIndexing] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.enableIndexing] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun enableIndexing(enableIndexing: JsonField<Boolean>) = apply {
+            this.enableIndexing = enableIndexing
+        }
+
         /** S3 bucket name for document storage */
         fun filesBucket(filesBucket: String) = filesBucket(JsonField.of(filesBucket))
 
@@ -275,8 +314,11 @@ private constructor(
          */
         fun filesBucket(filesBucket: JsonField<String>) = apply { this.filesBucket = filesBucket }
 
-        /** Vector search index name */
-        fun indexName(indexName: String) = indexName(JsonField.of(indexName))
+        /** Vector search index name. Null for storage-only vaults. */
+        fun indexName(indexName: String?) = indexName(JsonField.ofNullable(indexName))
+
+        /** Alias for calling [Builder.indexName] with `indexName.orElse(null)`. */
+        fun indexName(indexName: Optional<String>) = indexName(indexName.getOrNull())
 
         /**
          * Sets [Builder.indexName] to an arbitrary JSON value.
@@ -309,8 +351,11 @@ private constructor(
          */
         fun region(region: JsonField<String>) = apply { this.region = region }
 
-        /** S3 bucket name for vector embeddings */
-        fun vectorBucket(vectorBucket: String) = vectorBucket(JsonField.of(vectorBucket))
+        /** S3 bucket name for vector embeddings. Null for storage-only vaults. */
+        fun vectorBucket(vectorBucket: String?) = vectorBucket(JsonField.ofNullable(vectorBucket))
+
+        /** Alias for calling [Builder.vectorBucket] with `vectorBucket.orElse(null)`. */
+        fun vectorBucket(vectorBucket: Optional<String>) = vectorBucket(vectorBucket.getOrNull())
 
         /**
          * Sets [Builder.vectorBucket] to an arbitrary JSON value.
@@ -352,6 +397,7 @@ private constructor(
                 id,
                 createdAt,
                 description,
+                enableIndexing,
                 filesBucket,
                 indexName,
                 name,
@@ -371,6 +417,7 @@ private constructor(
         id()
         createdAt()
         description()
+        enableIndexing()
         filesBucket()
         indexName()
         name()
@@ -397,6 +444,7 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (if (description.asKnown().isPresent) 1 else 0) +
+            (if (enableIndexing.asKnown().isPresent) 1 else 0) +
             (if (filesBucket.asKnown().isPresent) 1 else 0) +
             (if (indexName.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
@@ -412,6 +460,7 @@ private constructor(
             id == other.id &&
             createdAt == other.createdAt &&
             description == other.description &&
+            enableIndexing == other.enableIndexing &&
             filesBucket == other.filesBucket &&
             indexName == other.indexName &&
             name == other.name &&
@@ -425,6 +474,7 @@ private constructor(
             id,
             createdAt,
             description,
+            enableIndexing,
             filesBucket,
             indexName,
             name,
@@ -437,5 +487,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "VaultCreateResponse{id=$id, createdAt=$createdAt, description=$description, filesBucket=$filesBucket, indexName=$indexName, name=$name, region=$region, vectorBucket=$vectorBucket, additionalProperties=$additionalProperties}"
+        "VaultCreateResponse{id=$id, createdAt=$createdAt, description=$description, enableIndexing=$enableIndexing, filesBucket=$filesBucket, indexName=$indexName, name=$name, region=$region, vectorBucket=$vectorBucket, additionalProperties=$additionalProperties}"
 }
