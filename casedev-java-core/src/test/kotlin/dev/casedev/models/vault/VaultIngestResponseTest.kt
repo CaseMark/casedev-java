@@ -24,7 +24,7 @@ internal class VaultIngestResponseTest {
         assertThat(vaultIngestResponse.message()).isEqualTo("message")
         assertThat(vaultIngestResponse.objectId()).isEqualTo("objectId")
         assertThat(vaultIngestResponse.status()).isEqualTo(VaultIngestResponse.Status.PROCESSING)
-        assertThat(vaultIngestResponse.workflowId()).isEqualTo("workflowId")
+        assertThat(vaultIngestResponse.workflowId()).contains("workflowId")
     }
 
     @Test

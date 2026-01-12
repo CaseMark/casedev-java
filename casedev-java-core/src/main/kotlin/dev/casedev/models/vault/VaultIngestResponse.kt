@@ -15,6 +15,7 @@ import dev.casedev.core.checkRequired
 import dev.casedev.errors.CasedevInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class VaultIngestResponse
@@ -64,7 +65,8 @@ private constructor(
     fun objectId(): String = objectId.getRequired("objectId")
 
     /**
-     * Current ingestion status
+     * Current ingestion status. 'stored' for file types without text extraction (no chunks/vectors
+     * created).
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -72,12 +74,12 @@ private constructor(
     fun status(): Status = status.getRequired("status")
 
     /**
-     * Workflow run ID for tracking progress
+     * Workflow run ID for tracking progress. Null for file types that skip processing.
      *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun workflowId(): String = workflowId.getRequired("workflowId")
+    fun workflowId(): Optional<String> = workflowId.getOptional("workflowId")
 
     /**
      * Returns the raw JSON value of [enableGraphRag].
@@ -204,7 +206,10 @@ private constructor(
          */
         fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
 
-        /** Current ingestion status */
+        /**
+         * Current ingestion status. 'stored' for file types without text extraction (no
+         * chunks/vectors created).
+         */
         fun status(status: Status) = status(JsonField.of(status))
 
         /**
@@ -215,8 +220,11 @@ private constructor(
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
-        /** Workflow run ID for tracking progress */
-        fun workflowId(workflowId: String) = workflowId(JsonField.of(workflowId))
+        /** Workflow run ID for tracking progress. Null for file types that skip processing. */
+        fun workflowId(workflowId: String?) = workflowId(JsonField.ofNullable(workflowId))
+
+        /** Alias for calling [Builder.workflowId] with `workflowId.orElse(null)`. */
+        fun workflowId(workflowId: Optional<String>) = workflowId(workflowId.getOrNull())
 
         /**
          * Sets [Builder.workflowId] to an arbitrary JSON value.
@@ -309,7 +317,10 @@ private constructor(
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (if (workflowId.asKnown().isPresent) 1 else 0)
 
-    /** Current ingestion status */
+    /**
+     * Current ingestion status. 'stored' for file types without text extraction (no chunks/vectors
+     * created).
+     */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -326,12 +337,15 @@ private constructor(
 
             @JvmField val PROCESSING = of("processing")
 
+            @JvmField val STORED = of("stored")
+
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
 
         /** An enum containing [Status]'s known values. */
         enum class Known {
-            PROCESSING
+            PROCESSING,
+            STORED,
         }
 
         /**
@@ -345,6 +359,7 @@ private constructor(
          */
         enum class Value {
             PROCESSING,
+            STORED,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -359,6 +374,7 @@ private constructor(
         fun value(): Value =
             when (this) {
                 PROCESSING -> Value.PROCESSING
+                STORED -> Value.STORED
                 else -> Value._UNKNOWN
             }
 
@@ -374,6 +390,7 @@ private constructor(
         fun known(): Known =
             when (this) {
                 PROCESSING -> Known.PROCESSING
+                STORED -> Known.STORED
                 else -> throw CasedevInvalidDataException("Unknown Status: $value")
             }
 
