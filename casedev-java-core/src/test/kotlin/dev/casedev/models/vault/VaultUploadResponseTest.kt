@@ -15,6 +15,7 @@ internal class VaultUploadResponseTest {
         val vaultUploadResponse =
             VaultUploadResponse.builder()
                 .autoIndex(true)
+                .enableIndexing(true)
                 .expiresIn(0.0)
                 .instructions(
                     VaultUploadResponse.Instructions.builder()
@@ -31,6 +32,7 @@ internal class VaultUploadResponseTest {
                 .build()
 
         assertThat(vaultUploadResponse.autoIndex()).contains(true)
+        assertThat(vaultUploadResponse.enableIndexing()).contains(true)
         assertThat(vaultUploadResponse.expiresIn()).contains(0.0)
         assertThat(vaultUploadResponse.instructions())
             .contains(
@@ -53,6 +55,7 @@ internal class VaultUploadResponseTest {
         val vaultUploadResponse =
             VaultUploadResponse.builder()
                 .autoIndex(true)
+                .enableIndexing(true)
                 .expiresIn(0.0)
                 .instructions(
                     VaultUploadResponse.Instructions.builder()
