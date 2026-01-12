@@ -3,18 +3,14 @@
 package dev.casedev.client
 
 import dev.casedev.core.ClientOptions
-import dev.casedev.services.blocking.ActionService
 import dev.casedev.services.blocking.ComputeService
-import dev.casedev.services.blocking.ConvertService
 import dev.casedev.services.blocking.FormatService
 import dev.casedev.services.blocking.LlmService
 import dev.casedev.services.blocking.OcrService
 import dev.casedev.services.blocking.SearchService
-import dev.casedev.services.blocking.TemplateService
 import dev.casedev.services.blocking.VaultService
 import dev.casedev.services.blocking.VoiceService
 import dev.casedev.services.blocking.WebhookService
-import dev.casedev.services.blocking.WorkflowService
 import java.util.function.Consumer
 
 /**
@@ -53,11 +49,7 @@ interface CasedevClient {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClient
 
-    fun actions(): ActionService
-
     fun compute(): ComputeService
-
-    fun convert(): ConvertService
 
     fun format(): FormatService
 
@@ -72,10 +64,6 @@ interface CasedevClient {
     fun voice(): VoiceService
 
     fun webhooks(): WebhookService
-
-    fun templates(): TemplateService
-
-    fun workflows(): WorkflowService
 
     /**
      * Closes this client, relinquishing any underlying resources.
@@ -100,11 +88,7 @@ interface CasedevClient {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClient.WithRawResponse
 
-        fun actions(): ActionService.WithRawResponse
-
         fun compute(): ComputeService.WithRawResponse
-
-        fun convert(): ConvertService.WithRawResponse
 
         fun format(): FormatService.WithRawResponse
 
@@ -119,9 +103,5 @@ interface CasedevClient {
         fun voice(): VoiceService.WithRawResponse
 
         fun webhooks(): WebhookService.WithRawResponse
-
-        fun templates(): TemplateService.WithRawResponse
-
-        fun workflows(): WorkflowService.WithRawResponse
     }
 }

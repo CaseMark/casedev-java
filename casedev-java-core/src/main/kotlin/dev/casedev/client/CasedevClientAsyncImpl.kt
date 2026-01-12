@@ -4,12 +4,8 @@ package dev.casedev.client
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.getPackageVersion
-import dev.casedev.services.async.ActionServiceAsync
-import dev.casedev.services.async.ActionServiceAsyncImpl
 import dev.casedev.services.async.ComputeServiceAsync
 import dev.casedev.services.async.ComputeServiceAsyncImpl
-import dev.casedev.services.async.ConvertServiceAsync
-import dev.casedev.services.async.ConvertServiceAsyncImpl
 import dev.casedev.services.async.FormatServiceAsync
 import dev.casedev.services.async.FormatServiceAsyncImpl
 import dev.casedev.services.async.LlmServiceAsync
@@ -18,16 +14,12 @@ import dev.casedev.services.async.OcrServiceAsync
 import dev.casedev.services.async.OcrServiceAsyncImpl
 import dev.casedev.services.async.SearchServiceAsync
 import dev.casedev.services.async.SearchServiceAsyncImpl
-import dev.casedev.services.async.TemplateServiceAsync
-import dev.casedev.services.async.TemplateServiceAsyncImpl
 import dev.casedev.services.async.VaultServiceAsync
 import dev.casedev.services.async.VaultServiceAsyncImpl
 import dev.casedev.services.async.VoiceServiceAsync
 import dev.casedev.services.async.VoiceServiceAsyncImpl
 import dev.casedev.services.async.WebhookServiceAsync
 import dev.casedev.services.async.WebhookServiceAsyncImpl
-import dev.casedev.services.async.WorkflowServiceAsync
-import dev.casedev.services.async.WorkflowServiceAsyncImpl
 import java.util.function.Consumer
 
 class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : CasedevClientAsync {
@@ -47,16 +39,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         WithRawResponseImpl(clientOptions)
     }
 
-    private val actions: ActionServiceAsync by lazy {
-        ActionServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
     private val compute: ComputeServiceAsync by lazy {
         ComputeServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
-    private val convert: ConvertServiceAsync by lazy {
-        ConvertServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
     private val format: FormatServiceAsync by lazy {
@@ -83,14 +67,6 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         WebhookServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
-    private val templates: TemplateServiceAsync by lazy {
-        TemplateServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
-    private val workflows: WorkflowServiceAsync by lazy {
-        WorkflowServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
     override fun sync(): CasedevClient = sync
 
     override fun withRawResponse(): CasedevClientAsync.WithRawResponse = withRawResponse
@@ -98,11 +74,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClientAsync =
         CasedevClientAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun actions(): ActionServiceAsync = actions
-
     override fun compute(): ComputeServiceAsync = compute
-
-    override fun convert(): ConvertServiceAsync = convert
 
     override fun format(): FormatServiceAsync = format
 
@@ -118,25 +90,13 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     override fun webhooks(): WebhookServiceAsync = webhooks
 
-    override fun templates(): TemplateServiceAsync = templates
-
-    override fun workflows(): WorkflowServiceAsync = workflows
-
     override fun close() = clientOptions.close()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CasedevClientAsync.WithRawResponse {
 
-        private val actions: ActionServiceAsync.WithRawResponse by lazy {
-            ActionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
         private val compute: ComputeServiceAsync.WithRawResponse by lazy {
             ComputeServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val convert: ConvertServiceAsync.WithRawResponse by lazy {
-            ConvertServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val format: FormatServiceAsync.WithRawResponse by lazy {
@@ -167,14 +127,6 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
             WebhookServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val templates: TemplateServiceAsync.WithRawResponse by lazy {
-            TemplateServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val workflows: WorkflowServiceAsync.WithRawResponse by lazy {
-            WorkflowServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): CasedevClientAsync.WithRawResponse =
@@ -182,11 +134,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        override fun actions(): ActionServiceAsync.WithRawResponse = actions
-
         override fun compute(): ComputeServiceAsync.WithRawResponse = compute
-
-        override fun convert(): ConvertServiceAsync.WithRawResponse = convert
 
         override fun format(): FormatServiceAsync.WithRawResponse = format
 
@@ -201,9 +149,5 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         override fun voice(): VoiceServiceAsync.WithRawResponse = voice
 
         override fun webhooks(): WebhookServiceAsync.WithRawResponse = webhooks
-
-        override fun templates(): TemplateServiceAsync.WithRawResponse = templates
-
-        override fun workflows(): WorkflowServiceAsync.WithRawResponse = workflows
     }
 }

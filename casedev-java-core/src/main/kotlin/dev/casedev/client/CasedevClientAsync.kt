@@ -3,18 +3,14 @@
 package dev.casedev.client
 
 import dev.casedev.core.ClientOptions
-import dev.casedev.services.async.ActionServiceAsync
 import dev.casedev.services.async.ComputeServiceAsync
-import dev.casedev.services.async.ConvertServiceAsync
 import dev.casedev.services.async.FormatServiceAsync
 import dev.casedev.services.async.LlmServiceAsync
 import dev.casedev.services.async.OcrServiceAsync
 import dev.casedev.services.async.SearchServiceAsync
-import dev.casedev.services.async.TemplateServiceAsync
 import dev.casedev.services.async.VaultServiceAsync
 import dev.casedev.services.async.VoiceServiceAsync
 import dev.casedev.services.async.WebhookServiceAsync
-import dev.casedev.services.async.WorkflowServiceAsync
 import java.util.function.Consumer
 
 /**
@@ -53,11 +49,7 @@ interface CasedevClientAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClientAsync
 
-    fun actions(): ActionServiceAsync
-
     fun compute(): ComputeServiceAsync
-
-    fun convert(): ConvertServiceAsync
 
     fun format(): FormatServiceAsync
 
@@ -72,10 +64,6 @@ interface CasedevClientAsync {
     fun voice(): VoiceServiceAsync
 
     fun webhooks(): WebhookServiceAsync
-
-    fun templates(): TemplateServiceAsync
-
-    fun workflows(): WorkflowServiceAsync
 
     /**
      * Closes this client, relinquishing any underlying resources.
@@ -104,11 +92,7 @@ interface CasedevClientAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): CasedevClientAsync.WithRawResponse
 
-        fun actions(): ActionServiceAsync.WithRawResponse
-
         fun compute(): ComputeServiceAsync.WithRawResponse
-
-        fun convert(): ConvertServiceAsync.WithRawResponse
 
         fun format(): FormatServiceAsync.WithRawResponse
 
@@ -123,9 +107,5 @@ interface CasedevClientAsync {
         fun voice(): VoiceServiceAsync.WithRawResponse
 
         fun webhooks(): WebhookServiceAsync.WithRawResponse
-
-        fun templates(): TemplateServiceAsync.WithRawResponse
-
-        fun workflows(): WorkflowServiceAsync.WithRawResponse
     }
 }

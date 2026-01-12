@@ -14,7 +14,6 @@ internal class VaultCreateParamsTest {
             .name("Contract Review Archive")
             .description("Repository for all client contract reviews and analysis")
             .enableGraph(true)
-            .enableIndexing(true)
             .metadata(JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true)))
             .build()
     }
@@ -26,7 +25,6 @@ internal class VaultCreateParamsTest {
                 .name("Contract Review Archive")
                 .description("Repository for all client contract reviews and analysis")
                 .enableGraph(true)
-                .enableIndexing(true)
                 .metadata(JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true)))
                 .build()
 
@@ -36,7 +34,6 @@ internal class VaultCreateParamsTest {
         assertThat(body.description())
             .contains("Repository for all client contract reviews and analysis")
         assertThat(body.enableGraph()).contains(true)
-        assertThat(body.enableIndexing()).contains(true)
         assertThat(body._metadata())
             .isEqualTo(JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true)))
     }

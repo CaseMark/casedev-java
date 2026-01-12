@@ -48,21 +48,12 @@ private constructor(
     fun description(): Optional<String> = body.description()
 
     /**
-     * Enable knowledge graph for entity relationship mapping. Only applies when enableIndexing is
-     * true.
+     * Enable knowledge graph for entity relationship mapping
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun enableGraph(): Optional<Boolean> = body.enableGraph()
-
-    /**
-     * Enable vector indexing and search capabilities. Set to false for storage-only vaults.
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun enableIndexing(): Optional<Boolean> = body.enableIndexing()
 
     /**
      * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA compliance
@@ -90,13 +81,6 @@ private constructor(
      * Unlike [enableGraph], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _enableGraph(): JsonField<Boolean> = body._enableGraph()
-
-    /**
-     * Returns the raw JSON value of [enableIndexing].
-     *
-     * Unlike [enableIndexing], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _enableIndexing(): JsonField<Boolean> = body._enableIndexing()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -143,9 +127,7 @@ private constructor(
          * - [name]
          * - [description]
          * - [enableGraph]
-         * - [enableIndexing]
          * - [metadata]
-         * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -172,10 +154,7 @@ private constructor(
          */
         fun description(description: JsonField<String>) = apply { body.description(description) }
 
-        /**
-         * Enable knowledge graph for entity relationship mapping. Only applies when enableIndexing
-         * is true.
-         */
+        /** Enable knowledge graph for entity relationship mapping */
         fun enableGraph(enableGraph: Boolean) = apply { body.enableGraph(enableGraph) }
 
         /**
@@ -186,20 +165,6 @@ private constructor(
          * value.
          */
         fun enableGraph(enableGraph: JsonField<Boolean>) = apply { body.enableGraph(enableGraph) }
-
-        /** Enable vector indexing and search capabilities. Set to false for storage-only vaults. */
-        fun enableIndexing(enableIndexing: Boolean) = apply { body.enableIndexing(enableIndexing) }
-
-        /**
-         * Sets [Builder.enableIndexing] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.enableIndexing] with a well-typed [Boolean] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun enableIndexing(enableIndexing: JsonField<Boolean>) = apply {
-            body.enableIndexing(enableIndexing)
-        }
 
         /**
          * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA
@@ -356,7 +321,6 @@ private constructor(
         private val name: JsonField<String>,
         private val description: JsonField<String>,
         private val enableGraph: JsonField<Boolean>,
-        private val enableIndexing: JsonField<Boolean>,
         private val metadata: JsonValue,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -370,11 +334,8 @@ private constructor(
             @JsonProperty("enableGraph")
             @ExcludeMissing
             enableGraph: JsonField<Boolean> = JsonMissing.of(),
-            @JsonProperty("enableIndexing")
-            @ExcludeMissing
-            enableIndexing: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("metadata") @ExcludeMissing metadata: JsonValue = JsonMissing.of(),
-        ) : this(name, description, enableGraph, enableIndexing, metadata, mutableMapOf())
+        ) : this(name, description, enableGraph, metadata, mutableMapOf())
 
         /**
          * Display name for the vault
@@ -393,21 +354,12 @@ private constructor(
         fun description(): Optional<String> = description.getOptional("description")
 
         /**
-         * Enable knowledge graph for entity relationship mapping. Only applies when enableIndexing
-         * is true.
+         * Enable knowledge graph for entity relationship mapping
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun enableGraph(): Optional<Boolean> = enableGraph.getOptional("enableGraph")
-
-        /**
-         * Enable vector indexing and search capabilities. Set to false for storage-only vaults.
-         *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun enableIndexing(): Optional<Boolean> = enableIndexing.getOptional("enableIndexing")
 
         /**
          * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA
@@ -440,16 +392,6 @@ private constructor(
         @ExcludeMissing
         fun _enableGraph(): JsonField<Boolean> = enableGraph
 
-        /**
-         * Returns the raw JSON value of [enableIndexing].
-         *
-         * Unlike [enableIndexing], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("enableIndexing")
-        @ExcludeMissing
-        fun _enableIndexing(): JsonField<Boolean> = enableIndexing
-
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -481,7 +423,6 @@ private constructor(
             private var name: JsonField<String>? = null
             private var description: JsonField<String> = JsonMissing.of()
             private var enableGraph: JsonField<Boolean> = JsonMissing.of()
-            private var enableIndexing: JsonField<Boolean> = JsonMissing.of()
             private var metadata: JsonValue = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -490,7 +431,6 @@ private constructor(
                 name = body.name
                 description = body.description
                 enableGraph = body.enableGraph
-                enableIndexing = body.enableIndexing
                 metadata = body.metadata
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -521,10 +461,7 @@ private constructor(
                 this.description = description
             }
 
-            /**
-             * Enable knowledge graph for entity relationship mapping. Only applies when
-             * enableIndexing is true.
-             */
+            /** Enable knowledge graph for entity relationship mapping */
             fun enableGraph(enableGraph: Boolean) = enableGraph(JsonField.of(enableGraph))
 
             /**
@@ -536,23 +473,6 @@ private constructor(
              */
             fun enableGraph(enableGraph: JsonField<Boolean>) = apply {
                 this.enableGraph = enableGraph
-            }
-
-            /**
-             * Enable vector indexing and search capabilities. Set to false for storage-only vaults.
-             */
-            fun enableIndexing(enableIndexing: Boolean) =
-                enableIndexing(JsonField.of(enableIndexing))
-
-            /**
-             * Sets [Builder.enableIndexing] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.enableIndexing] with a well-typed [Boolean] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun enableIndexing(enableIndexing: JsonField<Boolean>) = apply {
-                this.enableIndexing = enableIndexing
             }
 
             /**
@@ -597,7 +517,6 @@ private constructor(
                     checkRequired("name", name),
                     description,
                     enableGraph,
-                    enableIndexing,
                     metadata,
                     additionalProperties.toMutableMap(),
                 )
@@ -613,7 +532,6 @@ private constructor(
             name()
             description()
             enableGraph()
-            enableIndexing()
             validated = true
         }
 
@@ -635,8 +553,7 @@ private constructor(
         internal fun validity(): Int =
             (if (name.asKnown().isPresent) 1 else 0) +
                 (if (description.asKnown().isPresent) 1 else 0) +
-                (if (enableGraph.asKnown().isPresent) 1 else 0) +
-                (if (enableIndexing.asKnown().isPresent) 1 else 0)
+                (if (enableGraph.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -647,26 +564,18 @@ private constructor(
                 name == other.name &&
                 description == other.description &&
                 enableGraph == other.enableGraph &&
-                enableIndexing == other.enableIndexing &&
                 metadata == other.metadata &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(
-                name,
-                description,
-                enableGraph,
-                enableIndexing,
-                metadata,
-                additionalProperties,
-            )
+            Objects.hash(name, description, enableGraph, metadata, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{name=$name, description=$description, enableGraph=$enableGraph, enableIndexing=$enableIndexing, metadata=$metadata, additionalProperties=$additionalProperties}"
+            "Body{name=$name, description=$description, enableGraph=$enableGraph, metadata=$metadata, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
