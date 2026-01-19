@@ -4,15 +4,17 @@ package dev.casedev.services.async.compute.v1
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.compute.v1.environments.EnvironmentCreateParams
 import dev.casedev.models.compute.v1.environments.EnvironmentCreateResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentDeleteParams
 import dev.casedev.models.compute.v1.environments.EnvironmentDeleteResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentListParams
+import dev.casedev.models.compute.v1.environments.EnvironmentListResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentRetrieveParams
+import dev.casedev.models.compute.v1.environments.EnvironmentRetrieveResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentSetDefaultParams
+import dev.casedev.models.compute.v1.environments.EnvironmentSetDefaultResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -48,7 +50,7 @@ interface EnvironmentServiceAsync {
      * Retrieve a specific compute environment by name. Returns environment configuration including
      * status, domain, and metadata for your serverless compute infrastructure.
      */
-    fun retrieve(name: String): CompletableFuture<Void?> =
+    fun retrieve(name: String): CompletableFuture<EnvironmentRetrieveResponse> =
         retrieve(name, EnvironmentRetrieveParams.none())
 
     /** @see retrieve */
@@ -56,47 +58,53 @@ interface EnvironmentServiceAsync {
         name: String,
         params: EnvironmentRetrieveParams = EnvironmentRetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> = retrieve(params.toBuilder().name(name).build(), requestOptions)
+    ): CompletableFuture<EnvironmentRetrieveResponse> =
+        retrieve(params.toBuilder().name(name).build(), requestOptions)
 
     /** @see retrieve */
     fun retrieve(
         name: String,
         params: EnvironmentRetrieveParams = EnvironmentRetrieveParams.none(),
-    ): CompletableFuture<Void?> = retrieve(name, params, RequestOptions.none())
+    ): CompletableFuture<EnvironmentRetrieveResponse> =
+        retrieve(name, params, RequestOptions.none())
 
     /** @see retrieve */
     fun retrieve(
         params: EnvironmentRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<EnvironmentRetrieveResponse>
 
     /** @see retrieve */
-    fun retrieve(params: EnvironmentRetrieveParams): CompletableFuture<Void?> =
-        retrieve(params, RequestOptions.none())
+    fun retrieve(
+        params: EnvironmentRetrieveParams
+    ): CompletableFuture<EnvironmentRetrieveResponse> = retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
-    fun retrieve(name: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun retrieve(
+        name: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<EnvironmentRetrieveResponse> =
         retrieve(name, EnvironmentRetrieveParams.none(), requestOptions)
 
     /**
      * Retrieve all compute environments for your organization. Environments provide isolated
      * execution contexts for running code and workflows.
      */
-    fun list(): CompletableFuture<Void?> = list(EnvironmentListParams.none())
+    fun list(): CompletableFuture<EnvironmentListResponse> = list(EnvironmentListParams.none())
 
     /** @see list */
     fun list(
         params: EnvironmentListParams = EnvironmentListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<EnvironmentListResponse>
 
     /** @see list */
     fun list(
         params: EnvironmentListParams = EnvironmentListParams.none()
-    ): CompletableFuture<Void?> = list(params, RequestOptions.none())
+    ): CompletableFuture<EnvironmentListResponse> = list(params, RequestOptions.none())
 
     /** @see list */
-    fun list(requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun list(requestOptions: RequestOptions): CompletableFuture<EnvironmentListResponse> =
         list(EnvironmentListParams.none(), requestOptions)
 
     /**
@@ -142,7 +150,7 @@ interface EnvironmentServiceAsync {
      * Sets a compute environment as the default for the organization. Only one environment can be
      * default at a time - setting a new default will automatically unset the previous one.
      */
-    fun setDefault(name: String): CompletableFuture<Void?> =
+    fun setDefault(name: String): CompletableFuture<EnvironmentSetDefaultResponse> =
         setDefault(name, EnvironmentSetDefaultParams.none())
 
     /** @see setDefault */
@@ -150,26 +158,32 @@ interface EnvironmentServiceAsync {
         name: String,
         params: EnvironmentSetDefaultParams = EnvironmentSetDefaultParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> = setDefault(params.toBuilder().name(name).build(), requestOptions)
+    ): CompletableFuture<EnvironmentSetDefaultResponse> =
+        setDefault(params.toBuilder().name(name).build(), requestOptions)
 
     /** @see setDefault */
     fun setDefault(
         name: String,
         params: EnvironmentSetDefaultParams = EnvironmentSetDefaultParams.none(),
-    ): CompletableFuture<Void?> = setDefault(name, params, RequestOptions.none())
+    ): CompletableFuture<EnvironmentSetDefaultResponse> =
+        setDefault(name, params, RequestOptions.none())
 
     /** @see setDefault */
     fun setDefault(
         params: EnvironmentSetDefaultParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<EnvironmentSetDefaultResponse>
 
     /** @see setDefault */
-    fun setDefault(params: EnvironmentSetDefaultParams): CompletableFuture<Void?> =
-        setDefault(params, RequestOptions.none())
+    fun setDefault(
+        params: EnvironmentSetDefaultParams
+    ): CompletableFuture<EnvironmentSetDefaultResponse> = setDefault(params, RequestOptions.none())
 
     /** @see setDefault */
-    fun setDefault(name: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun setDefault(
+        name: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<EnvironmentSetDefaultResponse> =
         setDefault(name, EnvironmentSetDefaultParams.none(), requestOptions)
 
     /**
@@ -206,7 +220,9 @@ interface EnvironmentServiceAsync {
          * Returns a raw HTTP response for `get /compute/v1/environments/{name}`, but is otherwise
          * the same as [EnvironmentServiceAsync.retrieve].
          */
-        fun retrieve(name: String): CompletableFuture<HttpResponse> =
+        fun retrieve(
+            name: String
+        ): CompletableFuture<HttpResponseFor<EnvironmentRetrieveResponse>> =
             retrieve(name, EnvironmentRetrieveParams.none())
 
         /** @see retrieve */
@@ -214,51 +230,58 @@ interface EnvironmentServiceAsync {
             name: String,
             params: EnvironmentRetrieveParams = EnvironmentRetrieveParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<EnvironmentRetrieveResponse>> =
             retrieve(params.toBuilder().name(name).build(), requestOptions)
 
         /** @see retrieve */
         fun retrieve(
             name: String,
             params: EnvironmentRetrieveParams = EnvironmentRetrieveParams.none(),
-        ): CompletableFuture<HttpResponse> = retrieve(name, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<EnvironmentRetrieveResponse>> =
+            retrieve(name, params, RequestOptions.none())
 
         /** @see retrieve */
         fun retrieve(
             params: EnvironmentRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<EnvironmentRetrieveResponse>>
 
         /** @see retrieve */
-        fun retrieve(params: EnvironmentRetrieveParams): CompletableFuture<HttpResponse> =
+        fun retrieve(
+            params: EnvironmentRetrieveParams
+        ): CompletableFuture<HttpResponseFor<EnvironmentRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
         fun retrieve(
             name: String,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<EnvironmentRetrieveResponse>> =
             retrieve(name, EnvironmentRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /compute/v1/environments`, but is otherwise the same
          * as [EnvironmentServiceAsync.list].
          */
-        fun list(): CompletableFuture<HttpResponse> = list(EnvironmentListParams.none())
+        fun list(): CompletableFuture<HttpResponseFor<EnvironmentListResponse>> =
+            list(EnvironmentListParams.none())
 
         /** @see list */
         fun list(
             params: EnvironmentListParams = EnvironmentListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<EnvironmentListResponse>>
 
         /** @see list */
         fun list(
             params: EnvironmentListParams = EnvironmentListParams.none()
-        ): CompletableFuture<HttpResponse> = list(params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<EnvironmentListResponse>> =
+            list(params, RequestOptions.none())
 
         /** @see list */
-        fun list(requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+        fun list(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<EnvironmentListResponse>> =
             list(EnvironmentListParams.none(), requestOptions)
 
         /**
@@ -306,7 +329,9 @@ interface EnvironmentServiceAsync {
          * Returns a raw HTTP response for `post /compute/v1/environments/{name}/default`, but is
          * otherwise the same as [EnvironmentServiceAsync.setDefault].
          */
-        fun setDefault(name: String): CompletableFuture<HttpResponse> =
+        fun setDefault(
+            name: String
+        ): CompletableFuture<HttpResponseFor<EnvironmentSetDefaultResponse>> =
             setDefault(name, EnvironmentSetDefaultParams.none())
 
         /** @see setDefault */
@@ -314,30 +339,33 @@ interface EnvironmentServiceAsync {
             name: String,
             params: EnvironmentSetDefaultParams = EnvironmentSetDefaultParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<EnvironmentSetDefaultResponse>> =
             setDefault(params.toBuilder().name(name).build(), requestOptions)
 
         /** @see setDefault */
         fun setDefault(
             name: String,
             params: EnvironmentSetDefaultParams = EnvironmentSetDefaultParams.none(),
-        ): CompletableFuture<HttpResponse> = setDefault(name, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<EnvironmentSetDefaultResponse>> =
+            setDefault(name, params, RequestOptions.none())
 
         /** @see setDefault */
         fun setDefault(
             params: EnvironmentSetDefaultParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<EnvironmentSetDefaultResponse>>
 
         /** @see setDefault */
-        fun setDefault(params: EnvironmentSetDefaultParams): CompletableFuture<HttpResponse> =
+        fun setDefault(
+            params: EnvironmentSetDefaultParams
+        ): CompletableFuture<HttpResponseFor<EnvironmentSetDefaultResponse>> =
             setDefault(params, RequestOptions.none())
 
         /** @see setDefault */
         fun setDefault(
             name: String,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<EnvironmentSetDefaultResponse>> =
             setDefault(name, EnvironmentSetDefaultParams.none(), requestOptions)
     }
 }

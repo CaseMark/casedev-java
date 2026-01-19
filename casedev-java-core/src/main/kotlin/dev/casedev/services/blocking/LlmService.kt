@@ -5,8 +5,9 @@ package dev.casedev.services.blocking
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.llm.LlmGetConfigParams
+import dev.casedev.models.llm.LlmGetConfigResponse
 import dev.casedev.services.blocking.llm.V1Service
 import java.util.function.Consumer
 
@@ -37,20 +38,20 @@ interface LlmService {
      * - Configure AI SDK clients
      * - Build model selection interfaces
      */
-    fun getConfig() = getConfig(LlmGetConfigParams.none())
+    fun getConfig(): LlmGetConfigResponse = getConfig(LlmGetConfigParams.none())
 
     /** @see getConfig */
     fun getConfig(
         params: LlmGetConfigParams = LlmGetConfigParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): LlmGetConfigResponse
 
     /** @see getConfig */
-    fun getConfig(params: LlmGetConfigParams = LlmGetConfigParams.none()) =
+    fun getConfig(params: LlmGetConfigParams = LlmGetConfigParams.none()): LlmGetConfigResponse =
         getConfig(params, RequestOptions.none())
 
     /** @see getConfig */
-    fun getConfig(requestOptions: RequestOptions) =
+    fun getConfig(requestOptions: RequestOptions): LlmGetConfigResponse =
         getConfig(LlmGetConfigParams.none(), requestOptions)
 
     /** A view of [LlmService] that provides access to raw HTTP responses for each method. */
@@ -69,23 +70,26 @@ interface LlmService {
          * Returns a raw HTTP response for `get /llm/config`, but is otherwise the same as
          * [LlmService.getConfig].
          */
-        @MustBeClosed fun getConfig(): HttpResponse = getConfig(LlmGetConfigParams.none())
+        @MustBeClosed
+        fun getConfig(): HttpResponseFor<LlmGetConfigResponse> =
+            getConfig(LlmGetConfigParams.none())
 
         /** @see getConfig */
         @MustBeClosed
         fun getConfig(
             params: LlmGetConfigParams = LlmGetConfigParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<LlmGetConfigResponse>
 
         /** @see getConfig */
         @MustBeClosed
-        fun getConfig(params: LlmGetConfigParams = LlmGetConfigParams.none()): HttpResponse =
-            getConfig(params, RequestOptions.none())
+        fun getConfig(
+            params: LlmGetConfigParams = LlmGetConfigParams.none()
+        ): HttpResponseFor<LlmGetConfigResponse> = getConfig(params, RequestOptions.none())
 
         /** @see getConfig */
         @MustBeClosed
-        fun getConfig(requestOptions: RequestOptions): HttpResponse =
+        fun getConfig(requestOptions: RequestOptions): HttpResponseFor<LlmGetConfigResponse> =
             getConfig(LlmGetConfigParams.none(), requestOptions)
     }
 }

@@ -5,9 +5,11 @@ package dev.casedev.services.blocking.vault
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.vault.graphrag.GraphragGetStatsParams
+import dev.casedev.models.vault.graphrag.GraphragGetStatsResponse
 import dev.casedev.models.vault.graphrag.GraphragInitParams
+import dev.casedev.models.vault.graphrag.GraphragInitResponse
 import java.util.function.Consumer
 
 interface GraphragService {
@@ -29,30 +31,33 @@ interface GraphragService {
      * This includes metrics about the knowledge graph structure, entity relationships, and
      * processing status that enable advanced semantic search and AI-powered document analysis.
      */
-    fun getStats(id: String) = getStats(id, GraphragGetStatsParams.none())
+    fun getStats(id: String): GraphragGetStatsResponse = getStats(id, GraphragGetStatsParams.none())
 
     /** @see getStats */
     fun getStats(
         id: String,
         params: GraphragGetStatsParams = GraphragGetStatsParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = getStats(params.toBuilder().id(id).build(), requestOptions)
+    ): GraphragGetStatsResponse = getStats(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see getStats */
-    fun getStats(id: String, params: GraphragGetStatsParams = GraphragGetStatsParams.none()) =
-        getStats(id, params, RequestOptions.none())
+    fun getStats(
+        id: String,
+        params: GraphragGetStatsParams = GraphragGetStatsParams.none(),
+    ): GraphragGetStatsResponse = getStats(id, params, RequestOptions.none())
 
     /** @see getStats */
     fun getStats(
         params: GraphragGetStatsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): GraphragGetStatsResponse
 
     /** @see getStats */
-    fun getStats(params: GraphragGetStatsParams) = getStats(params, RequestOptions.none())
+    fun getStats(params: GraphragGetStatsParams): GraphragGetStatsResponse =
+        getStats(params, RequestOptions.none())
 
     /** @see getStats */
-    fun getStats(id: String, requestOptions: RequestOptions) =
+    fun getStats(id: String, requestOptions: RequestOptions): GraphragGetStatsResponse =
         getStats(id, GraphragGetStatsParams.none(), requestOptions)
 
     /**
@@ -60,27 +65,32 @@ interface GraphragService {
      * retrieval-augmented generation capabilities. This creates the necessary infrastructure for
      * semantic document analysis and graph-based querying within the vault.
      */
-    fun init(id: String) = init(id, GraphragInitParams.none())
+    fun init(id: String): GraphragInitResponse = init(id, GraphragInitParams.none())
 
     /** @see init */
     fun init(
         id: String,
         params: GraphragInitParams = GraphragInitParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = init(params.toBuilder().id(id).build(), requestOptions)
+    ): GraphragInitResponse = init(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see init */
-    fun init(id: String, params: GraphragInitParams = GraphragInitParams.none()) =
-        init(id, params, RequestOptions.none())
+    fun init(
+        id: String,
+        params: GraphragInitParams = GraphragInitParams.none(),
+    ): GraphragInitResponse = init(id, params, RequestOptions.none())
 
     /** @see init */
-    fun init(params: GraphragInitParams, requestOptions: RequestOptions = RequestOptions.none())
+    fun init(
+        params: GraphragInitParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): GraphragInitResponse
 
     /** @see init */
-    fun init(params: GraphragInitParams) = init(params, RequestOptions.none())
+    fun init(params: GraphragInitParams): GraphragInitResponse = init(params, RequestOptions.none())
 
     /** @see init */
-    fun init(id: String, requestOptions: RequestOptions) =
+    fun init(id: String, requestOptions: RequestOptions): GraphragInitResponse =
         init(id, GraphragInitParams.none(), requestOptions)
 
     /** A view of [GraphragService] that provides access to raw HTTP responses for each method. */
@@ -98,7 +108,8 @@ interface GraphragService {
          * same as [GraphragService.getStats].
          */
         @MustBeClosed
-        fun getStats(id: String): HttpResponse = getStats(id, GraphragGetStatsParams.none())
+        fun getStats(id: String): HttpResponseFor<GraphragGetStatsResponse> =
+            getStats(id, GraphragGetStatsParams.none())
 
         /** @see getStats */
         @MustBeClosed
@@ -106,37 +117,43 @@ interface GraphragService {
             id: String,
             params: GraphragGetStatsParams = GraphragGetStatsParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = getStats(params.toBuilder().id(id).build(), requestOptions)
+        ): HttpResponseFor<GraphragGetStatsResponse> =
+            getStats(params.toBuilder().id(id).build(), requestOptions)
 
         /** @see getStats */
         @MustBeClosed
         fun getStats(
             id: String,
             params: GraphragGetStatsParams = GraphragGetStatsParams.none(),
-        ): HttpResponse = getStats(id, params, RequestOptions.none())
+        ): HttpResponseFor<GraphragGetStatsResponse> = getStats(id, params, RequestOptions.none())
 
         /** @see getStats */
         @MustBeClosed
         fun getStats(
             params: GraphragGetStatsParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<GraphragGetStatsResponse>
 
         /** @see getStats */
         @MustBeClosed
-        fun getStats(params: GraphragGetStatsParams): HttpResponse =
+        fun getStats(params: GraphragGetStatsParams): HttpResponseFor<GraphragGetStatsResponse> =
             getStats(params, RequestOptions.none())
 
         /** @see getStats */
         @MustBeClosed
-        fun getStats(id: String, requestOptions: RequestOptions): HttpResponse =
+        fun getStats(
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<GraphragGetStatsResponse> =
             getStats(id, GraphragGetStatsParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /vault/{id}/graphrag/init`, but is otherwise the
          * same as [GraphragService.init].
          */
-        @MustBeClosed fun init(id: String): HttpResponse = init(id, GraphragInitParams.none())
+        @MustBeClosed
+        fun init(id: String): HttpResponseFor<GraphragInitResponse> =
+            init(id, GraphragInitParams.none())
 
         /** @see init */
         @MustBeClosed
@@ -144,27 +161,34 @@ interface GraphragService {
             id: String,
             params: GraphragInitParams = GraphragInitParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = init(params.toBuilder().id(id).build(), requestOptions)
+        ): HttpResponseFor<GraphragInitResponse> =
+            init(params.toBuilder().id(id).build(), requestOptions)
 
         /** @see init */
         @MustBeClosed
-        fun init(id: String, params: GraphragInitParams = GraphragInitParams.none()): HttpResponse =
-            init(id, params, RequestOptions.none())
+        fun init(
+            id: String,
+            params: GraphragInitParams = GraphragInitParams.none(),
+        ): HttpResponseFor<GraphragInitResponse> = init(id, params, RequestOptions.none())
 
         /** @see init */
         @MustBeClosed
         fun init(
             params: GraphragInitParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<GraphragInitResponse>
 
         /** @see init */
         @MustBeClosed
-        fun init(params: GraphragInitParams): HttpResponse = init(params, RequestOptions.none())
+        fun init(params: GraphragInitParams): HttpResponseFor<GraphragInitResponse> =
+            init(params, RequestOptions.none())
 
         /** @see init */
         @MustBeClosed
-        fun init(id: String, requestOptions: RequestOptions): HttpResponse =
+        fun init(
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<GraphragInitResponse> =
             init(id, GraphragInitParams.none(), requestOptions)
     }
 }

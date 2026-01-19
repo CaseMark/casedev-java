@@ -49,7 +49,9 @@ internal class SecretServiceTest {
                 .build()
         val secretService = client.compute().v1().secrets()
 
-        secretService.list(SecretListParams.builder().env("env").build())
+        val secrets = secretService.list(SecretListParams.builder().env("env").build())
+
+        secrets.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -62,9 +64,12 @@ internal class SecretServiceTest {
                 .build()
         val secretService = client.compute().v1().secrets()
 
-        secretService.deleteGroup(
-            SecretDeleteGroupParams.builder().group("group").env("env").key("key").build()
-        )
+        val response =
+            secretService.deleteGroup(
+                SecretDeleteGroupParams.builder().group("group").env("env").key("key").build()
+            )
+
+        response.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -77,9 +82,12 @@ internal class SecretServiceTest {
                 .build()
         val secretService = client.compute().v1().secrets()
 
-        secretService.retrieveGroup(
-            SecretRetrieveGroupParams.builder().group("group").env("env").build()
-        )
+        val response =
+            secretService.retrieveGroup(
+                SecretRetrieveGroupParams.builder().group("group").env("env").build()
+            )
+
+        response.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -92,16 +100,19 @@ internal class SecretServiceTest {
                 .build()
         val secretService = client.compute().v1().secrets()
 
-        secretService.updateGroup(
-            SecretUpdateGroupParams.builder()
-                .group("litigation-apis")
-                .secrets(
-                    SecretUpdateGroupParams.Secrets.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .env("env")
-                .build()
-        )
+        val response =
+            secretService.updateGroup(
+                SecretUpdateGroupParams.builder()
+                    .group("litigation-apis")
+                    .secrets(
+                        SecretUpdateGroupParams.Secrets.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .env("env")
+                    .build()
+            )
+
+        response.validate()
     }
 }

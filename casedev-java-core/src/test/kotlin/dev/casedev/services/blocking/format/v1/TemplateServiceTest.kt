@@ -50,7 +50,9 @@ internal class TemplateServiceTest {
                 .build()
         val templateService = client.format().v1().templates()
 
-        templateService.retrieve("id")
+        val template = templateService.retrieve("id")
+
+        template.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -63,6 +65,8 @@ internal class TemplateServiceTest {
                 .build()
         val templateService = client.format().v1().templates()
 
-        templateService.list(TemplateListParams.builder().type("type").build())
+        val templates = templateService.list(TemplateListParams.builder().type("type").build())
+
+        templates.validate()
     }
 }

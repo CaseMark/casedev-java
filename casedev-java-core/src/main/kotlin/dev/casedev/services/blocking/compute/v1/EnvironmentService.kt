@@ -5,15 +5,17 @@ package dev.casedev.services.blocking.compute.v1
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.compute.v1.environments.EnvironmentCreateParams
 import dev.casedev.models.compute.v1.environments.EnvironmentCreateResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentDeleteParams
 import dev.casedev.models.compute.v1.environments.EnvironmentDeleteResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentListParams
+import dev.casedev.models.compute.v1.environments.EnvironmentListResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentRetrieveParams
+import dev.casedev.models.compute.v1.environments.EnvironmentRetrieveResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentSetDefaultParams
+import dev.casedev.models.compute.v1.environments.EnvironmentSetDefaultResponse
 import java.util.function.Consumer
 
 interface EnvironmentService {
@@ -48,52 +50,56 @@ interface EnvironmentService {
      * Retrieve a specific compute environment by name. Returns environment configuration including
      * status, domain, and metadata for your serverless compute infrastructure.
      */
-    fun retrieve(name: String) = retrieve(name, EnvironmentRetrieveParams.none())
+    fun retrieve(name: String): EnvironmentRetrieveResponse =
+        retrieve(name, EnvironmentRetrieveParams.none())
 
     /** @see retrieve */
     fun retrieve(
         name: String,
         params: EnvironmentRetrieveParams = EnvironmentRetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = retrieve(params.toBuilder().name(name).build(), requestOptions)
+    ): EnvironmentRetrieveResponse = retrieve(params.toBuilder().name(name).build(), requestOptions)
 
     /** @see retrieve */
     fun retrieve(
         name: String,
         params: EnvironmentRetrieveParams = EnvironmentRetrieveParams.none(),
-    ) = retrieve(name, params, RequestOptions.none())
+    ): EnvironmentRetrieveResponse = retrieve(name, params, RequestOptions.none())
 
     /** @see retrieve */
     fun retrieve(
         params: EnvironmentRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): EnvironmentRetrieveResponse
 
     /** @see retrieve */
-    fun retrieve(params: EnvironmentRetrieveParams) = retrieve(params, RequestOptions.none())
+    fun retrieve(params: EnvironmentRetrieveParams): EnvironmentRetrieveResponse =
+        retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
-    fun retrieve(name: String, requestOptions: RequestOptions) =
+    fun retrieve(name: String, requestOptions: RequestOptions): EnvironmentRetrieveResponse =
         retrieve(name, EnvironmentRetrieveParams.none(), requestOptions)
 
     /**
      * Retrieve all compute environments for your organization. Environments provide isolated
      * execution contexts for running code and workflows.
      */
-    fun list() = list(EnvironmentListParams.none())
+    fun list(): EnvironmentListResponse = list(EnvironmentListParams.none())
 
     /** @see list */
     fun list(
         params: EnvironmentListParams = EnvironmentListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): EnvironmentListResponse
 
     /** @see list */
-    fun list(params: EnvironmentListParams = EnvironmentListParams.none()) =
-        list(params, RequestOptions.none())
+    fun list(
+        params: EnvironmentListParams = EnvironmentListParams.none()
+    ): EnvironmentListResponse = list(params, RequestOptions.none())
 
     /** @see list */
-    fun list(requestOptions: RequestOptions) = list(EnvironmentListParams.none(), requestOptions)
+    fun list(requestOptions: RequestOptions): EnvironmentListResponse =
+        list(EnvironmentListParams.none(), requestOptions)
 
     /**
      * Permanently delete a compute environment and all its associated resources. This will stop all
@@ -134,32 +140,35 @@ interface EnvironmentService {
      * Sets a compute environment as the default for the organization. Only one environment can be
      * default at a time - setting a new default will automatically unset the previous one.
      */
-    fun setDefault(name: String) = setDefault(name, EnvironmentSetDefaultParams.none())
+    fun setDefault(name: String): EnvironmentSetDefaultResponse =
+        setDefault(name, EnvironmentSetDefaultParams.none())
 
     /** @see setDefault */
     fun setDefault(
         name: String,
         params: EnvironmentSetDefaultParams = EnvironmentSetDefaultParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = setDefault(params.toBuilder().name(name).build(), requestOptions)
+    ): EnvironmentSetDefaultResponse =
+        setDefault(params.toBuilder().name(name).build(), requestOptions)
 
     /** @see setDefault */
     fun setDefault(
         name: String,
         params: EnvironmentSetDefaultParams = EnvironmentSetDefaultParams.none(),
-    ) = setDefault(name, params, RequestOptions.none())
+    ): EnvironmentSetDefaultResponse = setDefault(name, params, RequestOptions.none())
 
     /** @see setDefault */
     fun setDefault(
         params: EnvironmentSetDefaultParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): EnvironmentSetDefaultResponse
 
     /** @see setDefault */
-    fun setDefault(params: EnvironmentSetDefaultParams) = setDefault(params, RequestOptions.none())
+    fun setDefault(params: EnvironmentSetDefaultParams): EnvironmentSetDefaultResponse =
+        setDefault(params, RequestOptions.none())
 
     /** @see setDefault */
-    fun setDefault(name: String, requestOptions: RequestOptions) =
+    fun setDefault(name: String, requestOptions: RequestOptions): EnvironmentSetDefaultResponse =
         setDefault(name, EnvironmentSetDefaultParams.none(), requestOptions)
 
     /**
@@ -196,7 +205,8 @@ interface EnvironmentService {
          * the same as [EnvironmentService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(name: String): HttpResponse = retrieve(name, EnvironmentRetrieveParams.none())
+        fun retrieve(name: String): HttpResponseFor<EnvironmentRetrieveResponse> =
+            retrieve(name, EnvironmentRetrieveParams.none())
 
         /** @see retrieve */
         @MustBeClosed
@@ -204,53 +214,61 @@ interface EnvironmentService {
             name: String,
             params: EnvironmentRetrieveParams = EnvironmentRetrieveParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = retrieve(params.toBuilder().name(name).build(), requestOptions)
+        ): HttpResponseFor<EnvironmentRetrieveResponse> =
+            retrieve(params.toBuilder().name(name).build(), requestOptions)
 
         /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             name: String,
             params: EnvironmentRetrieveParams = EnvironmentRetrieveParams.none(),
-        ): HttpResponse = retrieve(name, params, RequestOptions.none())
+        ): HttpResponseFor<EnvironmentRetrieveResponse> =
+            retrieve(name, params, RequestOptions.none())
 
         /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: EnvironmentRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<EnvironmentRetrieveResponse>
 
         /** @see retrieve */
         @MustBeClosed
-        fun retrieve(params: EnvironmentRetrieveParams): HttpResponse =
-            retrieve(params, RequestOptions.none())
+        fun retrieve(
+            params: EnvironmentRetrieveParams
+        ): HttpResponseFor<EnvironmentRetrieveResponse> = retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
         @MustBeClosed
-        fun retrieve(name: String, requestOptions: RequestOptions): HttpResponse =
+        fun retrieve(
+            name: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<EnvironmentRetrieveResponse> =
             retrieve(name, EnvironmentRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /compute/v1/environments`, but is otherwise the same
          * as [EnvironmentService.list].
          */
-        @MustBeClosed fun list(): HttpResponse = list(EnvironmentListParams.none())
+        @MustBeClosed
+        fun list(): HttpResponseFor<EnvironmentListResponse> = list(EnvironmentListParams.none())
 
         /** @see list */
         @MustBeClosed
         fun list(
             params: EnvironmentListParams = EnvironmentListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<EnvironmentListResponse>
 
         /** @see list */
         @MustBeClosed
-        fun list(params: EnvironmentListParams = EnvironmentListParams.none()): HttpResponse =
-            list(params, RequestOptions.none())
+        fun list(
+            params: EnvironmentListParams = EnvironmentListParams.none()
+        ): HttpResponseFor<EnvironmentListResponse> = list(params, RequestOptions.none())
 
         /** @see list */
         @MustBeClosed
-        fun list(requestOptions: RequestOptions): HttpResponse =
+        fun list(requestOptions: RequestOptions): HttpResponseFor<EnvironmentListResponse> =
             list(EnvironmentListParams.none(), requestOptions)
 
         /**
@@ -302,7 +320,7 @@ interface EnvironmentService {
          * otherwise the same as [EnvironmentService.setDefault].
          */
         @MustBeClosed
-        fun setDefault(name: String): HttpResponse =
+        fun setDefault(name: String): HttpResponseFor<EnvironmentSetDefaultResponse> =
             setDefault(name, EnvironmentSetDefaultParams.none())
 
         /** @see setDefault */
@@ -311,30 +329,37 @@ interface EnvironmentService {
             name: String,
             params: EnvironmentSetDefaultParams = EnvironmentSetDefaultParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = setDefault(params.toBuilder().name(name).build(), requestOptions)
+        ): HttpResponseFor<EnvironmentSetDefaultResponse> =
+            setDefault(params.toBuilder().name(name).build(), requestOptions)
 
         /** @see setDefault */
         @MustBeClosed
         fun setDefault(
             name: String,
             params: EnvironmentSetDefaultParams = EnvironmentSetDefaultParams.none(),
-        ): HttpResponse = setDefault(name, params, RequestOptions.none())
+        ): HttpResponseFor<EnvironmentSetDefaultResponse> =
+            setDefault(name, params, RequestOptions.none())
 
         /** @see setDefault */
         @MustBeClosed
         fun setDefault(
             params: EnvironmentSetDefaultParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<EnvironmentSetDefaultResponse>
 
         /** @see setDefault */
         @MustBeClosed
-        fun setDefault(params: EnvironmentSetDefaultParams): HttpResponse =
+        fun setDefault(
+            params: EnvironmentSetDefaultParams
+        ): HttpResponseFor<EnvironmentSetDefaultResponse> =
             setDefault(params, RequestOptions.none())
 
         /** @see setDefault */
         @MustBeClosed
-        fun setDefault(name: String, requestOptions: RequestOptions): HttpResponse =
+        fun setDefault(
+            name: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<EnvironmentSetDefaultResponse> =
             setDefault(name, EnvironmentSetDefaultParams.none(), requestOptions)
     }
 }

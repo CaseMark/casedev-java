@@ -4,7 +4,6 @@ package dev.casedev.services.async.search
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.search.v1.V1AnswerParams
 import dev.casedev.models.search.v1.V1AnswerResponse
@@ -13,6 +12,7 @@ import dev.casedev.models.search.v1.V1ContentsResponse
 import dev.casedev.models.search.v1.V1ResearchParams
 import dev.casedev.models.search.v1.V1ResearchResponse
 import dev.casedev.models.search.v1.V1RetrieveResearchParams
+import dev.casedev.models.search.v1.V1RetrieveResearchResponse
 import dev.casedev.models.search.v1.V1SearchParams
 import dev.casedev.models.search.v1.V1SearchResponse
 import dev.casedev.models.search.v1.V1SimilarParams
@@ -81,7 +81,7 @@ interface V1ServiceAsync {
      * responses and streaming for real-time updates as the research progresses. Research tasks
      * analyze topics comprehensively using web search and AI synthesis.
      */
-    fun retrieveResearch(id: String): CompletableFuture<Void?> =
+    fun retrieveResearch(id: String): CompletableFuture<V1RetrieveResearchResponse> =
         retrieveResearch(id, V1RetrieveResearchParams.none())
 
     /** @see retrieveResearch */
@@ -89,27 +89,33 @@ interface V1ServiceAsync {
         id: String,
         params: V1RetrieveResearchParams = V1RetrieveResearchParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<V1RetrieveResearchResponse> =
         retrieveResearch(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see retrieveResearch */
     fun retrieveResearch(
         id: String,
         params: V1RetrieveResearchParams = V1RetrieveResearchParams.none(),
-    ): CompletableFuture<Void?> = retrieveResearch(id, params, RequestOptions.none())
+    ): CompletableFuture<V1RetrieveResearchResponse> =
+        retrieveResearch(id, params, RequestOptions.none())
 
     /** @see retrieveResearch */
     fun retrieveResearch(
         params: V1RetrieveResearchParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<V1RetrieveResearchResponse>
 
     /** @see retrieveResearch */
-    fun retrieveResearch(params: V1RetrieveResearchParams): CompletableFuture<Void?> =
+    fun retrieveResearch(
+        params: V1RetrieveResearchParams
+    ): CompletableFuture<V1RetrieveResearchResponse> =
         retrieveResearch(params, RequestOptions.none())
 
     /** @see retrieveResearch */
-    fun retrieveResearch(id: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun retrieveResearch(
+        id: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<V1RetrieveResearchResponse> =
         retrieveResearch(id, V1RetrieveResearchParams.none(), requestOptions)
 
     /**
@@ -197,7 +203,9 @@ interface V1ServiceAsync {
          * Returns a raw HTTP response for `get /search/v1/research/{id}`, but is otherwise the same
          * as [V1ServiceAsync.retrieveResearch].
          */
-        fun retrieveResearch(id: String): CompletableFuture<HttpResponse> =
+        fun retrieveResearch(
+            id: String
+        ): CompletableFuture<HttpResponseFor<V1RetrieveResearchResponse>> =
             retrieveResearch(id, V1RetrieveResearchParams.none())
 
         /** @see retrieveResearch */
@@ -205,30 +213,33 @@ interface V1ServiceAsync {
             id: String,
             params: V1RetrieveResearchParams = V1RetrieveResearchParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<V1RetrieveResearchResponse>> =
             retrieveResearch(params.toBuilder().id(id).build(), requestOptions)
 
         /** @see retrieveResearch */
         fun retrieveResearch(
             id: String,
             params: V1RetrieveResearchParams = V1RetrieveResearchParams.none(),
-        ): CompletableFuture<HttpResponse> = retrieveResearch(id, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<V1RetrieveResearchResponse>> =
+            retrieveResearch(id, params, RequestOptions.none())
 
         /** @see retrieveResearch */
         fun retrieveResearch(
             params: V1RetrieveResearchParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<V1RetrieveResearchResponse>>
 
         /** @see retrieveResearch */
-        fun retrieveResearch(params: V1RetrieveResearchParams): CompletableFuture<HttpResponse> =
+        fun retrieveResearch(
+            params: V1RetrieveResearchParams
+        ): CompletableFuture<HttpResponseFor<V1RetrieveResearchResponse>> =
             retrieveResearch(params, RequestOptions.none())
 
         /** @see retrieveResearch */
         fun retrieveResearch(
             id: String,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<V1RetrieveResearchResponse>> =
             retrieveResearch(id, V1RetrieveResearchParams.none(), requestOptions)
 
         /**

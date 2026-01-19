@@ -5,9 +5,9 @@ package dev.casedev.services.blocking.voice
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.voice.transcription.TranscriptionCreateParams
+import dev.casedev.models.voice.transcription.TranscriptionCreateResponse
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveParams
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveResponse
 import java.util.function.Consumer
@@ -34,20 +34,21 @@ interface TranscriptionService {
      *
      * **Direct URL (legacy)**: Pass `audio_url` for direct transcription without automatic storage.
      */
-    fun create() = create(TranscriptionCreateParams.none())
+    fun create(): TranscriptionCreateResponse = create(TranscriptionCreateParams.none())
 
     /** @see create */
     fun create(
         params: TranscriptionCreateParams = TranscriptionCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): TranscriptionCreateResponse
 
     /** @see create */
-    fun create(params: TranscriptionCreateParams = TranscriptionCreateParams.none()) =
-        create(params, RequestOptions.none())
+    fun create(
+        params: TranscriptionCreateParams = TranscriptionCreateParams.none()
+    ): TranscriptionCreateResponse = create(params, RequestOptions.none())
 
     /** @see create */
-    fun create(requestOptions: RequestOptions) =
+    fun create(requestOptions: RequestOptions): TranscriptionCreateResponse =
         create(TranscriptionCreateParams.none(), requestOptions)
 
     /**
@@ -103,24 +104,26 @@ interface TranscriptionService {
          * Returns a raw HTTP response for `post /voice/transcription`, but is otherwise the same as
          * [TranscriptionService.create].
          */
-        @MustBeClosed fun create(): HttpResponse = create(TranscriptionCreateParams.none())
+        @MustBeClosed
+        fun create(): HttpResponseFor<TranscriptionCreateResponse> =
+            create(TranscriptionCreateParams.none())
 
         /** @see create */
         @MustBeClosed
         fun create(
             params: TranscriptionCreateParams = TranscriptionCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<TranscriptionCreateResponse>
 
         /** @see create */
         @MustBeClosed
         fun create(
             params: TranscriptionCreateParams = TranscriptionCreateParams.none()
-        ): HttpResponse = create(params, RequestOptions.none())
+        ): HttpResponseFor<TranscriptionCreateResponse> = create(params, RequestOptions.none())
 
         /** @see create */
         @MustBeClosed
-        fun create(requestOptions: RequestOptions): HttpResponse =
+        fun create(requestOptions: RequestOptions): HttpResponseFor<TranscriptionCreateResponse> =
             create(TranscriptionCreateParams.none(), requestOptions)
 
         /**

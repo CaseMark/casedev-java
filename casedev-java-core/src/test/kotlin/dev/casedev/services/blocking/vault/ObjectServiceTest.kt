@@ -25,7 +25,12 @@ internal class ObjectServiceTest {
                 .build()
         val objectService = client.vault().objects()
 
-        objectService.retrieve(ObjectRetrieveParams.builder().id("id").objectId("objectId").build())
+        val object_ =
+            objectService.retrieve(
+                ObjectRetrieveParams.builder().id("id").objectId("objectId").build()
+            )
+
+        object_.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -38,7 +43,9 @@ internal class ObjectServiceTest {
                 .build()
         val objectService = client.vault().objects()
 
-        objectService.list("id")
+        val objects = objectService.list("id")
+
+        objects.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -88,6 +95,11 @@ internal class ObjectServiceTest {
                 .build()
         val objectService = client.vault().objects()
 
-        objectService.getText(ObjectGetTextParams.builder().id("id").objectId("objectId").build())
+        val response =
+            objectService.getText(
+                ObjectGetTextParams.builder().id("id").objectId("objectId").build()
+            )
+
+        response.validate()
     }
 }

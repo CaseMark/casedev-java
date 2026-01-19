@@ -21,9 +21,10 @@ internal class GraphragServiceAsyncTest {
                 .build()
         val graphragServiceAsync = client.vault().graphrag()
 
-        val future = graphragServiceAsync.getStats("id")
+        val responseFuture = graphragServiceAsync.getStats("id")
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -36,8 +37,9 @@ internal class GraphragServiceAsyncTest {
                 .build()
         val graphragServiceAsync = client.vault().graphrag()
 
-        val future = graphragServiceAsync.init("id")
+        val responseFuture = graphragServiceAsync.init("id")
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 }

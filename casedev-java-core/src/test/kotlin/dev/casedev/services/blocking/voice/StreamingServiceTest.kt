@@ -21,6 +21,8 @@ internal class StreamingServiceTest {
                 .build()
         val streamingService = client.voice().streaming()
 
-        streamingService.getUrl()
+        val response = streamingService.getUrl()
+
+        response.validate()
     }
 }

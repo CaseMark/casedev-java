@@ -5,7 +5,6 @@ package dev.casedev.services.blocking.search
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.search.v1.V1AnswerParams
 import dev.casedev.models.search.v1.V1AnswerResponse
@@ -14,6 +13,7 @@ import dev.casedev.models.search.v1.V1ContentsResponse
 import dev.casedev.models.search.v1.V1ResearchParams
 import dev.casedev.models.search.v1.V1ResearchResponse
 import dev.casedev.models.search.v1.V1RetrieveResearchParams
+import dev.casedev.models.search.v1.V1RetrieveResearchResponse
 import dev.casedev.models.search.v1.V1SearchParams
 import dev.casedev.models.search.v1.V1SearchResponse
 import dev.casedev.models.search.v1.V1SimilarParams
@@ -80,33 +80,35 @@ interface V1Service {
      * responses and streaming for real-time updates as the research progresses. Research tasks
      * analyze topics comprehensively using web search and AI synthesis.
      */
-    fun retrieveResearch(id: String) = retrieveResearch(id, V1RetrieveResearchParams.none())
+    fun retrieveResearch(id: String): V1RetrieveResearchResponse =
+        retrieveResearch(id, V1RetrieveResearchParams.none())
 
     /** @see retrieveResearch */
     fun retrieveResearch(
         id: String,
         params: V1RetrieveResearchParams = V1RetrieveResearchParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = retrieveResearch(params.toBuilder().id(id).build(), requestOptions)
+    ): V1RetrieveResearchResponse =
+        retrieveResearch(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see retrieveResearch */
     fun retrieveResearch(
         id: String,
         params: V1RetrieveResearchParams = V1RetrieveResearchParams.none(),
-    ) = retrieveResearch(id, params, RequestOptions.none())
+    ): V1RetrieveResearchResponse = retrieveResearch(id, params, RequestOptions.none())
 
     /** @see retrieveResearch */
     fun retrieveResearch(
         params: V1RetrieveResearchParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): V1RetrieveResearchResponse
 
     /** @see retrieveResearch */
-    fun retrieveResearch(params: V1RetrieveResearchParams) =
+    fun retrieveResearch(params: V1RetrieveResearchParams): V1RetrieveResearchResponse =
         retrieveResearch(params, RequestOptions.none())
 
     /** @see retrieveResearch */
-    fun retrieveResearch(id: String, requestOptions: RequestOptions) =
+    fun retrieveResearch(id: String, requestOptions: RequestOptions): V1RetrieveResearchResponse =
         retrieveResearch(id, V1RetrieveResearchParams.none(), requestOptions)
 
     /**
@@ -195,7 +197,7 @@ interface V1Service {
          * as [V1Service.retrieveResearch].
          */
         @MustBeClosed
-        fun retrieveResearch(id: String): HttpResponse =
+        fun retrieveResearch(id: String): HttpResponseFor<V1RetrieveResearchResponse> =
             retrieveResearch(id, V1RetrieveResearchParams.none())
 
         /** @see retrieveResearch */
@@ -204,30 +206,37 @@ interface V1Service {
             id: String,
             params: V1RetrieveResearchParams = V1RetrieveResearchParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = retrieveResearch(params.toBuilder().id(id).build(), requestOptions)
+        ): HttpResponseFor<V1RetrieveResearchResponse> =
+            retrieveResearch(params.toBuilder().id(id).build(), requestOptions)
 
         /** @see retrieveResearch */
         @MustBeClosed
         fun retrieveResearch(
             id: String,
             params: V1RetrieveResearchParams = V1RetrieveResearchParams.none(),
-        ): HttpResponse = retrieveResearch(id, params, RequestOptions.none())
+        ): HttpResponseFor<V1RetrieveResearchResponse> =
+            retrieveResearch(id, params, RequestOptions.none())
 
         /** @see retrieveResearch */
         @MustBeClosed
         fun retrieveResearch(
             params: V1RetrieveResearchParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<V1RetrieveResearchResponse>
 
         /** @see retrieveResearch */
         @MustBeClosed
-        fun retrieveResearch(params: V1RetrieveResearchParams): HttpResponse =
+        fun retrieveResearch(
+            params: V1RetrieveResearchParams
+        ): HttpResponseFor<V1RetrieveResearchResponse> =
             retrieveResearch(params, RequestOptions.none())
 
         /** @see retrieveResearch */
         @MustBeClosed
-        fun retrieveResearch(id: String, requestOptions: RequestOptions): HttpResponse =
+        fun retrieveResearch(
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<V1RetrieveResearchResponse> =
             retrieveResearch(id, V1RetrieveResearchParams.none(), requestOptions)
 
         /**

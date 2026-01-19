@@ -5,8 +5,9 @@ package dev.casedev.services.blocking.voice
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.voice.streaming.StreamingGetUrlParams
+import dev.casedev.models.voice.streaming.StreamingGetUrlResponse
 import java.util.function.Consumer
 
 interface StreamingService {
@@ -35,20 +36,21 @@ interface StreamingService {
      *
      * **Pricing:** $0.30 per minute ($18.00 per hour)
      */
-    fun getUrl() = getUrl(StreamingGetUrlParams.none())
+    fun getUrl(): StreamingGetUrlResponse = getUrl(StreamingGetUrlParams.none())
 
     /** @see getUrl */
     fun getUrl(
         params: StreamingGetUrlParams = StreamingGetUrlParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): StreamingGetUrlResponse
 
     /** @see getUrl */
-    fun getUrl(params: StreamingGetUrlParams = StreamingGetUrlParams.none()) =
-        getUrl(params, RequestOptions.none())
+    fun getUrl(
+        params: StreamingGetUrlParams = StreamingGetUrlParams.none()
+    ): StreamingGetUrlResponse = getUrl(params, RequestOptions.none())
 
     /** @see getUrl */
-    fun getUrl(requestOptions: RequestOptions) =
+    fun getUrl(requestOptions: RequestOptions): StreamingGetUrlResponse =
         getUrl(StreamingGetUrlParams.none(), requestOptions)
 
     /** A view of [StreamingService] that provides access to raw HTTP responses for each method. */
@@ -65,23 +67,26 @@ interface StreamingService {
          * Returns a raw HTTP response for `get /voice/streaming/url`, but is otherwise the same as
          * [StreamingService.getUrl].
          */
-        @MustBeClosed fun getUrl(): HttpResponse = getUrl(StreamingGetUrlParams.none())
+        @MustBeClosed
+        fun getUrl(): HttpResponseFor<StreamingGetUrlResponse> =
+            getUrl(StreamingGetUrlParams.none())
 
         /** @see getUrl */
         @MustBeClosed
         fun getUrl(
             params: StreamingGetUrlParams = StreamingGetUrlParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<StreamingGetUrlResponse>
 
         /** @see getUrl */
         @MustBeClosed
-        fun getUrl(params: StreamingGetUrlParams = StreamingGetUrlParams.none()): HttpResponse =
-            getUrl(params, RequestOptions.none())
+        fun getUrl(
+            params: StreamingGetUrlParams = StreamingGetUrlParams.none()
+        ): HttpResponseFor<StreamingGetUrlResponse> = getUrl(params, RequestOptions.none())
 
         /** @see getUrl */
         @MustBeClosed
-        fun getUrl(requestOptions: RequestOptions): HttpResponse =
+        fun getUrl(requestOptions: RequestOptions): HttpResponseFor<StreamingGetUrlResponse> =
             getUrl(StreamingGetUrlParams.none(), requestOptions)
     }
 }

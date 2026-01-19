@@ -37,9 +37,10 @@ internal class V1ServiceAsyncTest {
                 .build()
         val v1ServiceAsync = client.compute().v1()
 
-        val future =
+        val responseFuture =
             v1ServiceAsync.getUsage(V1GetUsageParams.builder().month(3L).year(2024L).build())
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 }

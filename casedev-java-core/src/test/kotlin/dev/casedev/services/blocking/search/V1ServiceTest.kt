@@ -111,9 +111,12 @@ internal class V1ServiceTest {
                 .build()
         val v1Service = client.search().v1()
 
-        v1Service.retrieveResearch(
-            V1RetrieveResearchParams.builder().id("id").events("events").stream(true).build()
-        )
+        val response =
+            v1Service.retrieveResearch(
+                V1RetrieveResearchParams.builder().id("id").events("events").stream(true).build()
+            )
+
+        response.validate()
     }
 
     @Disabled("Prism tests are disabled")

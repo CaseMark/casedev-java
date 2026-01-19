@@ -23,9 +23,10 @@ internal class V1ServiceAsyncTest {
                 .build()
         val v1ServiceAsync = client.ocr().v1()
 
-        val future = v1ServiceAsync.retrieve("id")
+        val v1Future = v1ServiceAsync.retrieve("id")
 
-        val response = future.get()
+        val v1 = v1Future.get()
+        v1.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -38,12 +39,12 @@ internal class V1ServiceAsyncTest {
                 .build()
         val v1ServiceAsync = client.ocr().v1()
 
-        val future =
+        val responseFuture =
             v1ServiceAsync.download(
                 V1DownloadParams.builder().id("id").type(V1DownloadParams.Type.TEXT).build()
             )
 
-        val response = future.get()
+        val response = responseFuture.get()
     }
 
     @Disabled("Prism tests are disabled")

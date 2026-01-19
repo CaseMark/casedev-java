@@ -22,7 +22,7 @@ internal class V1ServiceAsyncTest {
                 .build()
         val v1ServiceAsync = client.voice().v1()
 
-        val future =
+        val responseFuture =
             v1ServiceAsync.listVoices(
                 V1ListVoicesParams.builder()
                     .category("category")
@@ -37,6 +37,7 @@ internal class V1ServiceAsyncTest {
                     .build()
             )
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 }

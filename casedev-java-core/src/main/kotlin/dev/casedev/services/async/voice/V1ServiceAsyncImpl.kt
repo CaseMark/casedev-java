@@ -4,16 +4,18 @@ package dev.casedev.services.async.voice
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
+import dev.casedev.core.handlers.jsonHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponse.Handler
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepareAsync
 import dev.casedev.models.voice.v1.V1ListVoicesParams
+import dev.casedev.models.voice.v1.V1ListVoicesResponse
 import dev.casedev.services.async.voice.v1.SpeakServiceAsync
 import dev.casedev.services.async.voice.v1.SpeakServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
@@ -38,9 +40,9 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun listVoices(
         params: V1ListVoicesParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<V1ListVoicesResponse> =
         // get /voice/v1/voices
-        withRawResponse().listVoices(params, requestOptions).thenAccept {}
+        withRawResponse().listVoices(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         V1ServiceAsync.WithRawResponse {
@@ -61,12 +63,13 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
 
         override fun speak(): SpeakServiceAsync.WithRawResponse = speak
 
-        private val listVoicesHandler: Handler<Void?> = emptyHandler()
+        private val listVoicesHandler: Handler<V1ListVoicesResponse> =
+            jsonHandler<V1ListVoicesResponse>(clientOptions.jsonMapper)
 
         override fun listVoices(
             params: V1ListVoicesParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<V1ListVoicesResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -79,7 +82,13 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { listVoicesHandler.handle(it) }
+                        response
+                            .use { listVoicesHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

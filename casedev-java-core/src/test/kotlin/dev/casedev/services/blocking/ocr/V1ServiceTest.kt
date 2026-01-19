@@ -23,7 +23,9 @@ internal class V1ServiceTest {
                 .build()
         val v1Service = client.ocr().v1()
 
-        v1Service.retrieve("id")
+        val v1 = v1Service.retrieve("id")
+
+        v1.validate()
     }
 
     @Disabled("Prism tests are disabled")

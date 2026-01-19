@@ -5,12 +5,12 @@ package dev.casedev.services.blocking.ocr
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.ocr.v1.V1DownloadParams
 import dev.casedev.models.ocr.v1.V1ProcessParams
 import dev.casedev.models.ocr.v1.V1ProcessResponse
 import dev.casedev.models.ocr.v1.V1RetrieveParams
+import dev.casedev.models.ocr.v1.V1RetrieveResponse
 import java.util.function.Consumer
 
 interface V1Service {
@@ -31,27 +31,33 @@ interface V1Service {
      * Retrieve the status and results of an OCR job. Returns job progress, extracted text, and
      * metadata when processing is complete.
      */
-    fun retrieve(id: String) = retrieve(id, V1RetrieveParams.none())
+    fun retrieve(id: String): V1RetrieveResponse = retrieve(id, V1RetrieveParams.none())
 
     /** @see retrieve */
     fun retrieve(
         id: String,
         params: V1RetrieveParams = V1RetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = retrieve(params.toBuilder().id(id).build(), requestOptions)
+    ): V1RetrieveResponse = retrieve(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see retrieve */
-    fun retrieve(id: String, params: V1RetrieveParams = V1RetrieveParams.none()) =
-        retrieve(id, params, RequestOptions.none())
+    fun retrieve(
+        id: String,
+        params: V1RetrieveParams = V1RetrieveParams.none(),
+    ): V1RetrieveResponse = retrieve(id, params, RequestOptions.none())
 
     /** @see retrieve */
-    fun retrieve(params: V1RetrieveParams, requestOptions: RequestOptions = RequestOptions.none())
+    fun retrieve(
+        params: V1RetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): V1RetrieveResponse
 
     /** @see retrieve */
-    fun retrieve(params: V1RetrieveParams) = retrieve(params, RequestOptions.none())
+    fun retrieve(params: V1RetrieveParams): V1RetrieveResponse =
+        retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
-    fun retrieve(id: String, requestOptions: RequestOptions) =
+    fun retrieve(id: String, requestOptions: RequestOptions): V1RetrieveResponse =
         retrieve(id, V1RetrieveParams.none(), requestOptions)
 
     /**
@@ -59,7 +65,7 @@ interface V1Service {
      * extraction, structured JSON with coordinates, searchable PDF with text layer, or the original
      * uploaded document.
      */
-    fun download(type: V1DownloadParams.Type, params: V1DownloadParams) =
+    fun download(type: V1DownloadParams.Type, params: V1DownloadParams): String =
         download(type, params, RequestOptions.none())
 
     /** @see download */
@@ -67,13 +73,16 @@ interface V1Service {
         type: V1DownloadParams.Type,
         params: V1DownloadParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = download(params.toBuilder().type(type).build(), requestOptions)
+    ): String = download(params.toBuilder().type(type).build(), requestOptions)
 
     /** @see download */
-    fun download(params: V1DownloadParams) = download(params, RequestOptions.none())
+    fun download(params: V1DownloadParams): String = download(params, RequestOptions.none())
 
     /** @see download */
-    fun download(params: V1DownloadParams, requestOptions: RequestOptions = RequestOptions.none())
+    fun download(
+        params: V1DownloadParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): String
 
     /**
      * Submit a document for OCR processing to extract text, detect tables, forms, and other
@@ -102,7 +111,9 @@ interface V1Service {
          * Returns a raw HTTP response for `get /ocr/v1/{id}`, but is otherwise the same as
          * [V1Service.retrieve].
          */
-        @MustBeClosed fun retrieve(id: String): HttpResponse = retrieve(id, V1RetrieveParams.none())
+        @MustBeClosed
+        fun retrieve(id: String): HttpResponseFor<V1RetrieveResponse> =
+            retrieve(id, V1RetrieveParams.none())
 
         /** @see retrieve */
         @MustBeClosed
@@ -110,28 +121,34 @@ interface V1Service {
             id: String,
             params: V1RetrieveParams = V1RetrieveParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = retrieve(params.toBuilder().id(id).build(), requestOptions)
+        ): HttpResponseFor<V1RetrieveResponse> =
+            retrieve(params.toBuilder().id(id).build(), requestOptions)
 
         /** @see retrieve */
         @MustBeClosed
-        fun retrieve(id: String, params: V1RetrieveParams = V1RetrieveParams.none()): HttpResponse =
-            retrieve(id, params, RequestOptions.none())
+        fun retrieve(
+            id: String,
+            params: V1RetrieveParams = V1RetrieveParams.none(),
+        ): HttpResponseFor<V1RetrieveResponse> = retrieve(id, params, RequestOptions.none())
 
         /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: V1RetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<V1RetrieveResponse>
 
         /** @see retrieve */
         @MustBeClosed
-        fun retrieve(params: V1RetrieveParams): HttpResponse =
+        fun retrieve(params: V1RetrieveParams): HttpResponseFor<V1RetrieveResponse> =
             retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
         @MustBeClosed
-        fun retrieve(id: String, requestOptions: RequestOptions): HttpResponse =
+        fun retrieve(
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<V1RetrieveResponse> =
             retrieve(id, V1RetrieveParams.none(), requestOptions)
 
         /**
@@ -139,8 +156,10 @@ interface V1Service {
          * same as [V1Service.download].
          */
         @MustBeClosed
-        fun download(type: V1DownloadParams.Type, params: V1DownloadParams): HttpResponse =
-            download(type, params, RequestOptions.none())
+        fun download(
+            type: V1DownloadParams.Type,
+            params: V1DownloadParams,
+        ): HttpResponseFor<String> = download(type, params, RequestOptions.none())
 
         /** @see download */
         @MustBeClosed
@@ -148,11 +167,11 @@ interface V1Service {
             type: V1DownloadParams.Type,
             params: V1DownloadParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = download(params.toBuilder().type(type).build(), requestOptions)
+        ): HttpResponseFor<String> = download(params.toBuilder().type(type).build(), requestOptions)
 
         /** @see download */
         @MustBeClosed
-        fun download(params: V1DownloadParams): HttpResponse =
+        fun download(params: V1DownloadParams): HttpResponseFor<String> =
             download(params, RequestOptions.none())
 
         /** @see download */
@@ -160,7 +179,7 @@ interface V1Service {
         fun download(
             params: V1DownloadParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<String>
 
         /**
          * Returns a raw HTTP response for `post /ocr/v1/process`, but is otherwise the same as

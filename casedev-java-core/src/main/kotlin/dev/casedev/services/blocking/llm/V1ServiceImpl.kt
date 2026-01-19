@@ -4,18 +4,21 @@ package dev.casedev.services.blocking.llm
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
+import dev.casedev.core.handlers.jsonHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponse.Handler
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.core.http.json
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepare
 import dev.casedev.models.llm.v1.V1CreateEmbeddingParams
+import dev.casedev.models.llm.v1.V1CreateEmbeddingResponse
 import dev.casedev.models.llm.v1.V1ListModelsParams
+import dev.casedev.models.llm.v1.V1ListModelsResponse
 import dev.casedev.services.blocking.llm.v1.ChatService
 import dev.casedev.services.blocking.llm.v1.ChatServiceImpl
 import java.util.function.Consumer
@@ -35,15 +38,19 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
 
     override fun chat(): ChatService = chat
 
-    override fun createEmbedding(params: V1CreateEmbeddingParams, requestOptions: RequestOptions) {
+    override fun createEmbedding(
+        params: V1CreateEmbeddingParams,
+        requestOptions: RequestOptions,
+    ): V1CreateEmbeddingResponse =
         // post /llm/v1/embeddings
-        withRawResponse().createEmbedding(params, requestOptions)
-    }
+        withRawResponse().createEmbedding(params, requestOptions).parse()
 
-    override fun listModels(params: V1ListModelsParams, requestOptions: RequestOptions) {
+    override fun listModels(
+        params: V1ListModelsParams,
+        requestOptions: RequestOptions,
+    ): V1ListModelsResponse =
         // get /llm/v1/models
-        withRawResponse().listModels(params, requestOptions)
-    }
+        withRawResponse().listModels(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         V1Service.WithRawResponse {
@@ -64,12 +71,13 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
 
         override fun chat(): ChatService.WithRawResponse = chat
 
-        private val createEmbeddingHandler: Handler<Void?> = emptyHandler()
+        private val createEmbeddingHandler: Handler<V1CreateEmbeddingResponse> =
+            jsonHandler<V1CreateEmbeddingResponse>(clientOptions.jsonMapper)
 
         override fun createEmbedding(
             params: V1CreateEmbeddingParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<V1CreateEmbeddingResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -81,16 +89,23 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { createEmbeddingHandler.handle(it) }
+                response
+                    .use { createEmbeddingHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
 
-        private val listModelsHandler: Handler<Void?> = emptyHandler()
+        private val listModelsHandler: Handler<V1ListModelsResponse> =
+            jsonHandler<V1ListModelsResponse>(clientOptions.jsonMapper)
 
         override fun listModels(
             params: V1ListModelsParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<V1ListModelsResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -101,7 +116,13 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { listModelsHandler.handle(it) }
+                response
+                    .use { listModelsHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
     }

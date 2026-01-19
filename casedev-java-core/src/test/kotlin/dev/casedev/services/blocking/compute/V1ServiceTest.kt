@@ -35,6 +35,8 @@ internal class V1ServiceTest {
                 .build()
         val v1Service = client.compute().v1()
 
-        v1Service.getUsage(V1GetUsageParams.builder().month(3L).year(2024L).build())
+        val response = v1Service.getUsage(V1GetUsageParams.builder().month(3L).year(2024L).build())
+
+        response.validate()
     }
 }

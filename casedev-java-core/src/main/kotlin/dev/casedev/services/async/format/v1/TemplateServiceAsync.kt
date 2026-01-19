@@ -4,12 +4,13 @@ package dev.casedev.services.async.format.v1
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.format.v1.templates.TemplateCreateParams
 import dev.casedev.models.format.v1.templates.TemplateCreateResponse
 import dev.casedev.models.format.v1.templates.TemplateListParams
+import dev.casedev.models.format.v1.templates.TemplateListResponse
 import dev.casedev.models.format.v1.templates.TemplateRetrieveParams
+import dev.casedev.models.format.v1.templates.TemplateRetrieveResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -46,33 +47,38 @@ interface TemplateServiceAsync {
      * should be structured and formatted for specific legal use cases such as contracts, briefs, or
      * pleadings.
      */
-    fun retrieve(id: String): CompletableFuture<Void?> = retrieve(id, TemplateRetrieveParams.none())
+    fun retrieve(id: String): CompletableFuture<TemplateRetrieveResponse> =
+        retrieve(id, TemplateRetrieveParams.none())
 
     /** @see retrieve */
     fun retrieve(
         id: String,
         params: TemplateRetrieveParams = TemplateRetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> = retrieve(params.toBuilder().id(id).build(), requestOptions)
+    ): CompletableFuture<TemplateRetrieveResponse> =
+        retrieve(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see retrieve */
     fun retrieve(
         id: String,
         params: TemplateRetrieveParams = TemplateRetrieveParams.none(),
-    ): CompletableFuture<Void?> = retrieve(id, params, RequestOptions.none())
+    ): CompletableFuture<TemplateRetrieveResponse> = retrieve(id, params, RequestOptions.none())
 
     /** @see retrieve */
     fun retrieve(
         params: TemplateRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<TemplateRetrieveResponse>
 
     /** @see retrieve */
-    fun retrieve(params: TemplateRetrieveParams): CompletableFuture<Void?> =
+    fun retrieve(params: TemplateRetrieveParams): CompletableFuture<TemplateRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
-    fun retrieve(id: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun retrieve(
+        id: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<TemplateRetrieveResponse> =
         retrieve(id, TemplateRetrieveParams.none(), requestOptions)
 
     /**
@@ -82,20 +88,21 @@ interface TemplateServiceAsync {
      * Filter by type to get specific template categories like contracts, pleadings, or
      * correspondence.
      */
-    fun list(): CompletableFuture<Void?> = list(TemplateListParams.none())
+    fun list(): CompletableFuture<TemplateListResponse> = list(TemplateListParams.none())
 
     /** @see list */
     fun list(
         params: TemplateListParams = TemplateListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<TemplateListResponse>
 
     /** @see list */
-    fun list(params: TemplateListParams = TemplateListParams.none()): CompletableFuture<Void?> =
-        list(params, RequestOptions.none())
+    fun list(
+        params: TemplateListParams = TemplateListParams.none()
+    ): CompletableFuture<TemplateListResponse> = list(params, RequestOptions.none())
 
     /** @see list */
-    fun list(requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun list(requestOptions: RequestOptions): CompletableFuture<TemplateListResponse> =
         list(TemplateListParams.none(), requestOptions)
 
     /**
@@ -131,7 +138,7 @@ interface TemplateServiceAsync {
          * Returns a raw HTTP response for `get /format/v1/templates/{id}`, but is otherwise the
          * same as [TemplateServiceAsync.retrieve].
          */
-        fun retrieve(id: String): CompletableFuture<HttpResponse> =
+        fun retrieve(id: String): CompletableFuture<HttpResponseFor<TemplateRetrieveResponse>> =
             retrieve(id, TemplateRetrieveParams.none())
 
         /** @see retrieve */
@@ -139,48 +146,58 @@ interface TemplateServiceAsync {
             id: String,
             params: TemplateRetrieveParams = TemplateRetrieveParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<TemplateRetrieveResponse>> =
             retrieve(params.toBuilder().id(id).build(), requestOptions)
 
         /** @see retrieve */
         fun retrieve(
             id: String,
             params: TemplateRetrieveParams = TemplateRetrieveParams.none(),
-        ): CompletableFuture<HttpResponse> = retrieve(id, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<TemplateRetrieveResponse>> =
+            retrieve(id, params, RequestOptions.none())
 
         /** @see retrieve */
         fun retrieve(
             params: TemplateRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<TemplateRetrieveResponse>>
 
         /** @see retrieve */
-        fun retrieve(params: TemplateRetrieveParams): CompletableFuture<HttpResponse> =
+        fun retrieve(
+            params: TemplateRetrieveParams
+        ): CompletableFuture<HttpResponseFor<TemplateRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
-        fun retrieve(id: String, requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+        fun retrieve(
+            id: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<TemplateRetrieveResponse>> =
             retrieve(id, TemplateRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /format/v1/templates`, but is otherwise the same as
          * [TemplateServiceAsync.list].
          */
-        fun list(): CompletableFuture<HttpResponse> = list(TemplateListParams.none())
+        fun list(): CompletableFuture<HttpResponseFor<TemplateListResponse>> =
+            list(TemplateListParams.none())
 
         /** @see list */
         fun list(
             params: TemplateListParams = TemplateListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<TemplateListResponse>>
 
         /** @see list */
         fun list(
             params: TemplateListParams = TemplateListParams.none()
-        ): CompletableFuture<HttpResponse> = list(params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<TemplateListResponse>> =
+            list(params, RequestOptions.none())
 
         /** @see list */
-        fun list(requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+        fun list(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<TemplateListResponse>> =
             list(TemplateListParams.none(), requestOptions)
     }
 }

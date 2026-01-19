@@ -7,14 +7,17 @@ import dev.casedev.core.RequestOptions
 import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
+import dev.casedev.core.handlers.jsonHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponse.Handler
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepareAsync
 import dev.casedev.models.compute.v1.V1GetPricingParams
 import dev.casedev.models.compute.v1.V1GetUsageParams
+import dev.casedev.models.compute.v1.V1GetUsageResponse
 import dev.casedev.services.async.compute.v1.EnvironmentServiceAsync
 import dev.casedev.services.async.compute.v1.EnvironmentServiceAsyncImpl
 import dev.casedev.services.async.compute.v1.FunctionServiceAsync
@@ -72,9 +75,9 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun getUsage(
         params: V1GetUsageParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<V1GetUsageResponse> =
         // get /compute/v1/usage
-        withRawResponse().getUsage(params, requestOptions).thenAccept {}
+        withRawResponse().getUsage(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         V1ServiceAsync.WithRawResponse {
@@ -142,12 +145,13 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 }
         }
 
-        private val getUsageHandler: Handler<Void?> = emptyHandler()
+        private val getUsageHandler: Handler<V1GetUsageResponse> =
+            jsonHandler<V1GetUsageResponse>(clientOptions.jsonMapper)
 
         override fun getUsage(
             params: V1GetUsageParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<V1GetUsageResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -160,7 +164,13 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { getUsageHandler.handle(it) }
+                        response
+                            .use { getUsageHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

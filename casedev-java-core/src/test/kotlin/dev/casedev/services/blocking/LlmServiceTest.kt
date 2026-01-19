@@ -21,6 +21,8 @@ internal class LlmServiceTest {
                 .build()
         val llmService = client.llm()
 
-        llmService.getConfig()
+        val response = llmService.getConfig()
+
+        response.validate()
     }
 }

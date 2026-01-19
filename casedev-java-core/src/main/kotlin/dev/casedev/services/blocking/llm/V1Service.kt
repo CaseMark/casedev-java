@@ -5,9 +5,11 @@ package dev.casedev.services.blocking.llm
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.llm.v1.V1CreateEmbeddingParams
+import dev.casedev.models.llm.v1.V1CreateEmbeddingResponse
 import dev.casedev.models.llm.v1.V1ListModelsParams
+import dev.casedev.models.llm.v1.V1ListModelsResponse
 import dev.casedev.services.blocking.llm.v1.ChatService
 import java.util.function.Consumer
 
@@ -31,14 +33,14 @@ interface V1Service {
      * Create vector embeddings from text using OpenAI-compatible models. Perfect for semantic
      * search, document similarity, and building RAG systems for legal documents.
      */
-    fun createEmbedding(params: V1CreateEmbeddingParams) =
+    fun createEmbedding(params: V1CreateEmbeddingParams): V1CreateEmbeddingResponse =
         createEmbedding(params, RequestOptions.none())
 
     /** @see createEmbedding */
     fun createEmbedding(
         params: V1CreateEmbeddingParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): V1CreateEmbeddingResponse
 
     /**
      * Retrieve a list of all available language models from 40+ providers including OpenAI,
@@ -48,20 +50,20 @@ interface V1Service {
      * This endpoint is compatible with OpenAI's models API format, making it easy to integrate with
      * existing applications.
      */
-    fun listModels() = listModels(V1ListModelsParams.none())
+    fun listModels(): V1ListModelsResponse = listModels(V1ListModelsParams.none())
 
     /** @see listModels */
     fun listModels(
         params: V1ListModelsParams = V1ListModelsParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): V1ListModelsResponse
 
     /** @see listModels */
-    fun listModels(params: V1ListModelsParams = V1ListModelsParams.none()) =
+    fun listModels(params: V1ListModelsParams = V1ListModelsParams.none()): V1ListModelsResponse =
         listModels(params, RequestOptions.none())
 
     /** @see listModels */
-    fun listModels(requestOptions: RequestOptions) =
+    fun listModels(requestOptions: RequestOptions): V1ListModelsResponse =
         listModels(V1ListModelsParams.none(), requestOptions)
 
     /** A view of [V1Service] that provides access to raw HTTP responses for each method. */
@@ -81,7 +83,9 @@ interface V1Service {
          * [V1Service.createEmbedding].
          */
         @MustBeClosed
-        fun createEmbedding(params: V1CreateEmbeddingParams): HttpResponse =
+        fun createEmbedding(
+            params: V1CreateEmbeddingParams
+        ): HttpResponseFor<V1CreateEmbeddingResponse> =
             createEmbedding(params, RequestOptions.none())
 
         /** @see createEmbedding */
@@ -89,29 +93,32 @@ interface V1Service {
         fun createEmbedding(
             params: V1CreateEmbeddingParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<V1CreateEmbeddingResponse>
 
         /**
          * Returns a raw HTTP response for `get /llm/v1/models`, but is otherwise the same as
          * [V1Service.listModels].
          */
-        @MustBeClosed fun listModels(): HttpResponse = listModels(V1ListModelsParams.none())
+        @MustBeClosed
+        fun listModels(): HttpResponseFor<V1ListModelsResponse> =
+            listModels(V1ListModelsParams.none())
 
         /** @see listModels */
         @MustBeClosed
         fun listModels(
             params: V1ListModelsParams = V1ListModelsParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<V1ListModelsResponse>
 
         /** @see listModels */
         @MustBeClosed
-        fun listModels(params: V1ListModelsParams = V1ListModelsParams.none()): HttpResponse =
-            listModels(params, RequestOptions.none())
+        fun listModels(
+            params: V1ListModelsParams = V1ListModelsParams.none()
+        ): HttpResponseFor<V1ListModelsResponse> = listModels(params, RequestOptions.none())
 
         /** @see listModels */
         @MustBeClosed
-        fun listModels(requestOptions: RequestOptions): HttpResponse =
+        fun listModels(requestOptions: RequestOptions): HttpResponseFor<V1ListModelsResponse> =
             listModels(V1ListModelsParams.none(), requestOptions)
     }
 }

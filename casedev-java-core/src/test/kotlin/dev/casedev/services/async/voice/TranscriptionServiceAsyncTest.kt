@@ -22,7 +22,7 @@ internal class TranscriptionServiceAsyncTest {
                 .build()
         val transcriptionServiceAsync = client.voice().transcription()
 
-        val future =
+        val transcriptionFuture =
             transcriptionServiceAsync.create(
                 TranscriptionCreateParams.builder()
                     .audioUrl("audio_url")
@@ -42,7 +42,8 @@ internal class TranscriptionServiceAsyncTest {
                     .build()
             )
 
-        val response = future.get()
+        val transcription = transcriptionFuture.get()
+        transcription.validate()
     }
 
     @Disabled("Prism tests are disabled")

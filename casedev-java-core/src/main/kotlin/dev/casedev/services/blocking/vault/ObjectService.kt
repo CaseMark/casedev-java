@@ -5,14 +5,16 @@ package dev.casedev.services.blocking.vault
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlParams
 import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlResponse
 import dev.casedev.models.vault.objects.ObjectDownloadParams
 import dev.casedev.models.vault.objects.ObjectGetTextParams
+import dev.casedev.models.vault.objects.ObjectGetTextResponse
 import dev.casedev.models.vault.objects.ObjectListParams
+import dev.casedev.models.vault.objects.ObjectListResponse
 import dev.casedev.models.vault.objects.ObjectRetrieveParams
+import dev.casedev.models.vault.objects.ObjectRetrieveResponse
 import java.util.function.Consumer
 
 interface ObjectService {
@@ -34,7 +36,7 @@ interface ObjectService {
      * The download URL expires after 1 hour for security. This endpoint also updates the file size
      * if it wasn't previously calculated.
      */
-    fun retrieve(objectId: String, params: ObjectRetrieveParams) =
+    fun retrieve(objectId: String, params: ObjectRetrieveParams): ObjectRetrieveResponse =
         retrieve(objectId, params, RequestOptions.none())
 
     /** @see retrieve */
@@ -42,42 +44,47 @@ interface ObjectService {
         objectId: String,
         params: ObjectRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = retrieve(params.toBuilder().objectId(objectId).build(), requestOptions)
+    ): ObjectRetrieveResponse =
+        retrieve(params.toBuilder().objectId(objectId).build(), requestOptions)
 
     /** @see retrieve */
-    fun retrieve(params: ObjectRetrieveParams) = retrieve(params, RequestOptions.none())
+    fun retrieve(params: ObjectRetrieveParams): ObjectRetrieveResponse =
+        retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
     fun retrieve(
         params: ObjectRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): ObjectRetrieveResponse
 
     /**
      * Retrieve all objects stored in a specific vault, including document metadata, ingestion
      * status, and processing statistics.
      */
-    fun list(id: String) = list(id, ObjectListParams.none())
+    fun list(id: String): ObjectListResponse = list(id, ObjectListParams.none())
 
     /** @see list */
     fun list(
         id: String,
         params: ObjectListParams = ObjectListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = list(params.toBuilder().id(id).build(), requestOptions)
+    ): ObjectListResponse = list(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see list */
-    fun list(id: String, params: ObjectListParams = ObjectListParams.none()) =
+    fun list(id: String, params: ObjectListParams = ObjectListParams.none()): ObjectListResponse =
         list(id, params, RequestOptions.none())
 
     /** @see list */
-    fun list(params: ObjectListParams, requestOptions: RequestOptions = RequestOptions.none())
+    fun list(
+        params: ObjectListParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ObjectListResponse
 
     /** @see list */
-    fun list(params: ObjectListParams) = list(params, RequestOptions.none())
+    fun list(params: ObjectListParams): ObjectListResponse = list(params, RequestOptions.none())
 
     /** @see list */
-    fun list(id: String, requestOptions: RequestOptions) =
+    fun list(id: String, requestOptions: RequestOptions): ObjectListResponse =
         list(id, ObjectListParams.none(), requestOptions)
 
     /**
@@ -115,7 +122,7 @@ interface ObjectService {
      * appropriate headers for file download. Useful for retrieving contracts, depositions, case
      * files, and other legal documents stored in your vault.
      */
-    fun download(objectId: String, params: ObjectDownloadParams) =
+    fun download(objectId: String, params: ObjectDownloadParams): String =
         download(objectId, params, RequestOptions.none())
 
     /** @see download */
@@ -123,23 +130,23 @@ interface ObjectService {
         objectId: String,
         params: ObjectDownloadParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = download(params.toBuilder().objectId(objectId).build(), requestOptions)
+    ): String = download(params.toBuilder().objectId(objectId).build(), requestOptions)
 
     /** @see download */
-    fun download(params: ObjectDownloadParams) = download(params, RequestOptions.none())
+    fun download(params: ObjectDownloadParams): String = download(params, RequestOptions.none())
 
     /** @see download */
     fun download(
         params: ObjectDownloadParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): String
 
     /**
      * Retrieves the full extracted text content from a processed vault object. Returns the
      * concatenated text from all chunks, useful for document review, analysis, or export. The
      * object must have completed processing before text can be retrieved.
      */
-    fun getText(objectId: String, params: ObjectGetTextParams) =
+    fun getText(objectId: String, params: ObjectGetTextParams): ObjectGetTextResponse =
         getText(objectId, params, RequestOptions.none())
 
     /** @see getText */
@@ -147,13 +154,18 @@ interface ObjectService {
         objectId: String,
         params: ObjectGetTextParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = getText(params.toBuilder().objectId(objectId).build(), requestOptions)
+    ): ObjectGetTextResponse =
+        getText(params.toBuilder().objectId(objectId).build(), requestOptions)
 
     /** @see getText */
-    fun getText(params: ObjectGetTextParams) = getText(params, RequestOptions.none())
+    fun getText(params: ObjectGetTextParams): ObjectGetTextResponse =
+        getText(params, RequestOptions.none())
 
     /** @see getText */
-    fun getText(params: ObjectGetTextParams, requestOptions: RequestOptions = RequestOptions.none())
+    fun getText(
+        params: ObjectGetTextParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ObjectGetTextResponse
 
     /** A view of [ObjectService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -170,7 +182,10 @@ interface ObjectService {
          * the same as [ObjectService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(objectId: String, params: ObjectRetrieveParams): HttpResponse =
+        fun retrieve(
+            objectId: String,
+            params: ObjectRetrieveParams,
+        ): HttpResponseFor<ObjectRetrieveResponse> =
             retrieve(objectId, params, RequestOptions.none())
 
         /** @see retrieve */
@@ -179,11 +194,12 @@ interface ObjectService {
             objectId: String,
             params: ObjectRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = retrieve(params.toBuilder().objectId(objectId).build(), requestOptions)
+        ): HttpResponseFor<ObjectRetrieveResponse> =
+            retrieve(params.toBuilder().objectId(objectId).build(), requestOptions)
 
         /** @see retrieve */
         @MustBeClosed
-        fun retrieve(params: ObjectRetrieveParams): HttpResponse =
+        fun retrieve(params: ObjectRetrieveParams): HttpResponseFor<ObjectRetrieveResponse> =
             retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
@@ -191,13 +207,15 @@ interface ObjectService {
         fun retrieve(
             params: ObjectRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<ObjectRetrieveResponse>
 
         /**
          * Returns a raw HTTP response for `get /vault/{id}/objects`, but is otherwise the same as
          * [ObjectService.list].
          */
-        @MustBeClosed fun list(id: String): HttpResponse = list(id, ObjectListParams.none())
+        @MustBeClosed
+        fun list(id: String): HttpResponseFor<ObjectListResponse> =
+            list(id, ObjectListParams.none())
 
         /** @see list */
         @MustBeClosed
@@ -205,27 +223,31 @@ interface ObjectService {
             id: String,
             params: ObjectListParams = ObjectListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = list(params.toBuilder().id(id).build(), requestOptions)
+        ): HttpResponseFor<ObjectListResponse> =
+            list(params.toBuilder().id(id).build(), requestOptions)
 
         /** @see list */
         @MustBeClosed
-        fun list(id: String, params: ObjectListParams = ObjectListParams.none()): HttpResponse =
-            list(id, params, RequestOptions.none())
+        fun list(
+            id: String,
+            params: ObjectListParams = ObjectListParams.none(),
+        ): HttpResponseFor<ObjectListResponse> = list(id, params, RequestOptions.none())
 
         /** @see list */
         @MustBeClosed
         fun list(
             params: ObjectListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<ObjectListResponse>
 
         /** @see list */
         @MustBeClosed
-        fun list(params: ObjectListParams): HttpResponse = list(params, RequestOptions.none())
+        fun list(params: ObjectListParams): HttpResponseFor<ObjectListResponse> =
+            list(params, RequestOptions.none())
 
         /** @see list */
         @MustBeClosed
-        fun list(id: String, requestOptions: RequestOptions): HttpResponse =
+        fun list(id: String, requestOptions: RequestOptions): HttpResponseFor<ObjectListResponse> =
             list(id, ObjectListParams.none(), requestOptions)
 
         /**
@@ -267,7 +289,7 @@ interface ObjectService {
          * otherwise the same as [ObjectService.download].
          */
         @MustBeClosed
-        fun download(objectId: String, params: ObjectDownloadParams): HttpResponse =
+        fun download(objectId: String, params: ObjectDownloadParams): HttpResponseFor<String> =
             download(objectId, params, RequestOptions.none())
 
         /** @see download */
@@ -276,11 +298,12 @@ interface ObjectService {
             objectId: String,
             params: ObjectDownloadParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = download(params.toBuilder().objectId(objectId).build(), requestOptions)
+        ): HttpResponseFor<String> =
+            download(params.toBuilder().objectId(objectId).build(), requestOptions)
 
         /** @see download */
         @MustBeClosed
-        fun download(params: ObjectDownloadParams): HttpResponse =
+        fun download(params: ObjectDownloadParams): HttpResponseFor<String> =
             download(params, RequestOptions.none())
 
         /** @see download */
@@ -288,15 +311,17 @@ interface ObjectService {
         fun download(
             params: ObjectDownloadParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<String>
 
         /**
          * Returns a raw HTTP response for `get /vault/{id}/objects/{objectId}/text`, but is
          * otherwise the same as [ObjectService.getText].
          */
         @MustBeClosed
-        fun getText(objectId: String, params: ObjectGetTextParams): HttpResponse =
-            getText(objectId, params, RequestOptions.none())
+        fun getText(
+            objectId: String,
+            params: ObjectGetTextParams,
+        ): HttpResponseFor<ObjectGetTextResponse> = getText(objectId, params, RequestOptions.none())
 
         /** @see getText */
         @MustBeClosed
@@ -304,11 +329,12 @@ interface ObjectService {
             objectId: String,
             params: ObjectGetTextParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = getText(params.toBuilder().objectId(objectId).build(), requestOptions)
+        ): HttpResponseFor<ObjectGetTextResponse> =
+            getText(params.toBuilder().objectId(objectId).build(), requestOptions)
 
         /** @see getText */
         @MustBeClosed
-        fun getText(params: ObjectGetTextParams): HttpResponse =
+        fun getText(params: ObjectGetTextParams): HttpResponseFor<ObjectGetTextResponse> =
             getText(params, RequestOptions.none())
 
         /** @see getText */
@@ -316,6 +342,6 @@ interface ObjectService {
         fun getText(
             params: ObjectGetTextParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<ObjectGetTextResponse>
     }
 }

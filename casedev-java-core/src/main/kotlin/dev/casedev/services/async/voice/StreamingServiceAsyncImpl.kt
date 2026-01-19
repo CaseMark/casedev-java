@@ -4,16 +4,18 @@ package dev.casedev.services.async.voice
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
+import dev.casedev.core.handlers.jsonHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponse.Handler
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepareAsync
 import dev.casedev.models.voice.streaming.StreamingGetUrlParams
+import dev.casedev.models.voice.streaming.StreamingGetUrlResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -32,9 +34,9 @@ class StreamingServiceAsyncImpl internal constructor(private val clientOptions: 
     override fun getUrl(
         params: StreamingGetUrlParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<StreamingGetUrlResponse> =
         // get /voice/streaming/url
-        withRawResponse().getUrl(params, requestOptions).thenAccept {}
+        withRawResponse().getUrl(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         StreamingServiceAsync.WithRawResponse {
@@ -49,12 +51,13 @@ class StreamingServiceAsyncImpl internal constructor(private val clientOptions: 
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val getUrlHandler: Handler<Void?> = emptyHandler()
+        private val getUrlHandler: Handler<StreamingGetUrlResponse> =
+            jsonHandler<StreamingGetUrlResponse>(clientOptions.jsonMapper)
 
         override fun getUrl(
             params: StreamingGetUrlParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<StreamingGetUrlResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -67,7 +70,13 @@ class StreamingServiceAsyncImpl internal constructor(private val clientOptions: 
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { getUrlHandler.handle(it) }
+                        response
+                            .use { getUrlHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

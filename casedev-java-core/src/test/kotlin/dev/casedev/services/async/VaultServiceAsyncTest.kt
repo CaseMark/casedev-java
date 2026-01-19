@@ -53,9 +53,10 @@ internal class VaultServiceAsyncTest {
                 .build()
         val vaultServiceAsync = client.vault()
 
-        val future = vaultServiceAsync.retrieve("vault_abc123")
+        val vaultFuture = vaultServiceAsync.retrieve("vault_abc123")
 
-        val response = future.get()
+        val vault = vaultFuture.get()
+        vault.validate()
     }
 
     @Disabled("Prism tests are disabled")

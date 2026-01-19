@@ -5,14 +5,17 @@ package dev.casedev.services.blocking.compute.v1
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.compute.v1.secrets.SecretCreateParams
 import dev.casedev.models.compute.v1.secrets.SecretCreateResponse
 import dev.casedev.models.compute.v1.secrets.SecretDeleteGroupParams
+import dev.casedev.models.compute.v1.secrets.SecretDeleteGroupResponse
 import dev.casedev.models.compute.v1.secrets.SecretListParams
+import dev.casedev.models.compute.v1.secrets.SecretListResponse
 import dev.casedev.models.compute.v1.secrets.SecretRetrieveGroupParams
+import dev.casedev.models.compute.v1.secrets.SecretRetrieveGroupResponse
 import dev.casedev.models.compute.v1.secrets.SecretUpdateGroupParams
+import dev.casedev.models.compute.v1.secrets.SecretUpdateGroupResponse
 import java.util.function.Consumer
 
 interface SecretService {
@@ -53,92 +56,98 @@ interface SecretService {
      * Retrieve all secret groups for a compute environment. Secret groups organize related secrets
      * (API keys, credentials, etc.) that can be securely accessed by compute jobs during execution.
      */
-    fun list() = list(SecretListParams.none())
+    fun list(): SecretListResponse = list(SecretListParams.none())
 
     /** @see list */
     fun list(
         params: SecretListParams = SecretListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): SecretListResponse
 
     /** @see list */
-    fun list(params: SecretListParams = SecretListParams.none()) =
+    fun list(params: SecretListParams = SecretListParams.none()): SecretListResponse =
         list(params, RequestOptions.none())
 
     /** @see list */
-    fun list(requestOptions: RequestOptions) = list(SecretListParams.none(), requestOptions)
+    fun list(requestOptions: RequestOptions): SecretListResponse =
+        list(SecretListParams.none(), requestOptions)
 
     /**
      * Delete an entire secret group or a specific key within a secret group. When deleting a
      * specific key, the remaining secrets in the group are preserved. When deleting the entire
      * group, all secrets and the group itself are removed.
      */
-    fun deleteGroup(group: String) = deleteGroup(group, SecretDeleteGroupParams.none())
+    fun deleteGroup(group: String): SecretDeleteGroupResponse =
+        deleteGroup(group, SecretDeleteGroupParams.none())
 
     /** @see deleteGroup */
     fun deleteGroup(
         group: String,
         params: SecretDeleteGroupParams = SecretDeleteGroupParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = deleteGroup(params.toBuilder().group(group).build(), requestOptions)
+    ): SecretDeleteGroupResponse =
+        deleteGroup(params.toBuilder().group(group).build(), requestOptions)
 
     /** @see deleteGroup */
     fun deleteGroup(
         group: String,
         params: SecretDeleteGroupParams = SecretDeleteGroupParams.none(),
-    ) = deleteGroup(group, params, RequestOptions.none())
+    ): SecretDeleteGroupResponse = deleteGroup(group, params, RequestOptions.none())
 
     /** @see deleteGroup */
     fun deleteGroup(
         params: SecretDeleteGroupParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): SecretDeleteGroupResponse
 
     /** @see deleteGroup */
-    fun deleteGroup(params: SecretDeleteGroupParams) = deleteGroup(params, RequestOptions.none())
+    fun deleteGroup(params: SecretDeleteGroupParams): SecretDeleteGroupResponse =
+        deleteGroup(params, RequestOptions.none())
 
     /** @see deleteGroup */
-    fun deleteGroup(group: String, requestOptions: RequestOptions) =
+    fun deleteGroup(group: String, requestOptions: RequestOptions): SecretDeleteGroupResponse =
         deleteGroup(group, SecretDeleteGroupParams.none(), requestOptions)
 
     /**
      * Retrieve the keys (names) of secrets in a specified group within a compute environment. For
      * security reasons, actual secret values are not returned - only the keys and metadata.
      */
-    fun retrieveGroup(group: String) = retrieveGroup(group, SecretRetrieveGroupParams.none())
+    fun retrieveGroup(group: String): SecretRetrieveGroupResponse =
+        retrieveGroup(group, SecretRetrieveGroupParams.none())
 
     /** @see retrieveGroup */
     fun retrieveGroup(
         group: String,
         params: SecretRetrieveGroupParams = SecretRetrieveGroupParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = retrieveGroup(params.toBuilder().group(group).build(), requestOptions)
+    ): SecretRetrieveGroupResponse =
+        retrieveGroup(params.toBuilder().group(group).build(), requestOptions)
 
     /** @see retrieveGroup */
     fun retrieveGroup(
         group: String,
         params: SecretRetrieveGroupParams = SecretRetrieveGroupParams.none(),
-    ) = retrieveGroup(group, params, RequestOptions.none())
+    ): SecretRetrieveGroupResponse = retrieveGroup(group, params, RequestOptions.none())
 
     /** @see retrieveGroup */
     fun retrieveGroup(
         params: SecretRetrieveGroupParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): SecretRetrieveGroupResponse
 
     /** @see retrieveGroup */
-    fun retrieveGroup(params: SecretRetrieveGroupParams) =
+    fun retrieveGroup(params: SecretRetrieveGroupParams): SecretRetrieveGroupResponse =
         retrieveGroup(params, RequestOptions.none())
 
     /** @see retrieveGroup */
-    fun retrieveGroup(group: String, requestOptions: RequestOptions) =
+    fun retrieveGroup(group: String, requestOptions: RequestOptions): SecretRetrieveGroupResponse =
         retrieveGroup(group, SecretRetrieveGroupParams.none(), requestOptions)
 
     /**
      * Set or update secrets in a compute secret group. Secrets are encrypted with AES-256-GCM. Use
      * this to manage environment variables and API keys for your compute workloads.
      */
-    fun updateGroup(group: String, params: SecretUpdateGroupParams) =
+    fun updateGroup(group: String, params: SecretUpdateGroupParams): SecretUpdateGroupResponse =
         updateGroup(group, params, RequestOptions.none())
 
     /** @see updateGroup */
@@ -146,16 +155,18 @@ interface SecretService {
         group: String,
         params: SecretUpdateGroupParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = updateGroup(params.toBuilder().group(group).build(), requestOptions)
+    ): SecretUpdateGroupResponse =
+        updateGroup(params.toBuilder().group(group).build(), requestOptions)
 
     /** @see updateGroup */
-    fun updateGroup(params: SecretUpdateGroupParams) = updateGroup(params, RequestOptions.none())
+    fun updateGroup(params: SecretUpdateGroupParams): SecretUpdateGroupResponse =
+        updateGroup(params, RequestOptions.none())
 
     /** @see updateGroup */
     fun updateGroup(
         params: SecretUpdateGroupParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): SecretUpdateGroupResponse
 
     /** A view of [SecretService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -186,23 +197,25 @@ interface SecretService {
          * Returns a raw HTTP response for `get /compute/v1/secrets`, but is otherwise the same as
          * [SecretService.list].
          */
-        @MustBeClosed fun list(): HttpResponse = list(SecretListParams.none())
+        @MustBeClosed
+        fun list(): HttpResponseFor<SecretListResponse> = list(SecretListParams.none())
 
         /** @see list */
         @MustBeClosed
         fun list(
             params: SecretListParams = SecretListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<SecretListResponse>
 
         /** @see list */
         @MustBeClosed
-        fun list(params: SecretListParams = SecretListParams.none()): HttpResponse =
-            list(params, RequestOptions.none())
+        fun list(
+            params: SecretListParams = SecretListParams.none()
+        ): HttpResponseFor<SecretListResponse> = list(params, RequestOptions.none())
 
         /** @see list */
         @MustBeClosed
-        fun list(requestOptions: RequestOptions): HttpResponse =
+        fun list(requestOptions: RequestOptions): HttpResponseFor<SecretListResponse> =
             list(SecretListParams.none(), requestOptions)
 
         /**
@@ -210,7 +223,7 @@ interface SecretService {
          * the same as [SecretService.deleteGroup].
          */
         @MustBeClosed
-        fun deleteGroup(group: String): HttpResponse =
+        fun deleteGroup(group: String): HttpResponseFor<SecretDeleteGroupResponse> =
             deleteGroup(group, SecretDeleteGroupParams.none())
 
         /** @see deleteGroup */
@@ -219,30 +232,36 @@ interface SecretService {
             group: String,
             params: SecretDeleteGroupParams = SecretDeleteGroupParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = deleteGroup(params.toBuilder().group(group).build(), requestOptions)
+        ): HttpResponseFor<SecretDeleteGroupResponse> =
+            deleteGroup(params.toBuilder().group(group).build(), requestOptions)
 
         /** @see deleteGroup */
         @MustBeClosed
         fun deleteGroup(
             group: String,
             params: SecretDeleteGroupParams = SecretDeleteGroupParams.none(),
-        ): HttpResponse = deleteGroup(group, params, RequestOptions.none())
+        ): HttpResponseFor<SecretDeleteGroupResponse> =
+            deleteGroup(group, params, RequestOptions.none())
 
         /** @see deleteGroup */
         @MustBeClosed
         fun deleteGroup(
             params: SecretDeleteGroupParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<SecretDeleteGroupResponse>
 
         /** @see deleteGroup */
         @MustBeClosed
-        fun deleteGroup(params: SecretDeleteGroupParams): HttpResponse =
-            deleteGroup(params, RequestOptions.none())
+        fun deleteGroup(
+            params: SecretDeleteGroupParams
+        ): HttpResponseFor<SecretDeleteGroupResponse> = deleteGroup(params, RequestOptions.none())
 
         /** @see deleteGroup */
         @MustBeClosed
-        fun deleteGroup(group: String, requestOptions: RequestOptions): HttpResponse =
+        fun deleteGroup(
+            group: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<SecretDeleteGroupResponse> =
             deleteGroup(group, SecretDeleteGroupParams.none(), requestOptions)
 
         /**
@@ -250,7 +269,7 @@ interface SecretService {
          * same as [SecretService.retrieveGroup].
          */
         @MustBeClosed
-        fun retrieveGroup(group: String): HttpResponse =
+        fun retrieveGroup(group: String): HttpResponseFor<SecretRetrieveGroupResponse> =
             retrieveGroup(group, SecretRetrieveGroupParams.none())
 
         /** @see retrieveGroup */
@@ -259,30 +278,37 @@ interface SecretService {
             group: String,
             params: SecretRetrieveGroupParams = SecretRetrieveGroupParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = retrieveGroup(params.toBuilder().group(group).build(), requestOptions)
+        ): HttpResponseFor<SecretRetrieveGroupResponse> =
+            retrieveGroup(params.toBuilder().group(group).build(), requestOptions)
 
         /** @see retrieveGroup */
         @MustBeClosed
         fun retrieveGroup(
             group: String,
             params: SecretRetrieveGroupParams = SecretRetrieveGroupParams.none(),
-        ): HttpResponse = retrieveGroup(group, params, RequestOptions.none())
+        ): HttpResponseFor<SecretRetrieveGroupResponse> =
+            retrieveGroup(group, params, RequestOptions.none())
 
         /** @see retrieveGroup */
         @MustBeClosed
         fun retrieveGroup(
             params: SecretRetrieveGroupParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<SecretRetrieveGroupResponse>
 
         /** @see retrieveGroup */
         @MustBeClosed
-        fun retrieveGroup(params: SecretRetrieveGroupParams): HttpResponse =
+        fun retrieveGroup(
+            params: SecretRetrieveGroupParams
+        ): HttpResponseFor<SecretRetrieveGroupResponse> =
             retrieveGroup(params, RequestOptions.none())
 
         /** @see retrieveGroup */
         @MustBeClosed
-        fun retrieveGroup(group: String, requestOptions: RequestOptions): HttpResponse =
+        fun retrieveGroup(
+            group: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<SecretRetrieveGroupResponse> =
             retrieveGroup(group, SecretRetrieveGroupParams.none(), requestOptions)
 
         /**
@@ -290,7 +316,10 @@ interface SecretService {
          * same as [SecretService.updateGroup].
          */
         @MustBeClosed
-        fun updateGroup(group: String, params: SecretUpdateGroupParams): HttpResponse =
+        fun updateGroup(
+            group: String,
+            params: SecretUpdateGroupParams,
+        ): HttpResponseFor<SecretUpdateGroupResponse> =
             updateGroup(group, params, RequestOptions.none())
 
         /** @see updateGroup */
@@ -299,18 +328,20 @@ interface SecretService {
             group: String,
             params: SecretUpdateGroupParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = updateGroup(params.toBuilder().group(group).build(), requestOptions)
+        ): HttpResponseFor<SecretUpdateGroupResponse> =
+            updateGroup(params.toBuilder().group(group).build(), requestOptions)
 
         /** @see updateGroup */
         @MustBeClosed
-        fun updateGroup(params: SecretUpdateGroupParams): HttpResponse =
-            updateGroup(params, RequestOptions.none())
+        fun updateGroup(
+            params: SecretUpdateGroupParams
+        ): HttpResponseFor<SecretUpdateGroupResponse> = updateGroup(params, RequestOptions.none())
 
         /** @see updateGroup */
         @MustBeClosed
         fun updateGroup(
             params: SecretUpdateGroupParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<SecretUpdateGroupResponse>
     }
 }
