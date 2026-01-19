@@ -4,16 +4,18 @@ package dev.casedev.services.blocking.voice
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
+import dev.casedev.core.handlers.jsonHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponse.Handler
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepare
 import dev.casedev.models.voice.v1.V1ListVoicesParams
+import dev.casedev.models.voice.v1.V1ListVoicesResponse
 import dev.casedev.services.blocking.voice.v1.SpeakService
 import dev.casedev.services.blocking.voice.v1.SpeakServiceImpl
 import java.util.function.Consumer
@@ -33,10 +35,12 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
 
     override fun speak(): SpeakService = speak
 
-    override fun listVoices(params: V1ListVoicesParams, requestOptions: RequestOptions) {
+    override fun listVoices(
+        params: V1ListVoicesParams,
+        requestOptions: RequestOptions,
+    ): V1ListVoicesResponse =
         // get /voice/v1/voices
-        withRawResponse().listVoices(params, requestOptions)
-    }
+        withRawResponse().listVoices(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         V1Service.WithRawResponse {
@@ -57,12 +61,13 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
 
         override fun speak(): SpeakService.WithRawResponse = speak
 
-        private val listVoicesHandler: Handler<Void?> = emptyHandler()
+        private val listVoicesHandler: Handler<V1ListVoicesResponse> =
+            jsonHandler<V1ListVoicesResponse>(clientOptions.jsonMapper)
 
         override fun listVoices(
             params: V1ListVoicesParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<V1ListVoicesResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -73,7 +78,13 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { listVoicesHandler.handle(it) }
+                response
+                    .use { listVoicesHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
     }

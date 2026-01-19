@@ -5,8 +5,9 @@ package dev.casedev.services.blocking.voice
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.voice.v1.V1ListVoicesParams
+import dev.casedev.models.voice.v1.V1ListVoicesResponse
 import dev.casedev.services.blocking.voice.v1.SpeakService
 import java.util.function.Consumer
 
@@ -32,20 +33,20 @@ interface V1Service {
      * styles suitable for legal document narration, client presentations, and accessibility
      * purposes.
      */
-    fun listVoices() = listVoices(V1ListVoicesParams.none())
+    fun listVoices(): V1ListVoicesResponse = listVoices(V1ListVoicesParams.none())
 
     /** @see listVoices */
     fun listVoices(
         params: V1ListVoicesParams = V1ListVoicesParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): V1ListVoicesResponse
 
     /** @see listVoices */
-    fun listVoices(params: V1ListVoicesParams = V1ListVoicesParams.none()) =
+    fun listVoices(params: V1ListVoicesParams = V1ListVoicesParams.none()): V1ListVoicesResponse =
         listVoices(params, RequestOptions.none())
 
     /** @see listVoices */
-    fun listVoices(requestOptions: RequestOptions) =
+    fun listVoices(requestOptions: RequestOptions): V1ListVoicesResponse =
         listVoices(V1ListVoicesParams.none(), requestOptions)
 
     /** A view of [V1Service] that provides access to raw HTTP responses for each method. */
@@ -64,23 +65,26 @@ interface V1Service {
          * Returns a raw HTTP response for `get /voice/v1/voices`, but is otherwise the same as
          * [V1Service.listVoices].
          */
-        @MustBeClosed fun listVoices(): HttpResponse = listVoices(V1ListVoicesParams.none())
+        @MustBeClosed
+        fun listVoices(): HttpResponseFor<V1ListVoicesResponse> =
+            listVoices(V1ListVoicesParams.none())
 
         /** @see listVoices */
         @MustBeClosed
         fun listVoices(
             params: V1ListVoicesParams = V1ListVoicesParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<V1ListVoicesResponse>
 
         /** @see listVoices */
         @MustBeClosed
-        fun listVoices(params: V1ListVoicesParams = V1ListVoicesParams.none()): HttpResponse =
-            listVoices(params, RequestOptions.none())
+        fun listVoices(
+            params: V1ListVoicesParams = V1ListVoicesParams.none()
+        ): HttpResponseFor<V1ListVoicesResponse> = listVoices(params, RequestOptions.none())
 
         /** @see listVoices */
         @MustBeClosed
-        fun listVoices(requestOptions: RequestOptions): HttpResponse =
+        fun listVoices(requestOptions: RequestOptions): HttpResponseFor<V1ListVoicesResponse> =
             listVoices(V1ListVoicesParams.none(), requestOptions)
     }
 }

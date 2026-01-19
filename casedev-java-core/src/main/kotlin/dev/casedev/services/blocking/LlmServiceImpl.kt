@@ -4,16 +4,18 @@ package dev.casedev.services.blocking
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
+import dev.casedev.core.handlers.jsonHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponse.Handler
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepare
 import dev.casedev.models.llm.LlmGetConfigParams
+import dev.casedev.models.llm.LlmGetConfigResponse
 import dev.casedev.services.blocking.llm.V1Service
 import dev.casedev.services.blocking.llm.V1ServiceImpl
 import java.util.function.Consumer
@@ -33,10 +35,12 @@ class LlmServiceImpl internal constructor(private val clientOptions: ClientOptio
 
     override fun v1(): V1Service = v1
 
-    override fun getConfig(params: LlmGetConfigParams, requestOptions: RequestOptions) {
+    override fun getConfig(
+        params: LlmGetConfigParams,
+        requestOptions: RequestOptions,
+    ): LlmGetConfigResponse =
         // get /llm/config
-        withRawResponse().getConfig(params, requestOptions)
-    }
+        withRawResponse().getConfig(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         LlmService.WithRawResponse {
@@ -57,12 +61,13 @@ class LlmServiceImpl internal constructor(private val clientOptions: ClientOptio
 
         override fun v1(): V1Service.WithRawResponse = v1
 
-        private val getConfigHandler: Handler<Void?> = emptyHandler()
+        private val getConfigHandler: Handler<LlmGetConfigResponse> =
+            jsonHandler<LlmGetConfigResponse>(clientOptions.jsonMapper)
 
         override fun getConfig(
             params: LlmGetConfigParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<LlmGetConfigResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -73,7 +78,13 @@ class LlmServiceImpl internal constructor(private val clientOptions: ClientOptio
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { getConfigHandler.handle(it) }
+                response
+                    .use { getConfigHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
     }

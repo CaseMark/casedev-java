@@ -52,7 +52,9 @@ internal class VaultServiceTest {
                 .build()
         val vaultService = client.vault()
 
-        vaultService.retrieve("vault_abc123")
+        val vault = vaultService.retrieve("vault_abc123")
+
+        vault.validate()
     }
 
     @Disabled("Prism tests are disabled")

@@ -5,7 +5,6 @@ package dev.casedev.services.async.voice
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
@@ -18,6 +17,7 @@ import dev.casedev.core.http.json
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepareAsync
 import dev.casedev.models.voice.transcription.TranscriptionCreateParams
+import dev.casedev.models.voice.transcription.TranscriptionCreateResponse
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveParams
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveResponse
 import java.util.concurrent.CompletableFuture
@@ -39,9 +39,9 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
     override fun create(
         params: TranscriptionCreateParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<TranscriptionCreateResponse> =
         // post /voice/transcription
-        withRawResponse().create(params, requestOptions).thenAccept {}
+        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
     override fun retrieve(
         params: TranscriptionRetrieveParams,
@@ -63,12 +63,13 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val createHandler: Handler<Void?> = emptyHandler()
+        private val createHandler: Handler<TranscriptionCreateResponse> =
+            jsonHandler<TranscriptionCreateResponse>(clientOptions.jsonMapper)
 
         override fun create(
             params: TranscriptionCreateParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -82,7 +83,13 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { createHandler.handle(it) }
+                        response
+                            .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

@@ -5,7 +5,6 @@ package dev.casedev.services.async.compute.v1
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
@@ -22,8 +21,11 @@ import dev.casedev.models.compute.v1.environments.EnvironmentCreateResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentDeleteParams
 import dev.casedev.models.compute.v1.environments.EnvironmentDeleteResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentListParams
+import dev.casedev.models.compute.v1.environments.EnvironmentListResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentRetrieveParams
+import dev.casedev.models.compute.v1.environments.EnvironmentRetrieveResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentSetDefaultParams
+import dev.casedev.models.compute.v1.environments.EnvironmentSetDefaultResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -50,16 +52,16 @@ class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions
     override fun retrieve(
         params: EnvironmentRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<EnvironmentRetrieveResponse> =
         // get /compute/v1/environments/{name}
-        withRawResponse().retrieve(params, requestOptions).thenAccept {}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
         params: EnvironmentListParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<EnvironmentListResponse> =
         // get /compute/v1/environments
-        withRawResponse().list(params, requestOptions).thenAccept {}
+        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun delete(
         params: EnvironmentDeleteParams,
@@ -71,9 +73,9 @@ class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions
     override fun setDefault(
         params: EnvironmentSetDefaultParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<EnvironmentSetDefaultResponse> =
         // post /compute/v1/environments/{name}/default
-        withRawResponse().setDefault(params, requestOptions).thenAccept {}
+        withRawResponse().setDefault(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         EnvironmentServiceAsync.WithRawResponse {
@@ -119,12 +121,13 @@ class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions
                 }
         }
 
-        private val retrieveHandler: Handler<Void?> = emptyHandler()
+        private val retrieveHandler: Handler<EnvironmentRetrieveResponse> =
+            jsonHandler<EnvironmentRetrieveResponse>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: EnvironmentRetrieveParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<EnvironmentRetrieveResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("name", params.name().getOrNull())
@@ -140,17 +143,24 @@ class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { retrieveHandler.handle(it) }
+                        response
+                            .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }
 
-        private val listHandler: Handler<Void?> = emptyHandler()
+        private val listHandler: Handler<EnvironmentListResponse> =
+            jsonHandler<EnvironmentListResponse>(clientOptions.jsonMapper)
 
         override fun list(
             params: EnvironmentListParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<EnvironmentListResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -163,7 +173,13 @@ class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { listHandler.handle(it) }
+                        response
+                            .use { listHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }
@@ -202,12 +218,13 @@ class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions
                 }
         }
 
-        private val setDefaultHandler: Handler<Void?> = emptyHandler()
+        private val setDefaultHandler: Handler<EnvironmentSetDefaultResponse> =
+            jsonHandler<EnvironmentSetDefaultResponse>(clientOptions.jsonMapper)
 
         override fun setDefault(
             params: EnvironmentSetDefaultParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<EnvironmentSetDefaultResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("name", params.name().getOrNull())
@@ -230,7 +247,13 @@ class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { setDefaultHandler.handle(it) }
+                        response
+                            .use { setDefaultHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

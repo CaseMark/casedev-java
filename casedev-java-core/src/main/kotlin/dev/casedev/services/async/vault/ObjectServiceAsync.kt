@@ -4,14 +4,16 @@ package dev.casedev.services.async.vault
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlParams
 import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlResponse
 import dev.casedev.models.vault.objects.ObjectDownloadParams
 import dev.casedev.models.vault.objects.ObjectGetTextParams
+import dev.casedev.models.vault.objects.ObjectGetTextResponse
 import dev.casedev.models.vault.objects.ObjectListParams
+import dev.casedev.models.vault.objects.ObjectListResponse
 import dev.casedev.models.vault.objects.ObjectRetrieveParams
+import dev.casedev.models.vault.objects.ObjectRetrieveResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -34,58 +36,61 @@ interface ObjectServiceAsync {
      * The download URL expires after 1 hour for security. This endpoint also updates the file size
      * if it wasn't previously calculated.
      */
-    fun retrieve(objectId: String, params: ObjectRetrieveParams): CompletableFuture<Void?> =
-        retrieve(objectId, params, RequestOptions.none())
+    fun retrieve(
+        objectId: String,
+        params: ObjectRetrieveParams,
+    ): CompletableFuture<ObjectRetrieveResponse> = retrieve(objectId, params, RequestOptions.none())
 
     /** @see retrieve */
     fun retrieve(
         objectId: String,
         params: ObjectRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<ObjectRetrieveResponse> =
         retrieve(params.toBuilder().objectId(objectId).build(), requestOptions)
 
     /** @see retrieve */
-    fun retrieve(params: ObjectRetrieveParams): CompletableFuture<Void?> =
+    fun retrieve(params: ObjectRetrieveParams): CompletableFuture<ObjectRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
     fun retrieve(
         params: ObjectRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<ObjectRetrieveResponse>
 
     /**
      * Retrieve all objects stored in a specific vault, including document metadata, ingestion
      * status, and processing statistics.
      */
-    fun list(id: String): CompletableFuture<Void?> = list(id, ObjectListParams.none())
+    fun list(id: String): CompletableFuture<ObjectListResponse> = list(id, ObjectListParams.none())
 
     /** @see list */
     fun list(
         id: String,
         params: ObjectListParams = ObjectListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> = list(params.toBuilder().id(id).build(), requestOptions)
+    ): CompletableFuture<ObjectListResponse> =
+        list(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see list */
     fun list(
         id: String,
         params: ObjectListParams = ObjectListParams.none(),
-    ): CompletableFuture<Void?> = list(id, params, RequestOptions.none())
+    ): CompletableFuture<ObjectListResponse> = list(id, params, RequestOptions.none())
 
     /** @see list */
     fun list(
         params: ObjectListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<ObjectListResponse>
 
     /** @see list */
-    fun list(params: ObjectListParams): CompletableFuture<Void?> =
+    fun list(params: ObjectListParams): CompletableFuture<ObjectListResponse> =
         list(params, RequestOptions.none())
 
     /** @see list */
-    fun list(id: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun list(id: String, requestOptions: RequestOptions): CompletableFuture<ObjectListResponse> =
         list(id, ObjectListParams.none(), requestOptions)
 
     /**
@@ -124,7 +129,7 @@ interface ObjectServiceAsync {
      * appropriate headers for file download. Useful for retrieving contracts, depositions, case
      * files, and other legal documents stored in your vault.
      */
-    fun download(objectId: String, params: ObjectDownloadParams): CompletableFuture<Void?> =
+    fun download(objectId: String, params: ObjectDownloadParams): CompletableFuture<String> =
         download(objectId, params, RequestOptions.none())
 
     /** @see download */
@@ -132,44 +137,46 @@ interface ObjectServiceAsync {
         objectId: String,
         params: ObjectDownloadParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<String> =
         download(params.toBuilder().objectId(objectId).build(), requestOptions)
 
     /** @see download */
-    fun download(params: ObjectDownloadParams): CompletableFuture<Void?> =
+    fun download(params: ObjectDownloadParams): CompletableFuture<String> =
         download(params, RequestOptions.none())
 
     /** @see download */
     fun download(
         params: ObjectDownloadParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<String>
 
     /**
      * Retrieves the full extracted text content from a processed vault object. Returns the
      * concatenated text from all chunks, useful for document review, analysis, or export. The
      * object must have completed processing before text can be retrieved.
      */
-    fun getText(objectId: String, params: ObjectGetTextParams): CompletableFuture<Void?> =
-        getText(objectId, params, RequestOptions.none())
+    fun getText(
+        objectId: String,
+        params: ObjectGetTextParams,
+    ): CompletableFuture<ObjectGetTextResponse> = getText(objectId, params, RequestOptions.none())
 
     /** @see getText */
     fun getText(
         objectId: String,
         params: ObjectGetTextParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<ObjectGetTextResponse> =
         getText(params.toBuilder().objectId(objectId).build(), requestOptions)
 
     /** @see getText */
-    fun getText(params: ObjectGetTextParams): CompletableFuture<Void?> =
+    fun getText(params: ObjectGetTextParams): CompletableFuture<ObjectGetTextResponse> =
         getText(params, RequestOptions.none())
 
     /** @see getText */
     fun getText(
         params: ObjectGetTextParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<ObjectGetTextResponse>
 
     /**
      * A view of [ObjectServiceAsync] that provides access to raw HTTP responses for each method.
@@ -192,57 +199,66 @@ interface ObjectServiceAsync {
         fun retrieve(
             objectId: String,
             params: ObjectRetrieveParams,
-        ): CompletableFuture<HttpResponse> = retrieve(objectId, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<ObjectRetrieveResponse>> =
+            retrieve(objectId, params, RequestOptions.none())
 
         /** @see retrieve */
         fun retrieve(
             objectId: String,
             params: ObjectRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<ObjectRetrieveResponse>> =
             retrieve(params.toBuilder().objectId(objectId).build(), requestOptions)
 
         /** @see retrieve */
-        fun retrieve(params: ObjectRetrieveParams): CompletableFuture<HttpResponse> =
+        fun retrieve(
+            params: ObjectRetrieveParams
+        ): CompletableFuture<HttpResponseFor<ObjectRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
         fun retrieve(
             params: ObjectRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<ObjectRetrieveResponse>>
 
         /**
          * Returns a raw HTTP response for `get /vault/{id}/objects`, but is otherwise the same as
          * [ObjectServiceAsync.list].
          */
-        fun list(id: String): CompletableFuture<HttpResponse> = list(id, ObjectListParams.none())
+        fun list(id: String): CompletableFuture<HttpResponseFor<ObjectListResponse>> =
+            list(id, ObjectListParams.none())
 
         /** @see list */
         fun list(
             id: String,
             params: ObjectListParams = ObjectListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> = list(params.toBuilder().id(id).build(), requestOptions)
+        ): CompletableFuture<HttpResponseFor<ObjectListResponse>> =
+            list(params.toBuilder().id(id).build(), requestOptions)
 
         /** @see list */
         fun list(
             id: String,
             params: ObjectListParams = ObjectListParams.none(),
-        ): CompletableFuture<HttpResponse> = list(id, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<ObjectListResponse>> =
+            list(id, params, RequestOptions.none())
 
         /** @see list */
         fun list(
             params: ObjectListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<ObjectListResponse>>
 
         /** @see list */
-        fun list(params: ObjectListParams): CompletableFuture<HttpResponse> =
+        fun list(params: ObjectListParams): CompletableFuture<HttpResponseFor<ObjectListResponse>> =
             list(params, RequestOptions.none())
 
         /** @see list */
-        fun list(id: String, requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+        fun list(
+            id: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ObjectListResponse>> =
             list(id, ObjectListParams.none(), requestOptions)
 
         /**
@@ -282,25 +298,26 @@ interface ObjectServiceAsync {
         fun download(
             objectId: String,
             params: ObjectDownloadParams,
-        ): CompletableFuture<HttpResponse> = download(objectId, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<String>> =
+            download(objectId, params, RequestOptions.none())
 
         /** @see download */
         fun download(
             objectId: String,
             params: ObjectDownloadParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<String>> =
             download(params.toBuilder().objectId(objectId).build(), requestOptions)
 
         /** @see download */
-        fun download(params: ObjectDownloadParams): CompletableFuture<HttpResponse> =
+        fun download(params: ObjectDownloadParams): CompletableFuture<HttpResponseFor<String>> =
             download(params, RequestOptions.none())
 
         /** @see download */
         fun download(
             params: ObjectDownloadParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<String>>
 
         /**
          * Returns a raw HTTP response for `get /vault/{id}/objects/{objectId}/text`, but is
@@ -309,24 +326,27 @@ interface ObjectServiceAsync {
         fun getText(
             objectId: String,
             params: ObjectGetTextParams,
-        ): CompletableFuture<HttpResponse> = getText(objectId, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<ObjectGetTextResponse>> =
+            getText(objectId, params, RequestOptions.none())
 
         /** @see getText */
         fun getText(
             objectId: String,
             params: ObjectGetTextParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<ObjectGetTextResponse>> =
             getText(params.toBuilder().objectId(objectId).build(), requestOptions)
 
         /** @see getText */
-        fun getText(params: ObjectGetTextParams): CompletableFuture<HttpResponse> =
+        fun getText(
+            params: ObjectGetTextParams
+        ): CompletableFuture<HttpResponseFor<ObjectGetTextResponse>> =
             getText(params, RequestOptions.none())
 
         /** @see getText */
         fun getText(
             params: ObjectGetTextParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<ObjectGetTextResponse>>
     }
 }

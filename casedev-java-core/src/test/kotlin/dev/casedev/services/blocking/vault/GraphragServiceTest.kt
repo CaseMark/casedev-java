@@ -21,7 +21,9 @@ internal class GraphragServiceTest {
                 .build()
         val graphragService = client.vault().graphrag()
 
-        graphragService.getStats("id")
+        val response = graphragService.getStats("id")
+
+        response.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -34,6 +36,8 @@ internal class GraphragServiceTest {
                 .build()
         val graphragService = client.vault().graphrag()
 
-        graphragService.init("id")
+        val response = graphragService.init("id")
+
+        response.validate()
     }
 }

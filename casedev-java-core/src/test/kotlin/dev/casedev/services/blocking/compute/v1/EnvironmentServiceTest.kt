@@ -40,7 +40,9 @@ internal class EnvironmentServiceTest {
                 .build()
         val environmentService = client.compute().v1().environments()
 
-        environmentService.retrieve("name")
+        val environment = environmentService.retrieve("name")
+
+        environment.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -53,7 +55,9 @@ internal class EnvironmentServiceTest {
                 .build()
         val environmentService = client.compute().v1().environments()
 
-        environmentService.list()
+        val environments = environmentService.list()
+
+        environments.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -81,6 +85,8 @@ internal class EnvironmentServiceTest {
                 .build()
         val environmentService = client.compute().v1().environments()
 
-        environmentService.setDefault("prod-legal-docs")
+        val response = environmentService.setDefault("prod-legal-docs")
+
+        response.validate()
     }
 }

@@ -22,15 +22,18 @@ internal class V1ServiceTest {
                 .build()
         val v1Service = client.llm().v1()
 
-        v1Service.createEmbedding(
-            V1CreateEmbeddingParams.builder()
-                .input("string")
-                .model("model")
-                .dimensions(0L)
-                .encodingFormat(V1CreateEmbeddingParams.EncodingFormat.FLOAT)
-                .user("user")
-                .build()
-        )
+        val response =
+            v1Service.createEmbedding(
+                V1CreateEmbeddingParams.builder()
+                    .input("string")
+                    .model("model")
+                    .dimensions(0L)
+                    .encodingFormat(V1CreateEmbeddingParams.EncodingFormat.FLOAT)
+                    .user("user")
+                    .build()
+            )
+
+        response.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -43,6 +46,8 @@ internal class V1ServiceTest {
                 .build()
         val v1Service = client.llm().v1()
 
-        v1Service.listModels()
+        val response = v1Service.listModels()
+
+        response.validate()
     }
 }

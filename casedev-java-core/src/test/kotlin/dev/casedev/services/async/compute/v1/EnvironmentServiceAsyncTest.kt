@@ -41,9 +41,10 @@ internal class EnvironmentServiceAsyncTest {
                 .build()
         val environmentServiceAsync = client.compute().v1().environments()
 
-        val future = environmentServiceAsync.retrieve("name")
+        val environmentFuture = environmentServiceAsync.retrieve("name")
 
-        val response = future.get()
+        val environment = environmentFuture.get()
+        environment.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -56,9 +57,10 @@ internal class EnvironmentServiceAsyncTest {
                 .build()
         val environmentServiceAsync = client.compute().v1().environments()
 
-        val future = environmentServiceAsync.list()
+        val environmentsFuture = environmentServiceAsync.list()
 
-        val response = future.get()
+        val environments = environmentsFuture.get()
+        environments.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -87,8 +89,9 @@ internal class EnvironmentServiceAsyncTest {
                 .build()
         val environmentServiceAsync = client.compute().v1().environments()
 
-        val future = environmentServiceAsync.setDefault("prod-legal-docs")
+        val responseFuture = environmentServiceAsync.setDefault("prod-legal-docs")
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 }

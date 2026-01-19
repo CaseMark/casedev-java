@@ -4,8 +4,9 @@ package dev.casedev.services.async
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.llm.LlmGetConfigParams
+import dev.casedev.models.llm.LlmGetConfigResponse
 import dev.casedev.services.async.llm.V1ServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -37,21 +38,21 @@ interface LlmServiceAsync {
      * - Configure AI SDK clients
      * - Build model selection interfaces
      */
-    fun getConfig(): CompletableFuture<Void?> = getConfig(LlmGetConfigParams.none())
+    fun getConfig(): CompletableFuture<LlmGetConfigResponse> = getConfig(LlmGetConfigParams.none())
 
     /** @see getConfig */
     fun getConfig(
         params: LlmGetConfigParams = LlmGetConfigParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<LlmGetConfigResponse>
 
     /** @see getConfig */
     fun getConfig(
         params: LlmGetConfigParams = LlmGetConfigParams.none()
-    ): CompletableFuture<Void?> = getConfig(params, RequestOptions.none())
+    ): CompletableFuture<LlmGetConfigResponse> = getConfig(params, RequestOptions.none())
 
     /** @see getConfig */
-    fun getConfig(requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun getConfig(requestOptions: RequestOptions): CompletableFuture<LlmGetConfigResponse> =
         getConfig(LlmGetConfigParams.none(), requestOptions)
 
     /** A view of [LlmServiceAsync] that provides access to raw HTTP responses for each method. */
@@ -70,21 +71,25 @@ interface LlmServiceAsync {
          * Returns a raw HTTP response for `get /llm/config`, but is otherwise the same as
          * [LlmServiceAsync.getConfig].
          */
-        fun getConfig(): CompletableFuture<HttpResponse> = getConfig(LlmGetConfigParams.none())
+        fun getConfig(): CompletableFuture<HttpResponseFor<LlmGetConfigResponse>> =
+            getConfig(LlmGetConfigParams.none())
 
         /** @see getConfig */
         fun getConfig(
             params: LlmGetConfigParams = LlmGetConfigParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<LlmGetConfigResponse>>
 
         /** @see getConfig */
         fun getConfig(
             params: LlmGetConfigParams = LlmGetConfigParams.none()
-        ): CompletableFuture<HttpResponse> = getConfig(params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<LlmGetConfigResponse>> =
+            getConfig(params, RequestOptions.none())
 
         /** @see getConfig */
-        fun getConfig(requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+        fun getConfig(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<LlmGetConfigResponse>> =
             getConfig(LlmGetConfigParams.none(), requestOptions)
     }
 }

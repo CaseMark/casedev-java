@@ -5,7 +5,6 @@ package dev.casedev.services.blocking.compute.v1
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
@@ -22,8 +21,11 @@ import dev.casedev.models.compute.v1.environments.EnvironmentCreateResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentDeleteParams
 import dev.casedev.models.compute.v1.environments.EnvironmentDeleteResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentListParams
+import dev.casedev.models.compute.v1.environments.EnvironmentListResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentRetrieveParams
+import dev.casedev.models.compute.v1.environments.EnvironmentRetrieveResponse
 import dev.casedev.models.compute.v1.environments.EnvironmentSetDefaultParams
+import dev.casedev.models.compute.v1.environments.EnvironmentSetDefaultResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -46,15 +48,19 @@ class EnvironmentServiceImpl internal constructor(private val clientOptions: Cli
         // post /compute/v1/environments
         withRawResponse().create(params, requestOptions).parse()
 
-    override fun retrieve(params: EnvironmentRetrieveParams, requestOptions: RequestOptions) {
+    override fun retrieve(
+        params: EnvironmentRetrieveParams,
+        requestOptions: RequestOptions,
+    ): EnvironmentRetrieveResponse =
         // get /compute/v1/environments/{name}
-        withRawResponse().retrieve(params, requestOptions)
-    }
+        withRawResponse().retrieve(params, requestOptions).parse()
 
-    override fun list(params: EnvironmentListParams, requestOptions: RequestOptions) {
+    override fun list(
+        params: EnvironmentListParams,
+        requestOptions: RequestOptions,
+    ): EnvironmentListResponse =
         // get /compute/v1/environments
-        withRawResponse().list(params, requestOptions)
-    }
+        withRawResponse().list(params, requestOptions).parse()
 
     override fun delete(
         params: EnvironmentDeleteParams,
@@ -63,10 +69,12 @@ class EnvironmentServiceImpl internal constructor(private val clientOptions: Cli
         // delete /compute/v1/environments/{name}
         withRawResponse().delete(params, requestOptions).parse()
 
-    override fun setDefault(params: EnvironmentSetDefaultParams, requestOptions: RequestOptions) {
+    override fun setDefault(
+        params: EnvironmentSetDefaultParams,
+        requestOptions: RequestOptions,
+    ): EnvironmentSetDefaultResponse =
         // post /compute/v1/environments/{name}/default
-        withRawResponse().setDefault(params, requestOptions)
-    }
+        withRawResponse().setDefault(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         EnvironmentService.WithRawResponse {
@@ -109,12 +117,13 @@ class EnvironmentServiceImpl internal constructor(private val clientOptions: Cli
             }
         }
 
-        private val retrieveHandler: Handler<Void?> = emptyHandler()
+        private val retrieveHandler: Handler<EnvironmentRetrieveResponse> =
+            jsonHandler<EnvironmentRetrieveResponse>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: EnvironmentRetrieveParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<EnvironmentRetrieveResponse> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("name", params.name().getOrNull())
@@ -128,16 +137,23 @@ class EnvironmentServiceImpl internal constructor(private val clientOptions: Cli
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { retrieveHandler.handle(it) }
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
 
-        private val listHandler: Handler<Void?> = emptyHandler()
+        private val listHandler: Handler<EnvironmentListResponse> =
+            jsonHandler<EnvironmentListResponse>(clientOptions.jsonMapper)
 
         override fun list(
             params: EnvironmentListParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<EnvironmentListResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -148,7 +164,13 @@ class EnvironmentServiceImpl internal constructor(private val clientOptions: Cli
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { listHandler.handle(it) }
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
 
@@ -183,12 +205,13 @@ class EnvironmentServiceImpl internal constructor(private val clientOptions: Cli
             }
         }
 
-        private val setDefaultHandler: Handler<Void?> = emptyHandler()
+        private val setDefaultHandler: Handler<EnvironmentSetDefaultResponse> =
+            jsonHandler<EnvironmentSetDefaultResponse>(clientOptions.jsonMapper)
 
         override fun setDefault(
             params: EnvironmentSetDefaultParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<EnvironmentSetDefaultResponse> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("name", params.name().getOrNull())
@@ -209,7 +232,13 @@ class EnvironmentServiceImpl internal constructor(private val clientOptions: Cli
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { setDefaultHandler.handle(it) }
+                response
+                    .use { setDefaultHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
     }

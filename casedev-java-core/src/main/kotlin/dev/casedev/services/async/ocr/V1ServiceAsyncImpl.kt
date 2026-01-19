@@ -5,10 +5,10 @@ package dev.casedev.services.async.ocr
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
+import dev.casedev.core.handlers.stringHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
@@ -21,6 +21,7 @@ import dev.casedev.models.ocr.v1.V1DownloadParams
 import dev.casedev.models.ocr.v1.V1ProcessParams
 import dev.casedev.models.ocr.v1.V1ProcessResponse
 import dev.casedev.models.ocr.v1.V1RetrieveParams
+import dev.casedev.models.ocr.v1.V1RetrieveResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -40,16 +41,16 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun retrieve(
         params: V1RetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<V1RetrieveResponse> =
         // get /ocr/v1/{id}
-        withRawResponse().retrieve(params, requestOptions).thenAccept {}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun download(
         params: V1DownloadParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<String> =
         // get /ocr/v1/{id}/download/{type}
-        withRawResponse().download(params, requestOptions).thenAccept {}
+        withRawResponse().download(params, requestOptions).thenApply { it.parse() }
 
     override fun process(
         params: V1ProcessParams,
@@ -71,12 +72,13 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val retrieveHandler: Handler<Void?> = emptyHandler()
+        private val retrieveHandler: Handler<V1RetrieveResponse> =
+            jsonHandler<V1RetrieveResponse>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: V1RetrieveParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<V1RetrieveResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("id", params.id().getOrNull())
@@ -92,17 +94,23 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { retrieveHandler.handle(it) }
+                        response
+                            .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }
 
-        private val downloadHandler: Handler<Void?> = emptyHandler()
+        private val downloadHandler: Handler<String> = stringHandler()
 
         override fun download(
             params: V1DownloadParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<String>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("type", params.type().getOrNull())

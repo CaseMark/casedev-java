@@ -22,18 +22,21 @@ internal class V1ServiceTest {
                 .build()
         val v1Service = client.voice().v1()
 
-        v1Service.listVoices(
-            V1ListVoicesParams.builder()
-                .category("category")
-                .collectionId("collection_id")
-                .includeTotalCount(true)
-                .nextPageToken("next_page_token")
-                .pageSize(1L)
-                .search("search")
-                .sort(V1ListVoicesParams.Sort.NAME)
-                .sortDirection(V1ListVoicesParams.SortDirection.ASC)
-                .voiceType(V1ListVoicesParams.VoiceType.PREMADE)
-                .build()
-        )
+        val response =
+            v1Service.listVoices(
+                V1ListVoicesParams.builder()
+                    .category("category")
+                    .collectionId("collection_id")
+                    .includeTotalCount(true)
+                    .nextPageToken("next_page_token")
+                    .pageSize(1L)
+                    .search("search")
+                    .sort(V1ListVoicesParams.Sort.NAME)
+                    .sortDirection(V1ListVoicesParams.SortDirection.ASC)
+                    .voiceType(V1ListVoicesParams.VoiceType.PREMADE)
+                    .build()
+            )
+
+        response.validate()
     }
 }

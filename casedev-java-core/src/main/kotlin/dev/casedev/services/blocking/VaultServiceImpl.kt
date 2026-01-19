@@ -5,7 +5,6 @@ package dev.casedev.services.blocking
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
@@ -24,6 +23,7 @@ import dev.casedev.models.vault.VaultIngestResponse
 import dev.casedev.models.vault.VaultListParams
 import dev.casedev.models.vault.VaultListResponse
 import dev.casedev.models.vault.VaultRetrieveParams
+import dev.casedev.models.vault.VaultRetrieveResponse
 import dev.casedev.models.vault.VaultSearchParams
 import dev.casedev.models.vault.VaultSearchResponse
 import dev.casedev.models.vault.VaultUploadParams
@@ -62,10 +62,12 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
         // post /vault
         withRawResponse().create(params, requestOptions).parse()
 
-    override fun retrieve(params: VaultRetrieveParams, requestOptions: RequestOptions) {
+    override fun retrieve(
+        params: VaultRetrieveParams,
+        requestOptions: RequestOptions,
+    ): VaultRetrieveResponse =
         // get /vault/{id}
-        withRawResponse().retrieve(params, requestOptions)
-    }
+        withRawResponse().retrieve(params, requestOptions).parse()
 
     override fun list(params: VaultListParams, requestOptions: RequestOptions): VaultListResponse =
         // get /vault
@@ -145,12 +147,13 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             }
         }
 
-        private val retrieveHandler: Handler<Void?> = emptyHandler()
+        private val retrieveHandler: Handler<VaultRetrieveResponse> =
+            jsonHandler<VaultRetrieveResponse>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: VaultRetrieveParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<VaultRetrieveResponse> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("id", params.id().getOrNull())
@@ -164,7 +167,13 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { retrieveHandler.handle(it) }
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
 

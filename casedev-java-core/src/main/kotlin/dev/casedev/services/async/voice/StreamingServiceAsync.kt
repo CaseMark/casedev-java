@@ -4,8 +4,9 @@ package dev.casedev.services.async.voice
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.voice.streaming.StreamingGetUrlParams
+import dev.casedev.models.voice.streaming.StreamingGetUrlResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -35,21 +36,21 @@ interface StreamingServiceAsync {
      *
      * **Pricing:** $0.30 per minute ($18.00 per hour)
      */
-    fun getUrl(): CompletableFuture<Void?> = getUrl(StreamingGetUrlParams.none())
+    fun getUrl(): CompletableFuture<StreamingGetUrlResponse> = getUrl(StreamingGetUrlParams.none())
 
     /** @see getUrl */
     fun getUrl(
         params: StreamingGetUrlParams = StreamingGetUrlParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<StreamingGetUrlResponse>
 
     /** @see getUrl */
     fun getUrl(
         params: StreamingGetUrlParams = StreamingGetUrlParams.none()
-    ): CompletableFuture<Void?> = getUrl(params, RequestOptions.none())
+    ): CompletableFuture<StreamingGetUrlResponse> = getUrl(params, RequestOptions.none())
 
     /** @see getUrl */
-    fun getUrl(requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun getUrl(requestOptions: RequestOptions): CompletableFuture<StreamingGetUrlResponse> =
         getUrl(StreamingGetUrlParams.none(), requestOptions)
 
     /**
@@ -70,21 +71,25 @@ interface StreamingServiceAsync {
          * Returns a raw HTTP response for `get /voice/streaming/url`, but is otherwise the same as
          * [StreamingServiceAsync.getUrl].
          */
-        fun getUrl(): CompletableFuture<HttpResponse> = getUrl(StreamingGetUrlParams.none())
+        fun getUrl(): CompletableFuture<HttpResponseFor<StreamingGetUrlResponse>> =
+            getUrl(StreamingGetUrlParams.none())
 
         /** @see getUrl */
         fun getUrl(
             params: StreamingGetUrlParams = StreamingGetUrlParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<StreamingGetUrlResponse>>
 
         /** @see getUrl */
         fun getUrl(
             params: StreamingGetUrlParams = StreamingGetUrlParams.none()
-        ): CompletableFuture<HttpResponse> = getUrl(params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<StreamingGetUrlResponse>> =
+            getUrl(params, RequestOptions.none())
 
         /** @see getUrl */
-        fun getUrl(requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+        fun getUrl(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<StreamingGetUrlResponse>> =
             getUrl(StreamingGetUrlParams.none(), requestOptions)
     }
 }

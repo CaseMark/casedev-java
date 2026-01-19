@@ -4,7 +4,6 @@ package dev.casedev.services.async
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultCreateResponse
@@ -13,6 +12,7 @@ import dev.casedev.models.vault.VaultIngestResponse
 import dev.casedev.models.vault.VaultListParams
 import dev.casedev.models.vault.VaultListResponse
 import dev.casedev.models.vault.VaultRetrieveParams
+import dev.casedev.models.vault.VaultRetrieveResponse
 import dev.casedev.models.vault.VaultSearchParams
 import dev.casedev.models.vault.VaultSearchResponse
 import dev.casedev.models.vault.VaultUploadParams
@@ -59,33 +59,38 @@ interface VaultServiceAsync {
      * chunking strategy, and usage statistics. Returns vault metadata, bucket information, and
      * vector storage details.
      */
-    fun retrieve(id: String): CompletableFuture<Void?> = retrieve(id, VaultRetrieveParams.none())
+    fun retrieve(id: String): CompletableFuture<VaultRetrieveResponse> =
+        retrieve(id, VaultRetrieveParams.none())
 
     /** @see retrieve */
     fun retrieve(
         id: String,
         params: VaultRetrieveParams = VaultRetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> = retrieve(params.toBuilder().id(id).build(), requestOptions)
+    ): CompletableFuture<VaultRetrieveResponse> =
+        retrieve(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see retrieve */
     fun retrieve(
         id: String,
         params: VaultRetrieveParams = VaultRetrieveParams.none(),
-    ): CompletableFuture<Void?> = retrieve(id, params, RequestOptions.none())
+    ): CompletableFuture<VaultRetrieveResponse> = retrieve(id, params, RequestOptions.none())
 
     /** @see retrieve */
     fun retrieve(
         params: VaultRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<VaultRetrieveResponse>
 
     /** @see retrieve */
-    fun retrieve(params: VaultRetrieveParams): CompletableFuture<Void?> =
+    fun retrieve(params: VaultRetrieveParams): CompletableFuture<VaultRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
-    fun retrieve(id: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun retrieve(
+        id: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<VaultRetrieveResponse> =
         retrieve(id, VaultRetrieveParams.none(), requestOptions)
 
     /**
@@ -226,7 +231,7 @@ interface VaultServiceAsync {
          * Returns a raw HTTP response for `get /vault/{id}`, but is otherwise the same as
          * [VaultServiceAsync.retrieve].
          */
-        fun retrieve(id: String): CompletableFuture<HttpResponse> =
+        fun retrieve(id: String): CompletableFuture<HttpResponseFor<VaultRetrieveResponse>> =
             retrieve(id, VaultRetrieveParams.none())
 
         /** @see retrieve */
@@ -234,27 +239,33 @@ interface VaultServiceAsync {
             id: String,
             params: VaultRetrieveParams = VaultRetrieveParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<VaultRetrieveResponse>> =
             retrieve(params.toBuilder().id(id).build(), requestOptions)
 
         /** @see retrieve */
         fun retrieve(
             id: String,
             params: VaultRetrieveParams = VaultRetrieveParams.none(),
-        ): CompletableFuture<HttpResponse> = retrieve(id, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<VaultRetrieveResponse>> =
+            retrieve(id, params, RequestOptions.none())
 
         /** @see retrieve */
         fun retrieve(
             params: VaultRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<VaultRetrieveResponse>>
 
         /** @see retrieve */
-        fun retrieve(params: VaultRetrieveParams): CompletableFuture<HttpResponse> =
+        fun retrieve(
+            params: VaultRetrieveParams
+        ): CompletableFuture<HttpResponseFor<VaultRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
-        fun retrieve(id: String, requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+        fun retrieve(
+            id: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VaultRetrieveResponse>> =
             retrieve(id, VaultRetrieveParams.none(), requestOptions)
 
         /**

@@ -6,8 +6,10 @@ import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.http.HttpResponse
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.compute.v1.V1GetPricingParams
 import dev.casedev.models.compute.v1.V1GetUsageParams
+import dev.casedev.models.compute.v1.V1GetUsageResponse
 import dev.casedev.services.blocking.compute.v1.EnvironmentService
 import dev.casedev.services.blocking.compute.v1.FunctionService
 import dev.casedev.services.blocking.compute.v1.InvokeService
@@ -65,20 +67,21 @@ interface V1Service {
      * Includes GPU and CPU hours, total runs, costs, and breakdowns by environment. Use optional
      * query parameters to filter by specific year and month.
      */
-    fun getUsage() = getUsage(V1GetUsageParams.none())
+    fun getUsage(): V1GetUsageResponse = getUsage(V1GetUsageParams.none())
 
     /** @see getUsage */
     fun getUsage(
         params: V1GetUsageParams = V1GetUsageParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): V1GetUsageResponse
 
     /** @see getUsage */
-    fun getUsage(params: V1GetUsageParams = V1GetUsageParams.none()) =
+    fun getUsage(params: V1GetUsageParams = V1GetUsageParams.none()): V1GetUsageResponse =
         getUsage(params, RequestOptions.none())
 
     /** @see getUsage */
-    fun getUsage(requestOptions: RequestOptions) = getUsage(V1GetUsageParams.none(), requestOptions)
+    fun getUsage(requestOptions: RequestOptions): V1GetUsageResponse =
+        getUsage(V1GetUsageParams.none(), requestOptions)
 
     /** A view of [V1Service] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -127,23 +130,25 @@ interface V1Service {
          * Returns a raw HTTP response for `get /compute/v1/usage`, but is otherwise the same as
          * [V1Service.getUsage].
          */
-        @MustBeClosed fun getUsage(): HttpResponse = getUsage(V1GetUsageParams.none())
+        @MustBeClosed
+        fun getUsage(): HttpResponseFor<V1GetUsageResponse> = getUsage(V1GetUsageParams.none())
 
         /** @see getUsage */
         @MustBeClosed
         fun getUsage(
             params: V1GetUsageParams = V1GetUsageParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<V1GetUsageResponse>
 
         /** @see getUsage */
         @MustBeClosed
-        fun getUsage(params: V1GetUsageParams = V1GetUsageParams.none()): HttpResponse =
-            getUsage(params, RequestOptions.none())
+        fun getUsage(
+            params: V1GetUsageParams = V1GetUsageParams.none()
+        ): HttpResponseFor<V1GetUsageResponse> = getUsage(params, RequestOptions.none())
 
         /** @see getUsage */
         @MustBeClosed
-        fun getUsage(requestOptions: RequestOptions): HttpResponse =
+        fun getUsage(requestOptions: RequestOptions): HttpResponseFor<V1GetUsageResponse> =
             getUsage(V1GetUsageParams.none(), requestOptions)
     }
 }

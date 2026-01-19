@@ -4,16 +4,18 @@ package dev.casedev.services.blocking.voice
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
+import dev.casedev.core.handlers.jsonHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponse.Handler
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepare
 import dev.casedev.models.voice.streaming.StreamingGetUrlParams
+import dev.casedev.models.voice.streaming.StreamingGetUrlResponse
 import java.util.function.Consumer
 
 class StreamingServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -28,10 +30,12 @@ class StreamingServiceImpl internal constructor(private val clientOptions: Clien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): StreamingService =
         StreamingServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun getUrl(params: StreamingGetUrlParams, requestOptions: RequestOptions) {
+    override fun getUrl(
+        params: StreamingGetUrlParams,
+        requestOptions: RequestOptions,
+    ): StreamingGetUrlResponse =
         // get /voice/streaming/url
-        withRawResponse().getUrl(params, requestOptions)
-    }
+        withRawResponse().getUrl(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         StreamingService.WithRawResponse {
@@ -46,12 +50,13 @@ class StreamingServiceImpl internal constructor(private val clientOptions: Clien
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val getUrlHandler: Handler<Void?> = emptyHandler()
+        private val getUrlHandler: Handler<StreamingGetUrlResponse> =
+            jsonHandler<StreamingGetUrlResponse>(clientOptions.jsonMapper)
 
         override fun getUrl(
             params: StreamingGetUrlParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<StreamingGetUrlResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -62,7 +67,13 @@ class StreamingServiceImpl internal constructor(private val clientOptions: Clien
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { getUrlHandler.handle(it) }
+                response
+                    .use { getUrlHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
     }

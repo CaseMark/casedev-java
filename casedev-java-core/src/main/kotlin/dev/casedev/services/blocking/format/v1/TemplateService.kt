@@ -5,12 +5,13 @@ package dev.casedev.services.blocking.format.v1
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.format.v1.templates.TemplateCreateParams
 import dev.casedev.models.format.v1.templates.TemplateCreateResponse
 import dev.casedev.models.format.v1.templates.TemplateListParams
+import dev.casedev.models.format.v1.templates.TemplateListResponse
 import dev.casedev.models.format.v1.templates.TemplateRetrieveParams
+import dev.casedev.models.format.v1.templates.TemplateRetrieveResponse
 import java.util.function.Consumer
 
 interface TemplateService {
@@ -46,30 +47,33 @@ interface TemplateService {
      * should be structured and formatted for specific legal use cases such as contracts, briefs, or
      * pleadings.
      */
-    fun retrieve(id: String) = retrieve(id, TemplateRetrieveParams.none())
+    fun retrieve(id: String): TemplateRetrieveResponse = retrieve(id, TemplateRetrieveParams.none())
 
     /** @see retrieve */
     fun retrieve(
         id: String,
         params: TemplateRetrieveParams = TemplateRetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = retrieve(params.toBuilder().id(id).build(), requestOptions)
+    ): TemplateRetrieveResponse = retrieve(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see retrieve */
-    fun retrieve(id: String, params: TemplateRetrieveParams = TemplateRetrieveParams.none()) =
-        retrieve(id, params, RequestOptions.none())
+    fun retrieve(
+        id: String,
+        params: TemplateRetrieveParams = TemplateRetrieveParams.none(),
+    ): TemplateRetrieveResponse = retrieve(id, params, RequestOptions.none())
 
     /** @see retrieve */
     fun retrieve(
         params: TemplateRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): TemplateRetrieveResponse
 
     /** @see retrieve */
-    fun retrieve(params: TemplateRetrieveParams) = retrieve(params, RequestOptions.none())
+    fun retrieve(params: TemplateRetrieveParams): TemplateRetrieveResponse =
+        retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
-    fun retrieve(id: String, requestOptions: RequestOptions) =
+    fun retrieve(id: String, requestOptions: RequestOptions): TemplateRetrieveResponse =
         retrieve(id, TemplateRetrieveParams.none(), requestOptions)
 
     /**
@@ -79,20 +83,21 @@ interface TemplateService {
      * Filter by type to get specific template categories like contracts, pleadings, or
      * correspondence.
      */
-    fun list() = list(TemplateListParams.none())
+    fun list(): TemplateListResponse = list(TemplateListParams.none())
 
     /** @see list */
     fun list(
         params: TemplateListParams = TemplateListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): TemplateListResponse
 
     /** @see list */
-    fun list(params: TemplateListParams = TemplateListParams.none()) =
+    fun list(params: TemplateListParams = TemplateListParams.none()): TemplateListResponse =
         list(params, RequestOptions.none())
 
     /** @see list */
-    fun list(requestOptions: RequestOptions) = list(TemplateListParams.none(), requestOptions)
+    fun list(requestOptions: RequestOptions): TemplateListResponse =
+        list(TemplateListParams.none(), requestOptions)
 
     /** A view of [TemplateService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -124,7 +129,8 @@ interface TemplateService {
          * same as [TemplateService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(id: String): HttpResponse = retrieve(id, TemplateRetrieveParams.none())
+        fun retrieve(id: String): HttpResponseFor<TemplateRetrieveResponse> =
+            retrieve(id, TemplateRetrieveParams.none())
 
         /** @see retrieve */
         @MustBeClosed
@@ -132,53 +138,59 @@ interface TemplateService {
             id: String,
             params: TemplateRetrieveParams = TemplateRetrieveParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = retrieve(params.toBuilder().id(id).build(), requestOptions)
+        ): HttpResponseFor<TemplateRetrieveResponse> =
+            retrieve(params.toBuilder().id(id).build(), requestOptions)
 
         /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             id: String,
             params: TemplateRetrieveParams = TemplateRetrieveParams.none(),
-        ): HttpResponse = retrieve(id, params, RequestOptions.none())
+        ): HttpResponseFor<TemplateRetrieveResponse> = retrieve(id, params, RequestOptions.none())
 
         /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: TemplateRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<TemplateRetrieveResponse>
 
         /** @see retrieve */
         @MustBeClosed
-        fun retrieve(params: TemplateRetrieveParams): HttpResponse =
+        fun retrieve(params: TemplateRetrieveParams): HttpResponseFor<TemplateRetrieveResponse> =
             retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
         @MustBeClosed
-        fun retrieve(id: String, requestOptions: RequestOptions): HttpResponse =
+        fun retrieve(
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<TemplateRetrieveResponse> =
             retrieve(id, TemplateRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /format/v1/templates`, but is otherwise the same as
          * [TemplateService.list].
          */
-        @MustBeClosed fun list(): HttpResponse = list(TemplateListParams.none())
+        @MustBeClosed
+        fun list(): HttpResponseFor<TemplateListResponse> = list(TemplateListParams.none())
 
         /** @see list */
         @MustBeClosed
         fun list(
             params: TemplateListParams = TemplateListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<TemplateListResponse>
 
         /** @see list */
         @MustBeClosed
-        fun list(params: TemplateListParams = TemplateListParams.none()): HttpResponse =
-            list(params, RequestOptions.none())
+        fun list(
+            params: TemplateListParams = TemplateListParams.none()
+        ): HttpResponseFor<TemplateListResponse> = list(params, RequestOptions.none())
 
         /** @see list */
         @MustBeClosed
-        fun list(requestOptions: RequestOptions): HttpResponse =
+        fun list(requestOptions: RequestOptions): HttpResponseFor<TemplateListResponse> =
             list(TemplateListParams.none(), requestOptions)
     }
 }

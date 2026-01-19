@@ -5,7 +5,6 @@ package dev.casedev.services.async
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
@@ -24,6 +23,7 @@ import dev.casedev.models.vault.VaultIngestResponse
 import dev.casedev.models.vault.VaultListParams
 import dev.casedev.models.vault.VaultListResponse
 import dev.casedev.models.vault.VaultRetrieveParams
+import dev.casedev.models.vault.VaultRetrieveResponse
 import dev.casedev.models.vault.VaultSearchParams
 import dev.casedev.models.vault.VaultSearchResponse
 import dev.casedev.models.vault.VaultUploadParams
@@ -66,9 +66,9 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun retrieve(
         params: VaultRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<VaultRetrieveResponse> =
         // get /vault/{id}
-        withRawResponse().retrieve(params, requestOptions).thenAccept {}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
         params: VaultListParams,
@@ -154,12 +154,13 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
-        private val retrieveHandler: Handler<Void?> = emptyHandler()
+        private val retrieveHandler: Handler<VaultRetrieveResponse> =
+            jsonHandler<VaultRetrieveResponse>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: VaultRetrieveParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<VaultRetrieveResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("id", params.id().getOrNull())
@@ -175,7 +176,13 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { retrieveHandler.handle(it) }
+                        response
+                            .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

@@ -22,7 +22,7 @@ internal class V1ServiceAsyncTest {
                 .build()
         val v1ServiceAsync = client.llm().v1()
 
-        val future =
+        val responseFuture =
             v1ServiceAsync.createEmbedding(
                 V1CreateEmbeddingParams.builder()
                     .input("string")
@@ -33,7 +33,8 @@ internal class V1ServiceAsyncTest {
                     .build()
             )
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -46,8 +47,9 @@ internal class V1ServiceAsyncTest {
                 .build()
         val v1ServiceAsync = client.llm().v1()
 
-        val future = v1ServiceAsync.listModels()
+        val responseFuture = v1ServiceAsync.listModels()
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 }

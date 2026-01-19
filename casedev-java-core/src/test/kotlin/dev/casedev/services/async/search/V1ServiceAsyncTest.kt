@@ -114,12 +114,13 @@ internal class V1ServiceAsyncTest {
                 .build()
         val v1ServiceAsync = client.search().v1()
 
-        val future =
+        val responseFuture =
             v1ServiceAsync.retrieveResearch(
                 V1RetrieveResearchParams.builder().id("id").events("events").stream(true).build()
             )
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 
     @Disabled("Prism tests are disabled")

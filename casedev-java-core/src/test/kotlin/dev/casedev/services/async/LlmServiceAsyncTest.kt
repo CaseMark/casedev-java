@@ -21,8 +21,9 @@ internal class LlmServiceAsyncTest {
                 .build()
         val llmServiceAsync = client.llm()
 
-        val future = llmServiceAsync.getConfig()
+        val responseFuture = llmServiceAsync.getConfig()
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 }

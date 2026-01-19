@@ -5,10 +5,10 @@ package dev.casedev.services.blocking.vault
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
+import dev.casedev.core.handlers.stringHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
@@ -21,8 +21,11 @@ import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlParams
 import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlResponse
 import dev.casedev.models.vault.objects.ObjectDownloadParams
 import dev.casedev.models.vault.objects.ObjectGetTextParams
+import dev.casedev.models.vault.objects.ObjectGetTextResponse
 import dev.casedev.models.vault.objects.ObjectListParams
+import dev.casedev.models.vault.objects.ObjectListResponse
 import dev.casedev.models.vault.objects.ObjectRetrieveParams
+import dev.casedev.models.vault.objects.ObjectRetrieveResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -38,15 +41,19 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ObjectService =
         ObjectServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun retrieve(params: ObjectRetrieveParams, requestOptions: RequestOptions) {
+    override fun retrieve(
+        params: ObjectRetrieveParams,
+        requestOptions: RequestOptions,
+    ): ObjectRetrieveResponse =
         // get /vault/{id}/objects/{objectId}
-        withRawResponse().retrieve(params, requestOptions)
-    }
+        withRawResponse().retrieve(params, requestOptions).parse()
 
-    override fun list(params: ObjectListParams, requestOptions: RequestOptions) {
+    override fun list(
+        params: ObjectListParams,
+        requestOptions: RequestOptions,
+    ): ObjectListResponse =
         // get /vault/{id}/objects
-        withRawResponse().list(params, requestOptions)
-    }
+        withRawResponse().list(params, requestOptions).parse()
 
     override fun createPresignedUrl(
         params: ObjectCreatePresignedUrlParams,
@@ -55,15 +62,16 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
         // post /vault/{id}/objects/{objectId}/presigned-url
         withRawResponse().createPresignedUrl(params, requestOptions).parse()
 
-    override fun download(params: ObjectDownloadParams, requestOptions: RequestOptions) {
+    override fun download(params: ObjectDownloadParams, requestOptions: RequestOptions): String =
         // get /vault/{id}/objects/{objectId}/download
-        withRawResponse().download(params, requestOptions)
-    }
+        withRawResponse().download(params, requestOptions).parse()
 
-    override fun getText(params: ObjectGetTextParams, requestOptions: RequestOptions) {
+    override fun getText(
+        params: ObjectGetTextParams,
+        requestOptions: RequestOptions,
+    ): ObjectGetTextResponse =
         // get /vault/{id}/objects/{objectId}/text
-        withRawResponse().getText(params, requestOptions)
-    }
+        withRawResponse().getText(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ObjectService.WithRawResponse {
@@ -78,12 +86,13 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val retrieveHandler: Handler<Void?> = emptyHandler()
+        private val retrieveHandler: Handler<ObjectRetrieveResponse> =
+            jsonHandler<ObjectRetrieveResponse>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: ObjectRetrieveParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<ObjectRetrieveResponse> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("objectId", params.objectId().getOrNull())
@@ -97,13 +106,23 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { retrieveHandler.handle(it) }
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
 
-        private val listHandler: Handler<Void?> = emptyHandler()
+        private val listHandler: Handler<ObjectListResponse> =
+            jsonHandler<ObjectListResponse>(clientOptions.jsonMapper)
 
-        override fun list(params: ObjectListParams, requestOptions: RequestOptions): HttpResponse {
+        override fun list(
+            params: ObjectListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ObjectListResponse> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("id", params.id().getOrNull())
@@ -117,7 +136,13 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { listHandler.handle(it) }
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
 
@@ -158,12 +183,12 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
             }
         }
 
-        private val downloadHandler: Handler<Void?> = emptyHandler()
+        private val downloadHandler: Handler<String> = stringHandler()
 
         override fun download(
             params: ObjectDownloadParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<String> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("objectId", params.objectId().getOrNull())
@@ -187,12 +212,13 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
             }
         }
 
-        private val getTextHandler: Handler<Void?> = emptyHandler()
+        private val getTextHandler: Handler<ObjectGetTextResponse> =
+            jsonHandler<ObjectGetTextResponse>(clientOptions.jsonMapper)
 
         override fun getText(
             params: ObjectGetTextParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<ObjectGetTextResponse> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("objectId", params.objectId().getOrNull())
@@ -212,7 +238,13 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { getTextHandler.handle(it) }
+                response
+                    .use { getTextHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
     }

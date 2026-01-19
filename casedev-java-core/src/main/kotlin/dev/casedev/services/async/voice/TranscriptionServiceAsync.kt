@@ -4,9 +4,9 @@ package dev.casedev.services.async.voice
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.voice.transcription.TranscriptionCreateParams
+import dev.casedev.models.voice.transcription.TranscriptionCreateResponse
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveParams
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveResponse
 import java.util.concurrent.CompletableFuture
@@ -34,21 +34,22 @@ interface TranscriptionServiceAsync {
      *
      * **Direct URL (legacy)**: Pass `audio_url` for direct transcription without automatic storage.
      */
-    fun create(): CompletableFuture<Void?> = create(TranscriptionCreateParams.none())
+    fun create(): CompletableFuture<TranscriptionCreateResponse> =
+        create(TranscriptionCreateParams.none())
 
     /** @see create */
     fun create(
         params: TranscriptionCreateParams = TranscriptionCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<TranscriptionCreateResponse>
 
     /** @see create */
     fun create(
         params: TranscriptionCreateParams = TranscriptionCreateParams.none()
-    ): CompletableFuture<Void?> = create(params, RequestOptions.none())
+    ): CompletableFuture<TranscriptionCreateResponse> = create(params, RequestOptions.none())
 
     /** @see create */
-    fun create(requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun create(requestOptions: RequestOptions): CompletableFuture<TranscriptionCreateResponse> =
         create(TranscriptionCreateParams.none(), requestOptions)
 
     /**
@@ -111,21 +112,25 @@ interface TranscriptionServiceAsync {
          * Returns a raw HTTP response for `post /voice/transcription`, but is otherwise the same as
          * [TranscriptionServiceAsync.create].
          */
-        fun create(): CompletableFuture<HttpResponse> = create(TranscriptionCreateParams.none())
+        fun create(): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>> =
+            create(TranscriptionCreateParams.none())
 
         /** @see create */
         fun create(
             params: TranscriptionCreateParams = TranscriptionCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>>
 
         /** @see create */
         fun create(
             params: TranscriptionCreateParams = TranscriptionCreateParams.none()
-        ): CompletableFuture<HttpResponse> = create(params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>> =
+            create(params, RequestOptions.none())
 
         /** @see create */
-        fun create(requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+        fun create(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>> =
             create(TranscriptionCreateParams.none(), requestOptions)
 
         /**

@@ -5,7 +5,6 @@ package dev.casedev.services.async.format.v1
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
@@ -20,7 +19,9 @@ import dev.casedev.core.prepareAsync
 import dev.casedev.models.format.v1.templates.TemplateCreateParams
 import dev.casedev.models.format.v1.templates.TemplateCreateResponse
 import dev.casedev.models.format.v1.templates.TemplateListParams
+import dev.casedev.models.format.v1.templates.TemplateListResponse
 import dev.casedev.models.format.v1.templates.TemplateRetrieveParams
+import dev.casedev.models.format.v1.templates.TemplateRetrieveResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -47,16 +48,16 @@ class TemplateServiceAsyncImpl internal constructor(private val clientOptions: C
     override fun retrieve(
         params: TemplateRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<TemplateRetrieveResponse> =
         // get /format/v1/templates/{id}
-        withRawResponse().retrieve(params, requestOptions).thenAccept {}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
         params: TemplateListParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<TemplateListResponse> =
         // get /format/v1/templates
-        withRawResponse().list(params, requestOptions).thenAccept {}
+        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         TemplateServiceAsync.WithRawResponse {
@@ -102,12 +103,13 @@ class TemplateServiceAsyncImpl internal constructor(private val clientOptions: C
                 }
         }
 
-        private val retrieveHandler: Handler<Void?> = emptyHandler()
+        private val retrieveHandler: Handler<TemplateRetrieveResponse> =
+            jsonHandler<TemplateRetrieveResponse>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: TemplateRetrieveParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<TemplateRetrieveResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("id", params.id().getOrNull())
@@ -123,17 +125,24 @@ class TemplateServiceAsyncImpl internal constructor(private val clientOptions: C
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { retrieveHandler.handle(it) }
+                        response
+                            .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }
 
-        private val listHandler: Handler<Void?> = emptyHandler()
+        private val listHandler: Handler<TemplateListResponse> =
+            jsonHandler<TemplateListResponse>(clientOptions.jsonMapper)
 
         override fun list(
             params: TemplateListParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<TemplateListResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -146,7 +155,13 @@ class TemplateServiceAsyncImpl internal constructor(private val clientOptions: C
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { listHandler.handle(it) }
+                        response
+                            .use { listHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

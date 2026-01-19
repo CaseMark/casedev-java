@@ -5,18 +5,21 @@ package dev.casedev.services.async.vault
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
+import dev.casedev.core.handlers.jsonHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponse.Handler
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.core.http.json
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepareAsync
 import dev.casedev.models.vault.graphrag.GraphragGetStatsParams
+import dev.casedev.models.vault.graphrag.GraphragGetStatsResponse
 import dev.casedev.models.vault.graphrag.GraphragInitParams
+import dev.casedev.models.vault.graphrag.GraphragInitResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -36,16 +39,16 @@ class GraphragServiceAsyncImpl internal constructor(private val clientOptions: C
     override fun getStats(
         params: GraphragGetStatsParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<GraphragGetStatsResponse> =
         // get /vault/{id}/graphrag/stats
-        withRawResponse().getStats(params, requestOptions).thenAccept {}
+        withRawResponse().getStats(params, requestOptions).thenApply { it.parse() }
 
     override fun init(
         params: GraphragInitParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<GraphragInitResponse> =
         // post /vault/{id}/graphrag/init
-        withRawResponse().init(params, requestOptions).thenAccept {}
+        withRawResponse().init(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         GraphragServiceAsync.WithRawResponse {
@@ -60,12 +63,13 @@ class GraphragServiceAsyncImpl internal constructor(private val clientOptions: C
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val getStatsHandler: Handler<Void?> = emptyHandler()
+        private val getStatsHandler: Handler<GraphragGetStatsResponse> =
+            jsonHandler<GraphragGetStatsResponse>(clientOptions.jsonMapper)
 
         override fun getStats(
             params: GraphragGetStatsParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<GraphragGetStatsResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("id", params.id().getOrNull())
@@ -81,17 +85,24 @@ class GraphragServiceAsyncImpl internal constructor(private val clientOptions: C
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { getStatsHandler.handle(it) }
+                        response
+                            .use { getStatsHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }
 
-        private val initHandler: Handler<Void?> = emptyHandler()
+        private val initHandler: Handler<GraphragInitResponse> =
+            jsonHandler<GraphragInitResponse>(clientOptions.jsonMapper)
 
         override fun init(
             params: GraphragInitParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<GraphragInitResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("id", params.id().getOrNull())
@@ -108,7 +119,13 @@ class GraphragServiceAsyncImpl internal constructor(private val clientOptions: C
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { initHandler.handle(it) }
+                        response
+                            .use { initHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

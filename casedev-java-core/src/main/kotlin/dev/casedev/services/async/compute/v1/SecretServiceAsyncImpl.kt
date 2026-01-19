@@ -5,7 +5,6 @@ package dev.casedev.services.async.compute.v1
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
@@ -20,9 +19,13 @@ import dev.casedev.core.prepareAsync
 import dev.casedev.models.compute.v1.secrets.SecretCreateParams
 import dev.casedev.models.compute.v1.secrets.SecretCreateResponse
 import dev.casedev.models.compute.v1.secrets.SecretDeleteGroupParams
+import dev.casedev.models.compute.v1.secrets.SecretDeleteGroupResponse
 import dev.casedev.models.compute.v1.secrets.SecretListParams
+import dev.casedev.models.compute.v1.secrets.SecretListResponse
 import dev.casedev.models.compute.v1.secrets.SecretRetrieveGroupParams
+import dev.casedev.models.compute.v1.secrets.SecretRetrieveGroupResponse
 import dev.casedev.models.compute.v1.secrets.SecretUpdateGroupParams
+import dev.casedev.models.compute.v1.secrets.SecretUpdateGroupResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -49,30 +52,30 @@ class SecretServiceAsyncImpl internal constructor(private val clientOptions: Cli
     override fun list(
         params: SecretListParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<SecretListResponse> =
         // get /compute/v1/secrets
-        withRawResponse().list(params, requestOptions).thenAccept {}
+        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun deleteGroup(
         params: SecretDeleteGroupParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<SecretDeleteGroupResponse> =
         // delete /compute/v1/secrets/{group}
-        withRawResponse().deleteGroup(params, requestOptions).thenAccept {}
+        withRawResponse().deleteGroup(params, requestOptions).thenApply { it.parse() }
 
     override fun retrieveGroup(
         params: SecretRetrieveGroupParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<SecretRetrieveGroupResponse> =
         // get /compute/v1/secrets/{group}
-        withRawResponse().retrieveGroup(params, requestOptions).thenAccept {}
+        withRawResponse().retrieveGroup(params, requestOptions).thenApply { it.parse() }
 
     override fun updateGroup(
         params: SecretUpdateGroupParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<SecretUpdateGroupResponse> =
         // put /compute/v1/secrets/{group}
-        withRawResponse().updateGroup(params, requestOptions).thenAccept {}
+        withRawResponse().updateGroup(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         SecretServiceAsync.WithRawResponse {
@@ -118,12 +121,13 @@ class SecretServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 }
         }
 
-        private val listHandler: Handler<Void?> = emptyHandler()
+        private val listHandler: Handler<SecretListResponse> =
+            jsonHandler<SecretListResponse>(clientOptions.jsonMapper)
 
         override fun list(
             params: SecretListParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<SecretListResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -136,17 +140,24 @@ class SecretServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { listHandler.handle(it) }
+                        response
+                            .use { listHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }
 
-        private val deleteGroupHandler: Handler<Void?> = emptyHandler()
+        private val deleteGroupHandler: Handler<SecretDeleteGroupResponse> =
+            jsonHandler<SecretDeleteGroupResponse>(clientOptions.jsonMapper)
 
         override fun deleteGroup(
             params: SecretDeleteGroupParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<SecretDeleteGroupResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("group", params.group().getOrNull())
@@ -163,17 +174,24 @@ class SecretServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { deleteGroupHandler.handle(it) }
+                        response
+                            .use { deleteGroupHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }
 
-        private val retrieveGroupHandler: Handler<Void?> = emptyHandler()
+        private val retrieveGroupHandler: Handler<SecretRetrieveGroupResponse> =
+            jsonHandler<SecretRetrieveGroupResponse>(clientOptions.jsonMapper)
 
         override fun retrieveGroup(
             params: SecretRetrieveGroupParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<SecretRetrieveGroupResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("group", params.group().getOrNull())
@@ -189,17 +207,24 @@ class SecretServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { retrieveGroupHandler.handle(it) }
+                        response
+                            .use { retrieveGroupHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }
 
-        private val updateGroupHandler: Handler<Void?> = emptyHandler()
+        private val updateGroupHandler: Handler<SecretUpdateGroupResponse> =
+            jsonHandler<SecretUpdateGroupResponse>(clientOptions.jsonMapper)
 
         override fun updateGroup(
             params: SecretUpdateGroupParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<SecretUpdateGroupResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("group", params.group().getOrNull())
@@ -216,7 +241,13 @@ class SecretServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { updateGroupHandler.handle(it) }
+                        response
+                            .use { updateGroupHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

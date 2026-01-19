@@ -21,8 +21,9 @@ internal class StreamingServiceAsyncTest {
                 .build()
         val streamingServiceAsync = client.voice().streaming()
 
-        val future = streamingServiceAsync.getUrl()
+        val responseFuture = streamingServiceAsync.getUrl()
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 }

@@ -5,7 +5,6 @@ package dev.casedev.services.blocking.voice
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
@@ -18,6 +17,7 @@ import dev.casedev.core.http.json
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepare
 import dev.casedev.models.voice.transcription.TranscriptionCreateParams
+import dev.casedev.models.voice.transcription.TranscriptionCreateResponse
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveParams
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveResponse
 import java.util.function.Consumer
@@ -35,10 +35,12 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranscriptionService =
         TranscriptionServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun create(params: TranscriptionCreateParams, requestOptions: RequestOptions) {
+    override fun create(
+        params: TranscriptionCreateParams,
+        requestOptions: RequestOptions,
+    ): TranscriptionCreateResponse =
         // post /voice/transcription
-        withRawResponse().create(params, requestOptions)
-    }
+        withRawResponse().create(params, requestOptions).parse()
 
     override fun retrieve(
         params: TranscriptionRetrieveParams,
@@ -60,12 +62,13 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val createHandler: Handler<Void?> = emptyHandler()
+        private val createHandler: Handler<TranscriptionCreateResponse> =
+            jsonHandler<TranscriptionCreateResponse>(clientOptions.jsonMapper)
 
         override fun create(
             params: TranscriptionCreateParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<TranscriptionCreateResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -77,7 +80,13 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { createHandler.handle(it) }
+                response
+                    .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
 

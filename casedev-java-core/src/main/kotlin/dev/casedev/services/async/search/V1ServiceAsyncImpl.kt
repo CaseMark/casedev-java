@@ -5,7 +5,6 @@ package dev.casedev.services.async.search
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
@@ -24,6 +23,7 @@ import dev.casedev.models.search.v1.V1ContentsResponse
 import dev.casedev.models.search.v1.V1ResearchParams
 import dev.casedev.models.search.v1.V1ResearchResponse
 import dev.casedev.models.search.v1.V1RetrieveResearchParams
+import dev.casedev.models.search.v1.V1RetrieveResearchResponse
 import dev.casedev.models.search.v1.V1SearchParams
 import dev.casedev.models.search.v1.V1SearchResponse
 import dev.casedev.models.search.v1.V1SimilarParams
@@ -68,9 +68,9 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun retrieveResearch(
         params: V1RetrieveResearchParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<V1RetrieveResearchResponse> =
         // get /search/v1/research/{id}
-        withRawResponse().retrieveResearch(params, requestOptions).thenAccept {}
+        withRawResponse().retrieveResearch(params, requestOptions).thenApply { it.parse() }
 
     override fun search(
         params: V1SearchParams,
@@ -192,12 +192,13 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 }
         }
 
-        private val retrieveResearchHandler: Handler<Void?> = emptyHandler()
+        private val retrieveResearchHandler: Handler<V1RetrieveResearchResponse> =
+            jsonHandler<V1RetrieveResearchResponse>(clientOptions.jsonMapper)
 
         override fun retrieveResearch(
             params: V1RetrieveResearchParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<V1RetrieveResearchResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("id", params.id().getOrNull())
@@ -213,7 +214,13 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { retrieveResearchHandler.handle(it) }
+                        response
+                            .use { retrieveResearchHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

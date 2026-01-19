@@ -4,8 +4,9 @@ package dev.casedev.services.async.voice
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.voice.v1.V1ListVoicesParams
+import dev.casedev.models.voice.v1.V1ListVoicesResponse
 import dev.casedev.services.async.voice.v1.SpeakServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -32,21 +33,22 @@ interface V1ServiceAsync {
      * styles suitable for legal document narration, client presentations, and accessibility
      * purposes.
      */
-    fun listVoices(): CompletableFuture<Void?> = listVoices(V1ListVoicesParams.none())
+    fun listVoices(): CompletableFuture<V1ListVoicesResponse> =
+        listVoices(V1ListVoicesParams.none())
 
     /** @see listVoices */
     fun listVoices(
         params: V1ListVoicesParams = V1ListVoicesParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<V1ListVoicesResponse>
 
     /** @see listVoices */
     fun listVoices(
         params: V1ListVoicesParams = V1ListVoicesParams.none()
-    ): CompletableFuture<Void?> = listVoices(params, RequestOptions.none())
+    ): CompletableFuture<V1ListVoicesResponse> = listVoices(params, RequestOptions.none())
 
     /** @see listVoices */
-    fun listVoices(requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun listVoices(requestOptions: RequestOptions): CompletableFuture<V1ListVoicesResponse> =
         listVoices(V1ListVoicesParams.none(), requestOptions)
 
     /** A view of [V1ServiceAsync] that provides access to raw HTTP responses for each method. */
@@ -65,21 +67,25 @@ interface V1ServiceAsync {
          * Returns a raw HTTP response for `get /voice/v1/voices`, but is otherwise the same as
          * [V1ServiceAsync.listVoices].
          */
-        fun listVoices(): CompletableFuture<HttpResponse> = listVoices(V1ListVoicesParams.none())
+        fun listVoices(): CompletableFuture<HttpResponseFor<V1ListVoicesResponse>> =
+            listVoices(V1ListVoicesParams.none())
 
         /** @see listVoices */
         fun listVoices(
             params: V1ListVoicesParams = V1ListVoicesParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<V1ListVoicesResponse>>
 
         /** @see listVoices */
         fun listVoices(
             params: V1ListVoicesParams = V1ListVoicesParams.none()
-        ): CompletableFuture<HttpResponse> = listVoices(params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<V1ListVoicesResponse>> =
+            listVoices(params, RequestOptions.none())
 
         /** @see listVoices */
-        fun listVoices(requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+        fun listVoices(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<V1ListVoicesResponse>> =
             listVoices(V1ListVoicesParams.none(), requestOptions)
     }
 }

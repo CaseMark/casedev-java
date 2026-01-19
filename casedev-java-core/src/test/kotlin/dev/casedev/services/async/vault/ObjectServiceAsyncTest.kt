@@ -25,12 +25,13 @@ internal class ObjectServiceAsyncTest {
                 .build()
         val objectServiceAsync = client.vault().objects()
 
-        val future =
+        val objectFuture =
             objectServiceAsync.retrieve(
                 ObjectRetrieveParams.builder().id("id").objectId("objectId").build()
             )
 
-        val response = future.get()
+        val object_ = objectFuture.get()
+        object_.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -43,9 +44,10 @@ internal class ObjectServiceAsyncTest {
                 .build()
         val objectServiceAsync = client.vault().objects()
 
-        val future = objectServiceAsync.list("id")
+        val objectsFuture = objectServiceAsync.list("id")
 
-        val response = future.get()
+        val objects = objectsFuture.get()
+        objects.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -83,12 +85,12 @@ internal class ObjectServiceAsyncTest {
                 .build()
         val objectServiceAsync = client.vault().objects()
 
-        val future =
+        val responseFuture =
             objectServiceAsync.download(
                 ObjectDownloadParams.builder().id("id").objectId("objectId").build()
             )
 
-        val response = future.get()
+        val response = responseFuture.get()
     }
 
     @Disabled("Prism tests are disabled")
@@ -101,11 +103,12 @@ internal class ObjectServiceAsyncTest {
                 .build()
         val objectServiceAsync = client.vault().objects()
 
-        val future =
+        val responseFuture =
             objectServiceAsync.getText(
                 ObjectGetTextParams.builder().id("id").objectId("objectId").build()
             )
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 }

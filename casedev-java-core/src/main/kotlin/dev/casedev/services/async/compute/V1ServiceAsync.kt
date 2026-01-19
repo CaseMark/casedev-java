@@ -5,8 +5,10 @@ package dev.casedev.services.async.compute
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.http.HttpResponse
+import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.compute.v1.V1GetPricingParams
 import dev.casedev.models.compute.v1.V1GetUsageParams
+import dev.casedev.models.compute.v1.V1GetUsageResponse
 import dev.casedev.services.async.compute.v1.EnvironmentServiceAsync
 import dev.casedev.services.async.compute.v1.FunctionServiceAsync
 import dev.casedev.services.async.compute.v1.InvokeServiceAsync
@@ -66,20 +68,21 @@ interface V1ServiceAsync {
      * Includes GPU and CPU hours, total runs, costs, and breakdowns by environment. Use optional
      * query parameters to filter by specific year and month.
      */
-    fun getUsage(): CompletableFuture<Void?> = getUsage(V1GetUsageParams.none())
+    fun getUsage(): CompletableFuture<V1GetUsageResponse> = getUsage(V1GetUsageParams.none())
 
     /** @see getUsage */
     fun getUsage(
         params: V1GetUsageParams = V1GetUsageParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<V1GetUsageResponse>
 
     /** @see getUsage */
-    fun getUsage(params: V1GetUsageParams = V1GetUsageParams.none()): CompletableFuture<Void?> =
-        getUsage(params, RequestOptions.none())
+    fun getUsage(
+        params: V1GetUsageParams = V1GetUsageParams.none()
+    ): CompletableFuture<V1GetUsageResponse> = getUsage(params, RequestOptions.none())
 
     /** @see getUsage */
-    fun getUsage(requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun getUsage(requestOptions: RequestOptions): CompletableFuture<V1GetUsageResponse> =
         getUsage(V1GetUsageParams.none(), requestOptions)
 
     /** A view of [V1ServiceAsync] that provides access to raw HTTP responses for each method. */
@@ -127,21 +130,25 @@ interface V1ServiceAsync {
          * Returns a raw HTTP response for `get /compute/v1/usage`, but is otherwise the same as
          * [V1ServiceAsync.getUsage].
          */
-        fun getUsage(): CompletableFuture<HttpResponse> = getUsage(V1GetUsageParams.none())
+        fun getUsage(): CompletableFuture<HttpResponseFor<V1GetUsageResponse>> =
+            getUsage(V1GetUsageParams.none())
 
         /** @see getUsage */
         fun getUsage(
             params: V1GetUsageParams = V1GetUsageParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<V1GetUsageResponse>>
 
         /** @see getUsage */
         fun getUsage(
             params: V1GetUsageParams = V1GetUsageParams.none()
-        ): CompletableFuture<HttpResponse> = getUsage(params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<V1GetUsageResponse>> =
+            getUsage(params, RequestOptions.none())
 
         /** @see getUsage */
-        fun getUsage(requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+        fun getUsage(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<V1GetUsageResponse>> =
             getUsage(V1GetUsageParams.none(), requestOptions)
     }
 }

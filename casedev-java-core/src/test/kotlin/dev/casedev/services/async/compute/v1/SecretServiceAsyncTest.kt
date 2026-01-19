@@ -50,9 +50,10 @@ internal class SecretServiceAsyncTest {
                 .build()
         val secretServiceAsync = client.compute().v1().secrets()
 
-        val future = secretServiceAsync.list(SecretListParams.builder().env("env").build())
+        val secretsFuture = secretServiceAsync.list(SecretListParams.builder().env("env").build())
 
-        val response = future.get()
+        val secrets = secretsFuture.get()
+        secrets.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -65,12 +66,13 @@ internal class SecretServiceAsyncTest {
                 .build()
         val secretServiceAsync = client.compute().v1().secrets()
 
-        val future =
+        val responseFuture =
             secretServiceAsync.deleteGroup(
                 SecretDeleteGroupParams.builder().group("group").env("env").key("key").build()
             )
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -83,12 +85,13 @@ internal class SecretServiceAsyncTest {
                 .build()
         val secretServiceAsync = client.compute().v1().secrets()
 
-        val future =
+        val responseFuture =
             secretServiceAsync.retrieveGroup(
                 SecretRetrieveGroupParams.builder().group("group").env("env").build()
             )
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 
     @Disabled("Prism tests are disabled")
@@ -101,7 +104,7 @@ internal class SecretServiceAsyncTest {
                 .build()
         val secretServiceAsync = client.compute().v1().secrets()
 
-        val future =
+        val responseFuture =
             secretServiceAsync.updateGroup(
                 SecretUpdateGroupParams.builder()
                     .group("litigation-apis")
@@ -114,6 +117,7 @@ internal class SecretServiceAsyncTest {
                     .build()
             )
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 }

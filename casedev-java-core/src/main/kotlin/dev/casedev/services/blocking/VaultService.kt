@@ -5,7 +5,6 @@ package dev.casedev.services.blocking
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
-import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultCreateResponse
@@ -14,6 +13,7 @@ import dev.casedev.models.vault.VaultIngestResponse
 import dev.casedev.models.vault.VaultListParams
 import dev.casedev.models.vault.VaultListResponse
 import dev.casedev.models.vault.VaultRetrieveParams
+import dev.casedev.models.vault.VaultRetrieveResponse
 import dev.casedev.models.vault.VaultSearchParams
 import dev.casedev.models.vault.VaultSearchResponse
 import dev.casedev.models.vault.VaultUploadParams
@@ -59,30 +59,33 @@ interface VaultService {
      * chunking strategy, and usage statistics. Returns vault metadata, bucket information, and
      * vector storage details.
      */
-    fun retrieve(id: String) = retrieve(id, VaultRetrieveParams.none())
+    fun retrieve(id: String): VaultRetrieveResponse = retrieve(id, VaultRetrieveParams.none())
 
     /** @see retrieve */
     fun retrieve(
         id: String,
         params: VaultRetrieveParams = VaultRetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = retrieve(params.toBuilder().id(id).build(), requestOptions)
+    ): VaultRetrieveResponse = retrieve(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see retrieve */
-    fun retrieve(id: String, params: VaultRetrieveParams = VaultRetrieveParams.none()) =
-        retrieve(id, params, RequestOptions.none())
+    fun retrieve(
+        id: String,
+        params: VaultRetrieveParams = VaultRetrieveParams.none(),
+    ): VaultRetrieveResponse = retrieve(id, params, RequestOptions.none())
 
     /** @see retrieve */
     fun retrieve(
         params: VaultRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): VaultRetrieveResponse
 
     /** @see retrieve */
-    fun retrieve(params: VaultRetrieveParams) = retrieve(params, RequestOptions.none())
+    fun retrieve(params: VaultRetrieveParams): VaultRetrieveResponse =
+        retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
-    fun retrieve(id: String, requestOptions: RequestOptions) =
+    fun retrieve(id: String, requestOptions: RequestOptions): VaultRetrieveResponse =
         retrieve(id, VaultRetrieveParams.none(), requestOptions)
 
     /**
@@ -216,7 +219,8 @@ interface VaultService {
          * [VaultService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(id: String): HttpResponse = retrieve(id, VaultRetrieveParams.none())
+        fun retrieve(id: String): HttpResponseFor<VaultRetrieveResponse> =
+            retrieve(id, VaultRetrieveParams.none())
 
         /** @see retrieve */
         @MustBeClosed
@@ -224,30 +228,34 @@ interface VaultService {
             id: String,
             params: VaultRetrieveParams = VaultRetrieveParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = retrieve(params.toBuilder().id(id).build(), requestOptions)
+        ): HttpResponseFor<VaultRetrieveResponse> =
+            retrieve(params.toBuilder().id(id).build(), requestOptions)
 
         /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             id: String,
             params: VaultRetrieveParams = VaultRetrieveParams.none(),
-        ): HttpResponse = retrieve(id, params, RequestOptions.none())
+        ): HttpResponseFor<VaultRetrieveResponse> = retrieve(id, params, RequestOptions.none())
 
         /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: VaultRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<VaultRetrieveResponse>
 
         /** @see retrieve */
         @MustBeClosed
-        fun retrieve(params: VaultRetrieveParams): HttpResponse =
+        fun retrieve(params: VaultRetrieveParams): HttpResponseFor<VaultRetrieveResponse> =
             retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
         @MustBeClosed
-        fun retrieve(id: String, requestOptions: RequestOptions): HttpResponse =
+        fun retrieve(
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VaultRetrieveResponse> =
             retrieve(id, VaultRetrieveParams.none(), requestOptions)
 
         /**

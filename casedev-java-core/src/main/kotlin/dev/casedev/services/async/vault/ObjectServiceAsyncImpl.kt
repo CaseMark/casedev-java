@@ -5,10 +5,10 @@ package dev.casedev.services.async.vault
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
-import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
+import dev.casedev.core.handlers.stringHandler
 import dev.casedev.core.http.HttpMethod
 import dev.casedev.core.http.HttpRequest
 import dev.casedev.core.http.HttpResponse
@@ -21,8 +21,11 @@ import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlParams
 import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlResponse
 import dev.casedev.models.vault.objects.ObjectDownloadParams
 import dev.casedev.models.vault.objects.ObjectGetTextParams
+import dev.casedev.models.vault.objects.ObjectGetTextResponse
 import dev.casedev.models.vault.objects.ObjectListParams
+import dev.casedev.models.vault.objects.ObjectListResponse
 import dev.casedev.models.vault.objects.ObjectRetrieveParams
+import dev.casedev.models.vault.objects.ObjectRetrieveResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -42,16 +45,16 @@ class ObjectServiceAsyncImpl internal constructor(private val clientOptions: Cli
     override fun retrieve(
         params: ObjectRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<ObjectRetrieveResponse> =
         // get /vault/{id}/objects/{objectId}
-        withRawResponse().retrieve(params, requestOptions).thenAccept {}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
         params: ObjectListParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<ObjectListResponse> =
         // get /vault/{id}/objects
-        withRawResponse().list(params, requestOptions).thenAccept {}
+        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun createPresignedUrl(
         params: ObjectCreatePresignedUrlParams,
@@ -63,16 +66,16 @@ class ObjectServiceAsyncImpl internal constructor(private val clientOptions: Cli
     override fun download(
         params: ObjectDownloadParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<String> =
         // get /vault/{id}/objects/{objectId}/download
-        withRawResponse().download(params, requestOptions).thenAccept {}
+        withRawResponse().download(params, requestOptions).thenApply { it.parse() }
 
     override fun getText(
         params: ObjectGetTextParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<ObjectGetTextResponse> =
         // get /vault/{id}/objects/{objectId}/text
-        withRawResponse().getText(params, requestOptions).thenAccept {}
+        withRawResponse().getText(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ObjectServiceAsync.WithRawResponse {
@@ -87,12 +90,13 @@ class ObjectServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val retrieveHandler: Handler<Void?> = emptyHandler()
+        private val retrieveHandler: Handler<ObjectRetrieveResponse> =
+            jsonHandler<ObjectRetrieveResponse>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: ObjectRetrieveParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<ObjectRetrieveResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("objectId", params.objectId().getOrNull())
@@ -108,17 +112,24 @@ class ObjectServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { retrieveHandler.handle(it) }
+                        response
+                            .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }
 
-        private val listHandler: Handler<Void?> = emptyHandler()
+        private val listHandler: Handler<ObjectListResponse> =
+            jsonHandler<ObjectListResponse>(clientOptions.jsonMapper)
 
         override fun list(
             params: ObjectListParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<ObjectListResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("id", params.id().getOrNull())
@@ -134,7 +145,13 @@ class ObjectServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { listHandler.handle(it) }
+                        response
+                            .use { listHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }
@@ -179,12 +196,12 @@ class ObjectServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 }
         }
 
-        private val downloadHandler: Handler<Void?> = emptyHandler()
+        private val downloadHandler: Handler<String> = stringHandler()
 
         override fun download(
             params: ObjectDownloadParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<String>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("objectId", params.objectId().getOrNull())
@@ -211,12 +228,13 @@ class ObjectServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 }
         }
 
-        private val getTextHandler: Handler<Void?> = emptyHandler()
+        private val getTextHandler: Handler<ObjectGetTextResponse> =
+            jsonHandler<ObjectGetTextResponse>(clientOptions.jsonMapper)
 
         override fun getText(
             params: ObjectGetTextParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<ObjectGetTextResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("objectId", params.objectId().getOrNull())
@@ -238,7 +256,13 @@ class ObjectServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { getTextHandler.handle(it) }
+                        response
+                            .use { getTextHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }
