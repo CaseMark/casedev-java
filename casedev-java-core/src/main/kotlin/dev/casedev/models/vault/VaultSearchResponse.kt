@@ -44,7 +44,7 @@ private constructor(
     ) : this(chunks, method, query, response, sources, vaultId, mutableMapOf())
 
     /**
-     * Relevant text chunks with similarity scores
+     * Relevant text chunks with similarity scores and page locations
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -171,7 +171,7 @@ private constructor(
             additionalProperties = vaultSearchResponse.additionalProperties.toMutableMap()
         }
 
-        /** Relevant text chunks with similarity scores */
+        /** Relevant text chunks with similarity scores and page locations */
         fun chunks(chunks: List<Chunk>) = chunks(JsonField.of(chunks))
 
         /**
@@ -343,6 +343,11 @@ private constructor(
     class Chunk
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val chunkIndex: JsonField<Long>,
+        private val distance: JsonField<Double>,
+        private val objectId: JsonField<String>,
+        private val pageEnd: JsonField<Long>,
+        private val pageStart: JsonField<Long>,
         private val score: JsonField<Double>,
         private val source: JsonField<String>,
         private val text: JsonField<String>,
@@ -351,28 +356,134 @@ private constructor(
 
         @JsonCreator
         private constructor(
+            @JsonProperty("chunk_index")
+            @ExcludeMissing
+            chunkIndex: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("distance")
+            @ExcludeMissing
+            distance: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("object_id")
+            @ExcludeMissing
+            objectId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("page_end") @ExcludeMissing pageEnd: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("page_start")
+            @ExcludeMissing
+            pageStart: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("score") @ExcludeMissing score: JsonField<Double> = JsonMissing.of(),
             @JsonProperty("source") @ExcludeMissing source: JsonField<String> = JsonMissing.of(),
             @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
-        ) : this(score, source, text, mutableMapOf())
+        ) : this(
+            chunkIndex,
+            distance,
+            objectId,
+            pageEnd,
+            pageStart,
+            score,
+            source,
+            text,
+            mutableMapOf(),
+        )
 
         /**
+         * Index of the chunk within the document (0-based)
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun chunkIndex(): Optional<Long> = chunkIndex.getOptional("chunk_index")
+
+        /**
+         * Vector similarity distance (lower is more similar)
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun distance(): Optional<Double> = distance.getOptional("distance")
+
+        /**
+         * ID of the source document
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun objectId(): Optional<String> = objectId.getOptional("object_id")
+
+        /**
+         * PDF page number where the chunk ends (1-indexed). Null for non-PDF documents or documents
+         * ingested before page tracking was added.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun pageEnd(): Optional<Long> = pageEnd.getOptional("page_end")
+
+        /**
+         * PDF page number where the chunk begins (1-indexed). Null for non-PDF documents or
+         * documents ingested before page tracking was added.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun pageStart(): Optional<Long> = pageStart.getOptional("page_start")
+
+        /**
+         * Relevance score (deprecated, use distance or hybridScore)
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun score(): Optional<Double> = score.getOptional("score")
 
         /**
+         * Source identifier (deprecated, use object_id)
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun source(): Optional<String> = source.getOptional("source")
 
         /**
+         * Preview of the chunk text (up to 500 characters)
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun text(): Optional<String> = text.getOptional("text")
+
+        /**
+         * Returns the raw JSON value of [chunkIndex].
+         *
+         * Unlike [chunkIndex], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("chunk_index") @ExcludeMissing fun _chunkIndex(): JsonField<Long> = chunkIndex
+
+        /**
+         * Returns the raw JSON value of [distance].
+         *
+         * Unlike [distance], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("distance") @ExcludeMissing fun _distance(): JsonField<Double> = distance
+
+        /**
+         * Returns the raw JSON value of [objectId].
+         *
+         * Unlike [objectId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("object_id") @ExcludeMissing fun _objectId(): JsonField<String> = objectId
+
+        /**
+         * Returns the raw JSON value of [pageEnd].
+         *
+         * Unlike [pageEnd], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("page_end") @ExcludeMissing fun _pageEnd(): JsonField<Long> = pageEnd
+
+        /**
+         * Returns the raw JSON value of [pageStart].
+         *
+         * Unlike [pageStart], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("page_start") @ExcludeMissing fun _pageStart(): JsonField<Long> = pageStart
 
         /**
          * Returns the raw JSON value of [score].
@@ -416,6 +527,11 @@ private constructor(
         /** A builder for [Chunk]. */
         class Builder internal constructor() {
 
+            private var chunkIndex: JsonField<Long> = JsonMissing.of()
+            private var distance: JsonField<Double> = JsonMissing.of()
+            private var objectId: JsonField<String> = JsonMissing.of()
+            private var pageEnd: JsonField<Long> = JsonMissing.of()
+            private var pageStart: JsonField<Long> = JsonMissing.of()
             private var score: JsonField<Double> = JsonMissing.of()
             private var source: JsonField<String> = JsonMissing.of()
             private var text: JsonField<String> = JsonMissing.of()
@@ -423,12 +539,104 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(chunk: Chunk) = apply {
+                chunkIndex = chunk.chunkIndex
+                distance = chunk.distance
+                objectId = chunk.objectId
+                pageEnd = chunk.pageEnd
+                pageStart = chunk.pageStart
                 score = chunk.score
                 source = chunk.source
                 text = chunk.text
                 additionalProperties = chunk.additionalProperties.toMutableMap()
             }
 
+            /** Index of the chunk within the document (0-based) */
+            fun chunkIndex(chunkIndex: Long) = chunkIndex(JsonField.of(chunkIndex))
+
+            /**
+             * Sets [Builder.chunkIndex] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.chunkIndex] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun chunkIndex(chunkIndex: JsonField<Long>) = apply { this.chunkIndex = chunkIndex }
+
+            /** Vector similarity distance (lower is more similar) */
+            fun distance(distance: Double) = distance(JsonField.of(distance))
+
+            /**
+             * Sets [Builder.distance] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.distance] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun distance(distance: JsonField<Double>) = apply { this.distance = distance }
+
+            /** ID of the source document */
+            fun objectId(objectId: String) = objectId(JsonField.of(objectId))
+
+            /**
+             * Sets [Builder.objectId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
+
+            /**
+             * PDF page number where the chunk ends (1-indexed). Null for non-PDF documents or
+             * documents ingested before page tracking was added.
+             */
+            fun pageEnd(pageEnd: Long?) = pageEnd(JsonField.ofNullable(pageEnd))
+
+            /**
+             * Alias for [Builder.pageEnd].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun pageEnd(pageEnd: Long) = pageEnd(pageEnd as Long?)
+
+            /** Alias for calling [Builder.pageEnd] with `pageEnd.orElse(null)`. */
+            fun pageEnd(pageEnd: Optional<Long>) = pageEnd(pageEnd.getOrNull())
+
+            /**
+             * Sets [Builder.pageEnd] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.pageEnd] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun pageEnd(pageEnd: JsonField<Long>) = apply { this.pageEnd = pageEnd }
+
+            /**
+             * PDF page number where the chunk begins (1-indexed). Null for non-PDF documents or
+             * documents ingested before page tracking was added.
+             */
+            fun pageStart(pageStart: Long?) = pageStart(JsonField.ofNullable(pageStart))
+
+            /**
+             * Alias for [Builder.pageStart].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun pageStart(pageStart: Long) = pageStart(pageStart as Long?)
+
+            /** Alias for calling [Builder.pageStart] with `pageStart.orElse(null)`. */
+            fun pageStart(pageStart: Optional<Long>) = pageStart(pageStart.getOrNull())
+
+            /**
+             * Sets [Builder.pageStart] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.pageStart] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun pageStart(pageStart: JsonField<Long>) = apply { this.pageStart = pageStart }
+
+            /** Relevance score (deprecated, use distance or hybridScore) */
             fun score(score: Double) = score(JsonField.of(score))
 
             /**
@@ -440,6 +648,7 @@ private constructor(
              */
             fun score(score: JsonField<Double>) = apply { this.score = score }
 
+            /** Source identifier (deprecated, use object_id) */
             fun source(source: String) = source(JsonField.of(source))
 
             /**
@@ -451,6 +660,7 @@ private constructor(
              */
             fun source(source: JsonField<String>) = apply { this.source = source }
 
+            /** Preview of the chunk text (up to 500 characters) */
             fun text(text: String) = text(JsonField.of(text))
 
             /**
@@ -486,7 +696,18 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Chunk = Chunk(score, source, text, additionalProperties.toMutableMap())
+            fun build(): Chunk =
+                Chunk(
+                    chunkIndex,
+                    distance,
+                    objectId,
+                    pageEnd,
+                    pageStart,
+                    score,
+                    source,
+                    text,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -496,6 +717,11 @@ private constructor(
                 return@apply
             }
 
+            chunkIndex()
+            distance()
+            objectId()
+            pageEnd()
+            pageStart()
             score()
             source()
             text()
@@ -518,7 +744,12 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (score.asKnown().isPresent) 1 else 0) +
+            (if (chunkIndex.asKnown().isPresent) 1 else 0) +
+                (if (distance.asKnown().isPresent) 1 else 0) +
+                (if (objectId.asKnown().isPresent) 1 else 0) +
+                (if (pageEnd.asKnown().isPresent) 1 else 0) +
+                (if (pageStart.asKnown().isPresent) 1 else 0) +
+                (if (score.asKnown().isPresent) 1 else 0) +
                 (if (source.asKnown().isPresent) 1 else 0) +
                 (if (text.asKnown().isPresent) 1 else 0)
 
@@ -528,6 +759,11 @@ private constructor(
             }
 
             return other is Chunk &&
+                chunkIndex == other.chunkIndex &&
+                distance == other.distance &&
+                objectId == other.objectId &&
+                pageEnd == other.pageEnd &&
+                pageStart == other.pageStart &&
                 score == other.score &&
                 source == other.source &&
                 text == other.text &&
@@ -535,13 +771,23 @@ private constructor(
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(score, source, text, additionalProperties)
+            Objects.hash(
+                chunkIndex,
+                distance,
+                objectId,
+                pageEnd,
+                pageStart,
+                score,
+                source,
+                text,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Chunk{score=$score, source=$source, text=$text, additionalProperties=$additionalProperties}"
+            "Chunk{chunkIndex=$chunkIndex, distance=$distance, objectId=$objectId, pageEnd=$pageEnd, pageStart=$pageStart, score=$score, source=$source, text=$text, additionalProperties=$additionalProperties}"
     }
 
     class Source
