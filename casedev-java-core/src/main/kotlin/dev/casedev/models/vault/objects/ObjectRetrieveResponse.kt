@@ -146,7 +146,14 @@ private constructor(
      */
     fun ingestionStatus(): Optional<String> = ingestionStatus.getOptional("ingestionStatus")
 
-    /** Additional metadata */
+    /**
+     * Additional metadata
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = objectRetrieveResponse.metadata().convert(MyClass.class);
+     * ```
+     */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
     /**

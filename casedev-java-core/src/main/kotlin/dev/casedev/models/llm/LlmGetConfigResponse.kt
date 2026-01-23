@@ -232,10 +232,24 @@ private constructor(
          */
         fun description(): Optional<String> = description.getOptional("description")
 
-        /** Pricing information for the model */
+        /**
+         * Pricing information for the model
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = model.pricing().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("pricing") @ExcludeMissing fun _pricing(): JsonValue = pricing
 
-        /** Technical specifications and limits */
+        /**
+         * Technical specifications and limits
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = model.specification().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("specification")
         @ExcludeMissing
         fun _specification(): JsonValue = specification

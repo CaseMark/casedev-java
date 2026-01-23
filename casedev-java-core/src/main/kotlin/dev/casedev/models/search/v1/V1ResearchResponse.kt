@@ -49,7 +49,14 @@ private constructor(
      */
     fun researchId(): Optional<String> = researchId.getOptional("researchId")
 
-    /** Research findings and analysis */
+    /**
+     * Research findings and analysis
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = v1ResearchResponse.results().convert(MyClass.class);
+     * ```
+     */
     @JsonProperty("results") @ExcludeMissing fun _results(): JsonValue = results
 
     /**

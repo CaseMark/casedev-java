@@ -456,6 +456,12 @@ private constructor(
             @JsonProperty("note") @ExcludeMissing note: JsonField<String> = JsonMissing.of(),
         ) : this(headers, method, note, mutableMapOf())
 
+        /**
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = instructions.headers().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("headers") @ExcludeMissing fun _headers(): JsonValue = headers
 
         /**

@@ -59,7 +59,14 @@ private constructor(
      */
     fun autoIndex(): Optional<Boolean> = body.autoIndex()
 
-    /** Additional metadata to associate with the file */
+    /**
+     * Additional metadata to associate with the file
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = vaultUploadParams.metadata().convert(MyClass.class);
+     * ```
+     */
     fun _metadata(): JsonValue = body._metadata()
 
     /**
@@ -444,7 +451,14 @@ private constructor(
          */
         fun autoIndex(): Optional<Boolean> = autoIndex.getOptional("auto_index")
 
-        /** Additional metadata to associate with the file */
+        /**
+         * Additional metadata to associate with the file
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.metadata().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
         /**

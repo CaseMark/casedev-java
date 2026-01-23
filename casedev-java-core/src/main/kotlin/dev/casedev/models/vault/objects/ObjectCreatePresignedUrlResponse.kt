@@ -87,7 +87,14 @@ private constructor(
      */
     fun filename(): Optional<String> = filename.getOptional("filename")
 
-    /** Usage instructions and examples */
+    /**
+     * Usage instructions and examples
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = objectCreatePresignedUrlResponse.instructions().convert(MyClass.class);
+     * ```
+     */
     @JsonProperty("instructions") @ExcludeMissing fun _instructions(): JsonValue = instructions
 
     /**

@@ -49,7 +49,14 @@ private constructor(
      */
     fun model(): Optional<Model> = body.model()
 
-    /** Optional JSON schema to structure the research output */
+    /**
+     * Optional JSON schema to structure the research output
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = v1ResearchParams.outputSchema().convert(MyClass.class);
+     * ```
+     */
     fun _outputSchema(): JsonValue = body._outputSchema()
 
     /**
@@ -346,7 +353,14 @@ private constructor(
          */
         fun model(): Optional<Model> = model.getOptional("model")
 
-        /** Optional JSON schema to structure the research output */
+        /**
+         * Optional JSON schema to structure the research output
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.outputSchema().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("outputSchema") @ExcludeMissing fun _outputSchema(): JsonValue = outputSchema
 
         /**
