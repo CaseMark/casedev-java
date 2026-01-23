@@ -1063,7 +1063,15 @@ private constructor(
              */
             fun content(): Optional<String> = content.getOptional("content")
 
-            /** Custom styling options */
+            /**
+             * Custom styling options
+             *
+             * This arbitrary value can be deserialized into a custom type using the `convert`
+             * method:
+             * ```java
+             * MyClass myObject = component.styles().convert(MyClass.class);
+             * ```
+             */
             @JsonProperty("styles") @ExcludeMissing fun _styles(): JsonValue = styles
 
             /**
@@ -1074,7 +1082,15 @@ private constructor(
              */
             fun templateId(): Optional<String> = templateId.getOptional("templateId")
 
-            /** Variables for template interpolation */
+            /**
+             * Variables for template interpolation
+             *
+             * This arbitrary value can be deserialized into a custom type using the `convert`
+             * method:
+             * ```java
+             * MyClass myObject = component.variables().convert(MyClass.class);
+             * ```
+             */
             @JsonProperty("variables") @ExcludeMissing fun _variables(): JsonValue = variables
 
             /**

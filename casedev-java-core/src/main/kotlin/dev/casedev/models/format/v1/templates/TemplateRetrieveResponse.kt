@@ -56,7 +56,14 @@ private constructor(
      */
     fun id(): Optional<String> = id.getOptional("id")
 
-    /** Template formatting rules and structure */
+    /**
+     * Template formatting rules and structure
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = templateRetrieveResponse.content().convert(MyClass.class);
+     * ```
+     */
     @JsonProperty("content") @ExcludeMissing fun _content(): JsonValue = content
 
     /**

@@ -296,7 +296,14 @@ private constructor(
          */
         fun description(): Optional<String> = description.getOptional("description")
 
-        /** Voice characteristics and metadata */
+        /**
+         * Voice characteristics and metadata
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = voice.labels().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("labels") @ExcludeMissing fun _labels(): JsonValue = labels
 
         /**

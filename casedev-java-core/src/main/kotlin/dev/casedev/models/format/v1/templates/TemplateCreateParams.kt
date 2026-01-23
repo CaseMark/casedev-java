@@ -67,7 +67,14 @@ private constructor(
      */
     fun description(): Optional<String> = body.description()
 
-    /** CSS styles for the template */
+    /**
+     * CSS styles for the template
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = templateCreateParams.styles().convert(MyClass.class);
+     * ```
+     */
     fun _styles(): JsonValue = body._styles()
 
     /**
@@ -472,7 +479,14 @@ private constructor(
          */
         fun description(): Optional<String> = description.getOptional("description")
 
-        /** CSS styles for the template */
+        /**
+         * CSS styles for the template
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.styles().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("styles") @ExcludeMissing fun _styles(): JsonValue = styles
 
         /**

@@ -50,7 +50,14 @@ private constructor(
      */
     fun context(): Optional<String> = body.context()
 
-    /** Additional extraction options */
+    /**
+     * Additional extraction options
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = v1ContentsParams.extras().convert(MyClass.class);
+     * ```
+     */
     fun _extras(): JsonValue = body._extras()
 
     /**
@@ -552,7 +559,14 @@ private constructor(
          */
         fun context(): Optional<String> = context.getOptional("context")
 
-        /** Additional extraction options */
+        /**
+         * Additional extraction options
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.extras().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("extras") @ExcludeMissing fun _extras(): JsonValue = extras
 
         /**

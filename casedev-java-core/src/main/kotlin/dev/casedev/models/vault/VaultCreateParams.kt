@@ -67,6 +67,11 @@ private constructor(
     /**
      * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA compliance
      * tracking)
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = vaultCreateParams.metadata().convert(MyClass.class);
+     * ```
      */
     fun _metadata(): JsonValue = body._metadata()
 
@@ -412,6 +417,11 @@ private constructor(
         /**
          * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA
          * compliance tracking)
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.metadata().convert(MyClass.class);
+         * ```
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
