@@ -15,6 +15,7 @@ internal class ObjectCreatePresignedUrlParamsTest {
             .contentType("contentType")
             .expiresIn(60L)
             .operation(ObjectCreatePresignedUrlParams.Operation.GET)
+            .sizeBytes(1L)
             .build()
     }
 
@@ -37,6 +38,7 @@ internal class ObjectCreatePresignedUrlParamsTest {
                 .contentType("contentType")
                 .expiresIn(60L)
                 .operation(ObjectCreatePresignedUrlParams.Operation.GET)
+                .sizeBytes(1L)
                 .build()
 
         val body = params._body()
@@ -44,6 +46,7 @@ internal class ObjectCreatePresignedUrlParamsTest {
         assertThat(body.contentType()).contains("contentType")
         assertThat(body.expiresIn()).contains(60L)
         assertThat(body.operation()).contains(ObjectCreatePresignedUrlParams.Operation.GET)
+        assertThat(body.sizeBytes()).contains(1L)
     }
 
     @Test

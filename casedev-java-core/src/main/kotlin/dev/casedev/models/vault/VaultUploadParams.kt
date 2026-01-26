@@ -52,6 +52,14 @@ private constructor(
     fun filename(): String = body.filename()
 
     /**
+     * File size in bytes (required, max 500MB). Used to enforce upload limits at S3 level.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun sizeBytes(): Long = body.sizeBytes()
+
+    /**
      * Whether to automatically process and index the file for search
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -80,14 +88,6 @@ private constructor(
     fun path(): Optional<String> = body.path()
 
     /**
-     * Estimated file size in bytes for cost calculation
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun sizeBytes(): Optional<Double> = body.sizeBytes()
-
-    /**
      * Returns the raw JSON value of [contentType].
      *
      * Unlike [contentType], this method doesn't throw if the JSON field has an unexpected type.
@@ -102,6 +102,13 @@ private constructor(
     fun _filename(): JsonField<String> = body._filename()
 
     /**
+     * Returns the raw JSON value of [sizeBytes].
+     *
+     * Unlike [sizeBytes], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _sizeBytes(): JsonField<Long> = body._sizeBytes()
+
+    /**
      * Returns the raw JSON value of [autoIndex].
      *
      * Unlike [autoIndex], this method doesn't throw if the JSON field has an unexpected type.
@@ -114,13 +121,6 @@ private constructor(
      * Unlike [path], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _path(): JsonField<String> = body._path()
-
-    /**
-     * Returns the raw JSON value of [sizeBytes].
-     *
-     * Unlike [sizeBytes], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _sizeBytes(): JsonField<Double> = body._sizeBytes()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -141,6 +141,7 @@ private constructor(
          * ```java
          * .contentType()
          * .filename()
+         * .sizeBytes()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -174,9 +175,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [contentType]
          * - [filename]
+         * - [sizeBytes]
          * - [autoIndex]
          * - [metadata]
-         * - [path]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -203,6 +204,17 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun filename(filename: JsonField<String>) = apply { body.filename(filename) }
+
+        /** File size in bytes (required, max 500MB). Used to enforce upload limits at S3 level. */
+        fun sizeBytes(sizeBytes: Long) = apply { body.sizeBytes(sizeBytes) }
+
+        /**
+         * Sets [Builder.sizeBytes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sizeBytes] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun sizeBytes(sizeBytes: JsonField<Long>) = apply { body.sizeBytes(sizeBytes) }
 
         /** Whether to automatically process and index the file for search */
         fun autoIndex(autoIndex: Boolean) = apply { body.autoIndex(autoIndex) }
@@ -233,18 +245,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun path(path: JsonField<String>) = apply { body.path(path) }
-
-        /** Estimated file size in bytes for cost calculation */
-        fun sizeBytes(sizeBytes: Double) = apply { body.sizeBytes(sizeBytes) }
-
-        /**
-         * Sets [Builder.sizeBytes] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.sizeBytes] with a well-typed [Double] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun sizeBytes(sizeBytes: JsonField<Double>) = apply { body.sizeBytes(sizeBytes) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -372,6 +372,7 @@ private constructor(
          * ```java
          * .contentType()
          * .filename()
+         * .sizeBytes()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -402,10 +403,10 @@ private constructor(
     private constructor(
         private val contentType: JsonField<String>,
         private val filename: JsonField<String>,
+        private val sizeBytes: JsonField<Long>,
         private val autoIndex: JsonField<Boolean>,
         private val metadata: JsonValue,
         private val path: JsonField<String>,
-        private val sizeBytes: JsonField<Double>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -417,15 +418,15 @@ private constructor(
             @JsonProperty("filename")
             @ExcludeMissing
             filename: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("sizeBytes")
+            @ExcludeMissing
+            sizeBytes: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("auto_index")
             @ExcludeMissing
             autoIndex: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("metadata") @ExcludeMissing metadata: JsonValue = JsonMissing.of(),
             @JsonProperty("path") @ExcludeMissing path: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("sizeBytes")
-            @ExcludeMissing
-            sizeBytes: JsonField<Double> = JsonMissing.of(),
-        ) : this(contentType, filename, autoIndex, metadata, path, sizeBytes, mutableMapOf())
+        ) : this(contentType, filename, sizeBytes, autoIndex, metadata, path, mutableMapOf())
 
         /**
          * MIME type of the file (e.g., application/pdf, image/jpeg)
@@ -442,6 +443,14 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun filename(): String = filename.getRequired("filename")
+
+        /**
+         * File size in bytes (required, max 500MB). Used to enforce upload limits at S3 level.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun sizeBytes(): Long = sizeBytes.getRequired("sizeBytes")
 
         /**
          * Whether to automatically process and index the file for search
@@ -472,14 +481,6 @@ private constructor(
         fun path(): Optional<String> = path.getOptional("path")
 
         /**
-         * Estimated file size in bytes for cost calculation
-         *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun sizeBytes(): Optional<Double> = sizeBytes.getOptional("sizeBytes")
-
-        /**
          * Returns the raw JSON value of [contentType].
          *
          * Unlike [contentType], this method doesn't throw if the JSON field has an unexpected type.
@@ -496,6 +497,13 @@ private constructor(
         @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
 
         /**
+         * Returns the raw JSON value of [sizeBytes].
+         *
+         * Unlike [sizeBytes], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("sizeBytes") @ExcludeMissing fun _sizeBytes(): JsonField<Long> = sizeBytes
+
+        /**
          * Returns the raw JSON value of [autoIndex].
          *
          * Unlike [autoIndex], this method doesn't throw if the JSON field has an unexpected type.
@@ -508,13 +516,6 @@ private constructor(
          * Unlike [path], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("path") @ExcludeMissing fun _path(): JsonField<String> = path
-
-        /**
-         * Returns the raw JSON value of [sizeBytes].
-         *
-         * Unlike [sizeBytes], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("sizeBytes") @ExcludeMissing fun _sizeBytes(): JsonField<Double> = sizeBytes
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -537,6 +538,7 @@ private constructor(
              * ```java
              * .contentType()
              * .filename()
+             * .sizeBytes()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -547,20 +549,20 @@ private constructor(
 
             private var contentType: JsonField<String>? = null
             private var filename: JsonField<String>? = null
+            private var sizeBytes: JsonField<Long>? = null
             private var autoIndex: JsonField<Boolean> = JsonMissing.of()
             private var metadata: JsonValue = JsonMissing.of()
             private var path: JsonField<String> = JsonMissing.of()
-            private var sizeBytes: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 contentType = body.contentType
                 filename = body.filename
+                sizeBytes = body.sizeBytes
                 autoIndex = body.autoIndex
                 metadata = body.metadata
                 path = body.path
-                sizeBytes = body.sizeBytes
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -589,6 +591,20 @@ private constructor(
              * supported value.
              */
             fun filename(filename: JsonField<String>) = apply { this.filename = filename }
+
+            /**
+             * File size in bytes (required, max 500MB). Used to enforce upload limits at S3 level.
+             */
+            fun sizeBytes(sizeBytes: Long) = sizeBytes(JsonField.of(sizeBytes))
+
+            /**
+             * Sets [Builder.sizeBytes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sizeBytes] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun sizeBytes(sizeBytes: JsonField<Long>) = apply { this.sizeBytes = sizeBytes }
 
             /** Whether to automatically process and index the file for search */
             fun autoIndex(autoIndex: Boolean) = autoIndex(JsonField.of(autoIndex))
@@ -621,18 +637,6 @@ private constructor(
              */
             fun path(path: JsonField<String>) = apply { this.path = path }
 
-            /** Estimated file size in bytes for cost calculation */
-            fun sizeBytes(sizeBytes: Double) = sizeBytes(JsonField.of(sizeBytes))
-
-            /**
-             * Sets [Builder.sizeBytes] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.sizeBytes] with a well-typed [Double] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun sizeBytes(sizeBytes: JsonField<Double>) = apply { this.sizeBytes = sizeBytes }
-
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -661,6 +665,7 @@ private constructor(
              * ```java
              * .contentType()
              * .filename()
+             * .sizeBytes()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
@@ -669,10 +674,10 @@ private constructor(
                 Body(
                     checkRequired("contentType", contentType),
                     checkRequired("filename", filename),
+                    checkRequired("sizeBytes", sizeBytes),
                     autoIndex,
                     metadata,
                     path,
-                    sizeBytes,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -686,9 +691,9 @@ private constructor(
 
             contentType()
             filename()
+            sizeBytes()
             autoIndex()
             path()
-            sizeBytes()
             validated = true
         }
 
@@ -710,9 +715,9 @@ private constructor(
         internal fun validity(): Int =
             (if (contentType.asKnown().isPresent) 1 else 0) +
                 (if (filename.asKnown().isPresent) 1 else 0) +
+                (if (sizeBytes.asKnown().isPresent) 1 else 0) +
                 (if (autoIndex.asKnown().isPresent) 1 else 0) +
-                (if (path.asKnown().isPresent) 1 else 0) +
-                (if (sizeBytes.asKnown().isPresent) 1 else 0)
+                (if (path.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -722,10 +727,10 @@ private constructor(
             return other is Body &&
                 contentType == other.contentType &&
                 filename == other.filename &&
+                sizeBytes == other.sizeBytes &&
                 autoIndex == other.autoIndex &&
                 metadata == other.metadata &&
                 path == other.path &&
-                sizeBytes == other.sizeBytes &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -733,10 +738,10 @@ private constructor(
             Objects.hash(
                 contentType,
                 filename,
+                sizeBytes,
                 autoIndex,
                 metadata,
                 path,
-                sizeBytes,
                 additionalProperties,
             )
         }
@@ -744,7 +749,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{contentType=$contentType, filename=$filename, autoIndex=$autoIndex, metadata=$metadata, path=$path, sizeBytes=$sizeBytes, additionalProperties=$additionalProperties}"
+            "Body{contentType=$contentType, filename=$filename, sizeBytes=$sizeBytes, autoIndex=$autoIndex, metadata=$metadata, path=$path, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
