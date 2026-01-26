@@ -128,10 +128,10 @@ internal class VaultServiceTest {
                     .id("id")
                     .contentType("contentType")
                     .filename("filename")
+                    .sizeBytes(1L)
                     .autoIndex(true)
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .path("path")
-                    .sizeBytes(0.0)
                     .build()
             )
 

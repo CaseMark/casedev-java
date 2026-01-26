@@ -64,6 +64,15 @@ private constructor(
     fun operation(): Optional<Operation> = body.operation()
 
     /**
+     * File size in bytes (required for PUT operations, max 500MB). Used to enforce upload limits at
+     * S3 level.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun sizeBytes(): Optional<Long> = body.sizeBytes()
+
+    /**
      * Returns the raw JSON value of [contentType].
      *
      * Unlike [contentType], this method doesn't throw if the JSON field has an unexpected type.
@@ -83,6 +92,13 @@ private constructor(
      * Unlike [operation], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _operation(): JsonField<Operation> = body._operation()
+
+    /**
+     * Returns the raw JSON value of [sizeBytes].
+     *
+     * Unlike [sizeBytes], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _sizeBytes(): JsonField<Long> = body._sizeBytes()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -141,6 +157,7 @@ private constructor(
          * - [contentType]
          * - [expiresIn]
          * - [operation]
+         * - [sizeBytes]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -178,6 +195,20 @@ private constructor(
          * value.
          */
         fun operation(operation: JsonField<Operation>) = apply { body.operation(operation) }
+
+        /**
+         * File size in bytes (required for PUT operations, max 500MB). Used to enforce upload
+         * limits at S3 level.
+         */
+        fun sizeBytes(sizeBytes: Long) = apply { body.sizeBytes(sizeBytes) }
+
+        /**
+         * Sets [Builder.sizeBytes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sizeBytes] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun sizeBytes(sizeBytes: JsonField<Long>) = apply { body.sizeBytes(sizeBytes) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -337,6 +368,7 @@ private constructor(
         private val contentType: JsonField<String>,
         private val expiresIn: JsonField<Long>,
         private val operation: JsonField<Operation>,
+        private val sizeBytes: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -351,7 +383,8 @@ private constructor(
             @JsonProperty("operation")
             @ExcludeMissing
             operation: JsonField<Operation> = JsonMissing.of(),
-        ) : this(contentType, expiresIn, operation, mutableMapOf())
+            @JsonProperty("sizeBytes") @ExcludeMissing sizeBytes: JsonField<Long> = JsonMissing.of(),
+        ) : this(contentType, expiresIn, operation, sizeBytes, mutableMapOf())
 
         /**
          * Content type for PUT operations (optional, defaults to object's content type)
@@ -378,6 +411,15 @@ private constructor(
         fun operation(): Optional<Operation> = operation.getOptional("operation")
 
         /**
+         * File size in bytes (required for PUT operations, max 500MB). Used to enforce upload
+         * limits at S3 level.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun sizeBytes(): Optional<Long> = sizeBytes.getOptional("sizeBytes")
+
+        /**
          * Returns the raw JSON value of [contentType].
          *
          * Unlike [contentType], this method doesn't throw if the JSON field has an unexpected type.
@@ -401,6 +443,13 @@ private constructor(
         @JsonProperty("operation")
         @ExcludeMissing
         fun _operation(): JsonField<Operation> = operation
+
+        /**
+         * Returns the raw JSON value of [sizeBytes].
+         *
+         * Unlike [sizeBytes], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("sizeBytes") @ExcludeMissing fun _sizeBytes(): JsonField<Long> = sizeBytes
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -426,6 +475,7 @@ private constructor(
             private var contentType: JsonField<String> = JsonMissing.of()
             private var expiresIn: JsonField<Long> = JsonMissing.of()
             private var operation: JsonField<Operation> = JsonMissing.of()
+            private var sizeBytes: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -433,6 +483,7 @@ private constructor(
                 contentType = body.contentType
                 expiresIn = body.expiresIn
                 operation = body.operation
+                sizeBytes = body.sizeBytes
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -474,6 +525,21 @@ private constructor(
              */
             fun operation(operation: JsonField<Operation>) = apply { this.operation = operation }
 
+            /**
+             * File size in bytes (required for PUT operations, max 500MB). Used to enforce upload
+             * limits at S3 level.
+             */
+            fun sizeBytes(sizeBytes: Long) = sizeBytes(JsonField.of(sizeBytes))
+
+            /**
+             * Sets [Builder.sizeBytes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sizeBytes] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun sizeBytes(sizeBytes: JsonField<Long>) = apply { this.sizeBytes = sizeBytes }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -499,7 +565,13 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Body =
-                Body(contentType, expiresIn, operation, additionalProperties.toMutableMap())
+                Body(
+                    contentType,
+                    expiresIn,
+                    operation,
+                    sizeBytes,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -512,6 +584,7 @@ private constructor(
             contentType()
             expiresIn()
             operation().ifPresent { it.validate() }
+            sizeBytes()
             validated = true
         }
 
@@ -533,7 +606,8 @@ private constructor(
         internal fun validity(): Int =
             (if (contentType.asKnown().isPresent) 1 else 0) +
                 (if (expiresIn.asKnown().isPresent) 1 else 0) +
-                (operation.asKnown().getOrNull()?.validity() ?: 0)
+                (operation.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (sizeBytes.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -544,17 +618,18 @@ private constructor(
                 contentType == other.contentType &&
                 expiresIn == other.expiresIn &&
                 operation == other.operation &&
+                sizeBytes == other.sizeBytes &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(contentType, expiresIn, operation, additionalProperties)
+            Objects.hash(contentType, expiresIn, operation, sizeBytes, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{contentType=$contentType, expiresIn=$expiresIn, operation=$operation, additionalProperties=$additionalProperties}"
+            "Body{contentType=$contentType, expiresIn=$expiresIn, operation=$operation, sizeBytes=$sizeBytes, additionalProperties=$additionalProperties}"
     }
 
     /** The S3 operation to generate URL for */

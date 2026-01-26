@@ -351,6 +351,8 @@ private constructor(
         private val score: JsonField<Double>,
         private val source: JsonField<String>,
         private val text: JsonField<String>,
+        private val wordEndIndex: JsonField<Long>,
+        private val wordStartIndex: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -372,6 +374,12 @@ private constructor(
             @JsonProperty("score") @ExcludeMissing score: JsonField<Double> = JsonMissing.of(),
             @JsonProperty("source") @ExcludeMissing source: JsonField<String> = JsonMissing.of(),
             @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("word_end_index")
+            @ExcludeMissing
+            wordEndIndex: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("word_start_index")
+            @ExcludeMissing
+            wordStartIndex: JsonField<Long> = JsonMissing.of(),
         ) : this(
             chunkIndex,
             distance,
@@ -381,6 +389,8 @@ private constructor(
             score,
             source,
             text,
+            wordEndIndex,
+            wordStartIndex,
             mutableMapOf(),
         )
 
@@ -451,6 +461,24 @@ private constructor(
         fun text(): Optional<String> = text.getOptional("text")
 
         /**
+         * Ending word index (0-based) in the OCR word list. Use with GET
+         * /vault/:id/objects/:objectId/ocr-words to retrieve bounding boxes for highlighting.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun wordEndIndex(): Optional<Long> = wordEndIndex.getOptional("word_end_index")
+
+        /**
+         * Starting word index (0-based) in the OCR word list. Use with GET
+         * /vault/:id/objects/:objectId/ocr-words to retrieve bounding boxes for highlighting.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun wordStartIndex(): Optional<Long> = wordStartIndex.getOptional("word_start_index")
+
+        /**
          * Returns the raw JSON value of [chunkIndex].
          *
          * Unlike [chunkIndex], this method doesn't throw if the JSON field has an unexpected type.
@@ -506,6 +534,26 @@ private constructor(
          */
         @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
+        /**
+         * Returns the raw JSON value of [wordEndIndex].
+         *
+         * Unlike [wordEndIndex], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("word_end_index")
+        @ExcludeMissing
+        fun _wordEndIndex(): JsonField<Long> = wordEndIndex
+
+        /**
+         * Returns the raw JSON value of [wordStartIndex].
+         *
+         * Unlike [wordStartIndex], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("word_start_index")
+        @ExcludeMissing
+        fun _wordStartIndex(): JsonField<Long> = wordStartIndex
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -535,6 +583,8 @@ private constructor(
             private var score: JsonField<Double> = JsonMissing.of()
             private var source: JsonField<String> = JsonMissing.of()
             private var text: JsonField<String> = JsonMissing.of()
+            private var wordEndIndex: JsonField<Long> = JsonMissing.of()
+            private var wordStartIndex: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -547,6 +597,8 @@ private constructor(
                 score = chunk.score
                 source = chunk.source
                 text = chunk.text
+                wordEndIndex = chunk.wordEndIndex
+                wordStartIndex = chunk.wordStartIndex
                 additionalProperties = chunk.additionalProperties.toMutableMap()
             }
 
@@ -672,6 +724,62 @@ private constructor(
              */
             fun text(text: JsonField<String>) = apply { this.text = text }
 
+            /**
+             * Ending word index (0-based) in the OCR word list. Use with GET
+             * /vault/:id/objects/:objectId/ocr-words to retrieve bounding boxes for highlighting.
+             */
+            fun wordEndIndex(wordEndIndex: Long?) = wordEndIndex(JsonField.ofNullable(wordEndIndex))
+
+            /**
+             * Alias for [Builder.wordEndIndex].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun wordEndIndex(wordEndIndex: Long) = wordEndIndex(wordEndIndex as Long?)
+
+            /** Alias for calling [Builder.wordEndIndex] with `wordEndIndex.orElse(null)`. */
+            fun wordEndIndex(wordEndIndex: Optional<Long>) = wordEndIndex(wordEndIndex.getOrNull())
+
+            /**
+             * Sets [Builder.wordEndIndex] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.wordEndIndex] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun wordEndIndex(wordEndIndex: JsonField<Long>) = apply {
+                this.wordEndIndex = wordEndIndex
+            }
+
+            /**
+             * Starting word index (0-based) in the OCR word list. Use with GET
+             * /vault/:id/objects/:objectId/ocr-words to retrieve bounding boxes for highlighting.
+             */
+            fun wordStartIndex(wordStartIndex: Long?) =
+                wordStartIndex(JsonField.ofNullable(wordStartIndex))
+
+            /**
+             * Alias for [Builder.wordStartIndex].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun wordStartIndex(wordStartIndex: Long) = wordStartIndex(wordStartIndex as Long?)
+
+            /** Alias for calling [Builder.wordStartIndex] with `wordStartIndex.orElse(null)`. */
+            fun wordStartIndex(wordStartIndex: Optional<Long>) =
+                wordStartIndex(wordStartIndex.getOrNull())
+
+            /**
+             * Sets [Builder.wordStartIndex] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.wordStartIndex] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun wordStartIndex(wordStartIndex: JsonField<Long>) = apply {
+                this.wordStartIndex = wordStartIndex
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -706,6 +814,8 @@ private constructor(
                     score,
                     source,
                     text,
+                    wordEndIndex,
+                    wordStartIndex,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -725,6 +835,8 @@ private constructor(
             score()
             source()
             text()
+            wordEndIndex()
+            wordStartIndex()
             validated = true
         }
 
@@ -751,7 +863,9 @@ private constructor(
                 (if (pageStart.asKnown().isPresent) 1 else 0) +
                 (if (score.asKnown().isPresent) 1 else 0) +
                 (if (source.asKnown().isPresent) 1 else 0) +
-                (if (text.asKnown().isPresent) 1 else 0)
+                (if (text.asKnown().isPresent) 1 else 0) +
+                (if (wordEndIndex.asKnown().isPresent) 1 else 0) +
+                (if (wordStartIndex.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -767,6 +881,8 @@ private constructor(
                 score == other.score &&
                 source == other.source &&
                 text == other.text &&
+                wordEndIndex == other.wordEndIndex &&
+                wordStartIndex == other.wordStartIndex &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -780,6 +896,8 @@ private constructor(
                 score,
                 source,
                 text,
+                wordEndIndex,
+                wordStartIndex,
                 additionalProperties,
             )
         }
@@ -787,7 +905,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Chunk{chunkIndex=$chunkIndex, distance=$distance, objectId=$objectId, pageEnd=$pageEnd, pageStart=$pageStart, score=$score, source=$source, text=$text, additionalProperties=$additionalProperties}"
+            "Chunk{chunkIndex=$chunkIndex, distance=$distance, objectId=$objectId, pageEnd=$pageEnd, pageStart=$pageStart, score=$score, source=$source, text=$text, wordEndIndex=$wordEndIndex, wordStartIndex=$wordStartIndex, additionalProperties=$additionalProperties}"
     }
 
     class Source

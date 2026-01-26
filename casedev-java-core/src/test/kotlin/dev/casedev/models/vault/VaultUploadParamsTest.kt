@@ -14,10 +14,10 @@ internal class VaultUploadParamsTest {
             .id("id")
             .contentType("contentType")
             .filename("filename")
+            .sizeBytes(1L)
             .autoIndex(true)
             .metadata(JsonValue.from(mapOf<String, Any>()))
             .path("path")
-            .sizeBytes(0.0)
             .build()
     }
 
@@ -28,6 +28,7 @@ internal class VaultUploadParamsTest {
                 .id("id")
                 .contentType("contentType")
                 .filename("filename")
+                .sizeBytes(1L)
                 .build()
 
         assertThat(params._pathParam(0)).isEqualTo("id")
@@ -42,20 +43,20 @@ internal class VaultUploadParamsTest {
                 .id("id")
                 .contentType("contentType")
                 .filename("filename")
+                .sizeBytes(1L)
                 .autoIndex(true)
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .path("path")
-                .sizeBytes(0.0)
                 .build()
 
         val body = params._body()
 
         assertThat(body.contentType()).isEqualTo("contentType")
         assertThat(body.filename()).isEqualTo("filename")
+        assertThat(body.sizeBytes()).isEqualTo(1L)
         assertThat(body.autoIndex()).contains(true)
         assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.path()).contains("path")
-        assertThat(body.sizeBytes()).contains(0.0)
     }
 
     @Test
@@ -65,11 +66,13 @@ internal class VaultUploadParamsTest {
                 .id("id")
                 .contentType("contentType")
                 .filename("filename")
+                .sizeBytes(1L)
                 .build()
 
         val body = params._body()
 
         assertThat(body.contentType()).isEqualTo("contentType")
         assertThat(body.filename()).isEqualTo("filename")
+        assertThat(body.sizeBytes()).isEqualTo(1L)
     }
 }

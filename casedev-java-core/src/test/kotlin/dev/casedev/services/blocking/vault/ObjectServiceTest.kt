@@ -66,6 +66,7 @@ internal class ObjectServiceTest {
                     .contentType("contentType")
                     .expiresIn(60L)
                     .operation(ObjectCreatePresignedUrlParams.Operation.GET)
+                    .sizeBytes(1L)
                     .build()
             )
 
