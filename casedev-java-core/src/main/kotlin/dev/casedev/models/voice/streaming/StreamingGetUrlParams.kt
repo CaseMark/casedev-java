@@ -17,7 +17,7 @@ import java.util.Objects
  * - Encoding: PCM 16-bit little-endian
  * - Channels: Mono (1 channel)
  *
- * **Pricing:** $0.30 per minute ($18.00 per hour)
+ * **Pricing:** $0.01 per minute ($0.60 per hour)
  */
 class StreamingGetUrlParams
 private constructor(
