@@ -4,6 +4,7 @@ package dev.casedev.services.async.ocr
 
 import dev.casedev.TestServerExtension
 import dev.casedev.client.okhttp.CasedevOkHttpClientAsync
+import dev.casedev.core.JsonValue
 import dev.casedev.models.ocr.v1.V1DownloadParams
 import dev.casedev.models.ocr.v1.V1ProcessParams
 import org.junit.jupiter.api.Disabled
@@ -66,10 +67,17 @@ internal class V1ServiceAsyncTest {
                     .engine(V1ProcessParams.Engine.DOCTR)
                     .features(
                         V1ProcessParams.Features.builder()
-                            .forms(false)
-                            .layout(true)
-                            .tables(true)
-                            .text(true)
+                            .embed(V1ProcessParams.Features.Embed.builder().build())
+                            .forms(
+                                V1ProcessParams.Features.Forms.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .tables(
+                                V1ProcessParams.Features.Tables.builder()
+                                    .format(V1ProcessParams.Features.Tables.Format.CSV)
+                                    .build()
+                            )
                             .build()
                     )
                     .resultBucket("my-ocr-results")
