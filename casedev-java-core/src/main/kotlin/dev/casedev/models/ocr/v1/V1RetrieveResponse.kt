@@ -11,6 +11,7 @@ import dev.casedev.core.ExcludeMissing
 import dev.casedev.core.JsonField
 import dev.casedev.core.JsonMissing
 import dev.casedev.core.JsonValue
+import dev.casedev.core.checkRequired
 import dev.casedev.errors.CasedevInvalidDataException
 import java.time.OffsetDateTime
 import java.util.Collections
@@ -22,11 +23,11 @@ class V1RetrieveResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
-    private val completedAt: JsonField<OffsetDateTime>,
     private val createdAt: JsonField<OffsetDateTime>,
+    private val status: JsonField<Status>,
+    private val completedAt: JsonField<OffsetDateTime>,
     private val metadata: JsonValue,
     private val pageCount: JsonField<Long>,
-    private val status: JsonField<Status>,
     private val text: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -34,25 +35,41 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("completed_at")
-        @ExcludeMissing
-        completedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
         @JsonProperty("created_at")
         @ExcludeMissing
         createdAt: JsonField<OffsetDateTime> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("completed_at")
+        @ExcludeMissing
+        completedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
         @JsonProperty("metadata") @ExcludeMissing metadata: JsonValue = JsonMissing.of(),
         @JsonProperty("page_count") @ExcludeMissing pageCount: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
-    ) : this(id, completedAt, createdAt, metadata, pageCount, status, text, mutableMapOf())
+    ) : this(id, createdAt, status, completedAt, metadata, pageCount, text, mutableMapOf())
 
     /**
      * OCR job ID
      *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun id(): Optional<String> = id.getOptional("id")
+    fun id(): String = id.getRequired("id")
+
+    /**
+     * Job creation timestamp
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun createdAt(): OffsetDateTime = createdAt.getRequired("created_at")
+
+    /**
+     * Current job status
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun status(): Status = status.getRequired("status")
 
     /**
      * Job completion timestamp
@@ -61,14 +78,6 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun completedAt(): Optional<OffsetDateTime> = completedAt.getOptional("completed_at")
-
-    /**
-     * Job creation timestamp
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun createdAt(): Optional<OffsetDateTime> = createdAt.getOptional("created_at")
 
     /**
      * Additional processing metadata
@@ -89,14 +98,6 @@ private constructor(
     fun pageCount(): Optional<Long> = pageCount.getOptional("page_count")
 
     /**
-     * Current job status
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun status(): Optional<Status> = status.getOptional("status")
-
-    /**
      * Extracted text content (when completed)
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -112,15 +113,6 @@ private constructor(
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
-     * Returns the raw JSON value of [completedAt].
-     *
-     * Unlike [completedAt], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("completed_at")
-    @ExcludeMissing
-    fun _completedAt(): JsonField<OffsetDateTime> = completedAt
-
-    /**
      * Returns the raw JSON value of [createdAt].
      *
      * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
@@ -130,18 +122,27 @@ private constructor(
     fun _createdAt(): JsonField<OffsetDateTime> = createdAt
 
     /**
-     * Returns the raw JSON value of [pageCount].
-     *
-     * Unlike [pageCount], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("page_count") @ExcludeMissing fun _pageCount(): JsonField<Long> = pageCount
-
-    /**
      * Returns the raw JSON value of [status].
      *
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+    /**
+     * Returns the raw JSON value of [completedAt].
+     *
+     * Unlike [completedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("completed_at")
+    @ExcludeMissing
+    fun _completedAt(): JsonField<OffsetDateTime> = completedAt
+
+    /**
+     * Returns the raw JSON value of [pageCount].
+     *
+     * Unlike [pageCount], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("page_count") @ExcludeMissing fun _pageCount(): JsonField<Long> = pageCount
 
     /**
      * Returns the raw JSON value of [text].
@@ -164,30 +165,39 @@ private constructor(
 
     companion object {
 
-        /** Returns a mutable builder for constructing an instance of [V1RetrieveResponse]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [V1RetrieveResponse].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .status()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
     /** A builder for [V1RetrieveResponse]. */
     class Builder internal constructor() {
 
-        private var id: JsonField<String> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var createdAt: JsonField<OffsetDateTime>? = null
+        private var status: JsonField<Status>? = null
         private var completedAt: JsonField<OffsetDateTime> = JsonMissing.of()
-        private var createdAt: JsonField<OffsetDateTime> = JsonMissing.of()
         private var metadata: JsonValue = JsonMissing.of()
         private var pageCount: JsonField<Long> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
         private var text: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(v1RetrieveResponse: V1RetrieveResponse) = apply {
             id = v1RetrieveResponse.id
-            completedAt = v1RetrieveResponse.completedAt
             createdAt = v1RetrieveResponse.createdAt
+            status = v1RetrieveResponse.status
+            completedAt = v1RetrieveResponse.completedAt
             metadata = v1RetrieveResponse.metadata
             pageCount = v1RetrieveResponse.pageCount
-            status = v1RetrieveResponse.status
             text = v1RetrieveResponse.text
             additionalProperties = v1RetrieveResponse.additionalProperties.toMutableMap()
         }
@@ -203,6 +213,29 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
+        /** Job creation timestamp */
+        fun createdAt(createdAt: OffsetDateTime) = createdAt(JsonField.of(createdAt))
+
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [OffsetDateTime] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun createdAt(createdAt: JsonField<OffsetDateTime>) = apply { this.createdAt = createdAt }
+
+        /** Current job status */
+        fun status(status: Status) = status(JsonField.of(status))
+
+        /**
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun status(status: JsonField<Status>) = apply { this.status = status }
+
         /** Job completion timestamp */
         fun completedAt(completedAt: OffsetDateTime) = completedAt(JsonField.of(completedAt))
 
@@ -217,18 +250,6 @@ private constructor(
             this.completedAt = completedAt
         }
 
-        /** Job creation timestamp */
-        fun createdAt(createdAt: OffsetDateTime) = createdAt(JsonField.of(createdAt))
-
-        /**
-         * Sets [Builder.createdAt] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.createdAt] with a well-typed [OffsetDateTime] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun createdAt(createdAt: JsonField<OffsetDateTime>) = apply { this.createdAt = createdAt }
-
         /** Additional processing metadata */
         fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
@@ -242,17 +263,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun pageCount(pageCount: JsonField<Long>) = apply { this.pageCount = pageCount }
-
-        /** Current job status */
-        fun status(status: Status) = status(JsonField.of(status))
-
-        /**
-         * Sets [Builder.status] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /** Extracted text content (when completed) */
         fun text(text: String) = text(JsonField.of(text))
@@ -288,15 +298,24 @@ private constructor(
          * Returns an immutable instance of [V1RetrieveResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .status()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): V1RetrieveResponse =
             V1RetrieveResponse(
-                id,
+                checkRequired("id", id),
+                checkRequired("createdAt", createdAt),
+                checkRequired("status", status),
                 completedAt,
-                createdAt,
                 metadata,
                 pageCount,
-                status,
                 text,
                 additionalProperties.toMutableMap(),
             )
@@ -310,10 +329,10 @@ private constructor(
         }
 
         id()
-        completedAt()
         createdAt()
+        status().validate()
+        completedAt()
         pageCount()
-        status().ifPresent { it.validate() }
         text()
         validated = true
     }
@@ -334,10 +353,10 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
-            (if (completedAt.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
-            (if (pageCount.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (completedAt.asKnown().isPresent) 1 else 0) +
+            (if (pageCount.asKnown().isPresent) 1 else 0) +
             (if (text.asKnown().isPresent) 1 else 0)
 
     /** Current job status */
@@ -485,11 +504,11 @@ private constructor(
 
         return other is V1RetrieveResponse &&
             id == other.id &&
-            completedAt == other.completedAt &&
             createdAt == other.createdAt &&
+            status == other.status &&
+            completedAt == other.completedAt &&
             metadata == other.metadata &&
             pageCount == other.pageCount &&
-            status == other.status &&
             text == other.text &&
             additionalProperties == other.additionalProperties
     }
@@ -497,11 +516,11 @@ private constructor(
     private val hashCode: Int by lazy {
         Objects.hash(
             id,
-            completedAt,
             createdAt,
+            status,
+            completedAt,
             metadata,
             pageCount,
-            status,
             text,
             additionalProperties,
         )
@@ -510,5 +529,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "V1RetrieveResponse{id=$id, completedAt=$completedAt, createdAt=$createdAt, metadata=$metadata, pageCount=$pageCount, status=$status, text=$text, additionalProperties=$additionalProperties}"
+        "V1RetrieveResponse{id=$id, createdAt=$createdAt, status=$status, completedAt=$completedAt, metadata=$metadata, pageCount=$pageCount, text=$text, additionalProperties=$additionalProperties}"
 }

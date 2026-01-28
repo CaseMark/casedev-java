@@ -10,6 +10,7 @@ import dev.casedev.core.ExcludeMissing
 import dev.casedev.core.JsonField
 import dev.casedev.core.JsonMissing
 import dev.casedev.core.JsonValue
+import dev.casedev.core.checkRequired
 import dev.casedev.errors.CasedevInvalidDataException
 import java.time.OffsetDateTime
 import java.util.Collections
@@ -32,18 +33,18 @@ private constructor(
     ) : this(metadata, text, mutableMapOf())
 
     /**
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+    fun metadata(): Metadata = metadata.getRequired("metadata")
 
     /**
      * Full concatenated text content from all chunks
      *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun text(): Optional<String> = text.getOptional("text")
+    fun text(): String = text.getRequired("text")
 
     /**
      * Returns the raw JSON value of [metadata].
@@ -73,15 +74,23 @@ private constructor(
 
     companion object {
 
-        /** Returns a mutable builder for constructing an instance of [ObjectGetTextResponse]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [ObjectGetTextResponse].
+         *
+         * The following fields are required:
+         * ```java
+         * .metadata()
+         * .text()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
     /** A builder for [ObjectGetTextResponse]. */
     class Builder internal constructor() {
 
-        private var metadata: JsonField<Metadata> = JsonMissing.of()
-        private var text: JsonField<String> = JsonMissing.of()
+        private var metadata: JsonField<Metadata>? = null
+        private var text: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -136,9 +145,21 @@ private constructor(
          * Returns an immutable instance of [ObjectGetTextResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .metadata()
+         * .text()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ObjectGetTextResponse =
-            ObjectGetTextResponse(metadata, text, additionalProperties.toMutableMap())
+            ObjectGetTextResponse(
+                checkRequired("metadata", metadata),
+                checkRequired("text", text),
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -148,7 +169,7 @@ private constructor(
             return@apply
         }
 
-        metadata().ifPresent { it.validate() }
+        metadata().validate()
         text()
         validated = true
     }
@@ -175,10 +196,10 @@ private constructor(
     private constructor(
         private val chunkCount: JsonField<Long>,
         private val filename: JsonField<String>,
-        private val ingestionCompletedAt: JsonField<OffsetDateTime>,
         private val length: JsonField<Long>,
         private val objectId: JsonField<String>,
         private val vaultId: JsonField<String>,
+        private val ingestionCompletedAt: JsonField<OffsetDateTime>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -190,39 +211,63 @@ private constructor(
             @JsonProperty("filename")
             @ExcludeMissing
             filename: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("ingestion_completed_at")
-            @ExcludeMissing
-            ingestionCompletedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
             @JsonProperty("length") @ExcludeMissing length: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("object_id")
             @ExcludeMissing
             objectId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("vault_id") @ExcludeMissing vaultId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("ingestion_completed_at")
+            @ExcludeMissing
+            ingestionCompletedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
         ) : this(
             chunkCount,
             filename,
-            ingestionCompletedAt,
             length,
             objectId,
             vaultId,
+            ingestionCompletedAt,
             mutableMapOf(),
         )
 
         /**
          * Number of text chunks the document was split into
          *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun chunkCount(): Optional<Long> = chunkCount.getOptional("chunk_count")
+        fun chunkCount(): Long = chunkCount.getRequired("chunk_count")
 
         /**
          * Original filename of the document
          *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun filename(): Optional<String> = filename.getOptional("filename")
+        fun filename(): String = filename.getRequired("filename")
+
+        /**
+         * Total character count of the extracted text
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun length(): Long = length.getRequired("length")
+
+        /**
+         * The object ID
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun objectId(): String = objectId.getRequired("object_id")
+
+        /**
+         * The vault ID
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun vaultId(): String = vaultId.getRequired("vault_id")
 
         /**
          * When the document processing completed
@@ -232,30 +277,6 @@ private constructor(
          */
         fun ingestionCompletedAt(): Optional<OffsetDateTime> =
             ingestionCompletedAt.getOptional("ingestion_completed_at")
-
-        /**
-         * Total character count of the extracted text
-         *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun length(): Optional<Long> = length.getOptional("length")
-
-        /**
-         * The object ID
-         *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun objectId(): Optional<String> = objectId.getOptional("object_id")
-
-        /**
-         * The vault ID
-         *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun vaultId(): Optional<String> = vaultId.getOptional("vault_id")
 
         /**
          * Returns the raw JSON value of [chunkCount].
@@ -270,16 +291,6 @@ private constructor(
          * Unlike [filename], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
-
-        /**
-         * Returns the raw JSON value of [ingestionCompletedAt].
-         *
-         * Unlike [ingestionCompletedAt], this method doesn't throw if the JSON field has an
-         * unexpected type.
-         */
-        @JsonProperty("ingestion_completed_at")
-        @ExcludeMissing
-        fun _ingestionCompletedAt(): JsonField<OffsetDateTime> = ingestionCompletedAt
 
         /**
          * Returns the raw JSON value of [length].
@@ -302,6 +313,16 @@ private constructor(
          */
         @JsonProperty("vault_id") @ExcludeMissing fun _vaultId(): JsonField<String> = vaultId
 
+        /**
+         * Returns the raw JSON value of [ingestionCompletedAt].
+         *
+         * Unlike [ingestionCompletedAt], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("ingestion_completed_at")
+        @ExcludeMissing
+        fun _ingestionCompletedAt(): JsonField<OffsetDateTime> = ingestionCompletedAt
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -316,29 +337,40 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [Metadata]. */
+            /**
+             * Returns a mutable builder for constructing an instance of [Metadata].
+             *
+             * The following fields are required:
+             * ```java
+             * .chunkCount()
+             * .filename()
+             * .length()
+             * .objectId()
+             * .vaultId()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Metadata]. */
         class Builder internal constructor() {
 
-            private var chunkCount: JsonField<Long> = JsonMissing.of()
-            private var filename: JsonField<String> = JsonMissing.of()
+            private var chunkCount: JsonField<Long>? = null
+            private var filename: JsonField<String>? = null
+            private var length: JsonField<Long>? = null
+            private var objectId: JsonField<String>? = null
+            private var vaultId: JsonField<String>? = null
             private var ingestionCompletedAt: JsonField<OffsetDateTime> = JsonMissing.of()
-            private var length: JsonField<Long> = JsonMissing.of()
-            private var objectId: JsonField<String> = JsonMissing.of()
-            private var vaultId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(metadata: Metadata) = apply {
                 chunkCount = metadata.chunkCount
                 filename = metadata.filename
-                ingestionCompletedAt = metadata.ingestionCompletedAt
                 length = metadata.length
                 objectId = metadata.objectId
                 vaultId = metadata.vaultId
+                ingestionCompletedAt = metadata.ingestionCompletedAt
                 additionalProperties = metadata.additionalProperties.toMutableMap()
             }
 
@@ -365,21 +397,6 @@ private constructor(
              * supported value.
              */
             fun filename(filename: JsonField<String>) = apply { this.filename = filename }
-
-            /** When the document processing completed */
-            fun ingestionCompletedAt(ingestionCompletedAt: OffsetDateTime) =
-                ingestionCompletedAt(JsonField.of(ingestionCompletedAt))
-
-            /**
-             * Sets [Builder.ingestionCompletedAt] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.ingestionCompletedAt] with a well-typed
-             * [OffsetDateTime] value instead. This method is primarily for setting the field to an
-             * undocumented or not yet supported value.
-             */
-            fun ingestionCompletedAt(ingestionCompletedAt: JsonField<OffsetDateTime>) = apply {
-                this.ingestionCompletedAt = ingestionCompletedAt
-            }
 
             /** Total character count of the extracted text */
             fun length(length: Long) = length(JsonField.of(length))
@@ -417,6 +434,21 @@ private constructor(
              */
             fun vaultId(vaultId: JsonField<String>) = apply { this.vaultId = vaultId }
 
+            /** When the document processing completed */
+            fun ingestionCompletedAt(ingestionCompletedAt: OffsetDateTime) =
+                ingestionCompletedAt(JsonField.of(ingestionCompletedAt))
+
+            /**
+             * Sets [Builder.ingestionCompletedAt] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ingestionCompletedAt] with a well-typed
+             * [OffsetDateTime] value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
+             */
+            fun ingestionCompletedAt(ingestionCompletedAt: JsonField<OffsetDateTime>) = apply {
+                this.ingestionCompletedAt = ingestionCompletedAt
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -440,15 +472,26 @@ private constructor(
              * Returns an immutable instance of [Metadata].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .chunkCount()
+             * .filename()
+             * .length()
+             * .objectId()
+             * .vaultId()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Metadata =
                 Metadata(
-                    chunkCount,
-                    filename,
+                    checkRequired("chunkCount", chunkCount),
+                    checkRequired("filename", filename),
+                    checkRequired("length", length),
+                    checkRequired("objectId", objectId),
+                    checkRequired("vaultId", vaultId),
                     ingestionCompletedAt,
-                    length,
-                    objectId,
-                    vaultId,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -462,10 +505,10 @@ private constructor(
 
             chunkCount()
             filename()
-            ingestionCompletedAt()
             length()
             objectId()
             vaultId()
+            ingestionCompletedAt()
             validated = true
         }
 
@@ -487,10 +530,10 @@ private constructor(
         internal fun validity(): Int =
             (if (chunkCount.asKnown().isPresent) 1 else 0) +
                 (if (filename.asKnown().isPresent) 1 else 0) +
-                (if (ingestionCompletedAt.asKnown().isPresent) 1 else 0) +
                 (if (length.asKnown().isPresent) 1 else 0) +
                 (if (objectId.asKnown().isPresent) 1 else 0) +
-                (if (vaultId.asKnown().isPresent) 1 else 0)
+                (if (vaultId.asKnown().isPresent) 1 else 0) +
+                (if (ingestionCompletedAt.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -500,10 +543,10 @@ private constructor(
             return other is Metadata &&
                 chunkCount == other.chunkCount &&
                 filename == other.filename &&
-                ingestionCompletedAt == other.ingestionCompletedAt &&
                 length == other.length &&
                 objectId == other.objectId &&
                 vaultId == other.vaultId &&
+                ingestionCompletedAt == other.ingestionCompletedAt &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -511,10 +554,10 @@ private constructor(
             Objects.hash(
                 chunkCount,
                 filename,
-                ingestionCompletedAt,
                 length,
                 objectId,
                 vaultId,
+                ingestionCompletedAt,
                 additionalProperties,
             )
         }
@@ -522,7 +565,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Metadata{chunkCount=$chunkCount, filename=$filename, ingestionCompletedAt=$ingestionCompletedAt, length=$length, objectId=$objectId, vaultId=$vaultId, additionalProperties=$additionalProperties}"
+            "Metadata{chunkCount=$chunkCount, filename=$filename, length=$length, objectId=$objectId, vaultId=$vaultId, ingestionCompletedAt=$ingestionCompletedAt, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

@@ -10,6 +10,7 @@ import dev.casedev.core.ExcludeMissing
 import dev.casedev.core.JsonField
 import dev.casedev.core.JsonMissing
 import dev.casedev.core.JsonValue
+import dev.casedev.core.checkRequired
 import dev.casedev.errors.CasedevInvalidDataException
 import java.time.OffsetDateTime
 import java.util.Collections
@@ -21,19 +22,19 @@ class ObjectRetrieveResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
-    private val chunkCount: JsonField<Long>,
     private val contentType: JsonField<String>,
     private val createdAt: JsonField<OffsetDateTime>,
     private val downloadUrl: JsonField<String>,
     private val expiresIn: JsonField<Long>,
     private val filename: JsonField<String>,
     private val ingestionStatus: JsonField<String>,
+    private val vaultId: JsonField<String>,
+    private val chunkCount: JsonField<Long>,
     private val metadata: JsonValue,
     private val pageCount: JsonField<Long>,
     private val path: JsonField<String>,
     private val sizeBytes: JsonField<Long>,
     private val textLength: JsonField<Long>,
-    private val vaultId: JsonField<String>,
     private val vectorCount: JsonField<Long>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -41,7 +42,6 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("chunkCount") @ExcludeMissing chunkCount: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("contentType")
         @ExcludeMissing
         contentType: JsonField<String> = JsonMissing.of(),
@@ -56,28 +56,29 @@ private constructor(
         @JsonProperty("ingestionStatus")
         @ExcludeMissing
         ingestionStatus: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("vaultId") @ExcludeMissing vaultId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("chunkCount") @ExcludeMissing chunkCount: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("metadata") @ExcludeMissing metadata: JsonValue = JsonMissing.of(),
         @JsonProperty("pageCount") @ExcludeMissing pageCount: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("path") @ExcludeMissing path: JsonField<String> = JsonMissing.of(),
         @JsonProperty("sizeBytes") @ExcludeMissing sizeBytes: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("textLength") @ExcludeMissing textLength: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("vaultId") @ExcludeMissing vaultId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("vectorCount") @ExcludeMissing vectorCount: JsonField<Long> = JsonMissing.of(),
     ) : this(
         id,
-        chunkCount,
         contentType,
         createdAt,
         downloadUrl,
         expiresIn,
         filename,
         ingestionStatus,
+        vaultId,
+        chunkCount,
         metadata,
         pageCount,
         path,
         sizeBytes,
         textLength,
-        vaultId,
         vectorCount,
         mutableMapOf(),
     )
@@ -85,10 +86,66 @@ private constructor(
     /**
      * Object ID
      *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun id(): Optional<String> = id.getOptional("id")
+    fun id(): String = id.getRequired("id")
+
+    /**
+     * MIME type
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun contentType(): String = contentType.getRequired("contentType")
+
+    /**
+     * Upload timestamp
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun createdAt(): OffsetDateTime = createdAt.getRequired("createdAt")
+
+    /**
+     * Presigned S3 download URL
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun downloadUrl(): String = downloadUrl.getRequired("downloadUrl")
+
+    /**
+     * URL expiration time in seconds
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun expiresIn(): Long = expiresIn.getRequired("expiresIn")
+
+    /**
+     * Original filename
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun filename(): String = filename.getRequired("filename")
+
+    /**
+     * Processing status (pending, processing, completed, failed)
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun ingestionStatus(): String = ingestionStatus.getRequired("ingestionStatus")
+
+    /**
+     * Vault ID
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun vaultId(): String = vaultId.getRequired("vaultId")
 
     /**
      * Number of text chunks created
@@ -97,54 +154,6 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun chunkCount(): Optional<Long> = chunkCount.getOptional("chunkCount")
-
-    /**
-     * MIME type
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun contentType(): Optional<String> = contentType.getOptional("contentType")
-
-    /**
-     * Upload timestamp
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun createdAt(): Optional<OffsetDateTime> = createdAt.getOptional("createdAt")
-
-    /**
-     * Presigned S3 download URL
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun downloadUrl(): Optional<String> = downloadUrl.getOptional("downloadUrl")
-
-    /**
-     * URL expiration time in seconds
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun expiresIn(): Optional<Long> = expiresIn.getOptional("expiresIn")
-
-    /**
-     * Original filename
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun filename(): Optional<String> = filename.getOptional("filename")
-
-    /**
-     * Processing status (pending, processing, completed, failed)
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun ingestionStatus(): Optional<String> = ingestionStatus.getOptional("ingestionStatus")
 
     /**
      * Additional metadata
@@ -189,14 +198,6 @@ private constructor(
     fun textLength(): Optional<Long> = textLength.getOptional("textLength")
 
     /**
-     * Vault ID
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun vaultId(): Optional<String> = vaultId.getOptional("vaultId")
-
-    /**
      * Number of embedding vectors generated
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -210,13 +211,6 @@ private constructor(
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
-
-    /**
-     * Returns the raw JSON value of [chunkCount].
-     *
-     * Unlike [chunkCount], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("chunkCount") @ExcludeMissing fun _chunkCount(): JsonField<Long> = chunkCount
 
     /**
      * Returns the raw JSON value of [contentType].
@@ -265,6 +259,20 @@ private constructor(
     fun _ingestionStatus(): JsonField<String> = ingestionStatus
 
     /**
+     * Returns the raw JSON value of [vaultId].
+     *
+     * Unlike [vaultId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("vaultId") @ExcludeMissing fun _vaultId(): JsonField<String> = vaultId
+
+    /**
+     * Returns the raw JSON value of [chunkCount].
+     *
+     * Unlike [chunkCount], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("chunkCount") @ExcludeMissing fun _chunkCount(): JsonField<Long> = chunkCount
+
+    /**
      * Returns the raw JSON value of [pageCount].
      *
      * Unlike [pageCount], this method doesn't throw if the JSON field has an unexpected type.
@@ -293,13 +301,6 @@ private constructor(
     @JsonProperty("textLength") @ExcludeMissing fun _textLength(): JsonField<Long> = textLength
 
     /**
-     * Returns the raw JSON value of [vaultId].
-     *
-     * Unlike [vaultId], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("vaultId") @ExcludeMissing fun _vaultId(): JsonField<String> = vaultId
-
-    /**
      * Returns the raw JSON value of [vectorCount].
      *
      * Unlike [vectorCount], this method doesn't throw if the JSON field has an unexpected type.
@@ -320,46 +321,60 @@ private constructor(
 
     companion object {
 
-        /** Returns a mutable builder for constructing an instance of [ObjectRetrieveResponse]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [ObjectRetrieveResponse].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .contentType()
+         * .createdAt()
+         * .downloadUrl()
+         * .expiresIn()
+         * .filename()
+         * .ingestionStatus()
+         * .vaultId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
     /** A builder for [ObjectRetrieveResponse]. */
     class Builder internal constructor() {
 
-        private var id: JsonField<String> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var contentType: JsonField<String>? = null
+        private var createdAt: JsonField<OffsetDateTime>? = null
+        private var downloadUrl: JsonField<String>? = null
+        private var expiresIn: JsonField<Long>? = null
+        private var filename: JsonField<String>? = null
+        private var ingestionStatus: JsonField<String>? = null
+        private var vaultId: JsonField<String>? = null
         private var chunkCount: JsonField<Long> = JsonMissing.of()
-        private var contentType: JsonField<String> = JsonMissing.of()
-        private var createdAt: JsonField<OffsetDateTime> = JsonMissing.of()
-        private var downloadUrl: JsonField<String> = JsonMissing.of()
-        private var expiresIn: JsonField<Long> = JsonMissing.of()
-        private var filename: JsonField<String> = JsonMissing.of()
-        private var ingestionStatus: JsonField<String> = JsonMissing.of()
         private var metadata: JsonValue = JsonMissing.of()
         private var pageCount: JsonField<Long> = JsonMissing.of()
         private var path: JsonField<String> = JsonMissing.of()
         private var sizeBytes: JsonField<Long> = JsonMissing.of()
         private var textLength: JsonField<Long> = JsonMissing.of()
-        private var vaultId: JsonField<String> = JsonMissing.of()
         private var vectorCount: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(objectRetrieveResponse: ObjectRetrieveResponse) = apply {
             id = objectRetrieveResponse.id
-            chunkCount = objectRetrieveResponse.chunkCount
             contentType = objectRetrieveResponse.contentType
             createdAt = objectRetrieveResponse.createdAt
             downloadUrl = objectRetrieveResponse.downloadUrl
             expiresIn = objectRetrieveResponse.expiresIn
             filename = objectRetrieveResponse.filename
             ingestionStatus = objectRetrieveResponse.ingestionStatus
+            vaultId = objectRetrieveResponse.vaultId
+            chunkCount = objectRetrieveResponse.chunkCount
             metadata = objectRetrieveResponse.metadata
             pageCount = objectRetrieveResponse.pageCount
             path = objectRetrieveResponse.path
             sizeBytes = objectRetrieveResponse.sizeBytes
             textLength = objectRetrieveResponse.textLength
-            vaultId = objectRetrieveResponse.vaultId
             vectorCount = objectRetrieveResponse.vectorCount
             additionalProperties = objectRetrieveResponse.additionalProperties.toMutableMap()
         }
@@ -374,17 +389,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
-
-        /** Number of text chunks created */
-        fun chunkCount(chunkCount: Long) = chunkCount(JsonField.of(chunkCount))
-
-        /**
-         * Sets [Builder.chunkCount] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.chunkCount] with a well-typed [Long] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun chunkCount(chunkCount: JsonField<Long>) = apply { this.chunkCount = chunkCount }
 
         /** MIME type */
         fun contentType(contentType: String) = contentType(JsonField.of(contentType))
@@ -459,6 +463,28 @@ private constructor(
             this.ingestionStatus = ingestionStatus
         }
 
+        /** Vault ID */
+        fun vaultId(vaultId: String) = vaultId(JsonField.of(vaultId))
+
+        /**
+         * Sets [Builder.vaultId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vaultId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun vaultId(vaultId: JsonField<String>) = apply { this.vaultId = vaultId }
+
+        /** Number of text chunks created */
+        fun chunkCount(chunkCount: Long) = chunkCount(JsonField.of(chunkCount))
+
+        /**
+         * Sets [Builder.chunkCount] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.chunkCount] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun chunkCount(chunkCount: JsonField<Long>) = apply { this.chunkCount = chunkCount }
+
         /** Additional metadata */
         fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
@@ -509,17 +535,6 @@ private constructor(
          */
         fun textLength(textLength: JsonField<Long>) = apply { this.textLength = textLength }
 
-        /** Vault ID */
-        fun vaultId(vaultId: String) = vaultId(JsonField.of(vaultId))
-
-        /**
-         * Sets [Builder.vaultId] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.vaultId] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun vaultId(vaultId: JsonField<String>) = apply { this.vaultId = vaultId }
-
         /** Number of embedding vectors generated */
         fun vectorCount(vectorCount: Long) = vectorCount(JsonField.of(vectorCount))
 
@@ -555,23 +570,37 @@ private constructor(
          * Returns an immutable instance of [ObjectRetrieveResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .contentType()
+         * .createdAt()
+         * .downloadUrl()
+         * .expiresIn()
+         * .filename()
+         * .ingestionStatus()
+         * .vaultId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ObjectRetrieveResponse =
             ObjectRetrieveResponse(
-                id,
+                checkRequired("id", id),
+                checkRequired("contentType", contentType),
+                checkRequired("createdAt", createdAt),
+                checkRequired("downloadUrl", downloadUrl),
+                checkRequired("expiresIn", expiresIn),
+                checkRequired("filename", filename),
+                checkRequired("ingestionStatus", ingestionStatus),
+                checkRequired("vaultId", vaultId),
                 chunkCount,
-                contentType,
-                createdAt,
-                downloadUrl,
-                expiresIn,
-                filename,
-                ingestionStatus,
                 metadata,
                 pageCount,
                 path,
                 sizeBytes,
                 textLength,
-                vaultId,
                 vectorCount,
                 additionalProperties.toMutableMap(),
             )
@@ -585,18 +614,18 @@ private constructor(
         }
 
         id()
-        chunkCount()
         contentType()
         createdAt()
         downloadUrl()
         expiresIn()
         filename()
         ingestionStatus()
+        vaultId()
+        chunkCount()
         pageCount()
         path()
         sizeBytes()
         textLength()
-        vaultId()
         vectorCount()
         validated = true
     }
@@ -617,18 +646,18 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
-            (if (chunkCount.asKnown().isPresent) 1 else 0) +
             (if (contentType.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (if (downloadUrl.asKnown().isPresent) 1 else 0) +
             (if (expiresIn.asKnown().isPresent) 1 else 0) +
             (if (filename.asKnown().isPresent) 1 else 0) +
             (if (ingestionStatus.asKnown().isPresent) 1 else 0) +
+            (if (vaultId.asKnown().isPresent) 1 else 0) +
+            (if (chunkCount.asKnown().isPresent) 1 else 0) +
             (if (pageCount.asKnown().isPresent) 1 else 0) +
             (if (path.asKnown().isPresent) 1 else 0) +
             (if (sizeBytes.asKnown().isPresent) 1 else 0) +
             (if (textLength.asKnown().isPresent) 1 else 0) +
-            (if (vaultId.asKnown().isPresent) 1 else 0) +
             (if (vectorCount.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
@@ -638,19 +667,19 @@ private constructor(
 
         return other is ObjectRetrieveResponse &&
             id == other.id &&
-            chunkCount == other.chunkCount &&
             contentType == other.contentType &&
             createdAt == other.createdAt &&
             downloadUrl == other.downloadUrl &&
             expiresIn == other.expiresIn &&
             filename == other.filename &&
             ingestionStatus == other.ingestionStatus &&
+            vaultId == other.vaultId &&
+            chunkCount == other.chunkCount &&
             metadata == other.metadata &&
             pageCount == other.pageCount &&
             path == other.path &&
             sizeBytes == other.sizeBytes &&
             textLength == other.textLength &&
-            vaultId == other.vaultId &&
             vectorCount == other.vectorCount &&
             additionalProperties == other.additionalProperties
     }
@@ -658,19 +687,19 @@ private constructor(
     private val hashCode: Int by lazy {
         Objects.hash(
             id,
-            chunkCount,
             contentType,
             createdAt,
             downloadUrl,
             expiresIn,
             filename,
             ingestionStatus,
+            vaultId,
+            chunkCount,
             metadata,
             pageCount,
             path,
             sizeBytes,
             textLength,
-            vaultId,
             vectorCount,
             additionalProperties,
         )
@@ -679,5 +708,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ObjectRetrieveResponse{id=$id, chunkCount=$chunkCount, contentType=$contentType, createdAt=$createdAt, downloadUrl=$downloadUrl, expiresIn=$expiresIn, filename=$filename, ingestionStatus=$ingestionStatus, metadata=$metadata, pageCount=$pageCount, path=$path, sizeBytes=$sizeBytes, textLength=$textLength, vaultId=$vaultId, vectorCount=$vectorCount, additionalProperties=$additionalProperties}"
+        "ObjectRetrieveResponse{id=$id, contentType=$contentType, createdAt=$createdAt, downloadUrl=$downloadUrl, expiresIn=$expiresIn, filename=$filename, ingestionStatus=$ingestionStatus, vaultId=$vaultId, chunkCount=$chunkCount, metadata=$metadata, pageCount=$pageCount, path=$path, sizeBytes=$sizeBytes, textLength=$textLength, vectorCount=$vectorCount, additionalProperties=$additionalProperties}"
 }
