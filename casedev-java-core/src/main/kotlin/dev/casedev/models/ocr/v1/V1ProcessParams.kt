@@ -15,6 +15,7 @@ import dev.casedev.core.Params
 import dev.casedev.core.checkRequired
 import dev.casedev.core.http.Headers
 import dev.casedev.core.http.QueryParams
+import dev.casedev.core.toImmutable
 import dev.casedev.errors.CasedevInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -66,7 +67,7 @@ private constructor(
     fun engine(): Optional<Engine> = body.engine()
 
     /**
-     * OCR features to extract
+     * Additional processing options
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -236,7 +237,7 @@ private constructor(
          */
         fun engine(engine: JsonField<Engine>) = apply { body.engine(engine) }
 
-        /** OCR features to extract */
+        /** Additional processing options */
         fun features(features: Features) = apply { body.features(features) }
 
         /**
@@ -493,7 +494,7 @@ private constructor(
         fun engine(): Optional<Engine> = engine.getOptional("engine")
 
         /**
-         * OCR features to extract
+         * Additional processing options
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -678,7 +679,7 @@ private constructor(
              */
             fun engine(engine: JsonField<Engine>) = apply { this.engine = engine }
 
-            /** OCR features to extract */
+            /** Additional processing options */
             fun features(features: Features) = features(JsonField.of(features))
 
             /**
@@ -964,84 +965,67 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** OCR features to extract */
+    /** Additional processing options */
     class Features
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val forms: JsonField<Boolean>,
-        private val layout: JsonField<Boolean>,
-        private val tables: JsonField<Boolean>,
-        private val text: JsonField<Boolean>,
+        private val embed: JsonField<Embed>,
+        private val forms: JsonField<Forms>,
+        private val tables: JsonField<Tables>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("forms") @ExcludeMissing forms: JsonField<Boolean> = JsonMissing.of(),
-            @JsonProperty("layout") @ExcludeMissing layout: JsonField<Boolean> = JsonMissing.of(),
-            @JsonProperty("tables") @ExcludeMissing tables: JsonField<Boolean> = JsonMissing.of(),
-            @JsonProperty("text") @ExcludeMissing text: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(forms, layout, tables, text, mutableMapOf())
+            @JsonProperty("embed") @ExcludeMissing embed: JsonField<Embed> = JsonMissing.of(),
+            @JsonProperty("forms") @ExcludeMissing forms: JsonField<Forms> = JsonMissing.of(),
+            @JsonProperty("tables") @ExcludeMissing tables: JsonField<Tables> = JsonMissing.of(),
+        ) : this(embed, forms, tables, mutableMapOf())
 
         /**
-         * Detect form fields
+         * Generate searchable PDF with text layer
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun forms(): Optional<Boolean> = forms.getOptional("forms")
+        fun embed(): Optional<Embed> = embed.getOptional("embed")
 
         /**
-         * Preserve document layout
+         * Detect and extract form fields
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun layout(): Optional<Boolean> = layout.getOptional("layout")
+        fun forms(): Optional<Forms> = forms.getOptional("forms")
 
         /**
-         * Detect and extract tables
+         * Extract tables as structured data
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun tables(): Optional<Boolean> = tables.getOptional("tables")
+        fun tables(): Optional<Tables> = tables.getOptional("tables")
 
         /**
-         * Extract text content
+         * Returns the raw JSON value of [embed].
          *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Unlike [embed], this method doesn't throw if the JSON field has an unexpected type.
          */
-        fun text(): Optional<Boolean> = text.getOptional("text")
+        @JsonProperty("embed") @ExcludeMissing fun _embed(): JsonField<Embed> = embed
 
         /**
          * Returns the raw JSON value of [forms].
          *
          * Unlike [forms], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("forms") @ExcludeMissing fun _forms(): JsonField<Boolean> = forms
-
-        /**
-         * Returns the raw JSON value of [layout].
-         *
-         * Unlike [layout], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("layout") @ExcludeMissing fun _layout(): JsonField<Boolean> = layout
+        @JsonProperty("forms") @ExcludeMissing fun _forms(): JsonField<Forms> = forms
 
         /**
          * Returns the raw JSON value of [tables].
          *
          * Unlike [tables], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("tables") @ExcludeMissing fun _tables(): JsonField<Boolean> = tables
-
-        /**
-         * Returns the raw JSON value of [text].
-         *
-         * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<Boolean> = text
+        @JsonProperty("tables") @ExcludeMissing fun _tables(): JsonField<Tables> = tables
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1064,68 +1048,54 @@ private constructor(
         /** A builder for [Features]. */
         class Builder internal constructor() {
 
-            private var forms: JsonField<Boolean> = JsonMissing.of()
-            private var layout: JsonField<Boolean> = JsonMissing.of()
-            private var tables: JsonField<Boolean> = JsonMissing.of()
-            private var text: JsonField<Boolean> = JsonMissing.of()
+            private var embed: JsonField<Embed> = JsonMissing.of()
+            private var forms: JsonField<Forms> = JsonMissing.of()
+            private var tables: JsonField<Tables> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(features: Features) = apply {
+                embed = features.embed
                 forms = features.forms
-                layout = features.layout
                 tables = features.tables
-                text = features.text
                 additionalProperties = features.additionalProperties.toMutableMap()
             }
 
-            /** Detect form fields */
-            fun forms(forms: Boolean) = forms(JsonField.of(forms))
+            /** Generate searchable PDF with text layer */
+            fun embed(embed: Embed) = embed(JsonField.of(embed))
+
+            /**
+             * Sets [Builder.embed] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.embed] with a well-typed [Embed] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun embed(embed: JsonField<Embed>) = apply { this.embed = embed }
+
+            /** Detect and extract form fields */
+            fun forms(forms: Forms) = forms(JsonField.of(forms))
 
             /**
              * Sets [Builder.forms] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.forms] with a well-typed [Boolean] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.forms] with a well-typed [Forms] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
-            fun forms(forms: JsonField<Boolean>) = apply { this.forms = forms }
+            fun forms(forms: JsonField<Forms>) = apply { this.forms = forms }
 
-            /** Preserve document layout */
-            fun layout(layout: Boolean) = layout(JsonField.of(layout))
-
-            /**
-             * Sets [Builder.layout] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.layout] with a well-typed [Boolean] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun layout(layout: JsonField<Boolean>) = apply { this.layout = layout }
-
-            /** Detect and extract tables */
-            fun tables(tables: Boolean) = tables(JsonField.of(tables))
+            /** Extract tables as structured data */
+            fun tables(tables: Tables) = tables(JsonField.of(tables))
 
             /**
              * Sets [Builder.tables] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.tables] with a well-typed [Boolean] value instead.
+             * You should usually call [Builder.tables] with a well-typed [Tables] value instead.
              * This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun tables(tables: JsonField<Boolean>) = apply { this.tables = tables }
-
-            /** Extract text content */
-            fun text(text: Boolean) = text(JsonField.of(text))
-
-            /**
-             * Sets [Builder.text] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.text] with a well-typed [Boolean] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun text(text: JsonField<Boolean>) = apply { this.text = text }
+            fun tables(tables: JsonField<Tables>) = apply { this.tables = tables }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1152,7 +1122,7 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Features =
-                Features(forms, layout, tables, text, additionalProperties.toMutableMap())
+                Features(embed, forms, tables, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -1162,10 +1132,9 @@ private constructor(
                 return@apply
             }
 
-            forms()
-            layout()
-            tables()
-            text()
+            embed().ifPresent { it.validate() }
+            forms().ifPresent { it.validate() }
+            tables().ifPresent { it.validate() }
             validated = true
         }
 
@@ -1185,10 +1154,493 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (forms.asKnown().isPresent) 1 else 0) +
-                (if (layout.asKnown().isPresent) 1 else 0) +
-                (if (tables.asKnown().isPresent) 1 else 0) +
-                (if (text.asKnown().isPresent) 1 else 0)
+            (embed.asKnown().getOrNull()?.validity() ?: 0) +
+                (forms.asKnown().getOrNull()?.validity() ?: 0) +
+                (tables.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** Generate searchable PDF with text layer */
+        class Embed
+        @JsonCreator
+        private constructor(
+            @com.fasterxml.jackson.annotation.JsonValue
+            private val additionalProperties: Map<String, JsonValue>
+        ) {
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Embed]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Embed]. */
+            class Builder internal constructor() {
+
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(embed: Embed) = apply {
+                    additionalProperties = embed.additionalProperties.toMutableMap()
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Embed].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Embed = Embed(additionalProperties.toImmutable())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Embed = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: CasedevInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Embed && additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() = "Embed{additionalProperties=$additionalProperties}"
+        }
+
+        /** Detect and extract form fields */
+        class Forms
+        @JsonCreator
+        private constructor(
+            @com.fasterxml.jackson.annotation.JsonValue
+            private val additionalProperties: Map<String, JsonValue>
+        ) {
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Forms]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Forms]. */
+            class Builder internal constructor() {
+
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(forms: Forms) = apply {
+                    additionalProperties = forms.additionalProperties.toMutableMap()
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Forms].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Forms = Forms(additionalProperties.toImmutable())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Forms = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: CasedevInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Forms && additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() = "Forms{additionalProperties=$additionalProperties}"
+        }
+
+        /** Extract tables as structured data */
+        class Tables
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val format: JsonField<Format>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("format") @ExcludeMissing format: JsonField<Format> = JsonMissing.of()
+            ) : this(format, mutableMapOf())
+
+            /**
+             * Output format for extracted tables
+             *
+             * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun format(): Optional<Format> = format.getOptional("format")
+
+            /**
+             * Returns the raw JSON value of [format].
+             *
+             * Unlike [format], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<Format> = format
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Tables]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Tables]. */
+            class Builder internal constructor() {
+
+                private var format: JsonField<Format> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(tables: Tables) = apply {
+                    format = tables.format
+                    additionalProperties = tables.additionalProperties.toMutableMap()
+                }
+
+                /** Output format for extracted tables */
+                fun format(format: Format) = format(JsonField.of(format))
+
+                /**
+                 * Sets [Builder.format] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.format] with a well-typed [Format] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun format(format: JsonField<Format>) = apply { this.format = format }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Tables].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Tables = Tables(format, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Tables = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                format().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: CasedevInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int = (format.asKnown().getOrNull()?.validity() ?: 0)
+
+            /** Output format for extracted tables */
+            class Format @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val CSV = of("csv")
+
+                    @JvmField val JSON = of("json")
+
+                    @JvmStatic fun of(value: String) = Format(JsonField.of(value))
+                }
+
+                /** An enum containing [Format]'s known values. */
+                enum class Known {
+                    CSV,
+                    JSON,
+                }
+
+                /**
+                 * An enum containing [Format]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Format] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    CSV,
+                    JSON,
+                    /**
+                     * An enum member indicating that [Format] was instantiated with an unknown
+                     * value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        CSV -> Value.CSV
+                        JSON -> Value.JSON
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws CasedevInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        CSV -> Known.CSV
+                        JSON -> Known.JSON
+                        else -> throw CasedevInvalidDataException("Unknown Format: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws CasedevInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        CasedevInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                fun validate(): Format = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: CasedevInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Format && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Tables &&
+                    format == other.format &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(format, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Tables{format=$format, additionalProperties=$additionalProperties}"
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1196,21 +1648,20 @@ private constructor(
             }
 
             return other is Features &&
+                embed == other.embed &&
                 forms == other.forms &&
-                layout == other.layout &&
                 tables == other.tables &&
-                text == other.text &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(forms, layout, tables, text, additionalProperties)
+            Objects.hash(embed, forms, tables, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Features{forms=$forms, layout=$layout, tables=$tables, text=$text, additionalProperties=$additionalProperties}"
+            "Features{embed=$embed, forms=$forms, tables=$tables, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

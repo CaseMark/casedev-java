@@ -2,6 +2,7 @@
 
 package dev.casedev.models.ocr.v1
 
+import dev.casedev.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -16,10 +17,17 @@ internal class V1ProcessParamsTest {
             .engine(V1ProcessParams.Engine.DOCTR)
             .features(
                 V1ProcessParams.Features.builder()
-                    .forms(false)
-                    .layout(true)
-                    .tables(true)
-                    .text(true)
+                    .embed(V1ProcessParams.Features.Embed.builder().build())
+                    .forms(
+                        V1ProcessParams.Features.Forms.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .tables(
+                        V1ProcessParams.Features.Tables.builder()
+                            .format(V1ProcessParams.Features.Tables.Format.CSV)
+                            .build()
+                    )
                     .build()
             )
             .resultBucket("my-ocr-results")
@@ -37,10 +45,17 @@ internal class V1ProcessParamsTest {
                 .engine(V1ProcessParams.Engine.DOCTR)
                 .features(
                     V1ProcessParams.Features.builder()
-                        .forms(false)
-                        .layout(true)
-                        .tables(true)
-                        .text(true)
+                        .embed(V1ProcessParams.Features.Embed.builder().build())
+                        .forms(
+                            V1ProcessParams.Features.Forms.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
+                        .tables(
+                            V1ProcessParams.Features.Tables.builder()
+                                .format(V1ProcessParams.Features.Tables.Format.CSV)
+                                .build()
+                        )
                         .build()
                 )
                 .resultBucket("my-ocr-results")
@@ -56,10 +71,17 @@ internal class V1ProcessParamsTest {
         assertThat(body.features())
             .contains(
                 V1ProcessParams.Features.builder()
-                    .forms(false)
-                    .layout(true)
-                    .tables(true)
-                    .text(true)
+                    .embed(V1ProcessParams.Features.Embed.builder().build())
+                    .forms(
+                        V1ProcessParams.Features.Forms.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .tables(
+                        V1ProcessParams.Features.Tables.builder()
+                            .format(V1ProcessParams.Features.Tables.Format.CSV)
+                            .build()
+                    )
                     .build()
             )
         assertThat(body.resultBucket()).contains("my-ocr-results")
