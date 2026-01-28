@@ -18,27 +18,27 @@ internal class ObjectGetTextResponseTest {
                     ObjectGetTextResponse.Metadata.builder()
                         .chunkCount(0L)
                         .filename("filename")
-                        .ingestionCompletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                         .length(0L)
                         .objectId("object_id")
                         .vaultId("vault_id")
+                        .ingestionCompletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                         .build()
                 )
                 .text("text")
                 .build()
 
         assertThat(objectGetTextResponse.metadata())
-            .contains(
+            .isEqualTo(
                 ObjectGetTextResponse.Metadata.builder()
                     .chunkCount(0L)
                     .filename("filename")
-                    .ingestionCompletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                     .length(0L)
                     .objectId("object_id")
                     .vaultId("vault_id")
+                    .ingestionCompletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                     .build()
             )
-        assertThat(objectGetTextResponse.text()).contains("text")
+        assertThat(objectGetTextResponse.text()).isEqualTo("text")
     }
 
     @Test
@@ -50,10 +50,10 @@ internal class ObjectGetTextResponseTest {
                     ObjectGetTextResponse.Metadata.builder()
                         .chunkCount(0L)
                         .filename("filename")
-                        .ingestionCompletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                         .length(0L)
                         .objectId("object_id")
                         .vaultId("vault_id")
+                        .ingestionCompletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                         .build()
                 )
                 .text("text")

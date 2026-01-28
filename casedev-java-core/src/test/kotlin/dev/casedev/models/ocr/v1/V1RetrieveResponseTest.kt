@@ -16,22 +16,22 @@ internal class V1RetrieveResponseTest {
         val v1RetrieveResponse =
             V1RetrieveResponse.builder()
                 .id("id")
-                .completedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(V1RetrieveResponse.Status.PENDING)
+                .completedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .pageCount(0L)
-                .status(V1RetrieveResponse.Status.PENDING)
                 .text("text")
                 .build()
 
-        assertThat(v1RetrieveResponse.id()).contains("id")
-        assertThat(v1RetrieveResponse.completedAt())
-            .contains(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+        assertThat(v1RetrieveResponse.id()).isEqualTo("id")
         assertThat(v1RetrieveResponse.createdAt())
+            .isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+        assertThat(v1RetrieveResponse.status()).isEqualTo(V1RetrieveResponse.Status.PENDING)
+        assertThat(v1RetrieveResponse.completedAt())
             .contains(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(v1RetrieveResponse._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(v1RetrieveResponse.pageCount()).contains(0L)
-        assertThat(v1RetrieveResponse.status()).contains(V1RetrieveResponse.Status.PENDING)
         assertThat(v1RetrieveResponse.text()).contains("text")
     }
 
@@ -41,11 +41,11 @@ internal class V1RetrieveResponseTest {
         val v1RetrieveResponse =
             V1RetrieveResponse.builder()
                 .id("id")
-                .completedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(V1RetrieveResponse.Status.PENDING)
+                .completedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .pageCount(0L)
-                .status(V1RetrieveResponse.Status.PENDING)
                 .text("text")
                 .build()
 
