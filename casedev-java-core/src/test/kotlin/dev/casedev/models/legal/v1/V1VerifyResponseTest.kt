@@ -48,7 +48,7 @@ internal class V1VerifyResponseTest {
                 )
                 .summary(
                     V1VerifyResponse.Summary.builder()
-                        .ambiguous(0L)
+                        .multipleMatches(0L)
                         .notFound(0L)
                         .total(0L)
                         .verified(0L)
@@ -90,7 +90,7 @@ internal class V1VerifyResponseTest {
         assertThat(v1VerifyResponse.summary())
             .contains(
                 V1VerifyResponse.Summary.builder()
-                    .ambiguous(0L)
+                    .multipleMatches(0L)
                     .notFound(0L)
                     .total(0L)
                     .verified(0L)
@@ -137,7 +137,7 @@ internal class V1VerifyResponseTest {
                 )
                 .summary(
                     V1VerifyResponse.Summary.builder()
-                        .ambiguous(0L)
+                        .multipleMatches(0L)
                         .notFound(0L)
                         .total(0L)
                         .verified(0L)
