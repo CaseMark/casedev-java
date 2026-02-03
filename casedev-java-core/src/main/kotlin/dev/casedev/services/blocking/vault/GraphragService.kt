@@ -10,6 +10,8 @@ import dev.casedev.models.vault.graphrag.GraphragGetStatsParams
 import dev.casedev.models.vault.graphrag.GraphragGetStatsResponse
 import dev.casedev.models.vault.graphrag.GraphragInitParams
 import dev.casedev.models.vault.graphrag.GraphragInitResponse
+import dev.casedev.models.vault.graphrag.GraphragProcessObjectParams
+import dev.casedev.models.vault.graphrag.GraphragProcessObjectResponse
 import java.util.function.Consumer
 
 interface GraphragService {
@@ -92,6 +94,34 @@ interface GraphragService {
     /** @see init */
     fun init(id: String, requestOptions: RequestOptions): GraphragInitResponse =
         init(id, GraphragInitParams.none(), requestOptions)
+
+    /**
+     * Manually trigger GraphRAG indexing for a vault object. The object must already be ingested
+     * (completed status). This extracts entities, relationships, and communities from the document
+     * for advanced knowledge graph queries.
+     */
+    fun processObject(
+        objectId: String,
+        params: GraphragProcessObjectParams,
+    ): GraphragProcessObjectResponse = processObject(objectId, params, RequestOptions.none())
+
+    /** @see processObject */
+    fun processObject(
+        objectId: String,
+        params: GraphragProcessObjectParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): GraphragProcessObjectResponse =
+        processObject(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+    /** @see processObject */
+    fun processObject(params: GraphragProcessObjectParams): GraphragProcessObjectResponse =
+        processObject(params, RequestOptions.none())
+
+    /** @see processObject */
+    fun processObject(
+        params: GraphragProcessObjectParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): GraphragProcessObjectResponse
 
     /** A view of [GraphragService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -190,5 +220,39 @@ interface GraphragService {
             requestOptions: RequestOptions,
         ): HttpResponseFor<GraphragInitResponse> =
             init(id, GraphragInitParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /vault/{id}/graphrag/{objectId}`, but is otherwise
+         * the same as [GraphragService.processObject].
+         */
+        @MustBeClosed
+        fun processObject(
+            objectId: String,
+            params: GraphragProcessObjectParams,
+        ): HttpResponseFor<GraphragProcessObjectResponse> =
+            processObject(objectId, params, RequestOptions.none())
+
+        /** @see processObject */
+        @MustBeClosed
+        fun processObject(
+            objectId: String,
+            params: GraphragProcessObjectParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<GraphragProcessObjectResponse> =
+            processObject(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+        /** @see processObject */
+        @MustBeClosed
+        fun processObject(
+            params: GraphragProcessObjectParams
+        ): HttpResponseFor<GraphragProcessObjectResponse> =
+            processObject(params, RequestOptions.none())
+
+        /** @see processObject */
+        @MustBeClosed
+        fun processObject(
+            params: GraphragProcessObjectParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<GraphragProcessObjectResponse>
     }
 }

@@ -18,6 +18,8 @@ import dev.casedev.core.http.parseable
 import dev.casedev.core.prepareAsync
 import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultCreateResponse
+import dev.casedev.models.vault.VaultDeleteParams
+import dev.casedev.models.vault.VaultDeleteResponse
 import dev.casedev.models.vault.VaultIngestParams
 import dev.casedev.models.vault.VaultIngestResponse
 import dev.casedev.models.vault.VaultListParams
@@ -26,6 +28,8 @@ import dev.casedev.models.vault.VaultRetrieveParams
 import dev.casedev.models.vault.VaultRetrieveResponse
 import dev.casedev.models.vault.VaultSearchParams
 import dev.casedev.models.vault.VaultSearchResponse
+import dev.casedev.models.vault.VaultUpdateParams
+import dev.casedev.models.vault.VaultUpdateResponse
 import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
 import dev.casedev.services.async.vault.GraphragServiceAsync
@@ -70,12 +74,26 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
         // get /vault/{id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
+    override fun update(
+        params: VaultUpdateParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<VaultUpdateResponse> =
+        // patch /vault/{id}
+        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
+
     override fun list(
         params: VaultListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VaultListResponse> =
         // get /vault
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+
+    override fun delete(
+        params: VaultDeleteParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<VaultDeleteResponse> =
+        // delete /vault/{id}
+        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
 
     override fun ingest(
         params: VaultIngestParams,
@@ -187,6 +205,40 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
+        private val updateHandler: Handler<VaultUpdateResponse> =
+            jsonHandler<VaultUpdateResponse>(clientOptions.jsonMapper)
+
+        override fun update(
+            params: VaultUpdateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VaultUpdateResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PATCH)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("vault", params._pathParam(0))
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { updateHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
         private val listHandler: Handler<VaultListResponse> =
             jsonHandler<VaultListResponse>(clientOptions.jsonMapper)
 
@@ -208,6 +260,40 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val deleteHandler: Handler<VaultDeleteResponse> =
+            jsonHandler<VaultDeleteResponse>(clientOptions.jsonMapper)
+
+        override fun delete(
+            params: VaultDeleteParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VaultDeleteResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("vault", params._pathParam(0))
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { deleteHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

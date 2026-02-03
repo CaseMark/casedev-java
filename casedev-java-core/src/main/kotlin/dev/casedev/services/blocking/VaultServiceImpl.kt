@@ -18,6 +18,8 @@ import dev.casedev.core.http.parseable
 import dev.casedev.core.prepare
 import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultCreateResponse
+import dev.casedev.models.vault.VaultDeleteParams
+import dev.casedev.models.vault.VaultDeleteResponse
 import dev.casedev.models.vault.VaultIngestParams
 import dev.casedev.models.vault.VaultIngestResponse
 import dev.casedev.models.vault.VaultListParams
@@ -26,6 +28,8 @@ import dev.casedev.models.vault.VaultRetrieveParams
 import dev.casedev.models.vault.VaultRetrieveResponse
 import dev.casedev.models.vault.VaultSearchParams
 import dev.casedev.models.vault.VaultSearchResponse
+import dev.casedev.models.vault.VaultUpdateParams
+import dev.casedev.models.vault.VaultUpdateResponse
 import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
 import dev.casedev.services.blocking.vault.GraphragService
@@ -69,9 +73,23 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
         // get /vault/{id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
+    override fun update(
+        params: VaultUpdateParams,
+        requestOptions: RequestOptions,
+    ): VaultUpdateResponse =
+        // patch /vault/{id}
+        withRawResponse().update(params, requestOptions).parse()
+
     override fun list(params: VaultListParams, requestOptions: RequestOptions): VaultListResponse =
         // get /vault
         withRawResponse().list(params, requestOptions).parse()
+
+    override fun delete(
+        params: VaultDeleteParams,
+        requestOptions: RequestOptions,
+    ): VaultDeleteResponse =
+        // delete /vault/{id}
+        withRawResponse().delete(params, requestOptions).parse()
 
     override fun ingest(
         params: VaultIngestParams,
@@ -177,6 +195,37 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             }
         }
 
+        private val updateHandler: Handler<VaultUpdateResponse> =
+            jsonHandler<VaultUpdateResponse>(clientOptions.jsonMapper)
+
+        override fun update(
+            params: VaultUpdateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VaultUpdateResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PATCH)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("vault", params._pathParam(0))
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { updateHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
         private val listHandler: Handler<VaultListResponse> =
             jsonHandler<VaultListResponse>(clientOptions.jsonMapper)
 
@@ -196,6 +245,37 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val deleteHandler: Handler<VaultDeleteResponse> =
+            jsonHandler<VaultDeleteResponse>(clientOptions.jsonMapper)
+
+        override fun delete(
+            params: VaultDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VaultDeleteResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("vault", params._pathParam(0))
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { deleteHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

@@ -9,6 +9,8 @@ import dev.casedev.models.vault.graphrag.GraphragGetStatsParams
 import dev.casedev.models.vault.graphrag.GraphragGetStatsResponse
 import dev.casedev.models.vault.graphrag.GraphragInitParams
 import dev.casedev.models.vault.graphrag.GraphragInitResponse
+import dev.casedev.models.vault.graphrag.GraphragProcessObjectParams
+import dev.casedev.models.vault.graphrag.GraphragProcessObjectResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -100,6 +102,37 @@ interface GraphragServiceAsync {
     /** @see init */
     fun init(id: String, requestOptions: RequestOptions): CompletableFuture<GraphragInitResponse> =
         init(id, GraphragInitParams.none(), requestOptions)
+
+    /**
+     * Manually trigger GraphRAG indexing for a vault object. The object must already be ingested
+     * (completed status). This extracts entities, relationships, and communities from the document
+     * for advanced knowledge graph queries.
+     */
+    fun processObject(
+        objectId: String,
+        params: GraphragProcessObjectParams,
+    ): CompletableFuture<GraphragProcessObjectResponse> =
+        processObject(objectId, params, RequestOptions.none())
+
+    /** @see processObject */
+    fun processObject(
+        objectId: String,
+        params: GraphragProcessObjectParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<GraphragProcessObjectResponse> =
+        processObject(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+    /** @see processObject */
+    fun processObject(
+        params: GraphragProcessObjectParams
+    ): CompletableFuture<GraphragProcessObjectResponse> =
+        processObject(params, RequestOptions.none())
+
+    /** @see processObject */
+    fun processObject(
+        params: GraphragProcessObjectParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<GraphragProcessObjectResponse>
 
     /**
      * A view of [GraphragServiceAsync] that provides access to raw HTTP responses for each method.
@@ -196,5 +229,35 @@ interface GraphragServiceAsync {
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<GraphragInitResponse>> =
             init(id, GraphragInitParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /vault/{id}/graphrag/{objectId}`, but is otherwise
+         * the same as [GraphragServiceAsync.processObject].
+         */
+        fun processObject(
+            objectId: String,
+            params: GraphragProcessObjectParams,
+        ): CompletableFuture<HttpResponseFor<GraphragProcessObjectResponse>> =
+            processObject(objectId, params, RequestOptions.none())
+
+        /** @see processObject */
+        fun processObject(
+            objectId: String,
+            params: GraphragProcessObjectParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<GraphragProcessObjectResponse>> =
+            processObject(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+        /** @see processObject */
+        fun processObject(
+            params: GraphragProcessObjectParams
+        ): CompletableFuture<HttpResponseFor<GraphragProcessObjectResponse>> =
+            processObject(params, RequestOptions.none())
+
+        /** @see processObject */
+        fun processObject(
+            params: GraphragProcessObjectParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<GraphragProcessObjectResponse>>
     }
 }

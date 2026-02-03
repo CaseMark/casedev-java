@@ -20,6 +20,8 @@ import dev.casedev.models.vault.graphrag.GraphragGetStatsParams
 import dev.casedev.models.vault.graphrag.GraphragGetStatsResponse
 import dev.casedev.models.vault.graphrag.GraphragInitParams
 import dev.casedev.models.vault.graphrag.GraphragInitResponse
+import dev.casedev.models.vault.graphrag.GraphragProcessObjectParams
+import dev.casedev.models.vault.graphrag.GraphragProcessObjectResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -48,6 +50,13 @@ class GraphragServiceImpl internal constructor(private val clientOptions: Client
     ): GraphragInitResponse =
         // post /vault/{id}/graphrag/init
         withRawResponse().init(params, requestOptions).parse()
+
+    override fun processObject(
+        params: GraphragProcessObjectParams,
+        requestOptions: RequestOptions,
+    ): GraphragProcessObjectResponse =
+        // post /vault/{id}/graphrag/{objectId}
+        withRawResponse().processObject(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         GraphragService.WithRawResponse {
@@ -115,6 +124,42 @@ class GraphragServiceImpl internal constructor(private val clientOptions: Client
             return errorHandler.handle(response).parseable {
                 response
                     .use { initHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val processObjectHandler: Handler<GraphragProcessObjectResponse> =
+            jsonHandler<GraphragProcessObjectResponse>(clientOptions.jsonMapper)
+
+        override fun processObject(
+            params: GraphragProcessObjectParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<GraphragProcessObjectResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("objectId", params.objectId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "vault",
+                        params._pathParam(0),
+                        "graphrag",
+                        params._pathParam(1),
+                    )
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { processObjectHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

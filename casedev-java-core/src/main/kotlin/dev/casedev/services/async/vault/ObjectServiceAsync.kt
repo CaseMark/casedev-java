@@ -7,13 +7,21 @@ import dev.casedev.core.RequestOptions
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlParams
 import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlResponse
+import dev.casedev.models.vault.objects.ObjectDeleteParams
+import dev.casedev.models.vault.objects.ObjectDeleteResponse
 import dev.casedev.models.vault.objects.ObjectDownloadParams
+import dev.casedev.models.vault.objects.ObjectGetOcrWordsParams
+import dev.casedev.models.vault.objects.ObjectGetOcrWordsResponse
+import dev.casedev.models.vault.objects.ObjectGetSummarizeJobParams
+import dev.casedev.models.vault.objects.ObjectGetSummarizeJobResponse
 import dev.casedev.models.vault.objects.ObjectGetTextParams
 import dev.casedev.models.vault.objects.ObjectGetTextResponse
 import dev.casedev.models.vault.objects.ObjectListParams
 import dev.casedev.models.vault.objects.ObjectListResponse
 import dev.casedev.models.vault.objects.ObjectRetrieveParams
 import dev.casedev.models.vault.objects.ObjectRetrieveResponse
+import dev.casedev.models.vault.objects.ObjectUpdateParams
+import dev.casedev.models.vault.objects.ObjectUpdateResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -60,6 +68,34 @@ interface ObjectServiceAsync {
     ): CompletableFuture<ObjectRetrieveResponse>
 
     /**
+     * Update a document's filename, path, or metadata. Use this to rename files or organize them
+     * into virtual folders. The path is stored in metadata.path and can be used to build folder
+     * hierarchies in your application.
+     */
+    fun update(
+        objectId: String,
+        params: ObjectUpdateParams,
+    ): CompletableFuture<ObjectUpdateResponse> = update(objectId, params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        objectId: String,
+        params: ObjectUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectUpdateResponse> =
+        update(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+    /** @see update */
+    fun update(params: ObjectUpdateParams): CompletableFuture<ObjectUpdateResponse> =
+        update(params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        params: ObjectUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectUpdateResponse>
+
+    /**
      * Retrieve all objects stored in a specific vault, including document metadata, ingestion
      * status, and processing statistics.
      */
@@ -92,6 +128,33 @@ interface ObjectServiceAsync {
     /** @see list */
     fun list(id: String, requestOptions: RequestOptions): CompletableFuture<ObjectListResponse> =
         list(id, ObjectListParams.none(), requestOptions)
+
+    /**
+     * Permanently deletes a document from the vault including all associated vectors, chunks, graph
+     * data, and the original file. This operation cannot be undone.
+     */
+    fun delete(
+        objectId: String,
+        params: ObjectDeleteParams,
+    ): CompletableFuture<ObjectDeleteResponse> = delete(objectId, params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(
+        objectId: String,
+        params: ObjectDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectDeleteResponse> =
+        delete(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+    /** @see delete */
+    fun delete(params: ObjectDeleteParams): CompletableFuture<ObjectDeleteResponse> =
+        delete(params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(
+        params: ObjectDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectDeleteResponse>
 
     /**
      * Generate presigned URLs for direct S3 operations (GET, PUT, DELETE, HEAD) on vault objects.
@@ -149,6 +212,66 @@ interface ObjectServiceAsync {
         params: ObjectDownloadParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<String>
+
+    /**
+     * Retrieves word-level OCR bounding box data for a processed PDF document. Each word includes
+     * its text, normalized bounding box coordinates (0-1 range), confidence score, and global word
+     * index. Use this data to highlight specific text ranges in a PDF viewer based on word indices
+     * from search results.
+     */
+    fun getOcrWords(
+        objectId: String,
+        params: ObjectGetOcrWordsParams,
+    ): CompletableFuture<ObjectGetOcrWordsResponse> =
+        getOcrWords(objectId, params, RequestOptions.none())
+
+    /** @see getOcrWords */
+    fun getOcrWords(
+        objectId: String,
+        params: ObjectGetOcrWordsParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectGetOcrWordsResponse> =
+        getOcrWords(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+    /** @see getOcrWords */
+    fun getOcrWords(params: ObjectGetOcrWordsParams): CompletableFuture<ObjectGetOcrWordsResponse> =
+        getOcrWords(params, RequestOptions.none())
+
+    /** @see getOcrWords */
+    fun getOcrWords(
+        params: ObjectGetOcrWordsParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectGetOcrWordsResponse>
+
+    /**
+     * Get the status of a CaseMark summary workflow job. If the job has been processing for too
+     * long, this endpoint will poll CaseMark directly to recover stuck jobs.
+     */
+    fun getSummarizeJob(
+        jobId: String,
+        params: ObjectGetSummarizeJobParams,
+    ): CompletableFuture<ObjectGetSummarizeJobResponse> =
+        getSummarizeJob(jobId, params, RequestOptions.none())
+
+    /** @see getSummarizeJob */
+    fun getSummarizeJob(
+        jobId: String,
+        params: ObjectGetSummarizeJobParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectGetSummarizeJobResponse> =
+        getSummarizeJob(params.toBuilder().jobId(jobId).build(), requestOptions)
+
+    /** @see getSummarizeJob */
+    fun getSummarizeJob(
+        params: ObjectGetSummarizeJobParams
+    ): CompletableFuture<ObjectGetSummarizeJobResponse> =
+        getSummarizeJob(params, RequestOptions.none())
+
+    /** @see getSummarizeJob */
+    fun getSummarizeJob(
+        params: ObjectGetSummarizeJobParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectGetSummarizeJobResponse>
 
     /**
      * Retrieves the full extracted text content from a processed vault object. Returns the
@@ -223,6 +346,36 @@ interface ObjectServiceAsync {
         ): CompletableFuture<HttpResponseFor<ObjectRetrieveResponse>>
 
         /**
+         * Returns a raw HTTP response for `patch /vault/{id}/objects/{objectId}`, but is otherwise
+         * the same as [ObjectServiceAsync.update].
+         */
+        fun update(
+            objectId: String,
+            params: ObjectUpdateParams,
+        ): CompletableFuture<HttpResponseFor<ObjectUpdateResponse>> =
+            update(objectId, params, RequestOptions.none())
+
+        /** @see update */
+        fun update(
+            objectId: String,
+            params: ObjectUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectUpdateResponse>> =
+            update(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+        /** @see update */
+        fun update(
+            params: ObjectUpdateParams
+        ): CompletableFuture<HttpResponseFor<ObjectUpdateResponse>> =
+            update(params, RequestOptions.none())
+
+        /** @see update */
+        fun update(
+            params: ObjectUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectUpdateResponse>>
+
+        /**
          * Returns a raw HTTP response for `get /vault/{id}/objects`, but is otherwise the same as
          * [ObjectServiceAsync.list].
          */
@@ -260,6 +413,36 @@ interface ObjectServiceAsync {
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ObjectListResponse>> =
             list(id, ObjectListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /vault/{id}/objects/{objectId}`, but is otherwise
+         * the same as [ObjectServiceAsync.delete].
+         */
+        fun delete(
+            objectId: String,
+            params: ObjectDeleteParams,
+        ): CompletableFuture<HttpResponseFor<ObjectDeleteResponse>> =
+            delete(objectId, params, RequestOptions.none())
+
+        /** @see delete */
+        fun delete(
+            objectId: String,
+            params: ObjectDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectDeleteResponse>> =
+            delete(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+        /** @see delete */
+        fun delete(
+            params: ObjectDeleteParams
+        ): CompletableFuture<HttpResponseFor<ObjectDeleteResponse>> =
+            delete(params, RequestOptions.none())
+
+        /** @see delete */
+        fun delete(
+            params: ObjectDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectDeleteResponse>>
 
         /**
          * Returns a raw HTTP response for `post /vault/{id}/objects/{objectId}/presigned-url`, but
@@ -318,6 +501,66 @@ interface ObjectServiceAsync {
             params: ObjectDownloadParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<String>>
+
+        /**
+         * Returns a raw HTTP response for `get /vault/{id}/objects/{objectId}/ocr-words`, but is
+         * otherwise the same as [ObjectServiceAsync.getOcrWords].
+         */
+        fun getOcrWords(
+            objectId: String,
+            params: ObjectGetOcrWordsParams,
+        ): CompletableFuture<HttpResponseFor<ObjectGetOcrWordsResponse>> =
+            getOcrWords(objectId, params, RequestOptions.none())
+
+        /** @see getOcrWords */
+        fun getOcrWords(
+            objectId: String,
+            params: ObjectGetOcrWordsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectGetOcrWordsResponse>> =
+            getOcrWords(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+        /** @see getOcrWords */
+        fun getOcrWords(
+            params: ObjectGetOcrWordsParams
+        ): CompletableFuture<HttpResponseFor<ObjectGetOcrWordsResponse>> =
+            getOcrWords(params, RequestOptions.none())
+
+        /** @see getOcrWords */
+        fun getOcrWords(
+            params: ObjectGetOcrWordsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectGetOcrWordsResponse>>
+
+        /**
+         * Returns a raw HTTP response for `get /vault/{id}/objects/{objectId}/summarize/{jobId}`,
+         * but is otherwise the same as [ObjectServiceAsync.getSummarizeJob].
+         */
+        fun getSummarizeJob(
+            jobId: String,
+            params: ObjectGetSummarizeJobParams,
+        ): CompletableFuture<HttpResponseFor<ObjectGetSummarizeJobResponse>> =
+            getSummarizeJob(jobId, params, RequestOptions.none())
+
+        /** @see getSummarizeJob */
+        fun getSummarizeJob(
+            jobId: String,
+            params: ObjectGetSummarizeJobParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectGetSummarizeJobResponse>> =
+            getSummarizeJob(params.toBuilder().jobId(jobId).build(), requestOptions)
+
+        /** @see getSummarizeJob */
+        fun getSummarizeJob(
+            params: ObjectGetSummarizeJobParams
+        ): CompletableFuture<HttpResponseFor<ObjectGetSummarizeJobResponse>> =
+            getSummarizeJob(params, RequestOptions.none())
+
+        /** @see getSummarizeJob */
+        fun getSummarizeJob(
+            params: ObjectGetSummarizeJobParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectGetSummarizeJobResponse>>
 
         /**
          * Returns a raw HTTP response for `get /vault/{id}/objects/{objectId}/text`, but is

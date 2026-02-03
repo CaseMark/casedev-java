@@ -6,8 +6,10 @@ import dev.casedev.TestServerExtension
 import dev.casedev.client.okhttp.CasedevOkHttpClientAsync
 import dev.casedev.core.JsonValue
 import dev.casedev.models.vault.VaultCreateParams
+import dev.casedev.models.vault.VaultDeleteParams
 import dev.casedev.models.vault.VaultIngestParams
 import dev.casedev.models.vault.VaultSearchParams
+import dev.casedev.models.vault.VaultUpdateParams
 import dev.casedev.models.vault.VaultUploadParams
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -61,6 +63,30 @@ internal class VaultServiceAsyncTest {
 
     @Disabled("Prism tests are disabled")
     @Test
+    fun update() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val vaultServiceAsync = client.vault()
+
+        val vaultFuture =
+            vaultServiceAsync.update(
+                VaultUpdateParams.builder()
+                    .id("id")
+                    .description("description")
+                    .enableGraph(false)
+                    .name("Updated Vault Name")
+                    .build()
+            )
+
+        val vault = vaultFuture.get()
+        vault.validate()
+    }
+
+    @Disabled("Prism tests are disabled")
+    @Test
     fun list() {
         val client =
             CasedevOkHttpClientAsync.builder()
@@ -73,6 +99,23 @@ internal class VaultServiceAsyncTest {
 
         val vaults = vaultsFuture.get()
         vaults.validate()
+    }
+
+    @Disabled("Prism tests are disabled")
+    @Test
+    fun delete() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val vaultServiceAsync = client.vault()
+
+        val vaultFuture =
+            vaultServiceAsync.delete(VaultDeleteParams.builder().id("id").async(true).build())
+
+        val vault = vaultFuture.get()
+        vault.validate()
     }
 
     @Disabled("Prism tests are disabled")

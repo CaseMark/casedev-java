@@ -3,14 +3,22 @@
 package dev.casedev.client
 
 import dev.casedev.core.ClientOptions
+import dev.casedev.services.async.ApplicationServiceAsync
 import dev.casedev.services.async.ComputeServiceAsync
+import dev.casedev.services.async.DatabaseServiceAsync
 import dev.casedev.services.async.FormatServiceAsync
+import dev.casedev.services.async.LegalServiceAsync
 import dev.casedev.services.async.LlmServiceAsync
+import dev.casedev.services.async.MemoryServiceAsync
 import dev.casedev.services.async.OcrServiceAsync
+import dev.casedev.services.async.PaymentServiceAsync
+import dev.casedev.services.async.PrivilegeServiceAsync
+import dev.casedev.services.async.ProjectServiceAsync
 import dev.casedev.services.async.SearchServiceAsync
+import dev.casedev.services.async.SuperdocServiceAsync
+import dev.casedev.services.async.TranslateServiceAsync
 import dev.casedev.services.async.VaultServiceAsync
 import dev.casedev.services.async.VoiceServiceAsync
-import dev.casedev.services.async.WebhookServiceAsync
 import java.util.function.Consumer
 
 /**
@@ -49,21 +57,37 @@ interface CasedevClientAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClientAsync
 
+    fun applications(): ApplicationServiceAsync
+
     fun compute(): ComputeServiceAsync
+
+    fun database(): DatabaseServiceAsync
 
     fun format(): FormatServiceAsync
 
+    fun legal(): LegalServiceAsync
+
     fun llm(): LlmServiceAsync
+
+    fun memory(): MemoryServiceAsync
 
     fun ocr(): OcrServiceAsync
 
+    fun payments(): PaymentServiceAsync
+
+    fun privilege(): PrivilegeServiceAsync
+
+    fun projects(): ProjectServiceAsync
+
     fun search(): SearchServiceAsync
+
+    fun superdoc(): SuperdocServiceAsync
+
+    fun translate(): TranslateServiceAsync
 
     fun vault(): VaultServiceAsync
 
     fun voice(): VoiceServiceAsync
-
-    fun webhooks(): WebhookServiceAsync
 
     /**
      * Closes this client, relinquishing any underlying resources.
@@ -92,20 +116,36 @@ interface CasedevClientAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): CasedevClientAsync.WithRawResponse
 
+        fun applications(): ApplicationServiceAsync.WithRawResponse
+
         fun compute(): ComputeServiceAsync.WithRawResponse
+
+        fun database(): DatabaseServiceAsync.WithRawResponse
 
         fun format(): FormatServiceAsync.WithRawResponse
 
+        fun legal(): LegalServiceAsync.WithRawResponse
+
         fun llm(): LlmServiceAsync.WithRawResponse
+
+        fun memory(): MemoryServiceAsync.WithRawResponse
 
         fun ocr(): OcrServiceAsync.WithRawResponse
 
+        fun payments(): PaymentServiceAsync.WithRawResponse
+
+        fun privilege(): PrivilegeServiceAsync.WithRawResponse
+
+        fun projects(): ProjectServiceAsync.WithRawResponse
+
         fun search(): SearchServiceAsync.WithRawResponse
+
+        fun superdoc(): SuperdocServiceAsync.WithRawResponse
+
+        fun translate(): TranslateServiceAsync.WithRawResponse
 
         fun vault(): VaultServiceAsync.WithRawResponse
 
         fun voice(): VoiceServiceAsync.WithRawResponse
-
-        fun webhooks(): WebhookServiceAsync.WithRawResponse
     }
 }

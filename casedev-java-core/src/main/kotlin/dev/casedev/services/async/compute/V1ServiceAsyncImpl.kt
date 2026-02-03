@@ -20,12 +20,10 @@ import dev.casedev.models.compute.v1.V1GetUsageParams
 import dev.casedev.models.compute.v1.V1GetUsageResponse
 import dev.casedev.services.async.compute.v1.EnvironmentServiceAsync
 import dev.casedev.services.async.compute.v1.EnvironmentServiceAsyncImpl
-import dev.casedev.services.async.compute.v1.FunctionServiceAsync
-import dev.casedev.services.async.compute.v1.FunctionServiceAsyncImpl
-import dev.casedev.services.async.compute.v1.InvokeServiceAsync
-import dev.casedev.services.async.compute.v1.InvokeServiceAsyncImpl
-import dev.casedev.services.async.compute.v1.RunServiceAsync
-import dev.casedev.services.async.compute.v1.RunServiceAsyncImpl
+import dev.casedev.services.async.compute.v1.InstanceServiceAsync
+import dev.casedev.services.async.compute.v1.InstanceServiceAsyncImpl
+import dev.casedev.services.async.compute.v1.InstanceTypeServiceAsync
+import dev.casedev.services.async.compute.v1.InstanceTypeServiceAsyncImpl
 import dev.casedev.services.async.compute.v1.SecretServiceAsync
 import dev.casedev.services.async.compute.v1.SecretServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
@@ -42,11 +40,11 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
         EnvironmentServiceAsyncImpl(clientOptions)
     }
 
-    private val functions: FunctionServiceAsync by lazy { FunctionServiceAsyncImpl(clientOptions) }
+    private val instanceTypes: InstanceTypeServiceAsync by lazy {
+        InstanceTypeServiceAsyncImpl(clientOptions)
+    }
 
-    private val invoke: InvokeServiceAsync by lazy { InvokeServiceAsyncImpl(clientOptions) }
-
-    private val runs: RunServiceAsync by lazy { RunServiceAsyncImpl(clientOptions) }
+    private val instances: InstanceServiceAsync by lazy { InstanceServiceAsyncImpl(clientOptions) }
 
     private val secrets: SecretServiceAsync by lazy { SecretServiceAsyncImpl(clientOptions) }
 
@@ -57,11 +55,9 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
 
     override fun environments(): EnvironmentServiceAsync = environments
 
-    override fun functions(): FunctionServiceAsync = functions
+    override fun instanceTypes(): InstanceTypeServiceAsync = instanceTypes
 
-    override fun invoke(): InvokeServiceAsync = invoke
-
-    override fun runs(): RunServiceAsync = runs
+    override fun instances(): InstanceServiceAsync = instances
 
     override fun secrets(): SecretServiceAsync = secrets
 
@@ -89,16 +85,12 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
             EnvironmentServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val functions: FunctionServiceAsync.WithRawResponse by lazy {
-            FunctionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        private val instanceTypes: InstanceTypeServiceAsync.WithRawResponse by lazy {
+            InstanceTypeServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val invoke: InvokeServiceAsync.WithRawResponse by lazy {
-            InvokeServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val runs: RunServiceAsync.WithRawResponse by lazy {
-            RunServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        private val instances: InstanceServiceAsync.WithRawResponse by lazy {
+            InstanceServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val secrets: SecretServiceAsync.WithRawResponse by lazy {
@@ -114,11 +106,9 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
 
         override fun environments(): EnvironmentServiceAsync.WithRawResponse = environments
 
-        override fun functions(): FunctionServiceAsync.WithRawResponse = functions
+        override fun instanceTypes(): InstanceTypeServiceAsync.WithRawResponse = instanceTypes
 
-        override fun invoke(): InvokeServiceAsync.WithRawResponse = invoke
-
-        override fun runs(): RunServiceAsync.WithRawResponse = runs
+        override fun instances(): InstanceServiceAsync.WithRawResponse = instances
 
         override fun secrets(): SecretServiceAsync.WithRawResponse = secrets
 
