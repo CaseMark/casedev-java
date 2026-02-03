@@ -239,7 +239,7 @@ private constructor(
         )
 
         /**
-         * Multiple candidates (when ambiguous)
+         * Multiple candidates (when multiple_matches or heuristic verification)
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -255,7 +255,7 @@ private constructor(
         fun case_(): Optional<Case> = case_.getOptional("case")
 
         /**
-         * Heuristic confidence score when using fallback verification.
+         * Confidence score (1.0 for CourtListener, heuristic score for fallback).
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -408,7 +408,7 @@ private constructor(
                 additionalProperties = citation.additionalProperties.toMutableMap()
             }
 
-            /** Multiple candidates (when ambiguous) */
+            /** Multiple candidates (when multiple_matches or heuristic verification) */
             fun candidates(candidates: List<Candidate>) = candidates(JsonField.of(candidates))
 
             /**
@@ -446,7 +446,7 @@ private constructor(
              */
             fun case_(case_: JsonField<Case>) = apply { this.case_ = case_ }
 
-            /** Heuristic confidence score when using fallback verification. */
+            /** Confidence score (1.0 for CourtListener, heuristic score for fallback). */
             fun confidence(confidence: Double) = confidence(JsonField.of(confidence))
 
             /**
@@ -1471,7 +1471,7 @@ private constructor(
 
                 @JvmField val NOT_FOUND = of("not_found")
 
-                @JvmField val AMBIGUOUS = of("ambiguous")
+                @JvmField val MULTIPLE_MATCHES = of("multiple_matches")
 
                 @JvmStatic fun of(value: String) = Status(JsonField.of(value))
             }
@@ -1480,7 +1480,7 @@ private constructor(
             enum class Known {
                 VERIFIED,
                 NOT_FOUND,
-                AMBIGUOUS,
+                MULTIPLE_MATCHES,
             }
 
             /**
@@ -1495,7 +1495,7 @@ private constructor(
             enum class Value {
                 VERIFIED,
                 NOT_FOUND,
-                AMBIGUOUS,
+                MULTIPLE_MATCHES,
                 /**
                  * An enum member indicating that [Status] was instantiated with an unknown value.
                  */
@@ -1513,7 +1513,7 @@ private constructor(
                 when (this) {
                     VERIFIED -> Value.VERIFIED
                     NOT_FOUND -> Value.NOT_FOUND
-                    AMBIGUOUS -> Value.AMBIGUOUS
+                    MULTIPLE_MATCHES -> Value.MULTIPLE_MATCHES
                     else -> Value._UNKNOWN
                 }
 
@@ -1530,7 +1530,7 @@ private constructor(
                 when (this) {
                     VERIFIED -> Known.VERIFIED
                     NOT_FOUND -> Known.NOT_FOUND
-                    AMBIGUOUS -> Known.AMBIGUOUS
+                    MULTIPLE_MATCHES -> Known.MULTIPLE_MATCHES
                     else -> throw CasedevInvalidDataException("Unknown Status: $value")
                 }
 
@@ -1763,7 +1763,7 @@ private constructor(
     class Summary
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val ambiguous: JsonField<Long>,
+        private val multipleMatches: JsonField<Long>,
         private val notFound: JsonField<Long>,
         private val total: JsonField<Long>,
         private val verified: JsonField<Long>,
@@ -1772,13 +1772,13 @@ private constructor(
 
         @JsonCreator
         private constructor(
-            @JsonProperty("ambiguous")
+            @JsonProperty("multipleMatches")
             @ExcludeMissing
-            ambiguous: JsonField<Long> = JsonMissing.of(),
+            multipleMatches: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("notFound") @ExcludeMissing notFound: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("total") @ExcludeMissing total: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("verified") @ExcludeMissing verified: JsonField<Long> = JsonMissing.of(),
-        ) : this(ambiguous, notFound, total, verified, mutableMapOf())
+        ) : this(multipleMatches, notFound, total, verified, mutableMapOf())
 
         /**
          * Citations with multiple possible matches
@@ -1786,7 +1786,7 @@ private constructor(
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun ambiguous(): Optional<Long> = ambiguous.getOptional("ambiguous")
+        fun multipleMatches(): Optional<Long> = multipleMatches.getOptional("multipleMatches")
 
         /**
          * Citations not found in database
@@ -1813,11 +1813,14 @@ private constructor(
         fun verified(): Optional<Long> = verified.getOptional("verified")
 
         /**
-         * Returns the raw JSON value of [ambiguous].
+         * Returns the raw JSON value of [multipleMatches].
          *
-         * Unlike [ambiguous], this method doesn't throw if the JSON field has an unexpected type.
+         * Unlike [multipleMatches], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
-        @JsonProperty("ambiguous") @ExcludeMissing fun _ambiguous(): JsonField<Long> = ambiguous
+        @JsonProperty("multipleMatches")
+        @ExcludeMissing
+        fun _multipleMatches(): JsonField<Long> = multipleMatches
 
         /**
          * Returns the raw JSON value of [notFound].
@@ -1861,7 +1864,7 @@ private constructor(
         /** A builder for [Summary]. */
         class Builder internal constructor() {
 
-            private var ambiguous: JsonField<Long> = JsonMissing.of()
+            private var multipleMatches: JsonField<Long> = JsonMissing.of()
             private var notFound: JsonField<Long> = JsonMissing.of()
             private var total: JsonField<Long> = JsonMissing.of()
             private var verified: JsonField<Long> = JsonMissing.of()
@@ -1869,7 +1872,7 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(summary: Summary) = apply {
-                ambiguous = summary.ambiguous
+                multipleMatches = summary.multipleMatches
                 notFound = summary.notFound
                 total = summary.total
                 verified = summary.verified
@@ -1877,16 +1880,19 @@ private constructor(
             }
 
             /** Citations with multiple possible matches */
-            fun ambiguous(ambiguous: Long) = ambiguous(JsonField.of(ambiguous))
+            fun multipleMatches(multipleMatches: Long) =
+                multipleMatches(JsonField.of(multipleMatches))
 
             /**
-             * Sets [Builder.ambiguous] to an arbitrary JSON value.
+             * Sets [Builder.multipleMatches] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.ambiguous] with a well-typed [Long] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.multipleMatches] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun ambiguous(ambiguous: JsonField<Long>) = apply { this.ambiguous = ambiguous }
+            fun multipleMatches(multipleMatches: JsonField<Long>) = apply {
+                this.multipleMatches = multipleMatches
+            }
 
             /** Citations not found in database */
             fun notFound(notFound: Long) = notFound(JsonField.of(notFound))
@@ -1949,7 +1955,13 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Summary =
-                Summary(ambiguous, notFound, total, verified, additionalProperties.toMutableMap())
+                Summary(
+                    multipleMatches,
+                    notFound,
+                    total,
+                    verified,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -1959,7 +1971,7 @@ private constructor(
                 return@apply
             }
 
-            ambiguous()
+            multipleMatches()
             notFound()
             total()
             verified()
@@ -1982,7 +1994,7 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (ambiguous.asKnown().isPresent) 1 else 0) +
+            (if (multipleMatches.asKnown().isPresent) 1 else 0) +
                 (if (notFound.asKnown().isPresent) 1 else 0) +
                 (if (total.asKnown().isPresent) 1 else 0) +
                 (if (verified.asKnown().isPresent) 1 else 0)
@@ -1993,7 +2005,7 @@ private constructor(
             }
 
             return other is Summary &&
-                ambiguous == other.ambiguous &&
+                multipleMatches == other.multipleMatches &&
                 notFound == other.notFound &&
                 total == other.total &&
                 verified == other.verified &&
@@ -2001,13 +2013,13 @@ private constructor(
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(ambiguous, notFound, total, verified, additionalProperties)
+            Objects.hash(multipleMatches, notFound, total, verified, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Summary{ambiguous=$ambiguous, notFound=$notFound, total=$total, verified=$verified, additionalProperties=$additionalProperties}"
+            "Summary{multipleMatches=$multipleMatches, notFound=$notFound, total=$total, verified=$verified, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
