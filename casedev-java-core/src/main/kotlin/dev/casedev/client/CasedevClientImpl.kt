@@ -4,22 +4,38 @@ package dev.casedev.client
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.getPackageVersion
+import dev.casedev.services.blocking.ApplicationService
+import dev.casedev.services.blocking.ApplicationServiceImpl
 import dev.casedev.services.blocking.ComputeService
 import dev.casedev.services.blocking.ComputeServiceImpl
+import dev.casedev.services.blocking.DatabaseService
+import dev.casedev.services.blocking.DatabaseServiceImpl
 import dev.casedev.services.blocking.FormatService
 import dev.casedev.services.blocking.FormatServiceImpl
+import dev.casedev.services.blocking.LegalService
+import dev.casedev.services.blocking.LegalServiceImpl
 import dev.casedev.services.blocking.LlmService
 import dev.casedev.services.blocking.LlmServiceImpl
+import dev.casedev.services.blocking.MemoryService
+import dev.casedev.services.blocking.MemoryServiceImpl
 import dev.casedev.services.blocking.OcrService
 import dev.casedev.services.blocking.OcrServiceImpl
+import dev.casedev.services.blocking.PaymentService
+import dev.casedev.services.blocking.PaymentServiceImpl
+import dev.casedev.services.blocking.PrivilegeService
+import dev.casedev.services.blocking.PrivilegeServiceImpl
+import dev.casedev.services.blocking.ProjectService
+import dev.casedev.services.blocking.ProjectServiceImpl
 import dev.casedev.services.blocking.SearchService
 import dev.casedev.services.blocking.SearchServiceImpl
+import dev.casedev.services.blocking.SuperdocService
+import dev.casedev.services.blocking.SuperdocServiceImpl
+import dev.casedev.services.blocking.TranslateService
+import dev.casedev.services.blocking.TranslateServiceImpl
 import dev.casedev.services.blocking.VaultService
 import dev.casedev.services.blocking.VaultServiceImpl
 import dev.casedev.services.blocking.VoiceService
 import dev.casedev.services.blocking.VoiceServiceImpl
-import dev.casedev.services.blocking.WebhookService
-import dev.casedev.services.blocking.WebhookServiceImpl
 import java.util.function.Consumer
 
 class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClient {
@@ -39,21 +55,47 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
         WithRawResponseImpl(clientOptions)
     }
 
+    private val applications: ApplicationService by lazy {
+        ApplicationServiceImpl(clientOptionsWithUserAgent)
+    }
+
     private val compute: ComputeService by lazy { ComputeServiceImpl(clientOptionsWithUserAgent) }
+
+    private val database: DatabaseService by lazy {
+        DatabaseServiceImpl(clientOptionsWithUserAgent)
+    }
 
     private val format: FormatService by lazy { FormatServiceImpl(clientOptionsWithUserAgent) }
 
+    private val legal: LegalService by lazy { LegalServiceImpl(clientOptionsWithUserAgent) }
+
     private val llm: LlmService by lazy { LlmServiceImpl(clientOptionsWithUserAgent) }
+
+    private val memory: MemoryService by lazy { MemoryServiceImpl(clientOptionsWithUserAgent) }
 
     private val ocr: OcrService by lazy { OcrServiceImpl(clientOptionsWithUserAgent) }
 
+    private val payments: PaymentService by lazy { PaymentServiceImpl(clientOptionsWithUserAgent) }
+
+    private val privilege: PrivilegeService by lazy {
+        PrivilegeServiceImpl(clientOptionsWithUserAgent)
+    }
+
+    private val projects: ProjectService by lazy { ProjectServiceImpl(clientOptionsWithUserAgent) }
+
     private val search: SearchService by lazy { SearchServiceImpl(clientOptionsWithUserAgent) }
+
+    private val superdoc: SuperdocService by lazy {
+        SuperdocServiceImpl(clientOptionsWithUserAgent)
+    }
+
+    private val translate: TranslateService by lazy {
+        TranslateServiceImpl(clientOptionsWithUserAgent)
+    }
 
     private val vault: VaultService by lazy { VaultServiceImpl(clientOptionsWithUserAgent) }
 
     private val voice: VoiceService by lazy { VoiceServiceImpl(clientOptionsWithUserAgent) }
-
-    private val webhooks: WebhookService by lazy { WebhookServiceImpl(clientOptionsWithUserAgent) }
 
     override fun async(): CasedevClientAsync = async
 
@@ -62,45 +104,97 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClient =
         CasedevClientImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun applications(): ApplicationService = applications
+
     override fun compute(): ComputeService = compute
+
+    override fun database(): DatabaseService = database
 
     override fun format(): FormatService = format
 
+    override fun legal(): LegalService = legal
+
     override fun llm(): LlmService = llm
+
+    override fun memory(): MemoryService = memory
 
     override fun ocr(): OcrService = ocr
 
+    override fun payments(): PaymentService = payments
+
+    override fun privilege(): PrivilegeService = privilege
+
+    override fun projects(): ProjectService = projects
+
     override fun search(): SearchService = search
+
+    override fun superdoc(): SuperdocService = superdoc
+
+    override fun translate(): TranslateService = translate
 
     override fun vault(): VaultService = vault
 
     override fun voice(): VoiceService = voice
-
-    override fun webhooks(): WebhookService = webhooks
 
     override fun close() = clientOptions.close()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CasedevClient.WithRawResponse {
 
+        private val applications: ApplicationService.WithRawResponse by lazy {
+            ApplicationServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val compute: ComputeService.WithRawResponse by lazy {
             ComputeServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val database: DatabaseService.WithRawResponse by lazy {
+            DatabaseServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val format: FormatService.WithRawResponse by lazy {
             FormatServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val legal: LegalService.WithRawResponse by lazy {
+            LegalServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val llm: LlmService.WithRawResponse by lazy {
             LlmServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val memory: MemoryService.WithRawResponse by lazy {
+            MemoryServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val ocr: OcrService.WithRawResponse by lazy {
             OcrServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val payments: PaymentService.WithRawResponse by lazy {
+            PaymentServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val privilege: PrivilegeService.WithRawResponse by lazy {
+            PrivilegeServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val projects: ProjectService.WithRawResponse by lazy {
+            ProjectServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val search: SearchService.WithRawResponse by lazy {
             SearchServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val superdoc: SuperdocService.WithRawResponse by lazy {
+            SuperdocServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val translate: TranslateService.WithRawResponse by lazy {
+            TranslateServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val vault: VaultService.WithRawResponse by lazy {
@@ -111,10 +205,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
             VoiceServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val webhooks: WebhookService.WithRawResponse by lazy {
-            WebhookServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): CasedevClient.WithRawResponse =
@@ -122,20 +212,36 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        override fun applications(): ApplicationService.WithRawResponse = applications
+
         override fun compute(): ComputeService.WithRawResponse = compute
+
+        override fun database(): DatabaseService.WithRawResponse = database
 
         override fun format(): FormatService.WithRawResponse = format
 
+        override fun legal(): LegalService.WithRawResponse = legal
+
         override fun llm(): LlmService.WithRawResponse = llm
+
+        override fun memory(): MemoryService.WithRawResponse = memory
 
         override fun ocr(): OcrService.WithRawResponse = ocr
 
+        override fun payments(): PaymentService.WithRawResponse = payments
+
+        override fun privilege(): PrivilegeService.WithRawResponse = privilege
+
+        override fun projects(): ProjectService.WithRawResponse = projects
+
         override fun search(): SearchService.WithRawResponse = search
+
+        override fun superdoc(): SuperdocService.WithRawResponse = superdoc
+
+        override fun translate(): TranslateService.WithRawResponse = translate
 
         override fun vault(): VaultService.WithRawResponse = vault
 
         override fun voice(): VoiceService.WithRawResponse = voice
-
-        override fun webhooks(): WebhookService.WithRawResponse = webhooks
     }
 }

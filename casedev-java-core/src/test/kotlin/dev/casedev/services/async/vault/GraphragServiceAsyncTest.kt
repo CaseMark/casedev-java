@@ -4,6 +4,7 @@ package dev.casedev.services.async.vault
 
 import dev.casedev.TestServerExtension
 import dev.casedev.client.okhttp.CasedevOkHttpClientAsync
+import dev.casedev.models.vault.graphrag.GraphragProcessObjectParams
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -38,6 +39,25 @@ internal class GraphragServiceAsyncTest {
         val graphragServiceAsync = client.vault().graphrag()
 
         val responseFuture = graphragServiceAsync.init("id")
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("Prism tests are disabled")
+    @Test
+    fun processObject() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val graphragServiceAsync = client.vault().graphrag()
+
+        val responseFuture =
+            graphragServiceAsync.processObject(
+                GraphragProcessObjectParams.builder().id("id").objectId("objectId").build()
+            )
 
         val response = responseFuture.get()
         response.validate()

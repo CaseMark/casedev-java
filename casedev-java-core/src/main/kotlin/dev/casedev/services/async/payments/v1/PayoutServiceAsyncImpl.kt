@@ -1,0 +1,179 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package dev.casedev.services.async.payments.v1
+
+import dev.casedev.core.ClientOptions
+import dev.casedev.core.RequestOptions
+import dev.casedev.core.checkRequired
+import dev.casedev.core.handlers.emptyHandler
+import dev.casedev.core.handlers.errorBodyHandler
+import dev.casedev.core.handlers.errorHandler
+import dev.casedev.core.http.HttpMethod
+import dev.casedev.core.http.HttpRequest
+import dev.casedev.core.http.HttpResponse
+import dev.casedev.core.http.HttpResponse.Handler
+import dev.casedev.core.http.json
+import dev.casedev.core.http.parseable
+import dev.casedev.core.prepareAsync
+import dev.casedev.models.payments.v1.payouts.PayoutCancelParams
+import dev.casedev.models.payments.v1.payouts.PayoutCreateParams
+import dev.casedev.models.payments.v1.payouts.PayoutListParams
+import dev.casedev.models.payments.v1.payouts.PayoutRetrieveParams
+import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
+import kotlin.jvm.optionals.getOrNull
+
+class PayoutServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    PayoutServiceAsync {
+
+    private val withRawResponse: PayoutServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
+
+    override fun withRawResponse(): PayoutServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PayoutServiceAsync =
+        PayoutServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun create(
+        params: PayoutCreateParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Void?> =
+        // post /payments/v1/payouts
+        withRawResponse().create(params, requestOptions).thenAccept {}
+
+    override fun retrieve(
+        params: PayoutRetrieveParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Void?> =
+        // get /payments/v1/payouts/{id}
+        withRawResponse().retrieve(params, requestOptions).thenAccept {}
+
+    override fun list(
+        params: PayoutListParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Void?> =
+        // get /payments/v1/payouts
+        withRawResponse().list(params, requestOptions).thenAccept {}
+
+    override fun cancel(
+        params: PayoutCancelParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Void?> =
+        // post /payments/v1/payouts/{id}/cancel
+        withRawResponse().cancel(params, requestOptions).thenAccept {}
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        PayoutServiceAsync.WithRawResponse {
+
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): PayoutServiceAsync.WithRawResponse =
+            PayoutServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
+        private val createHandler: Handler<Void?> = emptyHandler()
+
+        override fun create(
+            params: PayoutCreateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("payments", "v1", "payouts")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response.use { createHandler.handle(it) }
+                    }
+                }
+        }
+
+        private val retrieveHandler: Handler<Void?> = emptyHandler()
+
+        override fun retrieve(
+            params: PayoutRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("payments", "v1", "payouts", params._pathParam(0))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response.use { retrieveHandler.handle(it) }
+                    }
+                }
+        }
+
+        private val listHandler: Handler<Void?> = emptyHandler()
+
+        override fun list(
+            params: PayoutListParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("payments", "v1", "payouts")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response.use { listHandler.handle(it) }
+                    }
+                }
+        }
+
+        private val cancelHandler: Handler<Void?> = emptyHandler()
+
+        override fun cancel(
+            params: PayoutCancelParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("payments", "v1", "payouts", params._pathParam(0), "cancel")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response.use { cancelHandler.handle(it) }
+                    }
+                }
+        }
+    }
+}

@@ -48,14 +48,22 @@ internal class ProGuardCompatibilityTest {
         val client = CasedevOkHttpClient.builder().apiKey("My API Key").build()
 
         assertThat(client).isNotNull()
+        assertThat(client.applications()).isNotNull()
         assertThat(client.compute()).isNotNull()
+        assertThat(client.database()).isNotNull()
         assertThat(client.format()).isNotNull()
+        assertThat(client.legal()).isNotNull()
         assertThat(client.llm()).isNotNull()
+        assertThat(client.memory()).isNotNull()
         assertThat(client.ocr()).isNotNull()
+        assertThat(client.payments()).isNotNull()
+        assertThat(client.privilege()).isNotNull()
+        assertThat(client.projects()).isNotNull()
         assertThat(client.search()).isNotNull()
+        assertThat(client.superdoc()).isNotNull()
+        assertThat(client.translate()).isNotNull()
         assertThat(client.vault()).isNotNull()
         assertThat(client.voice()).isNotNull()
-        assertThat(client.webhooks()).isNotNull()
     }
 
     @Test

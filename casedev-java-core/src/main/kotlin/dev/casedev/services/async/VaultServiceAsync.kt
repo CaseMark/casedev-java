@@ -7,6 +7,8 @@ import dev.casedev.core.RequestOptions
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultCreateResponse
+import dev.casedev.models.vault.VaultDeleteParams
+import dev.casedev.models.vault.VaultDeleteResponse
 import dev.casedev.models.vault.VaultIngestParams
 import dev.casedev.models.vault.VaultIngestResponse
 import dev.casedev.models.vault.VaultListParams
@@ -15,6 +17,8 @@ import dev.casedev.models.vault.VaultRetrieveParams
 import dev.casedev.models.vault.VaultRetrieveResponse
 import dev.casedev.models.vault.VaultSearchParams
 import dev.casedev.models.vault.VaultSearchResponse
+import dev.casedev.models.vault.VaultUpdateParams
+import dev.casedev.models.vault.VaultUpdateResponse
 import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
 import dev.casedev.services.async.vault.GraphragServiceAsync
@@ -94,6 +98,42 @@ interface VaultServiceAsync {
         retrieve(id, VaultRetrieveParams.none(), requestOptions)
 
     /**
+     * Update vault settings including name, description, and enableGraph. Changing enableGraph only
+     * affects future document uploads - existing documents retain their current graph/non-graph
+     * state.
+     */
+    fun update(id: String): CompletableFuture<VaultUpdateResponse> =
+        update(id, VaultUpdateParams.none())
+
+    /** @see update */
+    fun update(
+        id: String,
+        params: VaultUpdateParams = VaultUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VaultUpdateResponse> =
+        update(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see update */
+    fun update(
+        id: String,
+        params: VaultUpdateParams = VaultUpdateParams.none(),
+    ): CompletableFuture<VaultUpdateResponse> = update(id, params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        params: VaultUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VaultUpdateResponse>
+
+    /** @see update */
+    fun update(params: VaultUpdateParams): CompletableFuture<VaultUpdateResponse> =
+        update(params, RequestOptions.none())
+
+    /** @see update */
+    fun update(id: String, requestOptions: RequestOptions): CompletableFuture<VaultUpdateResponse> =
+        update(id, VaultUpdateParams.none(), requestOptions)
+
+    /**
      * List all vaults for the authenticated organization. Returns vault metadata including name,
      * description, storage configuration, and usage statistics.
      */
@@ -113,6 +153,42 @@ interface VaultServiceAsync {
     /** @see list */
     fun list(requestOptions: RequestOptions): CompletableFuture<VaultListResponse> =
         list(VaultListParams.none(), requestOptions)
+
+    /**
+     * Permanently deletes a vault and all its contents including documents, vectors, graph data,
+     * and S3 buckets. This operation cannot be undone. For large vaults, use the async=true query
+     * parameter to queue deletion in the background.
+     */
+    fun delete(id: String): CompletableFuture<VaultDeleteResponse> =
+        delete(id, VaultDeleteParams.none())
+
+    /** @see delete */
+    fun delete(
+        id: String,
+        params: VaultDeleteParams = VaultDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VaultDeleteResponse> =
+        delete(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see delete */
+    fun delete(
+        id: String,
+        params: VaultDeleteParams = VaultDeleteParams.none(),
+    ): CompletableFuture<VaultDeleteResponse> = delete(id, params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(
+        params: VaultDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VaultDeleteResponse>
+
+    /** @see delete */
+    fun delete(params: VaultDeleteParams): CompletableFuture<VaultDeleteResponse> =
+        delete(params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(id: String, requestOptions: RequestOptions): CompletableFuture<VaultDeleteResponse> =
+        delete(id, VaultDeleteParams.none(), requestOptions)
 
     /**
      * Triggers ingestion workflow for a vault object to extract text, generate chunks, and create
@@ -269,6 +345,47 @@ interface VaultServiceAsync {
             retrieve(id, VaultRetrieveParams.none(), requestOptions)
 
         /**
+         * Returns a raw HTTP response for `patch /vault/{id}`, but is otherwise the same as
+         * [VaultServiceAsync.update].
+         */
+        fun update(id: String): CompletableFuture<HttpResponseFor<VaultUpdateResponse>> =
+            update(id, VaultUpdateParams.none())
+
+        /** @see update */
+        fun update(
+            id: String,
+            params: VaultUpdateParams = VaultUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VaultUpdateResponse>> =
+            update(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see update */
+        fun update(
+            id: String,
+            params: VaultUpdateParams = VaultUpdateParams.none(),
+        ): CompletableFuture<HttpResponseFor<VaultUpdateResponse>> =
+            update(id, params, RequestOptions.none())
+
+        /** @see update */
+        fun update(
+            params: VaultUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VaultUpdateResponse>>
+
+        /** @see update */
+        fun update(
+            params: VaultUpdateParams
+        ): CompletableFuture<HttpResponseFor<VaultUpdateResponse>> =
+            update(params, RequestOptions.none())
+
+        /** @see update */
+        fun update(
+            id: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VaultUpdateResponse>> =
+            update(id, VaultUpdateParams.none(), requestOptions)
+
+        /**
          * Returns a raw HTTP response for `get /vault`, but is otherwise the same as
          * [VaultServiceAsync.list].
          */
@@ -292,6 +409,47 @@ interface VaultServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<VaultListResponse>> =
             list(VaultListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /vault/{id}`, but is otherwise the same as
+         * [VaultServiceAsync.delete].
+         */
+        fun delete(id: String): CompletableFuture<HttpResponseFor<VaultDeleteResponse>> =
+            delete(id, VaultDeleteParams.none())
+
+        /** @see delete */
+        fun delete(
+            id: String,
+            params: VaultDeleteParams = VaultDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VaultDeleteResponse>> =
+            delete(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see delete */
+        fun delete(
+            id: String,
+            params: VaultDeleteParams = VaultDeleteParams.none(),
+        ): CompletableFuture<HttpResponseFor<VaultDeleteResponse>> =
+            delete(id, params, RequestOptions.none())
+
+        /** @see delete */
+        fun delete(
+            params: VaultDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VaultDeleteResponse>>
+
+        /** @see delete */
+        fun delete(
+            params: VaultDeleteParams
+        ): CompletableFuture<HttpResponseFor<VaultDeleteResponse>> =
+            delete(params, RequestOptions.none())
+
+        /** @see delete */
+        fun delete(
+            id: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VaultDeleteResponse>> =
+            delete(id, VaultDeleteParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /vault/{id}/ingest/{objectId}`, but is otherwise

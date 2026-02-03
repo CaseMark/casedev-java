@@ -6,8 +6,10 @@ import dev.casedev.TestServerExtension
 import dev.casedev.client.okhttp.CasedevOkHttpClient
 import dev.casedev.core.JsonValue
 import dev.casedev.models.vault.VaultCreateParams
+import dev.casedev.models.vault.VaultDeleteParams
 import dev.casedev.models.vault.VaultIngestParams
 import dev.casedev.models.vault.VaultSearchParams
+import dev.casedev.models.vault.VaultUpdateParams
 import dev.casedev.models.vault.VaultUploadParams
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -59,6 +61,29 @@ internal class VaultServiceTest {
 
     @Disabled("Prism tests are disabled")
     @Test
+    fun update() {
+        val client =
+            CasedevOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val vaultService = client.vault()
+
+        val vault =
+            vaultService.update(
+                VaultUpdateParams.builder()
+                    .id("id")
+                    .description("description")
+                    .enableGraph(false)
+                    .name("Updated Vault Name")
+                    .build()
+            )
+
+        vault.validate()
+    }
+
+    @Disabled("Prism tests are disabled")
+    @Test
     fun list() {
         val client =
             CasedevOkHttpClient.builder()
@@ -70,6 +95,21 @@ internal class VaultServiceTest {
         val vaults = vaultService.list()
 
         vaults.validate()
+    }
+
+    @Disabled("Prism tests are disabled")
+    @Test
+    fun delete() {
+        val client =
+            CasedevOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val vaultService = client.vault()
+
+        val vault = vaultService.delete(VaultDeleteParams.builder().id("id").async(true).build())
+
+        vault.validate()
     }
 
     @Disabled("Prism tests are disabled")

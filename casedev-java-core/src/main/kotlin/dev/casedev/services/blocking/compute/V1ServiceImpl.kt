@@ -20,12 +20,10 @@ import dev.casedev.models.compute.v1.V1GetUsageParams
 import dev.casedev.models.compute.v1.V1GetUsageResponse
 import dev.casedev.services.blocking.compute.v1.EnvironmentService
 import dev.casedev.services.blocking.compute.v1.EnvironmentServiceImpl
-import dev.casedev.services.blocking.compute.v1.FunctionService
-import dev.casedev.services.blocking.compute.v1.FunctionServiceImpl
-import dev.casedev.services.blocking.compute.v1.InvokeService
-import dev.casedev.services.blocking.compute.v1.InvokeServiceImpl
-import dev.casedev.services.blocking.compute.v1.RunService
-import dev.casedev.services.blocking.compute.v1.RunServiceImpl
+import dev.casedev.services.blocking.compute.v1.InstanceService
+import dev.casedev.services.blocking.compute.v1.InstanceServiceImpl
+import dev.casedev.services.blocking.compute.v1.InstanceTypeService
+import dev.casedev.services.blocking.compute.v1.InstanceTypeServiceImpl
 import dev.casedev.services.blocking.compute.v1.SecretService
 import dev.casedev.services.blocking.compute.v1.SecretServiceImpl
 import java.util.function.Consumer
@@ -38,11 +36,11 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
 
     private val environments: EnvironmentService by lazy { EnvironmentServiceImpl(clientOptions) }
 
-    private val functions: FunctionService by lazy { FunctionServiceImpl(clientOptions) }
+    private val instanceTypes: InstanceTypeService by lazy {
+        InstanceTypeServiceImpl(clientOptions)
+    }
 
-    private val invoke: InvokeService by lazy { InvokeServiceImpl(clientOptions) }
-
-    private val runs: RunService by lazy { RunServiceImpl(clientOptions) }
+    private val instances: InstanceService by lazy { InstanceServiceImpl(clientOptions) }
 
     private val secrets: SecretService by lazy { SecretServiceImpl(clientOptions) }
 
@@ -53,11 +51,9 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
 
     override fun environments(): EnvironmentService = environments
 
-    override fun functions(): FunctionService = functions
+    override fun instanceTypes(): InstanceTypeService = instanceTypes
 
-    override fun invoke(): InvokeService = invoke
-
-    override fun runs(): RunService = runs
+    override fun instances(): InstanceService = instances
 
     override fun secrets(): SecretService = secrets
 
@@ -83,16 +79,12 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             EnvironmentServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val functions: FunctionService.WithRawResponse by lazy {
-            FunctionServiceImpl.WithRawResponseImpl(clientOptions)
+        private val instanceTypes: InstanceTypeService.WithRawResponse by lazy {
+            InstanceTypeServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val invoke: InvokeService.WithRawResponse by lazy {
-            InvokeServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val runs: RunService.WithRawResponse by lazy {
-            RunServiceImpl.WithRawResponseImpl(clientOptions)
+        private val instances: InstanceService.WithRawResponse by lazy {
+            InstanceServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val secrets: SecretService.WithRawResponse by lazy {
@@ -108,11 +100,9 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
 
         override fun environments(): EnvironmentService.WithRawResponse = environments
 
-        override fun functions(): FunctionService.WithRawResponse = functions
+        override fun instanceTypes(): InstanceTypeService.WithRawResponse = instanceTypes
 
-        override fun invoke(): InvokeService.WithRawResponse = invoke
-
-        override fun runs(): RunService.WithRawResponse = runs
+        override fun instances(): InstanceService.WithRawResponse = instances
 
         override fun secrets(): SecretService.WithRawResponse = secrets
 

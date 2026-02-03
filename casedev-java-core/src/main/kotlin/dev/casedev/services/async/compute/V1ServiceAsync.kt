@@ -10,9 +10,8 @@ import dev.casedev.models.compute.v1.V1GetPricingParams
 import dev.casedev.models.compute.v1.V1GetUsageParams
 import dev.casedev.models.compute.v1.V1GetUsageResponse
 import dev.casedev.services.async.compute.v1.EnvironmentServiceAsync
-import dev.casedev.services.async.compute.v1.FunctionServiceAsync
-import dev.casedev.services.async.compute.v1.InvokeServiceAsync
-import dev.casedev.services.async.compute.v1.RunServiceAsync
+import dev.casedev.services.async.compute.v1.InstanceServiceAsync
+import dev.casedev.services.async.compute.v1.InstanceTypeServiceAsync
 import dev.casedev.services.async.compute.v1.SecretServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -33,11 +32,9 @@ interface V1ServiceAsync {
 
     fun environments(): EnvironmentServiceAsync
 
-    fun functions(): FunctionServiceAsync
+    fun instanceTypes(): InstanceTypeServiceAsync
 
-    fun invoke(): InvokeServiceAsync
-
-    fun runs(): RunServiceAsync
+    fun instances(): InstanceServiceAsync
 
     fun secrets(): SecretServiceAsync
 
@@ -97,11 +94,9 @@ interface V1ServiceAsync {
 
         fun environments(): EnvironmentServiceAsync.WithRawResponse
 
-        fun functions(): FunctionServiceAsync.WithRawResponse
+        fun instanceTypes(): InstanceTypeServiceAsync.WithRawResponse
 
-        fun invoke(): InvokeServiceAsync.WithRawResponse
-
-        fun runs(): RunServiceAsync.WithRawResponse
+        fun instances(): InstanceServiceAsync.WithRawResponse
 
         fun secrets(): SecretServiceAsync.WithRawResponse
 

@@ -19,13 +19,21 @@ import dev.casedev.core.http.parseable
 import dev.casedev.core.prepare
 import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlParams
 import dev.casedev.models.vault.objects.ObjectCreatePresignedUrlResponse
+import dev.casedev.models.vault.objects.ObjectDeleteParams
+import dev.casedev.models.vault.objects.ObjectDeleteResponse
 import dev.casedev.models.vault.objects.ObjectDownloadParams
+import dev.casedev.models.vault.objects.ObjectGetOcrWordsParams
+import dev.casedev.models.vault.objects.ObjectGetOcrWordsResponse
+import dev.casedev.models.vault.objects.ObjectGetSummarizeJobParams
+import dev.casedev.models.vault.objects.ObjectGetSummarizeJobResponse
 import dev.casedev.models.vault.objects.ObjectGetTextParams
 import dev.casedev.models.vault.objects.ObjectGetTextResponse
 import dev.casedev.models.vault.objects.ObjectListParams
 import dev.casedev.models.vault.objects.ObjectListResponse
 import dev.casedev.models.vault.objects.ObjectRetrieveParams
 import dev.casedev.models.vault.objects.ObjectRetrieveResponse
+import dev.casedev.models.vault.objects.ObjectUpdateParams
+import dev.casedev.models.vault.objects.ObjectUpdateResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -48,12 +56,26 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
         // get /vault/{id}/objects/{objectId}
         withRawResponse().retrieve(params, requestOptions).parse()
 
+    override fun update(
+        params: ObjectUpdateParams,
+        requestOptions: RequestOptions,
+    ): ObjectUpdateResponse =
+        // patch /vault/{id}/objects/{objectId}
+        withRawResponse().update(params, requestOptions).parse()
+
     override fun list(
         params: ObjectListParams,
         requestOptions: RequestOptions,
     ): ObjectListResponse =
         // get /vault/{id}/objects
         withRawResponse().list(params, requestOptions).parse()
+
+    override fun delete(
+        params: ObjectDeleteParams,
+        requestOptions: RequestOptions,
+    ): ObjectDeleteResponse =
+        // delete /vault/{id}/objects/{objectId}
+        withRawResponse().delete(params, requestOptions).parse()
 
     override fun createPresignedUrl(
         params: ObjectCreatePresignedUrlParams,
@@ -65,6 +87,20 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
     override fun download(params: ObjectDownloadParams, requestOptions: RequestOptions): String =
         // get /vault/{id}/objects/{objectId}/download
         withRawResponse().download(params, requestOptions).parse()
+
+    override fun getOcrWords(
+        params: ObjectGetOcrWordsParams,
+        requestOptions: RequestOptions,
+    ): ObjectGetOcrWordsResponse =
+        // get /vault/{id}/objects/{objectId}/ocr-words
+        withRawResponse().getOcrWords(params, requestOptions).parse()
+
+    override fun getSummarizeJob(
+        params: ObjectGetSummarizeJobParams,
+        requestOptions: RequestOptions,
+    ): ObjectGetSummarizeJobResponse =
+        // get /vault/{id}/objects/{objectId}/summarize/{jobId}
+        withRawResponse().getSummarizeJob(params, requestOptions).parse()
 
     override fun getText(
         params: ObjectGetTextParams,
@@ -116,6 +152,37 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
             }
         }
 
+        private val updateHandler: Handler<ObjectUpdateResponse> =
+            jsonHandler<ObjectUpdateResponse>(clientOptions.jsonMapper)
+
+        override fun update(
+            params: ObjectUpdateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ObjectUpdateResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("objectId", params.objectId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PATCH)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("vault", params._pathParam(0), "objects", params._pathParam(1))
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { updateHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
         private val listHandler: Handler<ObjectListResponse> =
             jsonHandler<ObjectListResponse>(clientOptions.jsonMapper)
 
@@ -138,6 +205,37 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
             return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val deleteHandler: Handler<ObjectDeleteResponse> =
+            jsonHandler<ObjectDeleteResponse>(clientOptions.jsonMapper)
+
+        override fun delete(
+            params: ObjectDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ObjectDeleteResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("objectId", params.objectId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("vault", params._pathParam(0), "objects", params._pathParam(1))
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { deleteHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
@@ -209,6 +307,79 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
                 response.use { downloadHandler.handle(it) }
+            }
+        }
+
+        private val getOcrWordsHandler: Handler<ObjectGetOcrWordsResponse> =
+            jsonHandler<ObjectGetOcrWordsResponse>(clientOptions.jsonMapper)
+
+        override fun getOcrWords(
+            params: ObjectGetOcrWordsParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ObjectGetOcrWordsResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("objectId", params.objectId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "vault",
+                        params._pathParam(0),
+                        "objects",
+                        params._pathParam(1),
+                        "ocr-words",
+                    )
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { getOcrWordsHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val getSummarizeJobHandler: Handler<ObjectGetSummarizeJobResponse> =
+            jsonHandler<ObjectGetSummarizeJobResponse>(clientOptions.jsonMapper)
+
+        override fun getSummarizeJob(
+            params: ObjectGetSummarizeJobParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ObjectGetSummarizeJobResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("jobId", params.jobId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "vault",
+                        params._pathParam(0),
+                        "objects",
+                        params._pathParam(1),
+                        "summarize",
+                        params._pathParam(2),
+                    )
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { getSummarizeJobHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
 

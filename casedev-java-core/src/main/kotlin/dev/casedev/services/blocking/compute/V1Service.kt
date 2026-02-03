@@ -11,9 +11,8 @@ import dev.casedev.models.compute.v1.V1GetPricingParams
 import dev.casedev.models.compute.v1.V1GetUsageParams
 import dev.casedev.models.compute.v1.V1GetUsageResponse
 import dev.casedev.services.blocking.compute.v1.EnvironmentService
-import dev.casedev.services.blocking.compute.v1.FunctionService
-import dev.casedev.services.blocking.compute.v1.InvokeService
-import dev.casedev.services.blocking.compute.v1.RunService
+import dev.casedev.services.blocking.compute.v1.InstanceService
+import dev.casedev.services.blocking.compute.v1.InstanceTypeService
 import dev.casedev.services.blocking.compute.v1.SecretService
 import java.util.function.Consumer
 
@@ -33,11 +32,9 @@ interface V1Service {
 
     fun environments(): EnvironmentService
 
-    fun functions(): FunctionService
+    fun instanceTypes(): InstanceTypeService
 
-    fun invoke(): InvokeService
-
-    fun runs(): RunService
+    fun instances(): InstanceService
 
     fun secrets(): SecretService
 
@@ -95,11 +92,9 @@ interface V1Service {
 
         fun environments(): EnvironmentService.WithRawResponse
 
-        fun functions(): FunctionService.WithRawResponse
+        fun instanceTypes(): InstanceTypeService.WithRawResponse
 
-        fun invoke(): InvokeService.WithRawResponse
-
-        fun runs(): RunService.WithRawResponse
+        fun instances(): InstanceService.WithRawResponse
 
         fun secrets(): SecretService.WithRawResponse
 
