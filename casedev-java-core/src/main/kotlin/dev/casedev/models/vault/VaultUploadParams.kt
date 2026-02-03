@@ -80,8 +80,8 @@ private constructor(
     fun path(): Optional<String> = body.path()
 
     /**
-     * File size in bytes (optional, max 500MB). When provided, enforces exact file size at S3
-     * level.
+     * File size in bytes (optional, max 5GB for single PUT uploads). When provided, enforces exact
+     * file size at S3 level.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -236,8 +236,8 @@ private constructor(
         fun path(path: JsonField<String>) = apply { body.path(path) }
 
         /**
-         * File size in bytes (optional, max 500MB). When provided, enforces exact file size at S3
-         * level.
+         * File size in bytes (optional, max 5GB for single PUT uploads). When provided, enforces
+         * exact file size at S3 level.
          */
         fun sizeBytes(sizeBytes: Long) = apply { body.sizeBytes(sizeBytes) }
 
@@ -473,8 +473,8 @@ private constructor(
         fun path(): Optional<String> = path.getOptional("path")
 
         /**
-         * File size in bytes (optional, max 500MB). When provided, enforces exact file size at S3
-         * level.
+         * File size in bytes (optional, max 5GB for single PUT uploads). When provided, enforces
+         * exact file size at S3 level.
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -624,8 +624,8 @@ private constructor(
             fun path(path: JsonField<String>) = apply { this.path = path }
 
             /**
-             * File size in bytes (optional, max 500MB). When provided, enforces exact file size at
-             * S3 level.
+             * File size in bytes (optional, max 5GB for single PUT uploads). When provided,
+             * enforces exact file size at S3 level.
              */
             fun sizeBytes(sizeBytes: Long) = sizeBytes(JsonField.of(sizeBytes))
 
