@@ -64,8 +64,8 @@ private constructor(
     fun operation(): Optional<Operation> = body.operation()
 
     /**
-     * File size in bytes (optional, max 500MB). When provided for PUT operations, enforces exact
-     * file size at S3 level.
+     * File size in bytes (optional, max 5GB for single PUT uploads). When provided for PUT
+     * operations, enforces exact file size at S3 level.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -197,8 +197,8 @@ private constructor(
         fun operation(operation: JsonField<Operation>) = apply { body.operation(operation) }
 
         /**
-         * File size in bytes (optional, max 500MB). When provided for PUT operations, enforces
-         * exact file size at S3 level.
+         * File size in bytes (optional, max 5GB for single PUT uploads). When provided for PUT
+         * operations, enforces exact file size at S3 level.
          */
         fun sizeBytes(sizeBytes: Long) = apply { body.sizeBytes(sizeBytes) }
 
@@ -411,8 +411,8 @@ private constructor(
         fun operation(): Optional<Operation> = operation.getOptional("operation")
 
         /**
-         * File size in bytes (optional, max 500MB). When provided for PUT operations, enforces
-         * exact file size at S3 level.
+         * File size in bytes (optional, max 5GB for single PUT uploads). When provided for PUT
+         * operations, enforces exact file size at S3 level.
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -526,8 +526,8 @@ private constructor(
             fun operation(operation: JsonField<Operation>) = apply { this.operation = operation }
 
             /**
-             * File size in bytes (optional, max 500MB). When provided for PUT operations, enforces
-             * exact file size at S3 level.
+             * File size in bytes (optional, max 5GB for single PUT uploads). When provided for PUT
+             * operations, enforces exact file size at S3 level.
              */
             fun sizeBytes(sizeBytes: Long) = sizeBytes(JsonField.of(sizeBytes))
 
