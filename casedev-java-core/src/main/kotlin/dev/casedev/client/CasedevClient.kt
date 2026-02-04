@@ -11,9 +11,7 @@ import dev.casedev.services.blocking.LegalService
 import dev.casedev.services.blocking.LlmService
 import dev.casedev.services.blocking.MemoryService
 import dev.casedev.services.blocking.OcrService
-import dev.casedev.services.blocking.PaymentService
 import dev.casedev.services.blocking.PrivilegeService
-import dev.casedev.services.blocking.ProjectService
 import dev.casedev.services.blocking.SearchService
 import dev.casedev.services.blocking.SuperdocService
 import dev.casedev.services.blocking.TranslateService
@@ -73,11 +71,7 @@ interface CasedevClient {
 
     fun ocr(): OcrService
 
-    fun payments(): PaymentService
-
     fun privilege(): PrivilegeService
-
-    fun projects(): ProjectService
 
     fun search(): SearchService
 
@@ -128,11 +122,7 @@ interface CasedevClient {
 
         fun ocr(): OcrService.WithRawResponse
 
-        fun payments(): PaymentService.WithRawResponse
-
         fun privilege(): PrivilegeService.WithRawResponse
-
-        fun projects(): ProjectService.WithRawResponse
 
         fun search(): SearchService.WithRawResponse
 

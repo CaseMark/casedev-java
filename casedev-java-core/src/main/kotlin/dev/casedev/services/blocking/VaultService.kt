@@ -23,6 +23,7 @@ import dev.casedev.models.vault.VaultUpdateResponse
 import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
 import dev.casedev.services.blocking.vault.GraphragService
+import dev.casedev.services.blocking.vault.MultipartService
 import dev.casedev.services.blocking.vault.ObjectService
 import java.util.function.Consumer
 
@@ -41,6 +42,8 @@ interface VaultService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VaultService
 
     fun graphrag(): GraphragService
+
+    fun multipart(): MultipartService
 
     fun objects(): ObjectService
 
@@ -268,6 +271,8 @@ interface VaultService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): VaultService.WithRawResponse
 
         fun graphrag(): GraphragService.WithRawResponse
+
+        fun multipart(): MultipartService.WithRawResponse
 
         fun objects(): ObjectService.WithRawResponse
 

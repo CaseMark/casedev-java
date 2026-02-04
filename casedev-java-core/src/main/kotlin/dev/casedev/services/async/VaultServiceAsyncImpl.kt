@@ -34,6 +34,8 @@ import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
 import dev.casedev.services.async.vault.GraphragServiceAsync
 import dev.casedev.services.async.vault.GraphragServiceAsyncImpl
+import dev.casedev.services.async.vault.MultipartServiceAsync
+import dev.casedev.services.async.vault.MultipartServiceAsyncImpl
 import dev.casedev.services.async.vault.ObjectServiceAsync
 import dev.casedev.services.async.vault.ObjectServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
@@ -49,6 +51,10 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     private val graphrag: GraphragServiceAsync by lazy { GraphragServiceAsyncImpl(clientOptions) }
 
+    private val multipart: MultipartServiceAsync by lazy {
+        MultipartServiceAsyncImpl(clientOptions)
+    }
+
     private val objects: ObjectServiceAsync by lazy { ObjectServiceAsyncImpl(clientOptions) }
 
     override fun withRawResponse(): VaultServiceAsync.WithRawResponse = withRawResponse
@@ -57,6 +63,8 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
         VaultServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun graphrag(): GraphragServiceAsync = graphrag
+
+    override fun multipart(): MultipartServiceAsync = multipart
 
     override fun objects(): ObjectServiceAsync = objects
 
@@ -126,6 +134,10 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
             GraphragServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val multipart: MultipartServiceAsync.WithRawResponse by lazy {
+            MultipartServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val objects: ObjectServiceAsync.WithRawResponse by lazy {
             ObjectServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -138,6 +150,8 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
             )
 
         override fun graphrag(): GraphragServiceAsync.WithRawResponse = graphrag
+
+        override fun multipart(): MultipartServiceAsync.WithRawResponse = multipart
 
         override fun objects(): ObjectServiceAsync.WithRawResponse = objects
 
