@@ -11,9 +11,7 @@ import dev.casedev.services.async.LegalServiceAsync
 import dev.casedev.services.async.LlmServiceAsync
 import dev.casedev.services.async.MemoryServiceAsync
 import dev.casedev.services.async.OcrServiceAsync
-import dev.casedev.services.async.PaymentServiceAsync
 import dev.casedev.services.async.PrivilegeServiceAsync
-import dev.casedev.services.async.ProjectServiceAsync
 import dev.casedev.services.async.SearchServiceAsync
 import dev.casedev.services.async.SuperdocServiceAsync
 import dev.casedev.services.async.TranslateServiceAsync
@@ -73,11 +71,7 @@ interface CasedevClientAsync {
 
     fun ocr(): OcrServiceAsync
 
-    fun payments(): PaymentServiceAsync
-
     fun privilege(): PrivilegeServiceAsync
-
-    fun projects(): ProjectServiceAsync
 
     fun search(): SearchServiceAsync
 
@@ -132,11 +126,7 @@ interface CasedevClientAsync {
 
         fun ocr(): OcrServiceAsync.WithRawResponse
 
-        fun payments(): PaymentServiceAsync.WithRawResponse
-
         fun privilege(): PrivilegeServiceAsync.WithRawResponse
-
-        fun projects(): ProjectServiceAsync.WithRawResponse
 
         fun search(): SearchServiceAsync.WithRawResponse
 

@@ -34,6 +34,8 @@ import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
 import dev.casedev.services.blocking.vault.GraphragService
 import dev.casedev.services.blocking.vault.GraphragServiceImpl
+import dev.casedev.services.blocking.vault.MultipartService
+import dev.casedev.services.blocking.vault.MultipartServiceImpl
 import dev.casedev.services.blocking.vault.ObjectService
 import dev.casedev.services.blocking.vault.ObjectServiceImpl
 import java.util.function.Consumer
@@ -48,6 +50,8 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     private val graphrag: GraphragService by lazy { GraphragServiceImpl(clientOptions) }
 
+    private val multipart: MultipartService by lazy { MultipartServiceImpl(clientOptions) }
+
     private val objects: ObjectService by lazy { ObjectServiceImpl(clientOptions) }
 
     override fun withRawResponse(): VaultService.WithRawResponse = withRawResponse
@@ -56,6 +60,8 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
         VaultServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun graphrag(): GraphragService = graphrag
+
+    override fun multipart(): MultipartService = multipart
 
     override fun objects(): ObjectService = objects
 
@@ -122,6 +128,10 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             GraphragServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val multipart: MultipartService.WithRawResponse by lazy {
+            MultipartServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val objects: ObjectService.WithRawResponse by lazy {
             ObjectServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -134,6 +144,8 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             )
 
         override fun graphrag(): GraphragService.WithRawResponse = graphrag
+
+        override fun multipart(): MultipartService.WithRawResponse = multipart
 
         override fun objects(): ObjectService.WithRawResponse = objects
 

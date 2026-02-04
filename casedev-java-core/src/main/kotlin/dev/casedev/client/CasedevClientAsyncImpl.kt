@@ -20,12 +20,8 @@ import dev.casedev.services.async.MemoryServiceAsync
 import dev.casedev.services.async.MemoryServiceAsyncImpl
 import dev.casedev.services.async.OcrServiceAsync
 import dev.casedev.services.async.OcrServiceAsyncImpl
-import dev.casedev.services.async.PaymentServiceAsync
-import dev.casedev.services.async.PaymentServiceAsyncImpl
 import dev.casedev.services.async.PrivilegeServiceAsync
 import dev.casedev.services.async.PrivilegeServiceAsyncImpl
-import dev.casedev.services.async.ProjectServiceAsync
-import dev.casedev.services.async.ProjectServiceAsyncImpl
 import dev.casedev.services.async.SearchServiceAsync
 import dev.casedev.services.async.SearchServiceAsyncImpl
 import dev.casedev.services.async.SuperdocServiceAsync
@@ -83,16 +79,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     private val ocr: OcrServiceAsync by lazy { OcrServiceAsyncImpl(clientOptionsWithUserAgent) }
 
-    private val payments: PaymentServiceAsync by lazy {
-        PaymentServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
     private val privilege: PrivilegeServiceAsync by lazy {
         PrivilegeServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
-    private val projects: ProjectServiceAsync by lazy {
-        ProjectServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
     private val search: SearchServiceAsync by lazy {
@@ -138,11 +126,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     override fun ocr(): OcrServiceAsync = ocr
 
-    override fun payments(): PaymentServiceAsync = payments
-
     override fun privilege(): PrivilegeServiceAsync = privilege
-
-    override fun projects(): ProjectServiceAsync = projects
 
     override fun search(): SearchServiceAsync = search
 
@@ -191,16 +175,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
             OcrServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val payments: PaymentServiceAsync.WithRawResponse by lazy {
-            PaymentServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
         private val privilege: PrivilegeServiceAsync.WithRawResponse by lazy {
             PrivilegeServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val projects: ProjectServiceAsync.WithRawResponse by lazy {
-            ProjectServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val search: SearchServiceAsync.WithRawResponse by lazy {
@@ -246,11 +222,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         override fun ocr(): OcrServiceAsync.WithRawResponse = ocr
 
-        override fun payments(): PaymentServiceAsync.WithRawResponse = payments
-
         override fun privilege(): PrivilegeServiceAsync.WithRawResponse = privilege
-
-        override fun projects(): ProjectServiceAsync.WithRawResponse = projects
 
         override fun search(): SearchServiceAsync.WithRawResponse = search
 

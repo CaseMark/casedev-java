@@ -22,6 +22,7 @@ import dev.casedev.models.vault.VaultUpdateResponse
 import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
 import dev.casedev.services.async.vault.GraphragServiceAsync
+import dev.casedev.services.async.vault.MultipartServiceAsync
 import dev.casedev.services.async.vault.ObjectServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -41,6 +42,8 @@ interface VaultServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VaultServiceAsync
 
     fun graphrag(): GraphragServiceAsync
+
+    fun multipart(): MultipartServiceAsync
 
     fun objects(): ObjectServiceAsync
 
@@ -285,6 +288,8 @@ interface VaultServiceAsync {
         ): VaultServiceAsync.WithRawResponse
 
         fun graphrag(): GraphragServiceAsync.WithRawResponse
+
+        fun multipart(): MultipartServiceAsync.WithRawResponse
 
         fun objects(): ObjectServiceAsync.WithRawResponse
 
