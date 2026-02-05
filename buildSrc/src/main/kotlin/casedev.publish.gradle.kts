@@ -27,9 +27,9 @@ configure<PublishingExtension> {
                 }
 
                 scm {
-                    connection.set("scm:git:git://github.com/stainless-sdks/router-java.git")
-                    developerConnection.set("scm:git:git://github.com/stainless-sdks/router-java.git")
-                    url.set("https://github.com/stainless-sdks/router-java")
+                    connection.set("scm:git:git://github.com/CaseMark/casedev-java.git")
+                    developerConnection.set("scm:git:git://github.com/CaseMark/casedev-java.git")
+                    url.set("https://github.com/CaseMark/casedev-java")
                 }
 
                 versionMapping {
