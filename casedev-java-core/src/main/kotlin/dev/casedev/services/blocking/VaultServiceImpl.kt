@@ -16,6 +16,8 @@ import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.core.http.json
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepare
+import dev.casedev.models.vault.VaultConfirmUploadParams
+import dev.casedev.models.vault.VaultConfirmUploadResponse
 import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultCreateResponse
 import dev.casedev.models.vault.VaultDeleteParams
@@ -96,6 +98,13 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
     ): VaultDeleteResponse =
         // delete /vault/{id}
         withRawResponse().delete(params, requestOptions).parse()
+
+    override fun confirmUpload(
+        params: VaultConfirmUploadParams,
+        requestOptions: RequestOptions,
+    ): VaultConfirmUploadResponse =
+        // post /vault/{id}/upload/{objectId}/confirm
+        withRawResponse().confirmUpload(params, requestOptions).parse()
 
     override fun ingest(
         params: VaultIngestParams,
@@ -288,6 +297,43 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val confirmUploadHandler: Handler<VaultConfirmUploadResponse> =
+            jsonHandler<VaultConfirmUploadResponse>(clientOptions.jsonMapper)
+
+        override fun confirmUpload(
+            params: VaultConfirmUploadParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VaultConfirmUploadResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("objectId", params.objectId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "vault",
+                        params._pathParam(0),
+                        "upload",
+                        params._pathParam(1),
+                        "confirm",
+                    )
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { confirmUploadHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

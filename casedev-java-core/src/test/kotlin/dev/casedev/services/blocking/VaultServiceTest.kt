@@ -5,6 +5,7 @@ package dev.casedev.services.blocking
 import dev.casedev.TestServerExtension
 import dev.casedev.client.okhttp.CasedevOkHttpClient
 import dev.casedev.core.JsonValue
+import dev.casedev.models.vault.VaultConfirmUploadParams
 import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultDeleteParams
 import dev.casedev.models.vault.VaultIngestParams
@@ -110,6 +111,36 @@ internal class VaultServiceTest {
         val vault = vaultService.delete(VaultDeleteParams.builder().id("id").async(true).build())
 
         vault.validate()
+    }
+
+    @Disabled("Prism tests are disabled")
+    @Test
+    fun confirmUpload() {
+        val client =
+            CasedevOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val vaultService = client.vault()
+
+        val response =
+            vaultService.confirmUpload(
+                VaultConfirmUploadParams.builder()
+                    .id("id")
+                    .objectId("objectId")
+                    .body(
+                        VaultConfirmUploadParams.Body.UnionMember0.builder()
+                            .sizeBytes(1L)
+                            .success(VaultConfirmUploadParams.Body.UnionMember0.Success.TRUE)
+                            .errorCode("errorCode")
+                            .errorMessage("errorMessage")
+                            .etag("etag")
+                            .build()
+                    )
+                    .build()
+            )
+
+        response.validate()
     }
 
     @Disabled("Prism tests are disabled")
