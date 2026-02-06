@@ -80,7 +80,7 @@ internal class ServiceParamsTest {
                 )
                 .frequencyPenalty(0.0)
                 .maxTokens(1000L)
-                .model("gpt-4o")
+                .model("casemark/casemark-core-3")
                 .presencePenalty(0.0)
                 .stream(false)
                 .temperature(0.7)

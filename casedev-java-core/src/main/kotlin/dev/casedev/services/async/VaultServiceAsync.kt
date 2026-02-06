@@ -5,6 +5,8 @@ package dev.casedev.services.async
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.http.HttpResponseFor
+import dev.casedev.models.vault.VaultConfirmUploadParams
+import dev.casedev.models.vault.VaultConfirmUploadResponse
 import dev.casedev.models.vault.VaultCreateParams
 import dev.casedev.models.vault.VaultCreateResponse
 import dev.casedev.models.vault.VaultDeleteParams
@@ -194,6 +196,36 @@ interface VaultServiceAsync {
         delete(id, VaultDeleteParams.none(), requestOptions)
 
     /**
+     * Confirm whether a direct-to-S3 vault upload succeeded or failed. This endpoint emits
+     * vault.upload.completed or vault.upload.failed events and is idempotent for repeated
+     * confirmations.
+     */
+    fun confirmUpload(
+        objectId: String,
+        params: VaultConfirmUploadParams,
+    ): CompletableFuture<VaultConfirmUploadResponse> =
+        confirmUpload(objectId, params, RequestOptions.none())
+
+    /** @see confirmUpload */
+    fun confirmUpload(
+        objectId: String,
+        params: VaultConfirmUploadParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VaultConfirmUploadResponse> =
+        confirmUpload(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+    /** @see confirmUpload */
+    fun confirmUpload(
+        params: VaultConfirmUploadParams
+    ): CompletableFuture<VaultConfirmUploadResponse> = confirmUpload(params, RequestOptions.none())
+
+    /** @see confirmUpload */
+    fun confirmUpload(
+        params: VaultConfirmUploadParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VaultConfirmUploadResponse>
+
+    /**
      * Triggers ingestion workflow for a vault object to extract text, generate chunks, and create
      * embeddings. For supported file types (PDF, DOCX, TXT, RTF, XML, audio, video), processing
      * happens asynchronously. For unsupported types (images, archives, etc.), the file is marked as
@@ -250,9 +282,9 @@ interface VaultServiceAsync {
     ): CompletableFuture<VaultSearchResponse>
 
     /**
-     * Generate a presigned URL for uploading files directly to a vault's S3 storage. This endpoint
-     * creates a temporary upload URL that allows secure file uploads without exposing credentials.
-     * Files can be automatically indexed for semantic search or stored for manual processing.
+     * Generate a presigned URL for uploading files directly to a vault's S3 storage. After
+     * uploading to S3, confirm the upload result via POST /vault/:vaultId/upload/:objectId/confirm
+     * before triggering ingestion.
      */
     fun upload(id: String, params: VaultUploadParams): CompletableFuture<VaultUploadResponse> =
         upload(id, params, RequestOptions.none())
@@ -455,6 +487,36 @@ interface VaultServiceAsync {
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VaultDeleteResponse>> =
             delete(id, VaultDeleteParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /vault/{id}/upload/{objectId}/confirm`, but is
+         * otherwise the same as [VaultServiceAsync.confirmUpload].
+         */
+        fun confirmUpload(
+            objectId: String,
+            params: VaultConfirmUploadParams,
+        ): CompletableFuture<HttpResponseFor<VaultConfirmUploadResponse>> =
+            confirmUpload(objectId, params, RequestOptions.none())
+
+        /** @see confirmUpload */
+        fun confirmUpload(
+            objectId: String,
+            params: VaultConfirmUploadParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VaultConfirmUploadResponse>> =
+            confirmUpload(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+        /** @see confirmUpload */
+        fun confirmUpload(
+            params: VaultConfirmUploadParams
+        ): CompletableFuture<HttpResponseFor<VaultConfirmUploadResponse>> =
+            confirmUpload(params, RequestOptions.none())
+
+        /** @see confirmUpload */
+        fun confirmUpload(
+            params: VaultConfirmUploadParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VaultConfirmUploadResponse>>
 
         /**
          * Returns a raw HTTP response for `post /vault/{id}/ingest/{objectId}`, but is otherwise
