@@ -18,11 +18,8 @@ import dev.casedev.core.http.json
 import dev.casedev.core.http.parseable
 import dev.casedev.core.prepareAsync
 import dev.casedev.models.vault.multipart.MultipartAbortParams
-import dev.casedev.models.vault.multipart.MultipartCompleteParams
 import dev.casedev.models.vault.multipart.MultipartGetPartUrlsParams
 import dev.casedev.models.vault.multipart.MultipartGetPartUrlsResponse
-import dev.casedev.models.vault.multipart.MultipartInitParams
-import dev.casedev.models.vault.multipart.MultipartInitResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -46,26 +43,12 @@ class MultipartServiceAsyncImpl internal constructor(private val clientOptions: 
         // post /vault/{id}/multipart/abort
         withRawResponse().abort(params, requestOptions).thenAccept {}
 
-    override fun complete(
-        params: MultipartCompleteParams,
-        requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
-        // post /vault/{id}/multipart/complete
-        withRawResponse().complete(params, requestOptions).thenAccept {}
-
     override fun getPartUrls(
         params: MultipartGetPartUrlsParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<MultipartGetPartUrlsResponse> =
         // post /vault/{id}/multipart/part-urls
         withRawResponse().getPartUrls(params, requestOptions).thenApply { it.parse() }
-
-    override fun init(
-        params: MultipartInitParams,
-        requestOptions: RequestOptions,
-    ): CompletableFuture<MultipartInitResponse> =
-        // post /vault/{id}/multipart/init
-        withRawResponse().init(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         MultipartServiceAsync.WithRawResponse {
@@ -107,33 +90,6 @@ class MultipartServiceAsyncImpl internal constructor(private val clientOptions: 
                 }
         }
 
-        private val completeHandler: Handler<Void?> = emptyHandler()
-
-        override fun complete(
-            params: MultipartCompleteParams,
-            requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("id", params.id().getOrNull())
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("vault", params._pathParam(0), "multipart", "complete")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response.use { completeHandler.handle(it) }
-                    }
-                }
-        }
-
         private val getPartUrlsHandler: Handler<MultipartGetPartUrlsResponse> =
             jsonHandler<MultipartGetPartUrlsResponse>(clientOptions.jsonMapper)
 
@@ -159,40 +115,6 @@ class MultipartServiceAsyncImpl internal constructor(private val clientOptions: 
                     errorHandler.handle(response).parseable {
                         response
                             .use { getPartUrlsHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
-                    }
-                }
-        }
-
-        private val initHandler: Handler<MultipartInitResponse> =
-            jsonHandler<MultipartInitResponse>(clientOptions.jsonMapper)
-
-        override fun init(
-            params: MultipartInitParams,
-            requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<MultipartInitResponse>> {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("id", params.id().getOrNull())
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("vault", params._pathParam(0), "multipart", "init")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { initHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

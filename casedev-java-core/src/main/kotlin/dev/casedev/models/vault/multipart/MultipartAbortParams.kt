@@ -20,7 +20,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Abort a multipart upload and discard uploaded parts. */
+/** Abort a multipart upload and discard uploaded parts (live). */
 class MultipartAbortParams
 private constructor(
     private val id: String?,

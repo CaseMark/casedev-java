@@ -22,7 +22,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Generate presigned URLs for individual multipart upload parts. */
+/** Generate presigned URLs for individual multipart upload parts (live). */
 class MultipartGetPartUrlsParams
 private constructor(
     private val id: String?,
@@ -586,6 +586,8 @@ private constructor(
         fun partNumber(): Long = partNumber.getRequired("partNumber")
 
         /**
+         * Part size in bytes (min 5MB except final part, max 5GB).
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
@@ -656,6 +658,7 @@ private constructor(
              */
             fun partNumber(partNumber: JsonField<Long>) = apply { this.partNumber = partNumber }
 
+            /** Part size in bytes (min 5MB except final part, max 5GB). */
             fun sizeBytes(sizeBytes: Long) = sizeBytes(JsonField.of(sizeBytes))
 
             /**
