@@ -10,10 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * Get the status of a CaseMark summary workflow job. If the job has been processing for too long,
- * this endpoint will poll CaseMark directly to recover stuck jobs.
- */
+/** Get the status of a CaseMark summary workflow job. */
 class ObjectGetSummarizeJobParams
 private constructor(
     private val id: String,

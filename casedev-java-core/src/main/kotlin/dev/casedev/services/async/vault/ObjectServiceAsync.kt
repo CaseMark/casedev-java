@@ -243,10 +243,7 @@ interface ObjectServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ObjectGetOcrWordsResponse>
 
-    /**
-     * Get the status of a CaseMark summary workflow job. If the job has been processing for too
-     * long, this endpoint will poll CaseMark directly to recover stuck jobs.
-     */
+    /** Get the status of a CaseMark summary workflow job. */
     fun getSummarizeJob(
         jobId: String,
         params: ObjectGetSummarizeJobParams,
