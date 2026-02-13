@@ -34,6 +34,8 @@ import dev.casedev.models.vault.VaultUpdateParams
 import dev.casedev.models.vault.VaultUpdateResponse
 import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
+import dev.casedev.services.blocking.vault.EventService
+import dev.casedev.services.blocking.vault.EventServiceImpl
 import dev.casedev.services.blocking.vault.GraphragService
 import dev.casedev.services.blocking.vault.GraphragServiceImpl
 import dev.casedev.services.blocking.vault.MultipartService
@@ -50,6 +52,8 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
         WithRawResponseImpl(clientOptions)
     }
 
+    private val events: EventService by lazy { EventServiceImpl(clientOptions) }
+
     private val graphrag: GraphragService by lazy { GraphragServiceImpl(clientOptions) }
 
     private val multipart: MultipartService by lazy { MultipartServiceImpl(clientOptions) }
@@ -60,6 +64,8 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VaultService =
         VaultServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun events(): EventService = events
 
     override fun graphrag(): GraphragService = graphrag
 
@@ -133,6 +139,10 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val events: EventService.WithRawResponse by lazy {
+            EventServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val graphrag: GraphragService.WithRawResponse by lazy {
             GraphragServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -151,6 +161,8 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             VaultServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun events(): EventService.WithRawResponse = events
 
         override fun graphrag(): GraphragService.WithRawResponse = graphrag
 
