@@ -9,6 +9,7 @@ import dev.casedev.models.legal.v1.V1GetCitationsFromUrlParams
 import dev.casedev.models.legal.v1.V1GetCitationsParams
 import dev.casedev.models.legal.v1.V1GetFullTextParams
 import dev.casedev.models.legal.v1.V1ListJurisdictionsParams
+import dev.casedev.models.legal.v1.V1PatentSearchParams
 import dev.casedev.models.legal.v1.V1ResearchParams
 import dev.casedev.models.legal.v1.V1SimilarParams
 import dev.casedev.models.legal.v1.V1VerifyParams
@@ -110,6 +111,38 @@ internal class V1ServiceTest {
 
         val response =
             v1Service.listJurisdictions(V1ListJurisdictionsParams.builder().name("xx").build())
+
+        response.validate()
+    }
+
+    @Disabled("Prism tests are disabled")
+    @Test
+    fun patentSearch() {
+        val client =
+            CasedevOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val v1Service = client.legal().v1()
+
+        val response =
+            v1Service.patentSearch(
+                V1PatentSearchParams.builder()
+                    .query("x")
+                    .applicationStatus("applicationStatus")
+                    .applicationType(V1PatentSearchParams.ApplicationType.UTILITY)
+                    .assignee("assignee")
+                    .filingDateFrom(LocalDate.parse("2019-12-27"))
+                    .filingDateTo(LocalDate.parse("2019-12-27"))
+                    .grantDateFrom(LocalDate.parse("2019-12-27"))
+                    .grantDateTo(LocalDate.parse("2019-12-27"))
+                    .inventor("inventor")
+                    .limit(1L)
+                    .offset(0L)
+                    .sortBy(V1PatentSearchParams.SortBy.FILING_DATE)
+                    .sortOrder(V1PatentSearchParams.SortOrder.ASC)
+                    .build()
+            )
 
         response.validate()
     }

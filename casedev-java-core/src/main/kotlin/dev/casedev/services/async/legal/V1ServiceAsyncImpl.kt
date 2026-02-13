@@ -25,6 +25,8 @@ import dev.casedev.models.legal.v1.V1GetFullTextParams
 import dev.casedev.models.legal.v1.V1GetFullTextResponse
 import dev.casedev.models.legal.v1.V1ListJurisdictionsParams
 import dev.casedev.models.legal.v1.V1ListJurisdictionsResponse
+import dev.casedev.models.legal.v1.V1PatentSearchParams
+import dev.casedev.models.legal.v1.V1PatentSearchResponse
 import dev.casedev.models.legal.v1.V1ResearchParams
 import dev.casedev.models.legal.v1.V1ResearchResponse
 import dev.casedev.models.legal.v1.V1SimilarParams
@@ -80,6 +82,13 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     ): CompletableFuture<V1ListJurisdictionsResponse> =
         // post /legal/v1/jurisdictions
         withRawResponse().listJurisdictions(params, requestOptions).thenApply { it.parse() }
+
+    override fun patentSearch(
+        params: V1PatentSearchParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<V1PatentSearchResponse> =
+        // post /legal/v1/patent-search
+        withRawResponse().patentSearch(params, requestOptions).thenApply { it.parse() }
 
     override fun research(
         params: V1ResearchParams,
@@ -261,6 +270,37 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                     errorHandler.handle(response).parseable {
                         response
                             .use { listJurisdictionsHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val patentSearchHandler: Handler<V1PatentSearchResponse> =
+            jsonHandler<V1PatentSearchResponse>(clientOptions.jsonMapper)
+
+        override fun patentSearch(
+            params: V1PatentSearchParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<V1PatentSearchResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("legal", "v1", "patent-search")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { patentSearchHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
