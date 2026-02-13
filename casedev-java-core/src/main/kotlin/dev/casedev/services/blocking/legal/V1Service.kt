@@ -16,6 +16,8 @@ import dev.casedev.models.legal.v1.V1GetFullTextParams
 import dev.casedev.models.legal.v1.V1GetFullTextResponse
 import dev.casedev.models.legal.v1.V1ListJurisdictionsParams
 import dev.casedev.models.legal.v1.V1ListJurisdictionsResponse
+import dev.casedev.models.legal.v1.V1PatentSearchParams
+import dev.casedev.models.legal.v1.V1PatentSearchResponse
 import dev.casedev.models.legal.v1.V1ResearchParams
 import dev.casedev.models.legal.v1.V1ResearchResponse
 import dev.casedev.models.legal.v1.V1SimilarParams
@@ -101,6 +103,21 @@ interface V1Service {
         params: V1ListJurisdictionsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): V1ListJurisdictionsResponse
+
+    /**
+     * Search the USPTO Open Data Portal for US patent applications and granted patents. Supports
+     * free-text queries, field-specific search, filters by assignee/inventor/status/type, date
+     * ranges, and pagination. Covers applications filed on or after January 1, 2001. Data is
+     * refreshed daily.
+     */
+    fun patentSearch(params: V1PatentSearchParams): V1PatentSearchResponse =
+        patentSearch(params, RequestOptions.none())
+
+    /** @see patentSearch */
+    fun patentSearch(
+        params: V1PatentSearchParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): V1PatentSearchResponse
 
     /**
      * Perform comprehensive legal research with multiple query variations. Uses advanced deep
@@ -229,6 +246,21 @@ interface V1Service {
             params: V1ListJurisdictionsParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<V1ListJurisdictionsResponse>
+
+        /**
+         * Returns a raw HTTP response for `post /legal/v1/patent-search`, but is otherwise the same
+         * as [V1Service.patentSearch].
+         */
+        @MustBeClosed
+        fun patentSearch(params: V1PatentSearchParams): HttpResponseFor<V1PatentSearchResponse> =
+            patentSearch(params, RequestOptions.none())
+
+        /** @see patentSearch */
+        @MustBeClosed
+        fun patentSearch(
+            params: V1PatentSearchParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<V1PatentSearchResponse>
 
         /**
          * Returns a raw HTTP response for `post /legal/v1/research`, but is otherwise the same as
