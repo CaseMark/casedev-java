@@ -61,4 +61,19 @@ internal class TranscriptionServiceAsyncTest {
         val transcription = transcriptionFuture.get()
         transcription.validate()
     }
+
+    @Disabled("Prism tests are disabled")
+    @Test
+    fun delete() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val transcriptionServiceAsync = client.voice().transcription()
+
+        val future = transcriptionServiceAsync.delete("id")
+
+        val response = future.get()
+    }
 }

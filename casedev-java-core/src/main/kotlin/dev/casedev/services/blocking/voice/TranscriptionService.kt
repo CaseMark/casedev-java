@@ -5,9 +5,11 @@ package dev.casedev.services.blocking.voice
 import com.google.errorprone.annotations.MustBeClosed
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
+import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.voice.transcription.TranscriptionCreateParams
 import dev.casedev.models.voice.transcription.TranscriptionCreateResponse
+import dev.casedev.models.voice.transcription.TranscriptionDeleteParams
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveParams
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveResponse
 import java.util.function.Consumer
@@ -85,6 +87,36 @@ interface TranscriptionService {
     /** @see retrieve */
     fun retrieve(id: String, requestOptions: RequestOptions): TranscriptionRetrieveResponse =
         retrieve(id, TranscriptionRetrieveParams.none(), requestOptions)
+
+    /**
+     * Deletes a transcription job. For managed vault jobs (tr_*), also removes local job records
+     * and managed transcript result objects. Idempotent: returns success if already deleted.
+     */
+    fun delete(id: String) = delete(id, TranscriptionDeleteParams.none())
+
+    /** @see delete */
+    fun delete(
+        id: String,
+        params: TranscriptionDeleteParams = TranscriptionDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ) = delete(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see delete */
+    fun delete(id: String, params: TranscriptionDeleteParams = TranscriptionDeleteParams.none()) =
+        delete(id, params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(
+        params: TranscriptionDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    )
+
+    /** @see delete */
+    fun delete(params: TranscriptionDeleteParams) = delete(params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(id: String, requestOptions: RequestOptions) =
+        delete(id, TranscriptionDeleteParams.none(), requestOptions)
 
     /**
      * A view of [TranscriptionService] that provides access to raw HTTP responses for each method.
@@ -171,5 +203,44 @@ interface TranscriptionService {
             requestOptions: RequestOptions,
         ): HttpResponseFor<TranscriptionRetrieveResponse> =
             retrieve(id, TranscriptionRetrieveParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /voice/transcription/{id}`, but is otherwise the
+         * same as [TranscriptionService.delete].
+         */
+        @MustBeClosed
+        fun delete(id: String): HttpResponse = delete(id, TranscriptionDeleteParams.none())
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(
+            id: String,
+            params: TranscriptionDeleteParams = TranscriptionDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse = delete(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(
+            id: String,
+            params: TranscriptionDeleteParams = TranscriptionDeleteParams.none(),
+        ): HttpResponse = delete(id, params, RequestOptions.none())
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(
+            params: TranscriptionDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(params: TranscriptionDeleteParams): HttpResponse =
+            delete(params, RequestOptions.none())
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(id: String, requestOptions: RequestOptions): HttpResponse =
+            delete(id, TranscriptionDeleteParams.none(), requestOptions)
     }
 }

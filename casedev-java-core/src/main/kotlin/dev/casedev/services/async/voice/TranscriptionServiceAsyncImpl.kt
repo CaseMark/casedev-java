@@ -5,6 +5,7 @@ package dev.casedev.services.async.voice
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
 import dev.casedev.core.checkRequired
+import dev.casedev.core.handlers.emptyHandler
 import dev.casedev.core.handlers.errorBodyHandler
 import dev.casedev.core.handlers.errorHandler
 import dev.casedev.core.handlers.jsonHandler
@@ -18,6 +19,7 @@ import dev.casedev.core.http.parseable
 import dev.casedev.core.prepareAsync
 import dev.casedev.models.voice.transcription.TranscriptionCreateParams
 import dev.casedev.models.voice.transcription.TranscriptionCreateResponse
+import dev.casedev.models.voice.transcription.TranscriptionDeleteParams
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveParams
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveResponse
 import java.util.concurrent.CompletableFuture
@@ -49,6 +51,13 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
     ): CompletableFuture<TranscriptionRetrieveResponse> =
         // get /voice/transcription/{id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+
+    override fun delete(
+        params: TranscriptionDeleteParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Void?> =
+        // delete /voice/transcription/{id}
+        withRawResponse().delete(params, requestOptions).thenAccept {}
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         TranscriptionServiceAsync.WithRawResponse {
@@ -123,6 +132,33 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                                     it.validate()
                                 }
                             }
+                    }
+                }
+        }
+
+        private val deleteHandler: Handler<Void?> = emptyHandler()
+
+        override fun delete(
+            params: TranscriptionDeleteParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("voice", "transcription", params._pathParam(0))
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response.use { deleteHandler.handle(it) }
                     }
                 }
         }
