@@ -4,9 +4,11 @@ package dev.casedev.services.async.voice
 
 import dev.casedev.core.ClientOptions
 import dev.casedev.core.RequestOptions
+import dev.casedev.core.http.HttpResponse
 import dev.casedev.core.http.HttpResponseFor
 import dev.casedev.models.voice.transcription.TranscriptionCreateParams
 import dev.casedev.models.voice.transcription.TranscriptionCreateResponse
+import dev.casedev.models.voice.transcription.TranscriptionDeleteParams
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveParams
 import dev.casedev.models.voice.transcription.TranscriptionRetrieveResponse
 import java.util.concurrent.CompletableFuture
@@ -94,6 +96,39 @@ interface TranscriptionServiceAsync {
         retrieve(id, TranscriptionRetrieveParams.none(), requestOptions)
 
     /**
+     * Deletes a transcription job. For managed vault jobs (tr_*), also removes local job records
+     * and managed transcript result objects. Idempotent: returns success if already deleted.
+     */
+    fun delete(id: String): CompletableFuture<Void?> = delete(id, TranscriptionDeleteParams.none())
+
+    /** @see delete */
+    fun delete(
+        id: String,
+        params: TranscriptionDeleteParams = TranscriptionDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?> = delete(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see delete */
+    fun delete(
+        id: String,
+        params: TranscriptionDeleteParams = TranscriptionDeleteParams.none(),
+    ): CompletableFuture<Void?> = delete(id, params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(
+        params: TranscriptionDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?>
+
+    /** @see delete */
+    fun delete(params: TranscriptionDeleteParams): CompletableFuture<Void?> =
+        delete(params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(id: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+        delete(id, TranscriptionDeleteParams.none(), requestOptions)
+
+    /**
      * A view of [TranscriptionServiceAsync] that provides access to raw HTTP responses for each
      * method.
      */
@@ -175,5 +210,40 @@ interface TranscriptionServiceAsync {
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<TranscriptionRetrieveResponse>> =
             retrieve(id, TranscriptionRetrieveParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /voice/transcription/{id}`, but is otherwise the
+         * same as [TranscriptionServiceAsync.delete].
+         */
+        fun delete(id: String): CompletableFuture<HttpResponse> =
+            delete(id, TranscriptionDeleteParams.none())
+
+        /** @see delete */
+        fun delete(
+            id: String,
+            params: TranscriptionDeleteParams = TranscriptionDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse> =
+            delete(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see delete */
+        fun delete(
+            id: String,
+            params: TranscriptionDeleteParams = TranscriptionDeleteParams.none(),
+        ): CompletableFuture<HttpResponse> = delete(id, params, RequestOptions.none())
+
+        /** @see delete */
+        fun delete(
+            params: TranscriptionDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse>
+
+        /** @see delete */
+        fun delete(params: TranscriptionDeleteParams): CompletableFuture<HttpResponse> =
+            delete(params, RequestOptions.none())
+
+        /** @see delete */
+        fun delete(id: String, requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+            delete(id, TranscriptionDeleteParams.none(), requestOptions)
     }
 }

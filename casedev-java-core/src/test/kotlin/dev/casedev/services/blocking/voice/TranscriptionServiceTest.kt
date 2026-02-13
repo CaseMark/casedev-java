@@ -59,4 +59,17 @@ internal class TranscriptionServiceTest {
 
         transcription.validate()
     }
+
+    @Disabled("Prism tests are disabled")
+    @Test
+    fun delete() {
+        val client =
+            CasedevOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val transcriptionService = client.voice().transcription()
+
+        transcriptionService.delete("id")
+    }
 }
