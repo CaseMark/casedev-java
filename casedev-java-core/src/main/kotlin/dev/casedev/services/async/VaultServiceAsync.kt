@@ -23,6 +23,7 @@ import dev.casedev.models.vault.VaultUpdateParams
 import dev.casedev.models.vault.VaultUpdateResponse
 import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
+import dev.casedev.services.async.vault.EventServiceAsync
 import dev.casedev.services.async.vault.GraphragServiceAsync
 import dev.casedev.services.async.vault.MultipartServiceAsync
 import dev.casedev.services.async.vault.ObjectServiceAsync
@@ -42,6 +43,8 @@ interface VaultServiceAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VaultServiceAsync
+
+    fun events(): EventServiceAsync
 
     fun graphrag(): GraphragServiceAsync
 
@@ -318,6 +321,8 @@ interface VaultServiceAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): VaultServiceAsync.WithRawResponse
+
+        fun events(): EventServiceAsync.WithRawResponse
 
         fun graphrag(): GraphragServiceAsync.WithRawResponse
 

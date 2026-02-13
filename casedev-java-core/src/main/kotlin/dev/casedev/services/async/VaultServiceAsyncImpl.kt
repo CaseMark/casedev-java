@@ -34,6 +34,8 @@ import dev.casedev.models.vault.VaultUpdateParams
 import dev.casedev.models.vault.VaultUpdateResponse
 import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
+import dev.casedev.services.async.vault.EventServiceAsync
+import dev.casedev.services.async.vault.EventServiceAsyncImpl
 import dev.casedev.services.async.vault.GraphragServiceAsync
 import dev.casedev.services.async.vault.GraphragServiceAsyncImpl
 import dev.casedev.services.async.vault.MultipartServiceAsync
@@ -51,6 +53,8 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
         WithRawResponseImpl(clientOptions)
     }
 
+    private val events: EventServiceAsync by lazy { EventServiceAsyncImpl(clientOptions) }
+
     private val graphrag: GraphragServiceAsync by lazy { GraphragServiceAsyncImpl(clientOptions) }
 
     private val multipart: MultipartServiceAsync by lazy {
@@ -63,6 +67,8 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VaultServiceAsync =
         VaultServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun events(): EventServiceAsync = events
 
     override fun graphrag(): GraphragServiceAsync = graphrag
 
@@ -139,6 +145,10 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val events: EventServiceAsync.WithRawResponse by lazy {
+            EventServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val graphrag: GraphragServiceAsync.WithRawResponse by lazy {
             GraphragServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -157,6 +167,8 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
             VaultServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun events(): EventServiceAsync.WithRawResponse = events
 
         override fun graphrag(): GraphragServiceAsync.WithRawResponse = graphrag
 
