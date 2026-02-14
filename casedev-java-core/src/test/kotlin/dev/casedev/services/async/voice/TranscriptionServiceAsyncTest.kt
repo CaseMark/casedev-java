@@ -37,6 +37,7 @@ internal class TranscriptionServiceAsyncTest {
                     .punctuate(true)
                     .speakerLabels(true)
                     .speakersExpected(0L)
+                    .addSpeechModel("string")
                     .vaultId("vault_id")
                     .addWordBoost("string")
                     .build()

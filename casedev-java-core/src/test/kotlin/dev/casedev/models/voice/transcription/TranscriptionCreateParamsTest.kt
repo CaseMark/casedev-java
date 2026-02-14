@@ -23,6 +23,7 @@ internal class TranscriptionCreateParamsTest {
             .punctuate(true)
             .speakerLabels(true)
             .speakersExpected(0L)
+            .addSpeechModel("string")
             .vaultId("vault_id")
             .addWordBoost("string")
             .build()
@@ -44,6 +45,7 @@ internal class TranscriptionCreateParamsTest {
                 .punctuate(true)
                 .speakerLabels(true)
                 .speakersExpected(0L)
+                .addSpeechModel("string")
                 .vaultId("vault_id")
                 .addWordBoost("string")
                 .build()
@@ -62,6 +64,7 @@ internal class TranscriptionCreateParamsTest {
         assertThat(body.punctuate()).contains(true)
         assertThat(body.speakerLabels()).contains(true)
         assertThat(body.speakersExpected()).contains(0L)
+        assertThat(body.speechModels().getOrNull()).containsExactly("string")
         assertThat(body.vaultId()).contains("vault_id")
         assertThat(body.wordBoost().getOrNull()).containsExactly("string")
     }
