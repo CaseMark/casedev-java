@@ -134,6 +134,14 @@ private constructor(
     fun speakersExpected(): Optional<Long> = body.speakersExpected()
 
     /**
+     * Priority-ordered speech models to use
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun speechModels(): Optional<List<String>> = body.speechModels()
+
+    /**
      * Vault ID containing the audio file (use with object_id)
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -235,6 +243,13 @@ private constructor(
      * type.
      */
     fun _speakersExpected(): JsonField<Long> = body._speakersExpected()
+
+    /**
+     * Returns the raw JSON value of [speechModels].
+     *
+     * Unlike [speechModels], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _speechModels(): JsonField<List<String>> = body._speechModels()
 
     /**
      * Returns the raw JSON value of [vaultId].
@@ -460,6 +475,27 @@ private constructor(
             body.speakersExpected(speakersExpected)
         }
 
+        /** Priority-ordered speech models to use */
+        fun speechModels(speechModels: List<String>) = apply { body.speechModels(speechModels) }
+
+        /**
+         * Sets [Builder.speechModels] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.speechModels] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun speechModels(speechModels: JsonField<List<String>>) = apply {
+            body.speechModels(speechModels)
+        }
+
+        /**
+         * Adds a single [String] to [speechModels].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addSpeechModel(speechModel: String) = apply { body.addSpeechModel(speechModel) }
+
         /** Vault ID containing the audio file (use with object_id) */
         fun vaultId(vaultId: String) = apply { body.vaultId(vaultId) }
 
@@ -641,6 +677,7 @@ private constructor(
         private val punctuate: JsonField<Boolean>,
         private val speakerLabels: JsonField<Boolean>,
         private val speakersExpected: JsonField<Long>,
+        private val speechModels: JsonField<List<String>>,
         private val vaultId: JsonField<String>,
         private val wordBoost: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -682,6 +719,9 @@ private constructor(
             @JsonProperty("speakers_expected")
             @ExcludeMissing
             speakersExpected: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("speech_models")
+            @ExcludeMissing
+            speechModels: JsonField<List<String>> = JsonMissing.of(),
             @JsonProperty("vault_id") @ExcludeMissing vaultId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("word_boost")
             @ExcludeMissing
@@ -699,6 +739,7 @@ private constructor(
             punctuate,
             speakerLabels,
             speakersExpected,
+            speechModels,
             vaultId,
             wordBoost,
             mutableMapOf(),
@@ -802,6 +843,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun speakersExpected(): Optional<Long> = speakersExpected.getOptional("speakers_expected")
+
+        /**
+         * Priority-ordered speech models to use
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun speechModels(): Optional<List<String>> = speechModels.getOptional("speech_models")
 
         /**
          * Vault ID containing the audio file (use with object_id)
@@ -926,6 +975,16 @@ private constructor(
         fun _speakersExpected(): JsonField<Long> = speakersExpected
 
         /**
+         * Returns the raw JSON value of [speechModels].
+         *
+         * Unlike [speechModels], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("speech_models")
+        @ExcludeMissing
+        fun _speechModels(): JsonField<List<String>> = speechModels
+
+        /**
          * Returns the raw JSON value of [vaultId].
          *
          * Unlike [vaultId], this method doesn't throw if the JSON field has an unexpected type.
@@ -974,6 +1033,7 @@ private constructor(
             private var punctuate: JsonField<Boolean> = JsonMissing.of()
             private var speakerLabels: JsonField<Boolean> = JsonMissing.of()
             private var speakersExpected: JsonField<Long> = JsonMissing.of()
+            private var speechModels: JsonField<MutableList<String>>? = null
             private var vaultId: JsonField<String> = JsonMissing.of()
             private var wordBoost: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -992,6 +1052,7 @@ private constructor(
                 punctuate = body.punctuate
                 speakerLabels = body.speakerLabels
                 speakersExpected = body.speakersExpected
+                speechModels = body.speechModels.map { it.toMutableList() }
                 vaultId = body.vaultId
                 wordBoost = body.wordBoost.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
@@ -1162,6 +1223,32 @@ private constructor(
                 this.speakersExpected = speakersExpected
             }
 
+            /** Priority-ordered speech models to use */
+            fun speechModels(speechModels: List<String>) = speechModels(JsonField.of(speechModels))
+
+            /**
+             * Sets [Builder.speechModels] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.speechModels] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun speechModels(speechModels: JsonField<List<String>>) = apply {
+                this.speechModels = speechModels.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [speechModels].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addSpeechModel(speechModel: String) = apply {
+                speechModels =
+                    (speechModels ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("speechModels", it).add(speechModel)
+                    }
+            }
+
             /** Vault ID containing the audio file (use with object_id) */
             fun vaultId(vaultId: String) = vaultId(JsonField.of(vaultId))
 
@@ -1238,6 +1325,7 @@ private constructor(
                     punctuate,
                     speakerLabels,
                     speakersExpected,
+                    (speechModels ?: JsonMissing.of()).map { it.toImmutable() },
                     vaultId,
                     (wordBoost ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
@@ -1263,6 +1351,7 @@ private constructor(
             punctuate()
             speakerLabels()
             speakersExpected()
+            speechModels()
             vaultId()
             wordBoost()
             validated = true
@@ -1296,6 +1385,7 @@ private constructor(
                 (if (punctuate.asKnown().isPresent) 1 else 0) +
                 (if (speakerLabels.asKnown().isPresent) 1 else 0) +
                 (if (speakersExpected.asKnown().isPresent) 1 else 0) +
+                (speechModels.asKnown().getOrNull()?.size ?: 0) +
                 (if (vaultId.asKnown().isPresent) 1 else 0) +
                 (wordBoost.asKnown().getOrNull()?.size ?: 0)
 
@@ -1317,6 +1407,7 @@ private constructor(
                 punctuate == other.punctuate &&
                 speakerLabels == other.speakerLabels &&
                 speakersExpected == other.speakersExpected &&
+                speechModels == other.speechModels &&
                 vaultId == other.vaultId &&
                 wordBoost == other.wordBoost &&
                 additionalProperties == other.additionalProperties
@@ -1336,6 +1427,7 @@ private constructor(
                 punctuate,
                 speakerLabels,
                 speakersExpected,
+                speechModels,
                 vaultId,
                 wordBoost,
                 additionalProperties,
@@ -1345,7 +1437,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{audioUrl=$audioUrl, autoHighlights=$autoHighlights, boostParam=$boostParam, contentSafetyLabels=$contentSafetyLabels, format=$format, formatText=$formatText, languageCode=$languageCode, languageDetection=$languageDetection, objectId=$objectId, punctuate=$punctuate, speakerLabels=$speakerLabels, speakersExpected=$speakersExpected, vaultId=$vaultId, wordBoost=$wordBoost, additionalProperties=$additionalProperties}"
+            "Body{audioUrl=$audioUrl, autoHighlights=$autoHighlights, boostParam=$boostParam, contentSafetyLabels=$contentSafetyLabels, format=$format, formatText=$formatText, languageCode=$languageCode, languageDetection=$languageDetection, objectId=$objectId, punctuate=$punctuate, speakerLabels=$speakerLabels, speakersExpected=$speakersExpected, speechModels=$speechModels, vaultId=$vaultId, wordBoost=$wordBoost, additionalProperties=$additionalProperties}"
     }
 
     /** How much to boost custom vocabulary */
