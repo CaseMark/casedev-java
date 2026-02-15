@@ -78,6 +78,7 @@ internal class ServiceParamsTest {
                         .role(ChatCreateCompletionParams.Message.Role.SYSTEM)
                         .build()
                 )
+                .casemarkShowReasoning(false)
                 .frequencyPenalty(0.0)
                 .maxTokens(1000L)
                 .model("casemark/casemark-core-3")

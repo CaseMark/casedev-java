@@ -44,6 +44,15 @@ private constructor(
     fun messages(): List<Message> = body.messages()
 
     /**
+     * CaseMark-only: when true, allows reasoning fields in responses. Defaults to false (reasoning
+     * is suppressed).
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun casemarkShowReasoning(): Optional<Boolean> = body.casemarkShowReasoning()
+
+    /**
      * Frequency penalty parameter
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -105,6 +114,14 @@ private constructor(
      * Unlike [messages], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _messages(): JsonField<List<Message>> = body._messages()
+
+    /**
+     * Returns the raw JSON value of [casemarkShowReasoning].
+     *
+     * Unlike [casemarkShowReasoning], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _casemarkShowReasoning(): JsonField<Boolean> = body._casemarkShowReasoning()
 
     /**
      * Returns the raw JSON value of [frequencyPenalty].
@@ -199,10 +216,10 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [messages]
+         * - [casemarkShowReasoning]
          * - [frequencyPenalty]
          * - [maxTokens]
          * - [model]
-         * - [presencePenalty]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -225,6 +242,25 @@ private constructor(
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addMessage(message: Message) = apply { body.addMessage(message) }
+
+        /**
+         * CaseMark-only: when true, allows reasoning fields in responses. Defaults to false
+         * (reasoning is suppressed).
+         */
+        fun casemarkShowReasoning(casemarkShowReasoning: Boolean) = apply {
+            body.casemarkShowReasoning(casemarkShowReasoning)
+        }
+
+        /**
+         * Sets [Builder.casemarkShowReasoning] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.casemarkShowReasoning] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun casemarkShowReasoning(casemarkShowReasoning: JsonField<Boolean>) = apply {
+            body.casemarkShowReasoning(casemarkShowReasoning)
+        }
 
         /** Frequency penalty parameter */
         fun frequencyPenalty(frequencyPenalty: Double) = apply {
@@ -461,6 +497,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val messages: JsonField<List<Message>>,
+        private val casemarkShowReasoning: JsonField<Boolean>,
         private val frequencyPenalty: JsonField<Double>,
         private val maxTokens: JsonField<Long>,
         private val model: JsonField<String>,
@@ -476,6 +513,9 @@ private constructor(
             @JsonProperty("messages")
             @ExcludeMissing
             messages: JsonField<List<Message>> = JsonMissing.of(),
+            @JsonProperty("casemark_show_reasoning")
+            @ExcludeMissing
+            casemarkShowReasoning: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("frequency_penalty")
             @ExcludeMissing
             frequencyPenalty: JsonField<Double> = JsonMissing.of(),
@@ -493,6 +533,7 @@ private constructor(
             @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
         ) : this(
             messages,
+            casemarkShowReasoning,
             frequencyPenalty,
             maxTokens,
             model,
@@ -510,6 +551,16 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun messages(): List<Message> = messages.getRequired("messages")
+
+        /**
+         * CaseMark-only: when true, allows reasoning fields in responses. Defaults to false
+         * (reasoning is suppressed).
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun casemarkShowReasoning(): Optional<Boolean> =
+            casemarkShowReasoning.getOptional("casemark_show_reasoning")
 
         /**
          * Frequency penalty parameter
@@ -575,6 +626,16 @@ private constructor(
         @JsonProperty("messages")
         @ExcludeMissing
         fun _messages(): JsonField<List<Message>> = messages
+
+        /**
+         * Returns the raw JSON value of [casemarkShowReasoning].
+         *
+         * Unlike [casemarkShowReasoning], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("casemark_show_reasoning")
+        @ExcludeMissing
+        fun _casemarkShowReasoning(): JsonField<Boolean> = casemarkShowReasoning
 
         /**
          * Returns the raw JSON value of [frequencyPenalty].
@@ -662,6 +723,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var messages: JsonField<MutableList<Message>>? = null
+            private var casemarkShowReasoning: JsonField<Boolean> = JsonMissing.of()
             private var frequencyPenalty: JsonField<Double> = JsonMissing.of()
             private var maxTokens: JsonField<Long> = JsonMissing.of()
             private var model: JsonField<String> = JsonMissing.of()
@@ -674,6 +736,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 messages = body.messages.map { it.toMutableList() }
+                casemarkShowReasoning = body.casemarkShowReasoning
                 frequencyPenalty = body.frequencyPenalty
                 maxTokens = body.maxTokens
                 model = body.model
@@ -708,6 +771,24 @@ private constructor(
                     (messages ?: JsonField.of(mutableListOf())).also {
                         checkKnown("messages", it).add(message)
                     }
+            }
+
+            /**
+             * CaseMark-only: when true, allows reasoning fields in responses. Defaults to false
+             * (reasoning is suppressed).
+             */
+            fun casemarkShowReasoning(casemarkShowReasoning: Boolean) =
+                casemarkShowReasoning(JsonField.of(casemarkShowReasoning))
+
+            /**
+             * Sets [Builder.casemarkShowReasoning] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.casemarkShowReasoning] with a well-typed [Boolean]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun casemarkShowReasoning(casemarkShowReasoning: JsonField<Boolean>) = apply {
+                this.casemarkShowReasoning = casemarkShowReasoning
             }
 
             /** Frequency penalty parameter */
@@ -838,6 +919,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     checkRequired("messages", messages).map { it.toImmutable() },
+                    casemarkShowReasoning,
                     frequencyPenalty,
                     maxTokens,
                     model,
@@ -857,6 +939,7 @@ private constructor(
             }
 
             messages().forEach { it.validate() }
+            casemarkShowReasoning()
             frequencyPenalty()
             maxTokens()
             model()
@@ -884,6 +967,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (messages.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (if (casemarkShowReasoning.asKnown().isPresent) 1 else 0) +
                 (if (frequencyPenalty.asKnown().isPresent) 1 else 0) +
                 (if (maxTokens.asKnown().isPresent) 1 else 0) +
                 (if (model.asKnown().isPresent) 1 else 0) +
@@ -899,6 +983,7 @@ private constructor(
 
             return other is Body &&
                 messages == other.messages &&
+                casemarkShowReasoning == other.casemarkShowReasoning &&
                 frequencyPenalty == other.frequencyPenalty &&
                 maxTokens == other.maxTokens &&
                 model == other.model &&
@@ -912,6 +997,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 messages,
+                casemarkShowReasoning,
                 frequencyPenalty,
                 maxTokens,
                 model,
@@ -926,7 +1012,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{messages=$messages, frequencyPenalty=$frequencyPenalty, maxTokens=$maxTokens, model=$model, presencePenalty=$presencePenalty, stream=$stream, temperature=$temperature, topP=$topP, additionalProperties=$additionalProperties}"
+            "Body{messages=$messages, casemarkShowReasoning=$casemarkShowReasoning, frequencyPenalty=$frequencyPenalty, maxTokens=$maxTokens, model=$model, presencePenalty=$presencePenalty, stream=$stream, temperature=$temperature, topP=$topP, additionalProperties=$additionalProperties}"
     }
 
     class Message
