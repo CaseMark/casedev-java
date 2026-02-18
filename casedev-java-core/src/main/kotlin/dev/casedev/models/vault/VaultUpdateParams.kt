@@ -50,6 +50,14 @@ private constructor(
     fun enableGraph(): Optional<Boolean> = body.enableGraph()
 
     /**
+     * Move the vault to a different group, or set to null to remove from its current group.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun groupId(): Optional<String> = body.groupId()
+
+    /**
      * New name for the vault
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -70,6 +78,13 @@ private constructor(
      * Unlike [enableGraph], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _enableGraph(): JsonField<Boolean> = body._enableGraph()
+
+    /**
+     * Returns the raw JSON value of [groupId].
+     *
+     * Unlike [groupId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _groupId(): JsonField<String> = body._groupId()
 
     /**
      * Returns the raw JSON value of [name].
@@ -124,6 +139,7 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [description]
          * - [enableGraph]
+         * - [groupId]
          * - [name]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -154,6 +170,20 @@ private constructor(
          * value.
          */
         fun enableGraph(enableGraph: JsonField<Boolean>) = apply { body.enableGraph(enableGraph) }
+
+        /** Move the vault to a different group, or set to null to remove from its current group. */
+        fun groupId(groupId: String?) = apply { body.groupId(groupId) }
+
+        /** Alias for calling [Builder.groupId] with `groupId.orElse(null)`. */
+        fun groupId(groupId: Optional<String>) = groupId(groupId.getOrNull())
+
+        /**
+         * Sets [Builder.groupId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.groupId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun groupId(groupId: JsonField<String>) = apply { body.groupId(groupId) }
 
         /** New name for the vault */
         fun name(name: String) = apply { body.name(name) }
@@ -314,6 +344,7 @@ private constructor(
     private constructor(
         private val description: JsonField<String>,
         private val enableGraph: JsonField<Boolean>,
+        private val groupId: JsonField<String>,
         private val name: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -326,8 +357,9 @@ private constructor(
             @JsonProperty("enableGraph")
             @ExcludeMissing
             enableGraph: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("groupId") @ExcludeMissing groupId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-        ) : this(description, enableGraph, name, mutableMapOf())
+        ) : this(description, enableGraph, groupId, name, mutableMapOf())
 
         /**
          * New description for the vault. Set to null to remove.
@@ -344,6 +376,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun enableGraph(): Optional<Boolean> = enableGraph.getOptional("enableGraph")
+
+        /**
+         * Move the vault to a different group, or set to null to remove from its current group.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun groupId(): Optional<String> = groupId.getOptional("groupId")
 
         /**
          * New name for the vault
@@ -370,6 +410,13 @@ private constructor(
         @JsonProperty("enableGraph")
         @ExcludeMissing
         fun _enableGraph(): JsonField<Boolean> = enableGraph
+
+        /**
+         * Returns the raw JSON value of [groupId].
+         *
+         * Unlike [groupId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("groupId") @ExcludeMissing fun _groupId(): JsonField<String> = groupId
 
         /**
          * Returns the raw JSON value of [name].
@@ -401,6 +448,7 @@ private constructor(
 
             private var description: JsonField<String> = JsonMissing.of()
             private var enableGraph: JsonField<Boolean> = JsonMissing.of()
+            private var groupId: JsonField<String> = JsonMissing.of()
             private var name: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -408,6 +456,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 description = body.description
                 enableGraph = body.enableGraph
+                groupId = body.groupId
                 name = body.name
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -442,6 +491,23 @@ private constructor(
             fun enableGraph(enableGraph: JsonField<Boolean>) = apply {
                 this.enableGraph = enableGraph
             }
+
+            /**
+             * Move the vault to a different group, or set to null to remove from its current group.
+             */
+            fun groupId(groupId: String?) = groupId(JsonField.ofNullable(groupId))
+
+            /** Alias for calling [Builder.groupId] with `groupId.orElse(null)`. */
+            fun groupId(groupId: Optional<String>) = groupId(groupId.getOrNull())
+
+            /**
+             * Sets [Builder.groupId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun groupId(groupId: JsonField<String>) = apply { this.groupId = groupId }
 
             /** New name for the vault */
             fun name(name: String) = name(JsonField.of(name))
@@ -480,7 +546,7 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Body =
-                Body(description, enableGraph, name, additionalProperties.toMutableMap())
+                Body(description, enableGraph, groupId, name, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -492,6 +558,7 @@ private constructor(
 
             description()
             enableGraph()
+            groupId()
             name()
             validated = true
         }
@@ -514,6 +581,7 @@ private constructor(
         internal fun validity(): Int =
             (if (description.asKnown().isPresent) 1 else 0) +
                 (if (enableGraph.asKnown().isPresent) 1 else 0) +
+                (if (groupId.asKnown().isPresent) 1 else 0) +
                 (if (name.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
@@ -524,18 +592,19 @@ private constructor(
             return other is Body &&
                 description == other.description &&
                 enableGraph == other.enableGraph &&
+                groupId == other.groupId &&
                 name == other.name &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(description, enableGraph, name, additionalProperties)
+            Objects.hash(description, enableGraph, groupId, name, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{description=$description, enableGraph=$enableGraph, name=$name, additionalProperties=$additionalProperties}"
+            "Body{description=$description, enableGraph=$enableGraph, groupId=$groupId, name=$name, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

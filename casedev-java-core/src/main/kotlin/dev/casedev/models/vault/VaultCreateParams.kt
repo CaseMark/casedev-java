@@ -65,6 +65,15 @@ private constructor(
     fun enableIndexing(): Optional<Boolean> = body.enableIndexing()
 
     /**
+     * Assign the vault to a vault group for access control. Required when using a group-scoped API
+     * key.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun groupId(): Optional<String> = body.groupId()
+
+    /**
      * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA compliance
      * tracking)
      *
@@ -102,6 +111,13 @@ private constructor(
      * Unlike [enableIndexing], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _enableIndexing(): JsonField<Boolean> = body._enableIndexing()
+
+    /**
+     * Returns the raw JSON value of [groupId].
+     *
+     * Unlike [groupId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _groupId(): JsonField<String> = body._groupId()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -149,7 +165,7 @@ private constructor(
          * - [description]
          * - [enableGraph]
          * - [enableIndexing]
-         * - [metadata]
+         * - [groupId]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -205,6 +221,20 @@ private constructor(
         fun enableIndexing(enableIndexing: JsonField<Boolean>) = apply {
             body.enableIndexing(enableIndexing)
         }
+
+        /**
+         * Assign the vault to a vault group for access control. Required when using a group-scoped
+         * API key.
+         */
+        fun groupId(groupId: String) = apply { body.groupId(groupId) }
+
+        /**
+         * Sets [Builder.groupId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.groupId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun groupId(groupId: JsonField<String>) = apply { body.groupId(groupId) }
 
         /**
          * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA
@@ -362,6 +392,7 @@ private constructor(
         private val description: JsonField<String>,
         private val enableGraph: JsonField<Boolean>,
         private val enableIndexing: JsonField<Boolean>,
+        private val groupId: JsonField<String>,
         private val metadata: JsonValue,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -378,8 +409,9 @@ private constructor(
             @JsonProperty("enableIndexing")
             @ExcludeMissing
             enableIndexing: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("groupId") @ExcludeMissing groupId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("metadata") @ExcludeMissing metadata: JsonValue = JsonMissing.of(),
-        ) : this(name, description, enableGraph, enableIndexing, metadata, mutableMapOf())
+        ) : this(name, description, enableGraph, enableIndexing, groupId, metadata, mutableMapOf())
 
         /**
          * Display name for the vault
@@ -413,6 +445,15 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun enableIndexing(): Optional<Boolean> = enableIndexing.getOptional("enableIndexing")
+
+        /**
+         * Assign the vault to a vault group for access control. Required when using a group-scoped
+         * API key.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun groupId(): Optional<String> = groupId.getOptional("groupId")
 
         /**
          * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA
@@ -460,6 +501,13 @@ private constructor(
         @ExcludeMissing
         fun _enableIndexing(): JsonField<Boolean> = enableIndexing
 
+        /**
+         * Returns the raw JSON value of [groupId].
+         *
+         * Unlike [groupId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("groupId") @ExcludeMissing fun _groupId(): JsonField<String> = groupId
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -492,6 +540,7 @@ private constructor(
             private var description: JsonField<String> = JsonMissing.of()
             private var enableGraph: JsonField<Boolean> = JsonMissing.of()
             private var enableIndexing: JsonField<Boolean> = JsonMissing.of()
+            private var groupId: JsonField<String> = JsonMissing.of()
             private var metadata: JsonValue = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -501,6 +550,7 @@ private constructor(
                 description = body.description
                 enableGraph = body.enableGraph
                 enableIndexing = body.enableIndexing
+                groupId = body.groupId
                 metadata = body.metadata
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -566,6 +616,21 @@ private constructor(
             }
 
             /**
+             * Assign the vault to a vault group for access control. Required when using a
+             * group-scoped API key.
+             */
+            fun groupId(groupId: String) = groupId(JsonField.of(groupId))
+
+            /**
+             * Sets [Builder.groupId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun groupId(groupId: JsonField<String>) = apply { this.groupId = groupId }
+
+            /**
              * Optional metadata to attach to the vault (e.g., { containsPHI: true } for HIPAA
              * compliance tracking)
              */
@@ -608,6 +673,7 @@ private constructor(
                     description,
                     enableGraph,
                     enableIndexing,
+                    groupId,
                     metadata,
                     additionalProperties.toMutableMap(),
                 )
@@ -624,6 +690,7 @@ private constructor(
             description()
             enableGraph()
             enableIndexing()
+            groupId()
             validated = true
         }
 
@@ -646,7 +713,8 @@ private constructor(
             (if (name.asKnown().isPresent) 1 else 0) +
                 (if (description.asKnown().isPresent) 1 else 0) +
                 (if (enableGraph.asKnown().isPresent) 1 else 0) +
-                (if (enableIndexing.asKnown().isPresent) 1 else 0)
+                (if (enableIndexing.asKnown().isPresent) 1 else 0) +
+                (if (groupId.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -658,6 +726,7 @@ private constructor(
                 description == other.description &&
                 enableGraph == other.enableGraph &&
                 enableIndexing == other.enableIndexing &&
+                groupId == other.groupId &&
                 metadata == other.metadata &&
                 additionalProperties == other.additionalProperties
         }
@@ -668,6 +737,7 @@ private constructor(
                 description,
                 enableGraph,
                 enableIndexing,
+                groupId,
                 metadata,
                 additionalProperties,
             )
@@ -676,7 +746,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{name=$name, description=$description, enableGraph=$enableGraph, enableIndexing=$enableIndexing, metadata=$metadata, additionalProperties=$additionalProperties}"
+            "Body{name=$name, description=$description, enableGraph=$enableGraph, enableIndexing=$enableIndexing, groupId=$groupId, metadata=$metadata, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

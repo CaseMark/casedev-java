@@ -25,6 +25,7 @@ import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
 import dev.casedev.services.async.vault.EventServiceAsync
 import dev.casedev.services.async.vault.GraphragServiceAsync
+import dev.casedev.services.async.vault.GroupServiceAsync
 import dev.casedev.services.async.vault.MultipartServiceAsync
 import dev.casedev.services.async.vault.ObjectServiceAsync
 import java.util.concurrent.CompletableFuture
@@ -47,6 +48,8 @@ interface VaultServiceAsync {
     fun events(): EventServiceAsync
 
     fun graphrag(): GraphragServiceAsync
+
+    fun groups(): GroupServiceAsync
 
     fun multipart(): MultipartServiceAsync
 
@@ -325,6 +328,8 @@ interface VaultServiceAsync {
         fun events(): EventServiceAsync.WithRawResponse
 
         fun graphrag(): GraphragServiceAsync.WithRawResponse
+
+        fun groups(): GroupServiceAsync.WithRawResponse
 
         fun multipart(): MultipartServiceAsync.WithRawResponse
 

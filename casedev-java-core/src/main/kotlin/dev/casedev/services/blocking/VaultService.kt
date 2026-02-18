@@ -26,6 +26,7 @@ import dev.casedev.models.vault.VaultUploadParams
 import dev.casedev.models.vault.VaultUploadResponse
 import dev.casedev.services.blocking.vault.EventService
 import dev.casedev.services.blocking.vault.GraphragService
+import dev.casedev.services.blocking.vault.GroupService
 import dev.casedev.services.blocking.vault.MultipartService
 import dev.casedev.services.blocking.vault.ObjectService
 import java.util.function.Consumer
@@ -47,6 +48,8 @@ interface VaultService {
     fun events(): EventService
 
     fun graphrag(): GraphragService
+
+    fun groups(): GroupService
 
     fun multipart(): MultipartService
 
@@ -306,6 +309,8 @@ interface VaultService {
         fun events(): EventService.WithRawResponse
 
         fun graphrag(): GraphragService.WithRawResponse
+
+        fun groups(): GroupService.WithRawResponse
 
         fun multipart(): MultipartService.WithRawResponse
 

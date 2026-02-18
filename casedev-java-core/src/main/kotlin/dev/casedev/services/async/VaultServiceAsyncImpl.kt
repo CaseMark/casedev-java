@@ -38,6 +38,8 @@ import dev.casedev.services.async.vault.EventServiceAsync
 import dev.casedev.services.async.vault.EventServiceAsyncImpl
 import dev.casedev.services.async.vault.GraphragServiceAsync
 import dev.casedev.services.async.vault.GraphragServiceAsyncImpl
+import dev.casedev.services.async.vault.GroupServiceAsync
+import dev.casedev.services.async.vault.GroupServiceAsyncImpl
 import dev.casedev.services.async.vault.MultipartServiceAsync
 import dev.casedev.services.async.vault.MultipartServiceAsyncImpl
 import dev.casedev.services.async.vault.ObjectServiceAsync
@@ -57,6 +59,8 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     private val graphrag: GraphragServiceAsync by lazy { GraphragServiceAsyncImpl(clientOptions) }
 
+    private val groups: GroupServiceAsync by lazy { GroupServiceAsyncImpl(clientOptions) }
+
     private val multipart: MultipartServiceAsync by lazy {
         MultipartServiceAsyncImpl(clientOptions)
     }
@@ -71,6 +75,8 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun events(): EventServiceAsync = events
 
     override fun graphrag(): GraphragServiceAsync = graphrag
+
+    override fun groups(): GroupServiceAsync = groups
 
     override fun multipart(): MultipartServiceAsync = multipart
 
@@ -153,6 +159,10 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
             GraphragServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val groups: GroupServiceAsync.WithRawResponse by lazy {
+            GroupServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val multipart: MultipartServiceAsync.WithRawResponse by lazy {
             MultipartServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -171,6 +181,8 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
         override fun events(): EventServiceAsync.WithRawResponse = events
 
         override fun graphrag(): GraphragServiceAsync.WithRawResponse = graphrag
+
+        override fun groups(): GroupServiceAsync.WithRawResponse = groups
 
         override fun multipart(): MultipartServiceAsync.WithRawResponse = multipart
 
