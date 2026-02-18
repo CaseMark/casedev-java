@@ -14,6 +14,7 @@ import dev.casedev.services.async.OcrServiceAsync
 import dev.casedev.services.async.PrivilegeServiceAsync
 import dev.casedev.services.async.SearchServiceAsync
 import dev.casedev.services.async.SuperdocServiceAsync
+import dev.casedev.services.async.SystemServiceAsync
 import dev.casedev.services.async.TranslateServiceAsync
 import dev.casedev.services.async.VaultServiceAsync
 import dev.casedev.services.async.VoiceServiceAsync
@@ -54,6 +55,8 @@ interface CasedevClientAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClientAsync
+
+    fun system(): SystemServiceAsync
 
     fun applications(): ApplicationServiceAsync
 
@@ -109,6 +112,8 @@ interface CasedevClientAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): CasedevClientAsync.WithRawResponse
+
+        fun system(): SystemServiceAsync.WithRawResponse
 
         fun applications(): ApplicationServiceAsync.WithRawResponse
 

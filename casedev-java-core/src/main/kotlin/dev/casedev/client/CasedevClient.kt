@@ -14,6 +14,7 @@ import dev.casedev.services.blocking.OcrService
 import dev.casedev.services.blocking.PrivilegeService
 import dev.casedev.services.blocking.SearchService
 import dev.casedev.services.blocking.SuperdocService
+import dev.casedev.services.blocking.SystemService
 import dev.casedev.services.blocking.TranslateService
 import dev.casedev.services.blocking.VaultService
 import dev.casedev.services.blocking.VoiceService
@@ -54,6 +55,8 @@ interface CasedevClient {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClient
+
+    fun system(): SystemService
 
     fun applications(): ApplicationService
 
@@ -105,6 +108,8 @@ interface CasedevClient {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClient.WithRawResponse
+
+        fun system(): SystemService.WithRawResponse
 
         fun applications(): ApplicationService.WithRawResponse
 

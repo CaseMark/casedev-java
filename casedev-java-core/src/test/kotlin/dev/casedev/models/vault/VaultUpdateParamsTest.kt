@@ -13,6 +13,7 @@ internal class VaultUpdateParamsTest {
             .id("id")
             .description("description")
             .enableGraph(false)
+            .groupId("groupId")
             .name("Updated Vault Name")
             .build()
     }
@@ -33,6 +34,7 @@ internal class VaultUpdateParamsTest {
                 .id("id")
                 .description("description")
                 .enableGraph(false)
+                .groupId("groupId")
                 .name("Updated Vault Name")
                 .build()
 
@@ -40,6 +42,7 @@ internal class VaultUpdateParamsTest {
 
         assertThat(body.description()).contains("description")
         assertThat(body.enableGraph()).contains(false)
+        assertThat(body.groupId()).contains("groupId")
         assertThat(body.name()).contains("Updated Vault Name")
     }
 

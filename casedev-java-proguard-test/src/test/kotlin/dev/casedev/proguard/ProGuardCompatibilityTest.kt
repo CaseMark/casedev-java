@@ -48,6 +48,7 @@ internal class ProGuardCompatibilityTest {
         val client = CasedevOkHttpClient.builder().apiKey("My API Key").build()
 
         assertThat(client).isNotNull()
+        assertThat(client.system()).isNotNull()
         assertThat(client.applications()).isNotNull()
         assertThat(client.compute()).isNotNull()
         assertThat(client.database()).isNotNull()

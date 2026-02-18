@@ -38,6 +38,8 @@ import dev.casedev.services.blocking.vault.EventService
 import dev.casedev.services.blocking.vault.EventServiceImpl
 import dev.casedev.services.blocking.vault.GraphragService
 import dev.casedev.services.blocking.vault.GraphragServiceImpl
+import dev.casedev.services.blocking.vault.GroupService
+import dev.casedev.services.blocking.vault.GroupServiceImpl
 import dev.casedev.services.blocking.vault.MultipartService
 import dev.casedev.services.blocking.vault.MultipartServiceImpl
 import dev.casedev.services.blocking.vault.ObjectService
@@ -56,6 +58,8 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     private val graphrag: GraphragService by lazy { GraphragServiceImpl(clientOptions) }
 
+    private val groups: GroupService by lazy { GroupServiceImpl(clientOptions) }
+
     private val multipart: MultipartService by lazy { MultipartServiceImpl(clientOptions) }
 
     private val objects: ObjectService by lazy { ObjectServiceImpl(clientOptions) }
@@ -68,6 +72,8 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun events(): EventService = events
 
     override fun graphrag(): GraphragService = graphrag
+
+    override fun groups(): GroupService = groups
 
     override fun multipart(): MultipartService = multipart
 
@@ -147,6 +153,10 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             GraphragServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val groups: GroupService.WithRawResponse by lazy {
+            GroupServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val multipart: MultipartService.WithRawResponse by lazy {
             MultipartServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -165,6 +175,8 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
         override fun events(): EventService.WithRawResponse = events
 
         override fun graphrag(): GraphragService.WithRawResponse = graphrag
+
+        override fun groups(): GroupService.WithRawResponse = groups
 
         override fun multipart(): MultipartService.WithRawResponse = multipart
 

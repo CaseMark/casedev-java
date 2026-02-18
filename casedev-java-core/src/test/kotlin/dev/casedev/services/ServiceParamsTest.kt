@@ -49,6 +49,7 @@ internal class ServiceParamsTest {
                 .description("Repository for all client contract reviews and analysis")
                 .enableGraph(true)
                 .enableIndexing(true)
+                .groupId("grp_abc123")
                 .metadata(JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true)))
                 .putAdditionalHeader("Secret-Header", "42")
                 .putAdditionalQueryParam("secret_query_param", "42")

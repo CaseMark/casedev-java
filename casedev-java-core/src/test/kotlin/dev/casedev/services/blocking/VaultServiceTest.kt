@@ -36,6 +36,7 @@ internal class VaultServiceTest {
                     .description("Repository for all client contract reviews and analysis")
                     .enableGraph(true)
                     .enableIndexing(true)
+                    .groupId("grp_abc123")
                     .metadata(
                         JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                     )
@@ -76,6 +77,7 @@ internal class VaultServiceTest {
                     .id("id")
                     .description("description")
                     .enableGraph(false)
+                    .groupId("groupId")
                     .name("Updated Vault Name")
                     .build()
             )

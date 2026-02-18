@@ -76,6 +76,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -106,6 +107,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -136,6 +138,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -166,6 +169,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -196,6 +200,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -226,6 +231,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -256,6 +262,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -286,6 +293,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -316,6 +324,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -346,6 +355,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -376,6 +386,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -406,6 +417,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -436,6 +448,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -466,6 +479,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -496,6 +510,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -526,6 +541,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )
@@ -554,6 +570,7 @@ internal class ErrorHandlingTest {
                         .description("Repository for all client contract reviews and analysis")
                         .enableGraph(true)
                         .enableIndexing(true)
+                        .groupId("grp_abc123")
                         .metadata(
                             JsonValue.from(mapOf("containsPHI" to true, "hipaaCompliant" to true))
                         )

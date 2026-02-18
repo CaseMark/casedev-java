@@ -26,6 +26,8 @@ import dev.casedev.services.async.SearchServiceAsync
 import dev.casedev.services.async.SearchServiceAsyncImpl
 import dev.casedev.services.async.SuperdocServiceAsync
 import dev.casedev.services.async.SuperdocServiceAsyncImpl
+import dev.casedev.services.async.SystemServiceAsync
+import dev.casedev.services.async.SystemServiceAsyncImpl
 import dev.casedev.services.async.TranslateServiceAsync
 import dev.casedev.services.async.TranslateServiceAsyncImpl
 import dev.casedev.services.async.VaultServiceAsync
@@ -49,6 +51,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     private val withRawResponse: CasedevClientAsync.WithRawResponse by lazy {
         WithRawResponseImpl(clientOptions)
+    }
+
+    private val system: SystemServiceAsync by lazy {
+        SystemServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
     private val applications: ApplicationServiceAsync by lazy {
@@ -110,6 +116,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClientAsync =
         CasedevClientAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun system(): SystemServiceAsync = system
+
     override fun applications(): ApplicationServiceAsync = applications
 
     override fun compute(): ComputeServiceAsync = compute
@@ -142,6 +150,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CasedevClientAsync.WithRawResponse {
+
+        private val system: SystemServiceAsync.WithRawResponse by lazy {
+            SystemServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
 
         private val applications: ApplicationServiceAsync.WithRawResponse by lazy {
             ApplicationServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -205,6 +217,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
             CasedevClientAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun system(): SystemServiceAsync.WithRawResponse = system
 
         override fun applications(): ApplicationServiceAsync.WithRawResponse = applications
 

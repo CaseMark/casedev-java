@@ -26,6 +26,8 @@ import dev.casedev.services.blocking.SearchService
 import dev.casedev.services.blocking.SearchServiceImpl
 import dev.casedev.services.blocking.SuperdocService
 import dev.casedev.services.blocking.SuperdocServiceImpl
+import dev.casedev.services.blocking.SystemService
+import dev.casedev.services.blocking.SystemServiceImpl
 import dev.casedev.services.blocking.TranslateService
 import dev.casedev.services.blocking.TranslateServiceImpl
 import dev.casedev.services.blocking.VaultService
@@ -50,6 +52,8 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
     private val withRawResponse: CasedevClient.WithRawResponse by lazy {
         WithRawResponseImpl(clientOptions)
     }
+
+    private val system: SystemService by lazy { SystemServiceImpl(clientOptionsWithUserAgent) }
 
     private val applications: ApplicationService by lazy {
         ApplicationServiceImpl(clientOptionsWithUserAgent)
@@ -96,6 +100,8 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CasedevClient =
         CasedevClientImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun system(): SystemService = system
+
     override fun applications(): ApplicationService = applications
 
     override fun compute(): ComputeService = compute
@@ -128,6 +134,10 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CasedevClient.WithRawResponse {
+
+        private val system: SystemService.WithRawResponse by lazy {
+            SystemServiceImpl.WithRawResponseImpl(clientOptions)
+        }
 
         private val applications: ApplicationService.WithRawResponse by lazy {
             ApplicationServiceImpl.WithRawResponseImpl(clientOptions)
@@ -191,6 +201,8 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
             CasedevClientImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun system(): SystemService.WithRawResponse = system
 
         override fun applications(): ApplicationService.WithRawResponse = applications
 
