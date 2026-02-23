@@ -1,0 +1,13 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package com.router.api.models.voice.streaming
+
+import org.junit.jupiter.api.Test
+
+internal class StreamingGetUrlParamsTest {
+
+    @Test
+    fun create() {
+        StreamingGetUrlParams.builder().build()
+    }
+}
