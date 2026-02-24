@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/dev.case/casedev-java)](https://central.sonatype.com/artifact/dev.case/casedev-java/0.1.0)
-[![javadoc](https://javadoc.io/badge2/dev.case/casedev-java/0.1.0/javadoc.svg)](https://javadoc.io/doc/dev.case/casedev-java/0.1.0)
+[![Maven Central](https://img.shields.io/maven-central/v/dev.case.api/casedev-java)](https://central.sonatype.com/artifact/dev.case.api/casedev-java/0.2.0)
+[![javadoc](https://javadoc.io/badge2/dev.case.api/casedev-java/0.2.0/javadoc.svg)](https://javadoc.io/doc/dev.case.api/casedev-java/0.2.0)
 
 <!-- x-release-please-end -->
 
@@ -13,7 +13,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [docs.case.dev](https://docs.case.dev). Javadocs are available on [javadoc.io](https://javadoc.io/doc/dev.case/casedev-java/0.1.0).
+The REST API documentation can be found on [docs.case.dev](https://docs.case.dev). Javadocs are available on [javadoc.io](https://javadoc.io/doc/dev.case.api/casedev-java/0.2.0).
 
 <!-- x-release-please-end -->
 
@@ -24,16 +24,16 @@ The REST API documentation can be found on [docs.case.dev](https://docs.case.dev
 ### Gradle
 
 ```kotlin
-implementation("dev.case:casedev-java:0.1.0")
+implementation("dev.case.api:casedev-java:0.2.0")
 ```
 
 ### Maven
 
 ```xml
 <dependency>
-  <groupId>dev.case</groupId>
+  <groupId>dev.case.api</groupId>
   <artifactId>casedev-java</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
@@ -46,10 +46,10 @@ This library requires Java 8 or later.
 ## Usage
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
-import dev.case.models.llm.v1.chat.ChatCreateCompletionParams;
-import dev.case.models.llm.v1.chat.ChatCreateCompletionResponse;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionParams;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionResponse;
 
 // Configures using the `casedev.apiKey` and `casedev.baseUrl` system properties
 // Or configures using the `CASEDEV_API_KEY` and `CASEDEV_BASE_URL` environment variables
@@ -69,8 +69,8 @@ ChatCreateCompletionResponse response = client.llm().v1().chat().createCompletio
 Configure the client using system properties or environment variables:
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
 
 // Configures using the `casedev.apiKey` and `casedev.baseUrl` system properties
 // Or configures using the `CASEDEV_API_KEY` and `CASEDEV_BASE_URL` environment variables
@@ -80,8 +80,8 @@ CasedevClient client = CasedevOkHttpClient.fromEnv();
 Or manually:
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
 
 CasedevClient client = CasedevOkHttpClient.builder()
     .apiKey("My API Key")
@@ -91,8 +91,8 @@ CasedevClient client = CasedevOkHttpClient.builder()
 Or using a combination of the two approaches:
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
 
 CasedevClient client = CasedevOkHttpClient.builder()
     // Configures using the `casedev.apiKey` and `casedev.baseUrl` system properties
@@ -120,7 +120,7 @@ System properties take precedence over environment variables.
 To temporarily use a modified client configuration, while reusing the same connection and thread pools, call `withOptions()` on any client or service:
 
 ```java
-import dev.case.client.CasedevClient;
+import dev.case.api.client.CasedevClient;
 
 CasedevClient clientWithOptions = client.withOptions(optionsBuilder -> {
     optionsBuilder.baseUrl("https://example.com");
@@ -149,10 +149,10 @@ Because each class is immutable, builder modification will _never_ affect alread
 The default client is synchronous. To switch to asynchronous execution, call the `async()` method:
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
-import dev.case.models.llm.v1.chat.ChatCreateCompletionParams;
-import dev.case.models.llm.v1.chat.ChatCreateCompletionResponse;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionParams;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionResponse;
 import java.util.concurrent.CompletableFuture;
 
 // Configures using the `casedev.apiKey` and `casedev.baseUrl` system properties
@@ -171,10 +171,10 @@ CompletableFuture<ChatCreateCompletionResponse> response = client.async().llm().
 Or create an asynchronous client from the beginning:
 
 ```java
-import dev.case.client.CasedevClientAsync;
-import dev.case.client.okhttp.CasedevOkHttpClientAsync;
-import dev.case.models.llm.v1.chat.ChatCreateCompletionParams;
-import dev.case.models.llm.v1.chat.ChatCreateCompletionResponse;
+import dev.case.api.client.CasedevClientAsync;
+import dev.case.api.client.okhttp.CasedevOkHttpClientAsync;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionParams;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionResponse;
 import java.util.concurrent.CompletableFuture;
 
 // Configures using the `casedev.apiKey` and `casedev.baseUrl` system properties
@@ -196,11 +196,11 @@ The asynchronous client supports the same options as the synchronous one, except
 
 The SDK defines methods that return binary responses, which are used for API responses that shouldn't necessarily be parsed, like non-JSON data.
 
-These methods return [`HttpResponse`](casedev-java-core/src/main/kotlin/dev/case/core/http/HttpResponse.kt):
+These methods return [`HttpResponse`](casedev-java-core/src/main/kotlin/dev/case/api/core/http/HttpResponse.kt):
 
 ```java
-import dev.case.core.http.HttpResponse;
-import dev.case.models.format.v1.V1CreateDocumentParams;
+import dev.case.api.core.http.HttpResponse;
+import dev.case.api.models.format.v1.V1CreateDocumentParams;
 
 V1CreateDocumentParams params = V1CreateDocumentParams.builder()
     .content("content")
@@ -212,7 +212,7 @@ HttpResponse response = client.format().v1().createDocument(params);
 To save the response content to a file, use the [`Files.copy(...)`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#copy-java.io.InputStream-java.nio.file.Path-java.nio.file.CopyOption...-) method:
 
 ```java
-import dev.case.core.http.HttpResponse;
+import dev.case.api.core.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -232,7 +232,7 @@ try (HttpResponse response = client.format().v1().createDocument(params)) {
 Or transfer the response content to any [`OutputStream`](https://docs.oracle.com/javase/8/docs/api/java/io/OutputStream.html):
 
 ```java
-import dev.case.core.http.HttpResponse;
+import dev.case.api.core.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -251,10 +251,10 @@ The SDK defines methods that deserialize responses into instances of Java classe
 To access this data, prefix any HTTP method call on a client or service with `withRawResponse()`:
 
 ```java
-import dev.case.core.http.Headers;
-import dev.case.core.http.HttpResponseFor;
-import dev.case.models.vault.VaultCreateParams;
-import dev.case.models.vault.VaultCreateResponse;
+import dev.case.api.core.http.Headers;
+import dev.case.api.core.http.HttpResponseFor;
+import dev.case.api.models.vault.VaultCreateParams;
+import dev.case.api.models.vault.VaultCreateResponse;
 
 VaultCreateParams params = VaultCreateParams.builder()
     .name("My Vault")
@@ -268,7 +268,7 @@ Headers headers = vault.headers();
 You can still deserialize the response into an instance of a Java class if needed:
 
 ```java
-import dev.case.models.vault.VaultCreateResponse;
+import dev.case.api.models.vault.VaultCreateResponse;
 
 VaultCreateResponse parsedVault = vault.parse();
 ```
@@ -277,26 +277,26 @@ VaultCreateResponse parsedVault = vault.parse();
 
 The SDK throws custom unchecked exception types:
 
-- [`CasedevServiceException`](casedev-java-core/src/main/kotlin/dev/case/errors/CasedevServiceException.kt): Base class for HTTP errors. See this table for which exception subclass is thrown for each HTTP status code:
+- [`CasedevServiceException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/CasedevServiceException.kt): Base class for HTTP errors. See this table for which exception subclass is thrown for each HTTP status code:
 
-  | Status | Exception                                                                                                             |
-  | ------ | --------------------------------------------------------------------------------------------------------------------- |
-  | 400    | [`BadRequestException`](casedev-java-core/src/main/kotlin/dev/case/errors/BadRequestException.kt)                     |
-  | 401    | [`UnauthorizedException`](casedev-java-core/src/main/kotlin/dev/case/errors/UnauthorizedException.kt)                 |
-  | 403    | [`PermissionDeniedException`](casedev-java-core/src/main/kotlin/dev/case/errors/PermissionDeniedException.kt)         |
-  | 404    | [`NotFoundException`](casedev-java-core/src/main/kotlin/dev/case/errors/NotFoundException.kt)                         |
-  | 422    | [`UnprocessableEntityException`](casedev-java-core/src/main/kotlin/dev/case/errors/UnprocessableEntityException.kt)   |
-  | 429    | [`RateLimitException`](casedev-java-core/src/main/kotlin/dev/case/errors/RateLimitException.kt)                       |
-  | 5xx    | [`InternalServerException`](casedev-java-core/src/main/kotlin/dev/case/errors/InternalServerException.kt)             |
-  | others | [`UnexpectedStatusCodeException`](casedev-java-core/src/main/kotlin/dev/case/errors/UnexpectedStatusCodeException.kt) |
+  | Status | Exception                                                                                                                 |
+  | ------ | ------------------------------------------------------------------------------------------------------------------------- |
+  | 400    | [`BadRequestException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/BadRequestException.kt)                     |
+  | 401    | [`UnauthorizedException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/UnauthorizedException.kt)                 |
+  | 403    | [`PermissionDeniedException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/PermissionDeniedException.kt)         |
+  | 404    | [`NotFoundException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/NotFoundException.kt)                         |
+  | 422    | [`UnprocessableEntityException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/UnprocessableEntityException.kt)   |
+  | 429    | [`RateLimitException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/RateLimitException.kt)                       |
+  | 5xx    | [`InternalServerException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/InternalServerException.kt)             |
+  | others | [`UnexpectedStatusCodeException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/UnexpectedStatusCodeException.kt) |
 
-- [`CasedevIoException`](casedev-java-core/src/main/kotlin/dev/case/errors/CasedevIoException.kt): I/O networking errors.
+- [`CasedevIoException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/CasedevIoException.kt): I/O networking errors.
 
-- [`CasedevRetryableException`](casedev-java-core/src/main/kotlin/dev/case/errors/CasedevRetryableException.kt): Generic error indicating a failure that could be retried by the client.
+- [`CasedevRetryableException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/CasedevRetryableException.kt): Generic error indicating a failure that could be retried by the client.
 
-- [`CasedevInvalidDataException`](casedev-java-core/src/main/kotlin/dev/case/errors/CasedevInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
+- [`CasedevInvalidDataException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/CasedevInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
 
-- [`CasedevException`](casedev-java-core/src/main/kotlin/dev/case/errors/CasedevException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
+- [`CasedevException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/CasedevException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
 
 ## Logging
 
@@ -326,7 +326,7 @@ The SDK depends on [Jackson](https://github.com/FasterXML/jackson) for JSON seri
 
 The SDK throws an exception if it detects an incompatible Jackson version at runtime (e.g. if the default version was overridden in your Maven or Gradle config).
 
-If the SDK threw an exception, but you're _certain_ the version is compatible, then disable the version check using the `checkJacksonVersionCompatibility` on [`CasedevOkHttpClient`](casedev-java-client-okhttp/src/main/kotlin/dev/case/client/okhttp/CasedevOkHttpClient.kt) or [`CasedevOkHttpClientAsync`](casedev-java-client-okhttp/src/main/kotlin/dev/case/client/okhttp/CasedevOkHttpClientAsync.kt).
+If the SDK threw an exception, but you're _certain_ the version is compatible, then disable the version check using the `checkJacksonVersionCompatibility` on [`CasedevOkHttpClient`](casedev-java-client-okhttp/src/main/kotlin/dev/case/api/client/okhttp/CasedevOkHttpClient.kt) or [`CasedevOkHttpClientAsync`](casedev-java-client-okhttp/src/main/kotlin/dev/case/api/client/okhttp/CasedevOkHttpClientAsync.kt).
 
 > [!CAUTION]
 > We make no guarantee that the SDK works correctly when the Jackson version check is disabled.
@@ -352,8 +352,8 @@ The API may also explicitly instruct the SDK to retry or not retry a request.
 To set a custom number of retries, configure the client using the `maxRetries` method:
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
 
 CasedevClient client = CasedevOkHttpClient.builder()
     .fromEnv()
@@ -368,7 +368,7 @@ Requests time out after 1 minute by default.
 To set a custom timeout, configure the method call using the `timeout` method:
 
 ```java
-import dev.case.models.vault.VaultCreateResponse;
+import dev.case.api.models.vault.VaultCreateResponse;
 
 VaultCreateResponse vault = client.vault().create(
   params, RequestOptions.builder().timeout(Duration.ofSeconds(30)).build()
@@ -378,8 +378,8 @@ VaultCreateResponse vault = client.vault().create(
 Or configure the default for all method calls at the client level:
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
 import java.time.Duration;
 
 CasedevClient client = CasedevOkHttpClient.builder()
@@ -393,8 +393,8 @@ CasedevClient client = CasedevOkHttpClient.builder()
 To route requests through a proxy, configure the client using the `proxy` method:
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 
@@ -413,8 +413,8 @@ CasedevClient client = CasedevOkHttpClient.builder()
 To customize the underlying OkHttp connection pool, configure the client using the `maxIdleConnections` and `keepAliveDuration` methods:
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
 import java.time.Duration;
 
 CasedevClient client = CasedevOkHttpClient.builder()
@@ -436,8 +436,8 @@ If both options are unset, OkHttp's default connection pool settings are used.
 To configure how HTTPS connections are secured, configure the client using the `sslSocketFactory`, `trustManager`, and `hostnameVerifier` methods:
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
 
 CasedevClient client = CasedevOkHttpClient.builder()
     .fromEnv()
@@ -453,8 +453,8 @@ CasedevClient client = CasedevOkHttpClient.builder()
 The SDK sends requests to the production by default. To send requests to a different environment, configure the client like so:
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
 
 CasedevClient client = CasedevOkHttpClient.builder()
     .fromEnv()
@@ -469,10 +469,10 @@ The SDK consists of three artifacts:
 - `casedev-java-core`
   - Contains core SDK logic
   - Does not depend on [OkHttp](https://square.github.io/okhttp)
-  - Exposes [`CasedevClient`](casedev-java-core/src/main/kotlin/dev/case/client/CasedevClient.kt), [`CasedevClientAsync`](casedev-java-core/src/main/kotlin/dev/case/client/CasedevClientAsync.kt), [`CasedevClientImpl`](casedev-java-core/src/main/kotlin/dev/case/client/CasedevClientImpl.kt), and [`CasedevClientAsyncImpl`](casedev-java-core/src/main/kotlin/dev/case/client/CasedevClientAsyncImpl.kt), all of which can work with any HTTP client
+  - Exposes [`CasedevClient`](casedev-java-core/src/main/kotlin/dev/case/api/client/CasedevClient.kt), [`CasedevClientAsync`](casedev-java-core/src/main/kotlin/dev/case/api/client/CasedevClientAsync.kt), [`CasedevClientImpl`](casedev-java-core/src/main/kotlin/dev/case/api/client/CasedevClientImpl.kt), and [`CasedevClientAsyncImpl`](casedev-java-core/src/main/kotlin/dev/case/api/client/CasedevClientAsyncImpl.kt), all of which can work with any HTTP client
 - `casedev-java-client-okhttp`
   - Depends on [OkHttp](https://square.github.io/okhttp)
-  - Exposes [`CasedevOkHttpClient`](casedev-java-client-okhttp/src/main/kotlin/dev/case/client/okhttp/CasedevOkHttpClient.kt) and [`CasedevOkHttpClientAsync`](casedev-java-client-okhttp/src/main/kotlin/dev/case/client/okhttp/CasedevOkHttpClientAsync.kt), which provide a way to construct [`CasedevClientImpl`](casedev-java-core/src/main/kotlin/dev/case/client/CasedevClientImpl.kt) and [`CasedevClientAsyncImpl`](casedev-java-core/src/main/kotlin/dev/case/client/CasedevClientAsyncImpl.kt), respectively, using OkHttp
+  - Exposes [`CasedevOkHttpClient`](casedev-java-client-okhttp/src/main/kotlin/dev/case/api/client/okhttp/CasedevOkHttpClient.kt) and [`CasedevOkHttpClientAsync`](casedev-java-client-okhttp/src/main/kotlin/dev/case/api/client/okhttp/CasedevOkHttpClientAsync.kt), which provide a way to construct [`CasedevClientImpl`](casedev-java-core/src/main/kotlin/dev/case/api/client/CasedevClientImpl.kt) and [`CasedevClientAsyncImpl`](casedev-java-core/src/main/kotlin/dev/case/api/client/CasedevClientAsyncImpl.kt), respectively, using OkHttp
 - `casedev-java`
   - Depends on and exposes the APIs of both `casedev-java-core` and `casedev-java-client-okhttp`
   - Does not have its own logic
@@ -487,16 +487,16 @@ This structure allows replacing the SDK's default HTTP client without pulling in
 To use a customized `OkHttpClient`:
 
 1. Replace your [`casedev-java` dependency](#installation) with `casedev-java-core`
-2. Copy `casedev-java-client-okhttp`'s [`OkHttpClient`](casedev-java-client-okhttp/src/main/kotlin/dev/case/client/okhttp/OkHttpClient.kt) class into your code and customize it
-3. Construct [`CasedevClientImpl`](casedev-java-core/src/main/kotlin/dev/case/client/CasedevClientImpl.kt) or [`CasedevClientAsyncImpl`](casedev-java-core/src/main/kotlin/dev/case/client/CasedevClientAsyncImpl.kt), similarly to [`CasedevOkHttpClient`](casedev-java-client-okhttp/src/main/kotlin/dev/case/client/okhttp/CasedevOkHttpClient.kt) or [`CasedevOkHttpClientAsync`](casedev-java-client-okhttp/src/main/kotlin/dev/case/client/okhttp/CasedevOkHttpClientAsync.kt), using your customized client
+2. Copy `casedev-java-client-okhttp`'s [`OkHttpClient`](casedev-java-client-okhttp/src/main/kotlin/dev/case/api/client/okhttp/OkHttpClient.kt) class into your code and customize it
+3. Construct [`CasedevClientImpl`](casedev-java-core/src/main/kotlin/dev/case/api/client/CasedevClientImpl.kt) or [`CasedevClientAsyncImpl`](casedev-java-core/src/main/kotlin/dev/case/api/client/CasedevClientAsyncImpl.kt), similarly to [`CasedevOkHttpClient`](casedev-java-client-okhttp/src/main/kotlin/dev/case/api/client/okhttp/CasedevOkHttpClient.kt) or [`CasedevOkHttpClientAsync`](casedev-java-client-okhttp/src/main/kotlin/dev/case/api/client/okhttp/CasedevOkHttpClientAsync.kt), using your customized client
 
 ### Completely custom HTTP client
 
 To use a completely custom HTTP client:
 
 1. Replace your [`casedev-java` dependency](#installation) with `casedev-java-core`
-2. Write a class that implements the [`HttpClient`](casedev-java-core/src/main/kotlin/dev/case/core/http/HttpClient.kt) interface
-3. Construct [`CasedevClientImpl`](casedev-java-core/src/main/kotlin/dev/case/client/CasedevClientImpl.kt) or [`CasedevClientAsyncImpl`](casedev-java-core/src/main/kotlin/dev/case/client/CasedevClientAsyncImpl.kt), similarly to [`CasedevOkHttpClient`](casedev-java-client-okhttp/src/main/kotlin/dev/case/client/okhttp/CasedevOkHttpClient.kt) or [`CasedevOkHttpClientAsync`](casedev-java-client-okhttp/src/main/kotlin/dev/case/client/okhttp/CasedevOkHttpClientAsync.kt), using your new client class
+2. Write a class that implements the [`HttpClient`](casedev-java-core/src/main/kotlin/dev/case/api/core/http/HttpClient.kt) interface
+3. Construct [`CasedevClientImpl`](casedev-java-core/src/main/kotlin/dev/case/api/client/CasedevClientImpl.kt) or [`CasedevClientAsyncImpl`](casedev-java-core/src/main/kotlin/dev/case/api/client/CasedevClientAsyncImpl.kt), similarly to [`CasedevOkHttpClient`](casedev-java-client-okhttp/src/main/kotlin/dev/case/api/client/okhttp/CasedevOkHttpClient.kt) or [`CasedevOkHttpClientAsync`](casedev-java-client-okhttp/src/main/kotlin/dev/case/api/client/okhttp/CasedevOkHttpClientAsync.kt), using your new client class
 
 ## Undocumented API functionality
 
@@ -507,8 +507,8 @@ The SDK is typed for convenient usage of the documented API. However, it also su
 To set undocumented parameters, call the `putAdditionalHeader`, `putAdditionalQueryParam`, or `putAdditionalBodyProperty` methods on any `Params` class:
 
 ```java
-import dev.case.core.JsonValue;
-import dev.case.models.llm.v1.chat.ChatCreateCompletionParams;
+import dev.case.api.core.JsonValue;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionParams;
 
 ChatCreateCompletionParams params = ChatCreateCompletionParams.builder()
     .putAdditionalHeader("Secret-Header", "42")
@@ -522,8 +522,8 @@ These can be accessed on the built object later using the `_additionalHeaders()`
 To set undocumented parameters on _nested_ headers, query params, or body classes, call the `putAdditionalProperty` method on the nested class:
 
 ```java
-import dev.case.core.JsonValue;
-import dev.case.models.agent.v1.agents.AgentCreateParams;
+import dev.case.api.core.JsonValue;
+import dev.case.api.models.agent.v1.agents.AgentCreateParams;
 
 AgentCreateParams params = AgentCreateParams.builder()
     .sandbox(AgentCreateParams.Sandbox.builder()
@@ -534,21 +534,21 @@ AgentCreateParams params = AgentCreateParams.builder()
 
 These properties can be accessed on the nested built object later using the `_additionalProperties()` method.
 
-To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](casedev-java-core/src/main/kotlin/dev/case/core/Values.kt) object to its setter:
+To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](casedev-java-core/src/main/kotlin/dev/case/api/core/Values.kt) object to its setter:
 
 ```java
-import dev.case.core.JsonValue;
-import dev.case.models.llm.v1.chat.ChatCreateCompletionParams;
+import dev.case.api.core.JsonValue;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionParams;
 
 ChatCreateCompletionParams params = ChatCreateCompletionParams.builder()
     .messages(JsonValue.from(42))
     .build();
 ```
 
-The most straightforward way to create a [`JsonValue`](casedev-java-core/src/main/kotlin/dev/case/core/Values.kt) is using its `from(...)` method:
+The most straightforward way to create a [`JsonValue`](casedev-java-core/src/main/kotlin/dev/case/api/core/Values.kt) is using its `from(...)` method:
 
 ```java
-import dev.case.core.JsonValue;
+import dev.case.api.core.JsonValue;
 import java.util.List;
 import java.util.Map;
 
@@ -586,11 +586,11 @@ JsonValue complexValue = JsonValue.from(Map.of(
 
 Normally a `Builder` class's `build` method will throw [`IllegalStateException`](https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html) if any required parameter or property is unset.
 
-To forcibly omit a required parameter or property, pass [`JsonMissing`](casedev-java-core/src/main/kotlin/dev/case/core/Values.kt):
+To forcibly omit a required parameter or property, pass [`JsonMissing`](casedev-java-core/src/main/kotlin/dev/case/api/core/Values.kt):
 
 ```java
-import dev.case.core.JsonMissing;
-import dev.case.models.llm.v1.chat.ChatCreateCompletionParams;
+import dev.case.api.core.JsonMissing;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionParams;
 
 ChatCreateCompletionParams params = ChatCreateCompletionParams.builder()
     .messages(JsonMissing.of())
@@ -602,7 +602,7 @@ ChatCreateCompletionParams params = ChatCreateCompletionParams.builder()
 To access undocumented response properties, call the `_additionalProperties()` method:
 
 ```java
-import dev.case.core.JsonValue;
+import dev.case.api.core.JsonValue;
 import java.util.Map;
 
 Map<String, JsonValue> additionalProperties = client.llm().v1().chat().createCompletion(params)._additionalProperties();
@@ -632,8 +632,8 @@ String result = secretPropertyValue.accept(new JsonValue.Visitor<>() {
 To access a property's raw JSON value, which may be undocumented, call its `_` prefixed method:
 
 ```java
-import dev.case.core.JsonField;
-import dev.case.models.llm.v1.chat.ChatCreateCompletionParams;
+import dev.case.api.core.JsonField;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionParams;
 import java.util.Optional;
 
 JsonField<List<ChatCreateCompletionParams.Message>> messages = client.llm().v1().chat().createCompletion(params)._messages();
@@ -656,12 +656,12 @@ if (messages.isMissing()) {
 
 In rare cases, the API may return a response that doesn't match the expected type. For example, the SDK may expect a property to contain a `String`, but the API could return something else.
 
-By default, the SDK will not throw an exception in this case. It will throw [`CasedevInvalidDataException`](casedev-java-core/src/main/kotlin/dev/case/errors/CasedevInvalidDataException.kt) only if you directly access the property.
+By default, the SDK will not throw an exception in this case. It will throw [`CasedevInvalidDataException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/CasedevInvalidDataException.kt) only if you directly access the property.
 
 If you would prefer to check that the response is completely well-typed upfront, then either call `validate()`:
 
 ```java
-import dev.case.models.llm.v1.chat.ChatCreateCompletionResponse;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionResponse;
 
 ChatCreateCompletionResponse response = client.llm().v1().chat().createCompletion(params).validate();
 ```
@@ -669,7 +669,7 @@ ChatCreateCompletionResponse response = client.llm().v1().chat().createCompletio
 Or configure the method call to validate the response using the `responseValidation` method:
 
 ```java
-import dev.case.models.llm.v1.chat.ChatCreateCompletionResponse;
+import dev.case.api.models.llm.v1.chat.ChatCreateCompletionResponse;
 
 ChatCreateCompletionResponse response = client.llm().v1().chat().createCompletion(
   params, RequestOptions.builder().responseValidation(true).build()
@@ -679,8 +679,8 @@ ChatCreateCompletionResponse response = client.llm().v1().chat().createCompletio
 Or configure the default for all method calls at the client level:
 
 ```java
-import dev.case.client.CasedevClient;
-import dev.case.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
 
 CasedevClient client = CasedevOkHttpClient.builder()
     .fromEnv()
