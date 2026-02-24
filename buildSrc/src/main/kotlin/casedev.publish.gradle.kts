@@ -1,69 +1,72 @@
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinJvm
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
-    `maven-publish`
-    signing
+    id("com.vanniktech.maven.publish")
 }
 
-configure<PublishingExtension> {
-    publications {
-        register<MavenPublication>("maven") {
-            from(components["java"])
-
-            pom {
-                name.set("Case.dev API")
-                description.set("The AI-native platform for legal technology. Build smarter legal applications\nwith our suite of AI-powered APIs.")
-                url.set("https://docs.case.dev")
-
-                licenses {
-                    license {
-                        name.set("Apache-2.0")
-                    }
-                }
-
-                developers {
-                    developer {
-                        name.set("Casedev")
-                        email.set("support@casemark.com")
-                    }
-                }
-
-                scm {
-                    connection.set("scm:git:git://github.com/stainless-sdks/router-java.git")
-                    developerConnection.set("scm:git:git://github.com/stainless-sdks/router-java.git")
-                    url.set("https://github.com/stainless-sdks/router-java")
-                }
-
-                versionMapping {
-                    allVariants {
-                        fromResolutionResult()
-                    }
-                }
-            }
-        }
-    }
-    repositories {
-        if (project.hasProperty("publishLocal")) {
-            maven {
-                name = "LocalFileSystem"
-                url = uri("${rootProject.layout.buildDirectory.get()}/local-maven-repo")
-            }
-        }
-    }
+publishing {
+  repositories {
+      if (project.hasProperty("publishLocal")) {
+          maven {
+              name = "LocalFileSystem"
+              url = uri("${rootProject.layout.buildDirectory.get()}/local-maven-repo")
+          }
+      }
+  }
 }
 
-signing {
-    val signingKeyId = System.getenv("GPG_SIGNING_KEY_ID")?.ifBlank { null }
-    val signingKey = System.getenv("GPG_SIGNING_KEY")?.ifBlank { null }
-    val signingPassword = System.getenv("GPG_SIGNING_PASSWORD")?.ifBlank { null }
-    if (signingKey != null && signingPassword != null) {
-        useInMemoryPgpKeys(
-            signingKeyId,
-            signingKey,
-            signingPassword,
+repositories {
+    gradlePluginPortal()
+    mavenCentral()
+}
+
+extra["signingInMemoryKey"] = System.getenv("GPG_SIGNING_KEY")
+extra["signingInMemoryKeyId"] = System.getenv("GPG_SIGNING_KEY_ID")
+extra["signingInMemoryKeyPassword"] = System.getenv("GPG_SIGNING_PASSWORD")
+
+configure<MavenPublishBaseExtension> {
+    if (!project.hasProperty("publishLocal")) {
+        signAllPublications()
+        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    }
+
+    coordinates(project.group.toString(), project.name, project.version.toString())
+    configure(
+        KotlinJvm(
+            javadocJar = JavadocJar.Dokka("dokkaJavadoc"),
+            sourcesJar = true,
         )
-        sign(publishing.publications["maven"])
+    )
+
+    pom {
+        name.set("Case.dev API")
+        description.set("The AI-native platform for legal technology. Build smarter legal applications\nwith our suite of AI-powered APIs.")
+        url.set("https://docs.case.dev")
+
+        licenses {
+            license {
+                name.set("Apache-2.0")
+            }
+        }
+
+        developers {
+            developer {
+                name.set("Casedev")
+                email.set("support@casemark.com")
+            }
+        }
+
+        scm {
+            connection.set("scm:git:git://github.com/CaseMark/casedev-java.git")
+            developerConnection.set("scm:git:git://github.com/CaseMark/casedev-java.git")
+            url.set("https://github.com/CaseMark/casedev-java")
+        }
     }
 }
 
-tasks.named("publish") {
-    dependsOn(":closeAndReleaseSonatypeStagingRepository")
+tasks.withType<Zip>().configureEach {
+    isZip64 = true
 }
