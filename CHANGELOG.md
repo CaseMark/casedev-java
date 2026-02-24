@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 (2026-02-24)
+
+Full Changelog: [v0.2.0...v0.2.1](https://github.com/CaseMark/casedev-java/compare/v0.2.0...v0.2.1)
+
+### Bug Fixes
+
+* prevent duplicate Slack alerts from release-please branches ([a8c8982](https://github.com/CaseMark/casedev-java/commit/a8c89829f1a4699c63c12d78b66498fca6571d38))
+
 ## 0.2.0 (2026-02-24)
 
 Full Changelog: [v0.1.0...v0.2.0](https://github.com/CaseMark/casedev-java/compare/v0.1.0...v0.2.0)
