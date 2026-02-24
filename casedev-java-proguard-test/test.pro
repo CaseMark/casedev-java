@@ -1,5 +1,5 @@
 # Specify the entrypoint where ProGuard starts to determine what's reachable.
--keep class com.router.api.proguard.** { *; }
+-keep class dev.case.proguard.** { *; }
 
 # For the testing framework.
 -keep class org.junit.** { *; }
