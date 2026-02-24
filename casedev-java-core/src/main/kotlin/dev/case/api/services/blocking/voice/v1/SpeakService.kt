@@ -1,0 +1,65 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package dev.case.api.services.blocking.voice.v1
+
+import com.google.errorprone.annotations.MustBeClosed
+import dev.case.api.core.ClientOptions
+import dev.case.api.core.RequestOptions
+import dev.case.api.core.http.HttpResponse
+import dev.case.api.models.voice.v1.speak.SpeakCreateParams
+import java.util.function.Consumer
+
+interface SpeakService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): SpeakService
+
+    /**
+     * Convert text to natural-sounding audio using ElevenLabs voices. Ideal for creating audio
+     * summaries of legal documents, client presentations, or accessibility features. Supports
+     * multiple languages and voice customization.
+     */
+    @MustBeClosed
+    fun create(params: SpeakCreateParams): HttpResponse = create(params, RequestOptions.none())
+
+    /** @see create */
+    @MustBeClosed
+    fun create(
+        params: SpeakCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): HttpResponse
+
+    /** A view of [SpeakService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): SpeakService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /voice/v1/speak`, but is otherwise the same as
+         * [SpeakService.create].
+         */
+        @MustBeClosed
+        fun create(params: SpeakCreateParams): HttpResponse = create(params, RequestOptions.none())
+
+        /** @see create */
+        @MustBeClosed
+        fun create(
+            params: SpeakCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse
+    }
+}
