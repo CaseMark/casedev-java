@@ -1,3 +1,5 @@
+// File generated from our OpenAPI spec by Stainless.
+
 package dev.case.api.core.http
 
 import dev.case.api.core.DefaultSleeper
