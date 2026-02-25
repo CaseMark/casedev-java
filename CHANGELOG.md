@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2 (2026-02-25)
+
+Full Changelog: [v0.2.1...v0.2.2](https://github.com/CaseMark/casedev-java/compare/v0.2.1...v0.2.2)
+
+### Chores
+
+* **internal:** expand imports ([79a66eb](https://github.com/CaseMark/casedev-java/commit/79a66eb37dd6337dffef2f89d18973148bfa8c80))
+
 ## 0.2.1 (2026-02-24)
 
 Full Changelog: [v0.2.0...v0.2.1](https://github.com/CaseMark/casedev-java/compare/v0.2.0...v0.2.1)
