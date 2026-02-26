@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package dev.case.api.models.agent.v1.agents
+package dev.case.api.models.agent.v1.execute
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -23,10 +23,10 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Creates a new agent definition with a scoped API key. The agent can then be used to create and
- * execute runs.
+ * Creates an ephemeral agent and immediately executes a run. Returns the run ID for polling status
+ * and results. This is the fastest way to run an agent without managing agent lifecycle.
  */
-class AgentCreateParams
+class ExecuteCreateParams
 private constructor(
     private val body: Body,
     private val additionalHeaders: Headers,
@@ -34,28 +34,12 @@ private constructor(
 ) : Params {
 
     /**
-     * System instructions that define agent behavior
+     * Task prompt for the agent
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun instructions(): String = body.instructions()
-
-    /**
-     * Display name for the agent
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = body.name()
-
-    /**
-     * Optional description of the agent
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun description(): Optional<String> = body.description()
+    fun prompt(): String = body.prompt()
 
     /**
      * Denylist of tools the agent cannot use
@@ -74,8 +58,23 @@ private constructor(
     fun enabledTools(): Optional<List<String>> = body.enabledTools()
 
     /**
-     * LLM model identifier (e.g. anthropic/claude-sonnet-4.6). Defaults to
-     * anthropic/claude-sonnet-4.6
+     * Additional context or constraints for this run
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun guidance(): Optional<String> = body.guidance()
+
+    /**
+     * System instructions. Defaults to a general-purpose legal assistant prompt if not provided.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun instructions(): Optional<String> = body.instructions()
+
+    /**
+     * LLM model identifier. Defaults to anthropic/claude-sonnet-4.6
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -83,20 +82,20 @@ private constructor(
     fun model(): Optional<String> = body.model()
 
     /**
-     * Custom sandbox configuration (cpu, memoryMiB)
+     * Scope this run to specific vault object IDs. The agent will only access these objects.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun objectIds(): Optional<List<String>> = body.objectIds()
+
+    /**
+     * Custom sandbox resources (cpu, memoryMiB)
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun sandbox(): Optional<Sandbox> = body.sandbox()
-
-    /**
-     * Restrict agent to vaults within specific vault group IDs
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun vaultGroups(): Optional<List<String>> = body.vaultGroups()
 
     /**
      * Restrict agent to specific vault IDs
@@ -107,25 +106,11 @@ private constructor(
     fun vaultIds(): Optional<List<String>> = body.vaultIds()
 
     /**
-     * Returns the raw JSON value of [instructions].
+     * Returns the raw JSON value of [prompt].
      *
-     * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _instructions(): JsonField<String> = body._instructions()
-
-    /**
-     * Returns the raw JSON value of [name].
-     *
-     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _name(): JsonField<String> = body._name()
-
-    /**
-     * Returns the raw JSON value of [description].
-     *
-     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _description(): JsonField<String> = body._description()
+    fun _prompt(): JsonField<String> = body._prompt()
 
     /**
      * Returns the raw JSON value of [disabledTools].
@@ -142,6 +127,20 @@ private constructor(
     fun _enabledTools(): JsonField<List<String>> = body._enabledTools()
 
     /**
+     * Returns the raw JSON value of [guidance].
+     *
+     * Unlike [guidance], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _guidance(): JsonField<String> = body._guidance()
+
+    /**
+     * Returns the raw JSON value of [instructions].
+     *
+     * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _instructions(): JsonField<String> = body._instructions()
+
+    /**
      * Returns the raw JSON value of [model].
      *
      * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
@@ -149,18 +148,18 @@ private constructor(
     fun _model(): JsonField<String> = body._model()
 
     /**
+     * Returns the raw JSON value of [objectIds].
+     *
+     * Unlike [objectIds], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _objectIds(): JsonField<List<String>> = body._objectIds()
+
+    /**
      * Returns the raw JSON value of [sandbox].
      *
      * Unlike [sandbox], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _sandbox(): JsonField<Sandbox> = body._sandbox()
-
-    /**
-     * Returns the raw JSON value of [vaultGroups].
-     *
-     * Unlike [vaultGroups], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _vaultGroups(): JsonField<List<String>> = body._vaultGroups()
 
     /**
      * Returns the raw JSON value of [vaultIds].
@@ -182,18 +181,17 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [AgentCreateParams].
+         * Returns a mutable builder for constructing an instance of [ExecuteCreateParams].
          *
          * The following fields are required:
          * ```java
-         * .instructions()
-         * .name()
+         * .prompt()
          * ```
          */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [AgentCreateParams]. */
+    /** A builder for [ExecuteCreateParams]. */
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -201,10 +199,10 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(agentCreateParams: AgentCreateParams) = apply {
-            body = agentCreateParams.body.toBuilder()
-            additionalHeaders = agentCreateParams.additionalHeaders.toBuilder()
-            additionalQueryParams = agentCreateParams.additionalQueryParams.toBuilder()
+        internal fun from(executeCreateParams: ExecuteCreateParams) = apply {
+            body = executeCreateParams.body.toBuilder()
+            additionalHeaders = executeCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = executeCreateParams.additionalQueryParams.toBuilder()
         }
 
         /**
@@ -212,51 +210,25 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
-         * - [instructions]
-         * - [name]
-         * - [description]
+         * - [prompt]
          * - [disabledTools]
          * - [enabledTools]
+         * - [guidance]
+         * - [instructions]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** System instructions that define agent behavior */
-        fun instructions(instructions: String) = apply { body.instructions(instructions) }
+        /** Task prompt for the agent */
+        fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
         /**
-         * Sets [Builder.instructions] to an arbitrary JSON value.
+         * Sets [Builder.prompt] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.instructions] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun instructions(instructions: JsonField<String>) = apply {
-            body.instructions(instructions)
-        }
-
-        /** Display name for the agent */
-        fun name(name: String) = apply { body.name(name) }
-
-        /**
-         * Sets [Builder.name] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * You should usually call [Builder.prompt] with a well-typed [String] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun name(name: JsonField<String>) = apply { body.name(name) }
-
-        /** Optional description of the agent */
-        fun description(description: String) = apply { body.description(description) }
-
-        /**
-         * Sets [Builder.description] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.description] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun description(description: JsonField<String>) = apply { body.description(description) }
+        fun prompt(prompt: JsonField<String>) = apply { body.prompt(prompt) }
 
         /** Denylist of tools the agent cannot use */
         fun disabledTools(disabledTools: List<String>?) = apply {
@@ -310,10 +282,38 @@ private constructor(
          */
         fun addEnabledTool(enabledTool: String) = apply { body.addEnabledTool(enabledTool) }
 
+        /** Additional context or constraints for this run */
+        fun guidance(guidance: String?) = apply { body.guidance(guidance) }
+
+        /** Alias for calling [Builder.guidance] with `guidance.orElse(null)`. */
+        fun guidance(guidance: Optional<String>) = guidance(guidance.getOrNull())
+
         /**
-         * LLM model identifier (e.g. anthropic/claude-sonnet-4.6). Defaults to
-         * anthropic/claude-sonnet-4.6
+         * Sets [Builder.guidance] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.guidance] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
+        fun guidance(guidance: JsonField<String>) = apply { body.guidance(guidance) }
+
+        /**
+         * System instructions. Defaults to a general-purpose legal assistant prompt if not
+         * provided.
+         */
+        fun instructions(instructions: String) = apply { body.instructions(instructions) }
+
+        /**
+         * Sets [Builder.instructions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.instructions] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun instructions(instructions: JsonField<String>) = apply {
+            body.instructions(instructions)
+        }
+
+        /** LLM model identifier. Defaults to anthropic/claude-sonnet-4.6 */
         fun model(model: String) = apply { body.model(model) }
 
         /**
@@ -324,7 +324,31 @@ private constructor(
          */
         fun model(model: JsonField<String>) = apply { body.model(model) }
 
-        /** Custom sandbox configuration (cpu, memoryMiB) */
+        /**
+         * Scope this run to specific vault object IDs. The agent will only access these objects.
+         */
+        fun objectIds(objectIds: List<String>?) = apply { body.objectIds(objectIds) }
+
+        /** Alias for calling [Builder.objectIds] with `objectIds.orElse(null)`. */
+        fun objectIds(objectIds: Optional<List<String>>) = objectIds(objectIds.getOrNull())
+
+        /**
+         * Sets [Builder.objectIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.objectIds] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun objectIds(objectIds: JsonField<List<String>>) = apply { body.objectIds(objectIds) }
+
+        /**
+         * Adds a single [String] to [objectIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addObjectId(objectId: String) = apply { body.addObjectId(objectId) }
+
+        /** Custom sandbox resources (cpu, memoryMiB) */
         fun sandbox(sandbox: Sandbox?) = apply { body.sandbox(sandbox) }
 
         /** Alias for calling [Builder.sandbox] with `sandbox.orElse(null)`. */
@@ -337,30 +361,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun sandbox(sandbox: JsonField<Sandbox>) = apply { body.sandbox(sandbox) }
-
-        /** Restrict agent to vaults within specific vault group IDs */
-        fun vaultGroups(vaultGroups: List<String>?) = apply { body.vaultGroups(vaultGroups) }
-
-        /** Alias for calling [Builder.vaultGroups] with `vaultGroups.orElse(null)`. */
-        fun vaultGroups(vaultGroups: Optional<List<String>>) = vaultGroups(vaultGroups.getOrNull())
-
-        /**
-         * Sets [Builder.vaultGroups] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.vaultGroups] with a well-typed `List<String>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun vaultGroups(vaultGroups: JsonField<List<String>>) = apply {
-            body.vaultGroups(vaultGroups)
-        }
-
-        /**
-         * Adds a single [String] to [vaultGroups].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addVaultGroup(vaultGroup: String) = apply { body.addVaultGroup(vaultGroup) }
 
         /** Restrict agent to specific vault IDs */
         fun vaultIds(vaultIds: List<String>?) = apply { body.vaultIds(vaultIds) }
@@ -502,20 +502,19 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [AgentCreateParams].
+         * Returns an immutable instance of [ExecuteCreateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
          * The following fields are required:
          * ```java
-         * .instructions()
-         * .name()
+         * .prompt()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): AgentCreateParams =
-            AgentCreateParams(
+        fun build(): ExecuteCreateParams =
+            ExecuteCreateParams(
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -531,77 +530,61 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val instructions: JsonField<String>,
-        private val name: JsonField<String>,
-        private val description: JsonField<String>,
+        private val prompt: JsonField<String>,
         private val disabledTools: JsonField<List<String>>,
         private val enabledTools: JsonField<List<String>>,
+        private val guidance: JsonField<String>,
+        private val instructions: JsonField<String>,
         private val model: JsonField<String>,
+        private val objectIds: JsonField<List<String>>,
         private val sandbox: JsonField<Sandbox>,
-        private val vaultGroups: JsonField<List<String>>,
         private val vaultIds: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("instructions")
-            @ExcludeMissing
-            instructions: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("description")
-            @ExcludeMissing
-            description: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<String> = JsonMissing.of(),
             @JsonProperty("disabledTools")
             @ExcludeMissing
             disabledTools: JsonField<List<String>> = JsonMissing.of(),
             @JsonProperty("enabledTools")
             @ExcludeMissing
             enabledTools: JsonField<List<String>> = JsonMissing.of(),
-            @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("sandbox") @ExcludeMissing sandbox: JsonField<Sandbox> = JsonMissing.of(),
-            @JsonProperty("vaultGroups")
+            @JsonProperty("guidance")
             @ExcludeMissing
-            vaultGroups: JsonField<List<String>> = JsonMissing.of(),
+            guidance: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("instructions")
+            @ExcludeMissing
+            instructions: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("objectIds")
+            @ExcludeMissing
+            objectIds: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("sandbox") @ExcludeMissing sandbox: JsonField<Sandbox> = JsonMissing.of(),
             @JsonProperty("vaultIds")
             @ExcludeMissing
             vaultIds: JsonField<List<String>> = JsonMissing.of(),
         ) : this(
-            instructions,
-            name,
-            description,
+            prompt,
             disabledTools,
             enabledTools,
+            guidance,
+            instructions,
             model,
+            objectIds,
             sandbox,
-            vaultGroups,
             vaultIds,
             mutableMapOf(),
         )
 
         /**
-         * System instructions that define agent behavior
+         * Task prompt for the agent
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun instructions(): String = instructions.getRequired("instructions")
-
-        /**
-         * Display name for the agent
-         *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun name(): String = name.getRequired("name")
-
-        /**
-         * Optional description of the agent
-         *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun description(): Optional<String> = description.getOptional("description")
+        fun prompt(): String = prompt.getRequired("prompt")
 
         /**
          * Denylist of tools the agent cannot use
@@ -620,8 +603,24 @@ private constructor(
         fun enabledTools(): Optional<List<String>> = enabledTools.getOptional("enabledTools")
 
         /**
-         * LLM model identifier (e.g. anthropic/claude-sonnet-4.6). Defaults to
-         * anthropic/claude-sonnet-4.6
+         * Additional context or constraints for this run
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun guidance(): Optional<String> = guidance.getOptional("guidance")
+
+        /**
+         * System instructions. Defaults to a general-purpose legal assistant prompt if not
+         * provided.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun instructions(): Optional<String> = instructions.getOptional("instructions")
+
+        /**
+         * LLM model identifier. Defaults to anthropic/claude-sonnet-4.6
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -629,20 +628,20 @@ private constructor(
         fun model(): Optional<String> = model.getOptional("model")
 
         /**
-         * Custom sandbox configuration (cpu, memoryMiB)
+         * Scope this run to specific vault object IDs. The agent will only access these objects.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun objectIds(): Optional<List<String>> = objectIds.getOptional("objectIds")
+
+        /**
+         * Custom sandbox resources (cpu, memoryMiB)
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun sandbox(): Optional<Sandbox> = sandbox.getOptional("sandbox")
-
-        /**
-         * Restrict agent to vaults within specific vault group IDs
-         *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun vaultGroups(): Optional<List<String>> = vaultGroups.getOptional("vaultGroups")
 
         /**
          * Restrict agent to specific vault IDs
@@ -653,30 +652,11 @@ private constructor(
         fun vaultIds(): Optional<List<String>> = vaultIds.getOptional("vaultIds")
 
         /**
-         * Returns the raw JSON value of [instructions].
+         * Returns the raw JSON value of [prompt].
          *
-         * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected
-         * type.
+         * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("instructions")
-        @ExcludeMissing
-        fun _instructions(): JsonField<String> = instructions
-
-        /**
-         * Returns the raw JSON value of [name].
-         *
-         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
-
-        /**
-         * Returns the raw JSON value of [description].
-         *
-         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("description")
-        @ExcludeMissing
-        fun _description(): JsonField<String> = description
+        @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<String> = prompt
 
         /**
          * Returns the raw JSON value of [disabledTools].
@@ -699,6 +679,23 @@ private constructor(
         fun _enabledTools(): JsonField<List<String>> = enabledTools
 
         /**
+         * Returns the raw JSON value of [guidance].
+         *
+         * Unlike [guidance], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("guidance") @ExcludeMissing fun _guidance(): JsonField<String> = guidance
+
+        /**
+         * Returns the raw JSON value of [instructions].
+         *
+         * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        fun _instructions(): JsonField<String> = instructions
+
+        /**
          * Returns the raw JSON value of [model].
          *
          * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
@@ -706,20 +703,20 @@ private constructor(
         @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
         /**
+         * Returns the raw JSON value of [objectIds].
+         *
+         * Unlike [objectIds], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("objectIds")
+        @ExcludeMissing
+        fun _objectIds(): JsonField<List<String>> = objectIds
+
+        /**
          * Returns the raw JSON value of [sandbox].
          *
          * Unlike [sandbox], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("sandbox") @ExcludeMissing fun _sandbox(): JsonField<Sandbox> = sandbox
-
-        /**
-         * Returns the raw JSON value of [vaultGroups].
-         *
-         * Unlike [vaultGroups], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("vaultGroups")
-        @ExcludeMissing
-        fun _vaultGroups(): JsonField<List<String>> = vaultGroups
 
         /**
          * Returns the raw JSON value of [vaultIds].
@@ -749,8 +746,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .instructions()
-             * .name()
+             * .prompt()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -759,70 +755,42 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var instructions: JsonField<String>? = null
-            private var name: JsonField<String>? = null
-            private var description: JsonField<String> = JsonMissing.of()
+            private var prompt: JsonField<String>? = null
             private var disabledTools: JsonField<MutableList<String>>? = null
             private var enabledTools: JsonField<MutableList<String>>? = null
+            private var guidance: JsonField<String> = JsonMissing.of()
+            private var instructions: JsonField<String> = JsonMissing.of()
             private var model: JsonField<String> = JsonMissing.of()
+            private var objectIds: JsonField<MutableList<String>>? = null
             private var sandbox: JsonField<Sandbox> = JsonMissing.of()
-            private var vaultGroups: JsonField<MutableList<String>>? = null
             private var vaultIds: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
-                instructions = body.instructions
-                name = body.name
-                description = body.description
+                prompt = body.prompt
                 disabledTools = body.disabledTools.map { it.toMutableList() }
                 enabledTools = body.enabledTools.map { it.toMutableList() }
+                guidance = body.guidance
+                instructions = body.instructions
                 model = body.model
+                objectIds = body.objectIds.map { it.toMutableList() }
                 sandbox = body.sandbox
-                vaultGroups = body.vaultGroups.map { it.toMutableList() }
                 vaultIds = body.vaultIds.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** System instructions that define agent behavior */
-            fun instructions(instructions: String) = instructions(JsonField.of(instructions))
+            /** Task prompt for the agent */
+            fun prompt(prompt: String) = prompt(JsonField.of(prompt))
 
             /**
-             * Sets [Builder.instructions] to an arbitrary JSON value.
+             * Sets [Builder.prompt] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.instructions] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.prompt] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun instructions(instructions: JsonField<String>) = apply {
-                this.instructions = instructions
-            }
-
-            /** Display name for the agent */
-            fun name(name: String) = name(JsonField.of(name))
-
-            /**
-             * Sets [Builder.name] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.name] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun name(name: JsonField<String>) = apply { this.name = name }
-
-            /** Optional description of the agent */
-            fun description(description: String) = description(JsonField.of(description))
-
-            /**
-             * Sets [Builder.description] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.description] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun description(description: JsonField<String>) = apply {
-                this.description = description
-            }
+            fun prompt(prompt: JsonField<String>) = apply { this.prompt = prompt }
 
             /** Denylist of tools the agent cannot use */
             fun disabledTools(disabledTools: List<String>?) =
@@ -886,10 +854,39 @@ private constructor(
                     }
             }
 
+            /** Additional context or constraints for this run */
+            fun guidance(guidance: String?) = guidance(JsonField.ofNullable(guidance))
+
+            /** Alias for calling [Builder.guidance] with `guidance.orElse(null)`. */
+            fun guidance(guidance: Optional<String>) = guidance(guidance.getOrNull())
+
             /**
-             * LLM model identifier (e.g. anthropic/claude-sonnet-4.6). Defaults to
-             * anthropic/claude-sonnet-4.6
+             * Sets [Builder.guidance] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.guidance] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
+            fun guidance(guidance: JsonField<String>) = apply { this.guidance = guidance }
+
+            /**
+             * System instructions. Defaults to a general-purpose legal assistant prompt if not
+             * provided.
+             */
+            fun instructions(instructions: String) = instructions(JsonField.of(instructions))
+
+            /**
+             * Sets [Builder.instructions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.instructions] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun instructions(instructions: JsonField<String>) = apply {
+                this.instructions = instructions
+            }
+
+            /** LLM model identifier. Defaults to anthropic/claude-sonnet-4.6 */
             fun model(model: String) = model(JsonField.of(model))
 
             /**
@@ -901,7 +898,39 @@ private constructor(
              */
             fun model(model: JsonField<String>) = apply { this.model = model }
 
-            /** Custom sandbox configuration (cpu, memoryMiB) */
+            /**
+             * Scope this run to specific vault object IDs. The agent will only access these
+             * objects.
+             */
+            fun objectIds(objectIds: List<String>?) = objectIds(JsonField.ofNullable(objectIds))
+
+            /** Alias for calling [Builder.objectIds] with `objectIds.orElse(null)`. */
+            fun objectIds(objectIds: Optional<List<String>>) = objectIds(objectIds.getOrNull())
+
+            /**
+             * Sets [Builder.objectIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectIds] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun objectIds(objectIds: JsonField<List<String>>) = apply {
+                this.objectIds = objectIds.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [objectIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addObjectId(objectId: String) = apply {
+                objectIds =
+                    (objectIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("objectIds", it).add(objectId)
+                    }
+            }
+
+            /** Custom sandbox resources (cpu, memoryMiB) */
             fun sandbox(sandbox: Sandbox?) = sandbox(JsonField.ofNullable(sandbox))
 
             /** Alias for calling [Builder.sandbox] with `sandbox.orElse(null)`. */
@@ -915,37 +944,6 @@ private constructor(
              * supported value.
              */
             fun sandbox(sandbox: JsonField<Sandbox>) = apply { this.sandbox = sandbox }
-
-            /** Restrict agent to vaults within specific vault group IDs */
-            fun vaultGroups(vaultGroups: List<String>?) =
-                vaultGroups(JsonField.ofNullable(vaultGroups))
-
-            /** Alias for calling [Builder.vaultGroups] with `vaultGroups.orElse(null)`. */
-            fun vaultGroups(vaultGroups: Optional<List<String>>) =
-                vaultGroups(vaultGroups.getOrNull())
-
-            /**
-             * Sets [Builder.vaultGroups] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.vaultGroups] with a well-typed `List<String>` value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun vaultGroups(vaultGroups: JsonField<List<String>>) = apply {
-                this.vaultGroups = vaultGroups.map { it.toMutableList() }
-            }
-
-            /**
-             * Adds a single [String] to [vaultGroups].
-             *
-             * @throws IllegalStateException if the field was previously set to a non-list.
-             */
-            fun addVaultGroup(vaultGroup: String) = apply {
-                vaultGroups =
-                    (vaultGroups ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("vaultGroups", it).add(vaultGroup)
-                    }
-            }
 
             /** Restrict agent to specific vault IDs */
             fun vaultIds(vaultIds: List<String>?) = vaultIds(JsonField.ofNullable(vaultIds))
@@ -1002,22 +1000,21 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .instructions()
-             * .name()
+             * .prompt()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
                 Body(
-                    checkRequired("instructions", instructions),
-                    checkRequired("name", name),
-                    description,
+                    checkRequired("prompt", prompt),
                     (disabledTools ?: JsonMissing.of()).map { it.toImmutable() },
                     (enabledTools ?: JsonMissing.of()).map { it.toImmutable() },
+                    guidance,
+                    instructions,
                     model,
+                    (objectIds ?: JsonMissing.of()).map { it.toImmutable() },
                     sandbox,
-                    (vaultGroups ?: JsonMissing.of()).map { it.toImmutable() },
                     (vaultIds ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
@@ -1030,14 +1027,14 @@ private constructor(
                 return@apply
             }
 
-            instructions()
-            name()
-            description()
+            prompt()
             disabledTools()
             enabledTools()
+            guidance()
+            instructions()
             model()
+            objectIds()
             sandbox().ifPresent { it.validate() }
-            vaultGroups()
             vaultIds()
             validated = true
         }
@@ -1058,14 +1055,14 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (instructions.asKnown().isPresent) 1 else 0) +
-                (if (name.asKnown().isPresent) 1 else 0) +
-                (if (description.asKnown().isPresent) 1 else 0) +
+            (if (prompt.asKnown().isPresent) 1 else 0) +
                 (disabledTools.asKnown().getOrNull()?.size ?: 0) +
                 (enabledTools.asKnown().getOrNull()?.size ?: 0) +
+                (if (guidance.asKnown().isPresent) 1 else 0) +
+                (if (instructions.asKnown().isPresent) 1 else 0) +
                 (if (model.asKnown().isPresent) 1 else 0) +
+                (objectIds.asKnown().getOrNull()?.size ?: 0) +
                 (sandbox.asKnown().getOrNull()?.validity() ?: 0) +
-                (vaultGroups.asKnown().getOrNull()?.size ?: 0) +
                 (vaultIds.asKnown().getOrNull()?.size ?: 0)
 
         override fun equals(other: Any?): Boolean {
@@ -1074,28 +1071,28 @@ private constructor(
             }
 
             return other is Body &&
-                instructions == other.instructions &&
-                name == other.name &&
-                description == other.description &&
+                prompt == other.prompt &&
                 disabledTools == other.disabledTools &&
                 enabledTools == other.enabledTools &&
+                guidance == other.guidance &&
+                instructions == other.instructions &&
                 model == other.model &&
+                objectIds == other.objectIds &&
                 sandbox == other.sandbox &&
-                vaultGroups == other.vaultGroups &&
                 vaultIds == other.vaultIds &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
             Objects.hash(
-                instructions,
-                name,
-                description,
+                prompt,
                 disabledTools,
                 enabledTools,
+                guidance,
+                instructions,
                 model,
+                objectIds,
                 sandbox,
-                vaultGroups,
                 vaultIds,
                 additionalProperties,
             )
@@ -1104,10 +1101,10 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{instructions=$instructions, name=$name, description=$description, disabledTools=$disabledTools, enabledTools=$enabledTools, model=$model, sandbox=$sandbox, vaultGroups=$vaultGroups, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
+            "Body{prompt=$prompt, disabledTools=$disabledTools, enabledTools=$enabledTools, guidance=$guidance, instructions=$instructions, model=$model, objectIds=$objectIds, sandbox=$sandbox, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
     }
 
-    /** Custom sandbox configuration (cpu, memoryMiB) */
+    /** Custom sandbox resources (cpu, memoryMiB) */
     class Sandbox
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -1289,7 +1286,7 @@ private constructor(
             return true
         }
 
-        return other is AgentCreateParams &&
+        return other is ExecuteCreateParams &&
             body == other.body &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
@@ -1298,5 +1295,5 @@ private constructor(
     override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "AgentCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "ExecuteCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

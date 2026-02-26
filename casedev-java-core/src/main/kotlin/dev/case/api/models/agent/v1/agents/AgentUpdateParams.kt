@@ -80,6 +80,12 @@ private constructor(
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
+    fun vaultGroups(): Optional<List<String>> = body.vaultGroups()
+
+    /**
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun vaultIds(): Optional<List<String>> = body.vaultIds()
 
     /**
@@ -123,6 +129,13 @@ private constructor(
      * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _name(): JsonField<String> = body._name()
+
+    /**
+     * Returns the raw JSON value of [vaultGroups].
+     *
+     * Unlike [vaultGroups], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _vaultGroups(): JsonField<List<String>> = body._vaultGroups()
 
     /**
      * Returns the raw JSON value of [vaultIds].
@@ -279,6 +292,29 @@ private constructor(
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
         fun sandbox(sandbox: JsonValue) = apply { body.sandbox(sandbox) }
+
+        fun vaultGroups(vaultGroups: List<String>?) = apply { body.vaultGroups(vaultGroups) }
+
+        /** Alias for calling [Builder.vaultGroups] with `vaultGroups.orElse(null)`. */
+        fun vaultGroups(vaultGroups: Optional<List<String>>) = vaultGroups(vaultGroups.getOrNull())
+
+        /**
+         * Sets [Builder.vaultGroups] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vaultGroups] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun vaultGroups(vaultGroups: JsonField<List<String>>) = apply {
+            body.vaultGroups(vaultGroups)
+        }
+
+        /**
+         * Adds a single [String] to [vaultGroups].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addVaultGroup(vaultGroup: String) = apply { body.addVaultGroup(vaultGroup) }
 
         fun vaultIds(vaultIds: List<String>?) = apply { body.vaultIds(vaultIds) }
 
@@ -454,6 +490,7 @@ private constructor(
         private val model: JsonField<String>,
         private val name: JsonField<String>,
         private val sandbox: JsonValue,
+        private val vaultGroups: JsonField<List<String>>,
         private val vaultIds: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -475,6 +512,9 @@ private constructor(
             @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
             @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
             @JsonProperty("sandbox") @ExcludeMissing sandbox: JsonValue = JsonMissing.of(),
+            @JsonProperty("vaultGroups")
+            @ExcludeMissing
+            vaultGroups: JsonField<List<String>> = JsonMissing.of(),
             @JsonProperty("vaultIds")
             @ExcludeMissing
             vaultIds: JsonField<List<String>> = JsonMissing.of(),
@@ -486,6 +526,7 @@ private constructor(
             model,
             name,
             sandbox,
+            vaultGroups,
             vaultIds,
             mutableMapOf(),
         )
@@ -533,6 +574,12 @@ private constructor(
          * ```
          */
         @JsonProperty("sandbox") @ExcludeMissing fun _sandbox(): JsonValue = sandbox
+
+        /**
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun vaultGroups(): Optional<List<String>> = vaultGroups.getOptional("vaultGroups")
 
         /**
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -594,6 +641,15 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /**
+         * Returns the raw JSON value of [vaultGroups].
+         *
+         * Unlike [vaultGroups], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("vaultGroups")
+        @ExcludeMissing
+        fun _vaultGroups(): JsonField<List<String>> = vaultGroups
+
+        /**
          * Returns the raw JSON value of [vaultIds].
          *
          * Unlike [vaultIds], this method doesn't throw if the JSON field has an unexpected type.
@@ -630,6 +686,7 @@ private constructor(
             private var model: JsonField<String> = JsonMissing.of()
             private var name: JsonField<String> = JsonMissing.of()
             private var sandbox: JsonValue = JsonMissing.of()
+            private var vaultGroups: JsonField<MutableList<String>>? = null
             private var vaultIds: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -642,6 +699,7 @@ private constructor(
                 model = body.model
                 name = body.name
                 sandbox = body.sandbox
+                vaultGroups = body.vaultGroups.map { it.toMutableList() }
                 vaultIds = body.vaultIds.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -756,6 +814,36 @@ private constructor(
 
             fun sandbox(sandbox: JsonValue) = apply { this.sandbox = sandbox }
 
+            fun vaultGroups(vaultGroups: List<String>?) =
+                vaultGroups(JsonField.ofNullable(vaultGroups))
+
+            /** Alias for calling [Builder.vaultGroups] with `vaultGroups.orElse(null)`. */
+            fun vaultGroups(vaultGroups: Optional<List<String>>) =
+                vaultGroups(vaultGroups.getOrNull())
+
+            /**
+             * Sets [Builder.vaultGroups] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.vaultGroups] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun vaultGroups(vaultGroups: JsonField<List<String>>) = apply {
+                this.vaultGroups = vaultGroups.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [vaultGroups].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addVaultGroup(vaultGroup: String) = apply {
+                vaultGroups =
+                    (vaultGroups ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("vaultGroups", it).add(vaultGroup)
+                    }
+            }
+
             fun vaultIds(vaultIds: List<String>?) = vaultIds(JsonField.ofNullable(vaultIds))
 
             /** Alias for calling [Builder.vaultIds] with `vaultIds.orElse(null)`. */
@@ -817,6 +905,7 @@ private constructor(
                     model,
                     name,
                     sandbox,
+                    (vaultGroups ?: JsonMissing.of()).map { it.toImmutable() },
                     (vaultIds ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
@@ -835,6 +924,7 @@ private constructor(
             instructions()
             model()
             name()
+            vaultGroups()
             vaultIds()
             validated = true
         }
@@ -861,6 +951,7 @@ private constructor(
                 (if (instructions.asKnown().isPresent) 1 else 0) +
                 (if (model.asKnown().isPresent) 1 else 0) +
                 (if (name.asKnown().isPresent) 1 else 0) +
+                (vaultGroups.asKnown().getOrNull()?.size ?: 0) +
                 (vaultIds.asKnown().getOrNull()?.size ?: 0)
 
         override fun equals(other: Any?): Boolean {
@@ -876,6 +967,7 @@ private constructor(
                 model == other.model &&
                 name == other.name &&
                 sandbox == other.sandbox &&
+                vaultGroups == other.vaultGroups &&
                 vaultIds == other.vaultIds &&
                 additionalProperties == other.additionalProperties
         }
@@ -889,6 +981,7 @@ private constructor(
                 model,
                 name,
                 sandbox,
+                vaultGroups,
                 vaultIds,
                 additionalProperties,
             )
@@ -897,7 +990,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{description=$description, disabledTools=$disabledTools, enabledTools=$enabledTools, instructions=$instructions, model=$model, name=$name, sandbox=$sandbox, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
+            "Body{description=$description, disabledTools=$disabledTools, enabledTools=$enabledTools, instructions=$instructions, model=$model, name=$name, sandbox=$sandbox, vaultGroups=$vaultGroups, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

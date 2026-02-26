@@ -4,6 +4,7 @@ package dev.case.api.services.async.agent
 
 import dev.case.api.core.ClientOptions
 import dev.case.api.services.async.agent.v1.AgentServiceAsync
+import dev.case.api.services.async.agent.v1.ExecuteServiceAsync
 import dev.case.api.services.async.agent.v1.RunServiceAsync
 import java.util.function.Consumer
 
@@ -25,6 +26,8 @@ interface V1ServiceAsync {
 
     fun run(): RunServiceAsync
 
+    fun execute(): ExecuteServiceAsync
+
     /** A view of [V1ServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -38,5 +41,7 @@ interface V1ServiceAsync {
         fun agents(): AgentServiceAsync.WithRawResponse
 
         fun run(): RunServiceAsync.WithRawResponse
+
+        fun execute(): ExecuteServiceAsync.WithRawResponse
     }
 }
