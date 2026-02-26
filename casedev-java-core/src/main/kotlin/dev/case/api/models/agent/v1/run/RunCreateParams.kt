@@ -11,9 +11,11 @@ import dev.case.api.core.JsonField
 import dev.case.api.core.JsonMissing
 import dev.case.api.core.JsonValue
 import dev.case.api.core.Params
+import dev.case.api.core.checkKnown
 import dev.case.api.core.checkRequired
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
+import dev.case.api.core.toImmutable
 import dev.case.api.errors.CasedevInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -61,6 +63,15 @@ private constructor(
     fun model(): Optional<String> = body.model()
 
     /**
+     * Scope this run to specific vault object IDs. The agent will only be able to access these
+     * objects during execution.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun objectIds(): Optional<List<String>> = body.objectIds()
+
+    /**
      * Returns the raw JSON value of [agentId].
      *
      * Unlike [agentId], this method doesn't throw if the JSON field has an unexpected type.
@@ -87,6 +98,13 @@ private constructor(
      * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _model(): JsonField<String> = body._model()
+
+    /**
+     * Returns the raw JSON value of [objectIds].
+     *
+     * Unlike [objectIds], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _objectIds(): JsonField<List<String>> = body._objectIds()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -135,6 +153,8 @@ private constructor(
          * - [prompt]
          * - [guidance]
          * - [model]
+         * - [objectIds]
+         * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -187,6 +207,31 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(model: JsonField<String>) = apply { body.model(model) }
+
+        /**
+         * Scope this run to specific vault object IDs. The agent will only be able to access these
+         * objects during execution.
+         */
+        fun objectIds(objectIds: List<String>?) = apply { body.objectIds(objectIds) }
+
+        /** Alias for calling [Builder.objectIds] with `objectIds.orElse(null)`. */
+        fun objectIds(objectIds: Optional<List<String>>) = objectIds(objectIds.getOrNull())
+
+        /**
+         * Sets [Builder.objectIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.objectIds] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun objectIds(objectIds: JsonField<List<String>>) = apply { body.objectIds(objectIds) }
+
+        /**
+         * Adds a single [String] to [objectIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addObjectId(objectId: String) = apply { body.addObjectId(objectId) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -335,6 +380,7 @@ private constructor(
         private val prompt: JsonField<String>,
         private val guidance: JsonField<String>,
         private val model: JsonField<String>,
+        private val objectIds: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -346,7 +392,10 @@ private constructor(
             @ExcludeMissing
             guidance: JsonField<String> = JsonMissing.of(),
             @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
-        ) : this(agentId, prompt, guidance, model, mutableMapOf())
+            @JsonProperty("objectIds")
+            @ExcludeMissing
+            objectIds: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(agentId, prompt, guidance, model, objectIds, mutableMapOf())
 
         /**
          * ID of the agent to run
@@ -381,6 +430,15 @@ private constructor(
         fun model(): Optional<String> = model.getOptional("model")
 
         /**
+         * Scope this run to specific vault object IDs. The agent will only be able to access these
+         * objects during execution.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun objectIds(): Optional<List<String>> = objectIds.getOptional("objectIds")
+
+        /**
          * Returns the raw JSON value of [agentId].
          *
          * Unlike [agentId], this method doesn't throw if the JSON field has an unexpected type.
@@ -407,6 +465,15 @@ private constructor(
          * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+        /**
+         * Returns the raw JSON value of [objectIds].
+         *
+         * Unlike [objectIds], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("objectIds")
+        @ExcludeMissing
+        fun _objectIds(): JsonField<List<String>> = objectIds
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -441,6 +508,7 @@ private constructor(
             private var prompt: JsonField<String>? = null
             private var guidance: JsonField<String> = JsonMissing.of()
             private var model: JsonField<String> = JsonMissing.of()
+            private var objectIds: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -449,6 +517,7 @@ private constructor(
                 prompt = body.prompt
                 guidance = body.guidance
                 model = body.model
+                objectIds = body.objectIds.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -506,6 +575,38 @@ private constructor(
              */
             fun model(model: JsonField<String>) = apply { this.model = model }
 
+            /**
+             * Scope this run to specific vault object IDs. The agent will only be able to access
+             * these objects during execution.
+             */
+            fun objectIds(objectIds: List<String>?) = objectIds(JsonField.ofNullable(objectIds))
+
+            /** Alias for calling [Builder.objectIds] with `objectIds.orElse(null)`. */
+            fun objectIds(objectIds: Optional<List<String>>) = objectIds(objectIds.getOrNull())
+
+            /**
+             * Sets [Builder.objectIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectIds] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun objectIds(objectIds: JsonField<List<String>>) = apply {
+                this.objectIds = objectIds.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [objectIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addObjectId(objectId: String) = apply {
+                objectIds =
+                    (objectIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("objectIds", it).add(objectId)
+                    }
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -544,6 +645,7 @@ private constructor(
                     checkRequired("prompt", prompt),
                     guidance,
                     model,
+                    (objectIds ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -559,6 +661,7 @@ private constructor(
             prompt()
             guidance()
             model()
+            objectIds()
             validated = true
         }
 
@@ -581,7 +684,8 @@ private constructor(
             (if (agentId.asKnown().isPresent) 1 else 0) +
                 (if (prompt.asKnown().isPresent) 1 else 0) +
                 (if (guidance.asKnown().isPresent) 1 else 0) +
-                (if (model.asKnown().isPresent) 1 else 0)
+                (if (model.asKnown().isPresent) 1 else 0) +
+                (objectIds.asKnown().getOrNull()?.size ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -593,17 +697,18 @@ private constructor(
                 prompt == other.prompt &&
                 guidance == other.guidance &&
                 model == other.model &&
+                objectIds == other.objectIds &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(agentId, prompt, guidance, model, additionalProperties)
+            Objects.hash(agentId, prompt, guidance, model, objectIds, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{agentId=$agentId, prompt=$prompt, guidance=$guidance, model=$model, additionalProperties=$additionalProperties}"
+            "Body{agentId=$agentId, prompt=$prompt, guidance=$guidance, model=$model, objectIds=$objectIds, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

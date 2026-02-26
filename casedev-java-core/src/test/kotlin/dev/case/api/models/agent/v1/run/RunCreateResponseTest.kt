@@ -5,6 +5,7 @@ package dev.case.api.models.agent.v1.run
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import dev.case.api.core.jsonMapper
 import java.time.OffsetDateTime
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -17,6 +18,7 @@ internal class RunCreateResponseTest {
                 .id("id")
                 .agentId("agentId")
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .addObjectId("string")
                 .status(RunCreateResponse.Status.QUEUED)
                 .build()
 
@@ -24,6 +26,7 @@ internal class RunCreateResponseTest {
         assertThat(runCreateResponse.agentId()).contains("agentId")
         assertThat(runCreateResponse.createdAt())
             .contains(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+        assertThat(runCreateResponse.objectIds().getOrNull()).containsExactly("string")
         assertThat(runCreateResponse.status()).contains(RunCreateResponse.Status.QUEUED)
     }
 
@@ -35,6 +38,7 @@ internal class RunCreateResponseTest {
                 .id("id")
                 .agentId("agentId")
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .addObjectId("string")
                 .status(RunCreateResponse.Status.QUEUED)
                 .build()
 

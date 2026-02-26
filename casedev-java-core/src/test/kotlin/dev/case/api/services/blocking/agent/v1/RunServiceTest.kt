@@ -28,6 +28,7 @@ internal class RunServiceTest {
                     .prompt("prompt")
                     .guidance("guidance")
                     .model("model")
+                    .addObjectId("string")
                     .build()
             )
 

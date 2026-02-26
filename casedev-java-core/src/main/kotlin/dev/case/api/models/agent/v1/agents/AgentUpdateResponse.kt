@@ -33,6 +33,7 @@ private constructor(
     private val name: JsonField<String>,
     private val sandbox: JsonValue,
     private val updatedAt: JsonField<OffsetDateTime>,
+    private val vaultGroups: JsonField<List<String>>,
     private val vaultIds: JsonField<List<String>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -62,6 +63,9 @@ private constructor(
         @JsonProperty("updatedAt")
         @ExcludeMissing
         updatedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
+        @JsonProperty("vaultGroups")
+        @ExcludeMissing
+        vaultGroups: JsonField<List<String>> = JsonMissing.of(),
         @JsonProperty("vaultIds")
         @ExcludeMissing
         vaultIds: JsonField<List<String>> = JsonMissing.of(),
@@ -77,6 +81,7 @@ private constructor(
         name,
         sandbox,
         updatedAt,
+        vaultGroups,
         vaultIds,
         mutableMapOf(),
     )
@@ -148,6 +153,12 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun updatedAt(): Optional<OffsetDateTime> = updatedAt.getOptional("updatedAt")
+
+    /**
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun vaultGroups(): Optional<List<String>> = vaultGroups.getOptional("vaultGroups")
 
     /**
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -236,6 +247,15 @@ private constructor(
     fun _updatedAt(): JsonField<OffsetDateTime> = updatedAt
 
     /**
+     * Returns the raw JSON value of [vaultGroups].
+     *
+     * Unlike [vaultGroups], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("vaultGroups")
+    @ExcludeMissing
+    fun _vaultGroups(): JsonField<List<String>> = vaultGroups
+
+    /**
      * Returns the raw JSON value of [vaultIds].
      *
      * Unlike [vaultIds], this method doesn't throw if the JSON field has an unexpected type.
@@ -274,6 +294,7 @@ private constructor(
         private var name: JsonField<String> = JsonMissing.of()
         private var sandbox: JsonValue = JsonMissing.of()
         private var updatedAt: JsonField<OffsetDateTime> = JsonMissing.of()
+        private var vaultGroups: JsonField<MutableList<String>>? = null
         private var vaultIds: JsonField<MutableList<String>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -290,6 +311,7 @@ private constructor(
             name = agentUpdateResponse.name
             sandbox = agentUpdateResponse.sandbox
             updatedAt = agentUpdateResponse.updatedAt
+            vaultGroups = agentUpdateResponse.vaultGroups.map { it.toMutableList() }
             vaultIds = agentUpdateResponse.vaultIds.map { it.toMutableList() }
             additionalProperties = agentUpdateResponse.additionalProperties.toMutableMap()
         }
@@ -446,6 +468,34 @@ private constructor(
          */
         fun updatedAt(updatedAt: JsonField<OffsetDateTime>) = apply { this.updatedAt = updatedAt }
 
+        fun vaultGroups(vaultGroups: List<String>?) = vaultGroups(JsonField.ofNullable(vaultGroups))
+
+        /** Alias for calling [Builder.vaultGroups] with `vaultGroups.orElse(null)`. */
+        fun vaultGroups(vaultGroups: Optional<List<String>>) = vaultGroups(vaultGroups.getOrNull())
+
+        /**
+         * Sets [Builder.vaultGroups] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vaultGroups] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun vaultGroups(vaultGroups: JsonField<List<String>>) = apply {
+            this.vaultGroups = vaultGroups.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [String] to [vaultGroups].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addVaultGroup(vaultGroup: String) = apply {
+            vaultGroups =
+                (vaultGroups ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("vaultGroups", it).add(vaultGroup)
+                }
+        }
+
         fun vaultIds(vaultIds: List<String>?) = vaultIds(JsonField.ofNullable(vaultIds))
 
         /** Alias for calling [Builder.vaultIds] with `vaultIds.orElse(null)`. */
@@ -511,6 +561,7 @@ private constructor(
                 name,
                 sandbox,
                 updatedAt,
+                (vaultGroups ?: JsonMissing.of()).map { it.toImmutable() },
                 (vaultIds ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
             )
@@ -533,6 +584,7 @@ private constructor(
         model()
         name()
         updatedAt()
+        vaultGroups()
         vaultIds()
         validated = true
     }
@@ -562,6 +614,7 @@ private constructor(
             (if (model.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
             (if (updatedAt.asKnown().isPresent) 1 else 0) +
+            (vaultGroups.asKnown().getOrNull()?.size ?: 0) +
             (vaultIds.asKnown().getOrNull()?.size ?: 0)
 
     override fun equals(other: Any?): Boolean {
@@ -581,6 +634,7 @@ private constructor(
             name == other.name &&
             sandbox == other.sandbox &&
             updatedAt == other.updatedAt &&
+            vaultGroups == other.vaultGroups &&
             vaultIds == other.vaultIds &&
             additionalProperties == other.additionalProperties
     }
@@ -598,6 +652,7 @@ private constructor(
             name,
             sandbox,
             updatedAt,
+            vaultGroups,
             vaultIds,
             additionalProperties,
         )
@@ -606,5 +661,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AgentUpdateResponse{id=$id, createdAt=$createdAt, description=$description, disabledTools=$disabledTools, enabledTools=$enabledTools, instructions=$instructions, isActive=$isActive, model=$model, name=$name, sandbox=$sandbox, updatedAt=$updatedAt, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
+        "AgentUpdateResponse{id=$id, createdAt=$createdAt, description=$description, disabledTools=$disabledTools, enabledTools=$enabledTools, instructions=$instructions, isActive=$isActive, model=$model, name=$name, sandbox=$sandbox, updatedAt=$updatedAt, vaultGroups=$vaultGroups, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
 }

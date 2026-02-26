@@ -28,6 +28,7 @@ private constructor(
     private val completedAt: JsonField<OffsetDateTime>,
     private val createdAt: JsonField<OffsetDateTime>,
     private val guidance: JsonField<String>,
+    private val modalSandboxId: JsonField<String>,
     private val model: JsonField<String>,
     private val prompt: JsonField<String>,
     private val result: JsonField<Result>,
@@ -35,6 +36,7 @@ private constructor(
     private val status: JsonField<Status>,
     private val steps: JsonField<List<Step>>,
     private val usage: JsonField<Usage>,
+    private val workflowId: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -49,6 +51,9 @@ private constructor(
         @ExcludeMissing
         createdAt: JsonField<OffsetDateTime> = JsonMissing.of(),
         @JsonProperty("guidance") @ExcludeMissing guidance: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("modalSandboxId")
+        @ExcludeMissing
+        modalSandboxId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
         @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<String> = JsonMissing.of(),
         @JsonProperty("result") @ExcludeMissing result: JsonField<Result> = JsonMissing.of(),
@@ -58,12 +63,14 @@ private constructor(
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("steps") @ExcludeMissing steps: JsonField<List<Step>> = JsonMissing.of(),
         @JsonProperty("usage") @ExcludeMissing usage: JsonField<Usage> = JsonMissing.of(),
+        @JsonProperty("workflowId") @ExcludeMissing workflowId: JsonField<String> = JsonMissing.of(),
     ) : this(
         id,
         agentId,
         completedAt,
         createdAt,
         guidance,
+        modalSandboxId,
         model,
         prompt,
         result,
@@ -71,6 +78,7 @@ private constructor(
         status,
         steps,
         usage,
+        workflowId,
         mutableMapOf(),
     )
 
@@ -103,6 +111,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun guidance(): Optional<String> = guidance.getOptional("guidance")
+
+    /**
+     * Modal sandbox ID (available once sandbox is created)
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun modalSandboxId(): Optional<String> = modalSandboxId.getOptional("modalSandboxId")
 
     /**
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -151,6 +167,14 @@ private constructor(
     fun usage(): Optional<Usage> = usage.getOptional("usage")
 
     /**
+     * Durable workflow run ID
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workflowId(): Optional<String> = workflowId.getOptional("workflowId")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -188,6 +212,15 @@ private constructor(
      * Unlike [guidance], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("guidance") @ExcludeMissing fun _guidance(): JsonField<String> = guidance
+
+    /**
+     * Returns the raw JSON value of [modalSandboxId].
+     *
+     * Unlike [modalSandboxId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("modalSandboxId")
+    @ExcludeMissing
+    fun _modalSandboxId(): JsonField<String> = modalSandboxId
 
     /**
      * Returns the raw JSON value of [model].
@@ -240,6 +273,13 @@ private constructor(
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<Usage> = usage
 
+    /**
+     * Returns the raw JSON value of [workflowId].
+     *
+     * Unlike [workflowId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("workflowId") @ExcludeMissing fun _workflowId(): JsonField<String> = workflowId
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -266,6 +306,7 @@ private constructor(
         private var completedAt: JsonField<OffsetDateTime> = JsonMissing.of()
         private var createdAt: JsonField<OffsetDateTime> = JsonMissing.of()
         private var guidance: JsonField<String> = JsonMissing.of()
+        private var modalSandboxId: JsonField<String> = JsonMissing.of()
         private var model: JsonField<String> = JsonMissing.of()
         private var prompt: JsonField<String> = JsonMissing.of()
         private var result: JsonField<Result> = JsonMissing.of()
@@ -273,6 +314,7 @@ private constructor(
         private var status: JsonField<Status> = JsonMissing.of()
         private var steps: JsonField<MutableList<Step>>? = null
         private var usage: JsonField<Usage> = JsonMissing.of()
+        private var workflowId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -282,6 +324,7 @@ private constructor(
             completedAt = runGetDetailsResponse.completedAt
             createdAt = runGetDetailsResponse.createdAt
             guidance = runGetDetailsResponse.guidance
+            modalSandboxId = runGetDetailsResponse.modalSandboxId
             model = runGetDetailsResponse.model
             prompt = runGetDetailsResponse.prompt
             result = runGetDetailsResponse.result
@@ -289,6 +332,7 @@ private constructor(
             status = runGetDetailsResponse.status
             steps = runGetDetailsResponse.steps.map { it.toMutableList() }
             usage = runGetDetailsResponse.usage
+            workflowId = runGetDetailsResponse.workflowId
             additionalProperties = runGetDetailsResponse.additionalProperties.toMutableMap()
         }
 
@@ -353,6 +397,25 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun guidance(guidance: JsonField<String>) = apply { this.guidance = guidance }
+
+        /** Modal sandbox ID (available once sandbox is created) */
+        fun modalSandboxId(modalSandboxId: String?) =
+            modalSandboxId(JsonField.ofNullable(modalSandboxId))
+
+        /** Alias for calling [Builder.modalSandboxId] with `modalSandboxId.orElse(null)`. */
+        fun modalSandboxId(modalSandboxId: Optional<String>) =
+            modalSandboxId(modalSandboxId.getOrNull())
+
+        /**
+         * Sets [Builder.modalSandboxId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.modalSandboxId] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun modalSandboxId(modalSandboxId: JsonField<String>) = apply {
+            this.modalSandboxId = modalSandboxId
+        }
 
         fun model(model: String?) = model(JsonField.ofNullable(model))
 
@@ -452,6 +515,21 @@ private constructor(
          */
         fun usage(usage: JsonField<Usage>) = apply { this.usage = usage }
 
+        /** Durable workflow run ID */
+        fun workflowId(workflowId: String?) = workflowId(JsonField.ofNullable(workflowId))
+
+        /** Alias for calling [Builder.workflowId] with `workflowId.orElse(null)`. */
+        fun workflowId(workflowId: Optional<String>) = workflowId(workflowId.getOrNull())
+
+        /**
+         * Sets [Builder.workflowId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workflowId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun workflowId(workflowId: JsonField<String>) = apply { this.workflowId = workflowId }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -483,6 +561,7 @@ private constructor(
                 completedAt,
                 createdAt,
                 guidance,
+                modalSandboxId,
                 model,
                 prompt,
                 result,
@@ -490,6 +569,7 @@ private constructor(
                 status,
                 (steps ?: JsonMissing.of()).map { it.toImmutable() },
                 usage,
+                workflowId,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -506,6 +586,7 @@ private constructor(
         completedAt()
         createdAt()
         guidance()
+        modalSandboxId()
         model()
         prompt()
         result().ifPresent { it.validate() }
@@ -513,6 +594,7 @@ private constructor(
         status().ifPresent { it.validate() }
         steps().ifPresent { it.forEach { it.validate() } }
         usage().ifPresent { it.validate() }
+        workflowId()
         validated = true
     }
 
@@ -536,13 +618,15 @@ private constructor(
             (if (completedAt.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (if (guidance.asKnown().isPresent) 1 else 0) +
+            (if (modalSandboxId.asKnown().isPresent) 1 else 0) +
             (if (model.asKnown().isPresent) 1 else 0) +
             (if (prompt.asKnown().isPresent) 1 else 0) +
             (result.asKnown().getOrNull()?.validity() ?: 0) +
             (if (startedAt.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (steps.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            (usage.asKnown().getOrNull()?.validity() ?: 0)
+            (usage.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (workflowId.asKnown().isPresent) 1 else 0)
 
     /** Final output from the agent */
     class Result
@@ -1880,6 +1964,7 @@ private constructor(
             completedAt == other.completedAt &&
             createdAt == other.createdAt &&
             guidance == other.guidance &&
+            modalSandboxId == other.modalSandboxId &&
             model == other.model &&
             prompt == other.prompt &&
             result == other.result &&
@@ -1887,6 +1972,7 @@ private constructor(
             status == other.status &&
             steps == other.steps &&
             usage == other.usage &&
+            workflowId == other.workflowId &&
             additionalProperties == other.additionalProperties
     }
 
@@ -1897,6 +1983,7 @@ private constructor(
             completedAt,
             createdAt,
             guidance,
+            modalSandboxId,
             model,
             prompt,
             result,
@@ -1904,6 +1991,7 @@ private constructor(
             status,
             steps,
             usage,
+            workflowId,
             additionalProperties,
         )
     }
@@ -1911,5 +1999,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RunGetDetailsResponse{id=$id, agentId=$agentId, completedAt=$completedAt, createdAt=$createdAt, guidance=$guidance, model=$model, prompt=$prompt, result=$result, startedAt=$startedAt, status=$status, steps=$steps, usage=$usage, additionalProperties=$additionalProperties}"
+        "RunGetDetailsResponse{id=$id, agentId=$agentId, completedAt=$completedAt, createdAt=$createdAt, guidance=$guidance, modalSandboxId=$modalSandboxId, model=$model, prompt=$prompt, result=$result, startedAt=$startedAt, status=$status, steps=$steps, usage=$usage, workflowId=$workflowId, additionalProperties=$additionalProperties}"
 }
