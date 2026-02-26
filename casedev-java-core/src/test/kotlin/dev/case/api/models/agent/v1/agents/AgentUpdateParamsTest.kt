@@ -20,6 +20,7 @@ internal class AgentUpdateParamsTest {
             .model("model")
             .name("name")
             .sandbox(JsonValue.from(mapOf<String, Any>()))
+            .addVaultGroup("string")
             .addVaultId("string")
             .build()
     }
@@ -45,6 +46,7 @@ internal class AgentUpdateParamsTest {
                 .model("model")
                 .name("name")
                 .sandbox(JsonValue.from(mapOf<String, Any>()))
+                .addVaultGroup("string")
                 .addVaultId("string")
                 .build()
 
@@ -57,6 +59,7 @@ internal class AgentUpdateParamsTest {
         assertThat(body.model()).contains("model")
         assertThat(body.name()).contains("name")
         assertThat(body._sandbox()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.vaultGroups().getOrNull()).containsExactly("string")
         assertThat(body.vaultIds().getOrNull()).containsExactly("string")
     }
 

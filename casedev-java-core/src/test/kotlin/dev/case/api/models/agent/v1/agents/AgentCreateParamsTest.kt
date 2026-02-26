@@ -18,6 +18,7 @@ internal class AgentCreateParamsTest {
             .addEnabledTool("string")
             .model("model")
             .sandbox(AgentCreateParams.Sandbox.builder().cpu(0L).memoryMiB(0L).build())
+            .addVaultGroup("string")
             .addVaultId("string")
             .build()
     }
@@ -33,6 +34,7 @@ internal class AgentCreateParamsTest {
                 .addEnabledTool("string")
                 .model("model")
                 .sandbox(AgentCreateParams.Sandbox.builder().cpu(0L).memoryMiB(0L).build())
+                .addVaultGroup("string")
                 .addVaultId("string")
                 .build()
 
@@ -46,6 +48,7 @@ internal class AgentCreateParamsTest {
         assertThat(body.model()).contains("model")
         assertThat(body.sandbox())
             .contains(AgentCreateParams.Sandbox.builder().cpu(0L).memoryMiB(0L).build())
+        assertThat(body.vaultGroups().getOrNull()).containsExactly("string")
         assertThat(body.vaultIds().getOrNull()).containsExactly("string")
     }
 

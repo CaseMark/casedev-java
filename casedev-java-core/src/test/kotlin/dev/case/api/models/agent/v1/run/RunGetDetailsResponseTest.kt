@@ -21,6 +21,7 @@ internal class RunGetDetailsResponseTest {
                 .completedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .guidance("guidance")
+                .modalSandboxId("modalSandboxId")
                 .model("model")
                 .prompt("prompt")
                 .result(
@@ -57,6 +58,7 @@ internal class RunGetDetailsResponseTest {
                         .toolCalls(0L)
                         .build()
                 )
+                .workflowId("workflowId")
                 .build()
 
         assertThat(runGetDetailsResponse.id()).contains("id")
@@ -66,6 +68,7 @@ internal class RunGetDetailsResponseTest {
         assertThat(runGetDetailsResponse.createdAt())
             .contains(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(runGetDetailsResponse.guidance()).contains("guidance")
+        assertThat(runGetDetailsResponse.modalSandboxId()).contains("modalSandboxId")
         assertThat(runGetDetailsResponse.model()).contains("model")
         assertThat(runGetDetailsResponse.prompt()).contains("prompt")
         assertThat(runGetDetailsResponse.result())
@@ -106,6 +109,7 @@ internal class RunGetDetailsResponseTest {
                     .toolCalls(0L)
                     .build()
             )
+        assertThat(runGetDetailsResponse.workflowId()).contains("workflowId")
     }
 
     @Test
@@ -118,6 +122,7 @@ internal class RunGetDetailsResponseTest {
                 .completedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .guidance("guidance")
+                .modalSandboxId("modalSandboxId")
                 .model("model")
                 .prompt("prompt")
                 .result(
@@ -154,6 +159,7 @@ internal class RunGetDetailsResponseTest {
                         .toolCalls(0L)
                         .build()
                 )
+                .workflowId("workflowId")
                 .build()
 
         val roundtrippedRunGetDetailsResponse =

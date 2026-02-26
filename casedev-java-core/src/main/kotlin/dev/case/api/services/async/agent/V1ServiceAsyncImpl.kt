@@ -5,6 +5,8 @@ package dev.case.api.services.async.agent
 import dev.case.api.core.ClientOptions
 import dev.case.api.services.async.agent.v1.AgentServiceAsync
 import dev.case.api.services.async.agent.v1.AgentServiceAsyncImpl
+import dev.case.api.services.async.agent.v1.ExecuteServiceAsync
+import dev.case.api.services.async.agent.v1.ExecuteServiceAsyncImpl
 import dev.case.api.services.async.agent.v1.RunServiceAsync
 import dev.case.api.services.async.agent.v1.RunServiceAsyncImpl
 import java.util.function.Consumer
@@ -20,6 +22,8 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
 
     private val run: RunServiceAsync by lazy { RunServiceAsyncImpl(clientOptions) }
 
+    private val execute: ExecuteServiceAsync by lazy { ExecuteServiceAsyncImpl(clientOptions) }
+
     override fun withRawResponse(): V1ServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync =
@@ -28,6 +32,8 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun agents(): AgentServiceAsync = agents
 
     override fun run(): RunServiceAsync = run
+
+    override fun execute(): ExecuteServiceAsync = execute
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         V1ServiceAsync.WithRawResponse {
@@ -40,6 +46,10 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
             RunServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val execute: ExecuteServiceAsync.WithRawResponse by lazy {
+            ExecuteServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): V1ServiceAsync.WithRawResponse =
@@ -50,5 +60,7 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
         override fun agents(): AgentServiceAsync.WithRawResponse = agents
 
         override fun run(): RunServiceAsync.WithRawResponse = run
+
+        override fun execute(): ExecuteServiceAsync.WithRawResponse = execute
     }
 }

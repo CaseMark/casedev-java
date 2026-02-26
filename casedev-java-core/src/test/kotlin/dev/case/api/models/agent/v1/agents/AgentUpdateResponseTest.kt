@@ -27,6 +27,7 @@ internal class AgentUpdateResponseTest {
                 .name("name")
                 .sandbox(JsonValue.from(mapOf<String, Any>()))
                 .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .addVaultGroup("string")
                 .addVaultId("string")
                 .build()
 
@@ -43,6 +44,7 @@ internal class AgentUpdateResponseTest {
         assertThat(agentUpdateResponse._sandbox()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(agentUpdateResponse.updatedAt())
             .contains(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+        assertThat(agentUpdateResponse.vaultGroups().getOrNull()).containsExactly("string")
         assertThat(agentUpdateResponse.vaultIds().getOrNull()).containsExactly("string")
     }
 
@@ -62,6 +64,7 @@ internal class AgentUpdateResponseTest {
                 .name("name")
                 .sandbox(JsonValue.from(mapOf<String, Any>()))
                 .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .addVaultGroup("string")
                 .addVaultId("string")
                 .build()
 

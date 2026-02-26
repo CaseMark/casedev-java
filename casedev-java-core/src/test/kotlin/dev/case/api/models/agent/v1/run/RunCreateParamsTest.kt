@@ -2,6 +2,7 @@
 
 package dev.case.api.models.agent.v1.run
 
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -14,6 +15,7 @@ internal class RunCreateParamsTest {
             .prompt("prompt")
             .guidance("guidance")
             .model("model")
+            .addObjectId("string")
             .build()
     }
 
@@ -25,6 +27,7 @@ internal class RunCreateParamsTest {
                 .prompt("prompt")
                 .guidance("guidance")
                 .model("model")
+                .addObjectId("string")
                 .build()
 
         val body = params._body()
@@ -33,6 +36,7 @@ internal class RunCreateParamsTest {
         assertThat(body.prompt()).isEqualTo("prompt")
         assertThat(body.guidance()).contains("guidance")
         assertThat(body.model()).contains("model")
+        assertThat(body.objectIds().getOrNull()).containsExactly("string")
     }
 
     @Test
