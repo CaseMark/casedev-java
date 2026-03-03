@@ -4,6 +4,7 @@ package dev.case.api.services.blocking.agent
 
 import dev.case.api.core.ClientOptions
 import dev.case.api.services.blocking.agent.v1.AgentService
+import dev.case.api.services.blocking.agent.v1.ChatService
 import dev.case.api.services.blocking.agent.v1.ExecuteService
 import dev.case.api.services.blocking.agent.v1.RunService
 import java.util.function.Consumer
@@ -28,6 +29,8 @@ interface V1Service {
 
     fun execute(): ExecuteService
 
+    fun chat(): ChatService
+
     /** A view of [V1Service] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -43,5 +46,7 @@ interface V1Service {
         fun run(): RunService.WithRawResponse
 
         fun execute(): ExecuteService.WithRawResponse
+
+        fun chat(): ChatService.WithRawResponse
     }
 }

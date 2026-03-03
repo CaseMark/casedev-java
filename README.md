@@ -290,6 +290,8 @@ The SDK throws custom unchecked exception types:
   | 5xx    | [`InternalServerException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/InternalServerException.kt)             |
   | others | [`UnexpectedStatusCodeException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/UnexpectedStatusCodeException.kt) |
 
+  [`SseException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/SseException.kt) is thrown for errors encountered during [SSE streaming](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) after a successful initial HTTP response.
+
 - [`CasedevIoException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/CasedevIoException.kt): I/O networking errors.
 
 - [`CasedevRetryableException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/CasedevRetryableException.kt): Generic error indicating a failure that could be retried by the client.
