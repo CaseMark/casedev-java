@@ -4,10 +4,12 @@ package dev.case.api.services.async.legal
 
 import dev.case.api.TestServerExtension
 import dev.case.api.client.okhttp.CasedevOkHttpClientAsync
+import dev.case.api.models.legal.v1.V1DocketParams
 import dev.case.api.models.legal.v1.V1FindParams
 import dev.case.api.models.legal.v1.V1GetCitationsFromUrlParams
 import dev.case.api.models.legal.v1.V1GetCitationsParams
 import dev.case.api.models.legal.v1.V1GetFullTextParams
+import dev.case.api.models.legal.v1.V1ListCourtsParams
 import dev.case.api.models.legal.v1.V1ListJurisdictionsParams
 import dev.case.api.models.legal.v1.V1PatentSearchParams
 import dev.case.api.models.legal.v1.V1ResearchParams
@@ -20,6 +22,35 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
 internal class V1ServiceAsyncTest {
+
+    @Test
+    fun docket() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val v1ServiceAsync = client.legal().v1()
+
+        val responseFuture =
+            v1ServiceAsync.docket(
+                V1DocketParams.builder()
+                    .type(V1DocketParams.Type.SEARCH)
+                    .court("court")
+                    .dateFiledAfter(LocalDate.parse("2019-12-27"))
+                    .dateFiledBefore(LocalDate.parse("2019-12-27"))
+                    .docketId("docketId")
+                    .includeEntries(true)
+                    .limit(1L)
+                    .live(true)
+                    .offset(0L)
+                    .query("xx")
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
 
     @Test
     fun find() {
@@ -93,6 +124,30 @@ internal class V1ServiceAsyncTest {
                     .highlightQuery("highlightQuery")
                     .maxCharacters(1000L)
                     .summaryQuery("summaryQuery")
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Test
+    fun listCourts() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val v1ServiceAsync = client.legal().v1()
+
+        val responseFuture =
+            v1ServiceAsync.listCourts(
+                V1ListCourtsParams.builder()
+                    .inUseOnly(true)
+                    .jurisdiction("jurisdiction")
+                    .limit(1L)
+                    .offset(0L)
+                    .query("xx")
                     .build()
             )
 

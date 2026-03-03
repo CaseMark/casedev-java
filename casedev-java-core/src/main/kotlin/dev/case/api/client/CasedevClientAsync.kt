@@ -14,6 +14,7 @@ import dev.case.api.services.async.MemoryServiceAsync
 import dev.case.api.services.async.OcrServiceAsync
 import dev.case.api.services.async.PrivilegeServiceAsync
 import dev.case.api.services.async.SearchServiceAsync
+import dev.case.api.services.async.SkillServiceAsync
 import dev.case.api.services.async.SuperdocServiceAsync
 import dev.case.api.services.async.SystemServiceAsync
 import dev.case.api.services.async.TranslateServiceAsync
@@ -79,6 +80,8 @@ interface CasedevClientAsync {
 
     fun privilege(): PrivilegeServiceAsync
 
+    fun skills(): SkillServiceAsync
+
     fun search(): SearchServiceAsync
 
     fun superdoc(): SuperdocServiceAsync
@@ -137,6 +140,8 @@ interface CasedevClientAsync {
         fun ocr(): OcrServiceAsync.WithRawResponse
 
         fun privilege(): PrivilegeServiceAsync.WithRawResponse
+
+        fun skills(): SkillServiceAsync.WithRawResponse
 
         fun search(): SearchServiceAsync.WithRawResponse
 

@@ -26,6 +26,8 @@ import dev.case.api.services.async.PrivilegeServiceAsync
 import dev.case.api.services.async.PrivilegeServiceAsyncImpl
 import dev.case.api.services.async.SearchServiceAsync
 import dev.case.api.services.async.SearchServiceAsyncImpl
+import dev.case.api.services.async.SkillServiceAsync
+import dev.case.api.services.async.SkillServiceAsyncImpl
 import dev.case.api.services.async.SuperdocServiceAsync
 import dev.case.api.services.async.SuperdocServiceAsyncImpl
 import dev.case.api.services.async.SystemServiceAsync
@@ -95,6 +97,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         PrivilegeServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val skills: SkillServiceAsync by lazy {
+        SkillServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val search: SearchServiceAsync by lazy {
         SearchServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -143,6 +149,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
     override fun ocr(): OcrServiceAsync = ocr
 
     override fun privilege(): PrivilegeServiceAsync = privilege
+
+    override fun skills(): SkillServiceAsync = skills
 
     override fun search(): SearchServiceAsync = search
 
@@ -203,6 +211,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
             PrivilegeServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val skills: SkillServiceAsync.WithRawResponse by lazy {
+            SkillServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val search: SearchServiceAsync.WithRawResponse by lazy {
             SearchServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -251,6 +263,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         override fun ocr(): OcrServiceAsync.WithRawResponse = ocr
 
         override fun privilege(): PrivilegeServiceAsync.WithRawResponse = privilege
+
+        override fun skills(): SkillServiceAsync.WithRawResponse = skills
 
         override fun search(): SearchServiceAsync.WithRawResponse = search
 
