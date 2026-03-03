@@ -1,0 +1,363 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package dev.case.api.services.blocking.agent.v1
+
+import com.google.errorprone.annotations.MustBeClosed
+import dev.case.api.core.ClientOptions
+import dev.case.api.core.RequestOptions
+import dev.case.api.core.http.HttpResponse
+import dev.case.api.core.http.HttpResponseFor
+import dev.case.api.core.http.StreamResponse
+import dev.case.api.models.agent.v1.chat.ChatCancelParams
+import dev.case.api.models.agent.v1.chat.ChatCancelResponse
+import dev.case.api.models.agent.v1.chat.ChatCreateParams
+import dev.case.api.models.agent.v1.chat.ChatCreateResponse
+import dev.case.api.models.agent.v1.chat.ChatDeleteParams
+import dev.case.api.models.agent.v1.chat.ChatDeleteResponse
+import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
+import dev.case.api.models.agent.v1.chat.ChatStreamParams
+import java.util.function.Consumer
+
+interface ChatService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatService
+
+    /**
+     * Creates a persistent OpenCode chat session in a Modal sandbox. Session state is retained and
+     * can be resumed across requests.
+     */
+    fun create(): ChatCreateResponse = create(ChatCreateParams.none())
+
+    /** @see create */
+    fun create(
+        params: ChatCreateParams = ChatCreateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ChatCreateResponse
+
+    /** @see create */
+    fun create(params: ChatCreateParams = ChatCreateParams.none()): ChatCreateResponse =
+        create(params, RequestOptions.none())
+
+    /** @see create */
+    fun create(requestOptions: RequestOptions): ChatCreateResponse =
+        create(ChatCreateParams.none(), requestOptions)
+
+    /** Snapshots and terminates the active sandbox (if any), then marks the chat as ended. */
+    fun delete(id: String): ChatDeleteResponse = delete(id, ChatDeleteParams.none())
+
+    /** @see delete */
+    fun delete(
+        id: String,
+        params: ChatDeleteParams = ChatDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ChatDeleteResponse = delete(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see delete */
+    fun delete(id: String, params: ChatDeleteParams = ChatDeleteParams.none()): ChatDeleteResponse =
+        delete(id, params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(
+        params: ChatDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ChatDeleteResponse
+
+    /** @see delete */
+    fun delete(params: ChatDeleteParams): ChatDeleteResponse = delete(params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(id: String, requestOptions: RequestOptions): ChatDeleteResponse =
+        delete(id, ChatDeleteParams.none(), requestOptions)
+
+    /** Aborts the active OpenCode generation for this chat session. */
+    fun cancel(id: String): ChatCancelResponse = cancel(id, ChatCancelParams.none())
+
+    /** @see cancel */
+    fun cancel(
+        id: String,
+        params: ChatCancelParams = ChatCancelParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ChatCancelResponse = cancel(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see cancel */
+    fun cancel(id: String, params: ChatCancelParams = ChatCancelParams.none()): ChatCancelResponse =
+        cancel(id, params, RequestOptions.none())
+
+    /** @see cancel */
+    fun cancel(
+        params: ChatCancelParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ChatCancelResponse
+
+    /** @see cancel */
+    fun cancel(params: ChatCancelParams): ChatCancelResponse = cancel(params, RequestOptions.none())
+
+    /** @see cancel */
+    fun cancel(id: String, requestOptions: RequestOptions): ChatCancelResponse =
+        cancel(id, ChatCancelParams.none(), requestOptions)
+
+    /** Proxies a message to the OpenCode session bound to this chat. */
+    fun sendMessage(id: String, params: ChatSendMessageParams) =
+        sendMessage(id, params, RequestOptions.none())
+
+    /** @see sendMessage */
+    fun sendMessage(
+        id: String,
+        params: ChatSendMessageParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ) = sendMessage(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see sendMessage */
+    fun sendMessage(params: ChatSendMessageParams) = sendMessage(params, RequestOptions.none())
+
+    /** @see sendMessage */
+    fun sendMessage(
+        params: ChatSendMessageParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    )
+
+    /**
+     * Relays OpenCode SSE events for this chat. Supports replay from buffered events using
+     * Last-Event-ID.
+     */
+    @MustBeClosed
+    fun streamStreaming(id: String): StreamResponse<String> =
+        streamStreaming(id, ChatStreamParams.none())
+
+    /** @see streamStreaming */
+    @MustBeClosed
+    fun streamStreaming(
+        id: String,
+        params: ChatStreamParams = ChatStreamParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<String> = streamStreaming(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see streamStreaming */
+    @MustBeClosed
+    fun streamStreaming(
+        id: String,
+        params: ChatStreamParams = ChatStreamParams.none(),
+    ): StreamResponse<String> = streamStreaming(id, params, RequestOptions.none())
+
+    /** @see streamStreaming */
+    @MustBeClosed
+    fun streamStreaming(
+        params: ChatStreamParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<String>
+
+    /** @see streamStreaming */
+    @MustBeClosed
+    fun streamStreaming(params: ChatStreamParams): StreamResponse<String> =
+        streamStreaming(params, RequestOptions.none())
+
+    /** @see streamStreaming */
+    @MustBeClosed
+    fun streamStreaming(id: String, requestOptions: RequestOptions): StreamResponse<String> =
+        streamStreaming(id, ChatStreamParams.none(), requestOptions)
+
+    /** A view of [ChatService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /agent/v1/chat`, but is otherwise the same as
+         * [ChatService.create].
+         */
+        @MustBeClosed
+        fun create(): HttpResponseFor<ChatCreateResponse> = create(ChatCreateParams.none())
+
+        /** @see create */
+        @MustBeClosed
+        fun create(
+            params: ChatCreateParams = ChatCreateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatCreateResponse>
+
+        /** @see create */
+        @MustBeClosed
+        fun create(
+            params: ChatCreateParams = ChatCreateParams.none()
+        ): HttpResponseFor<ChatCreateResponse> = create(params, RequestOptions.none())
+
+        /** @see create */
+        @MustBeClosed
+        fun create(requestOptions: RequestOptions): HttpResponseFor<ChatCreateResponse> =
+            create(ChatCreateParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /agent/v1/chat/{id}`, but is otherwise the same
+         * as [ChatService.delete].
+         */
+        @MustBeClosed
+        fun delete(id: String): HttpResponseFor<ChatDeleteResponse> =
+            delete(id, ChatDeleteParams.none())
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(
+            id: String,
+            params: ChatDeleteParams = ChatDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatDeleteResponse> =
+            delete(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(
+            id: String,
+            params: ChatDeleteParams = ChatDeleteParams.none(),
+        ): HttpResponseFor<ChatDeleteResponse> = delete(id, params, RequestOptions.none())
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(
+            params: ChatDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatDeleteResponse>
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(params: ChatDeleteParams): HttpResponseFor<ChatDeleteResponse> =
+            delete(params, RequestOptions.none())
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ChatDeleteResponse> = delete(id, ChatDeleteParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /agent/v1/chat/{id}/cancel`, but is otherwise the
+         * same as [ChatService.cancel].
+         */
+        @MustBeClosed
+        fun cancel(id: String): HttpResponseFor<ChatCancelResponse> =
+            cancel(id, ChatCancelParams.none())
+
+        /** @see cancel */
+        @MustBeClosed
+        fun cancel(
+            id: String,
+            params: ChatCancelParams = ChatCancelParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatCancelResponse> =
+            cancel(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see cancel */
+        @MustBeClosed
+        fun cancel(
+            id: String,
+            params: ChatCancelParams = ChatCancelParams.none(),
+        ): HttpResponseFor<ChatCancelResponse> = cancel(id, params, RequestOptions.none())
+
+        /** @see cancel */
+        @MustBeClosed
+        fun cancel(
+            params: ChatCancelParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatCancelResponse>
+
+        /** @see cancel */
+        @MustBeClosed
+        fun cancel(params: ChatCancelParams): HttpResponseFor<ChatCancelResponse> =
+            cancel(params, RequestOptions.none())
+
+        /** @see cancel */
+        @MustBeClosed
+        fun cancel(
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ChatCancelResponse> = cancel(id, ChatCancelParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /agent/v1/chat/{id}/message`, but is otherwise the
+         * same as [ChatService.sendMessage].
+         */
+        @MustBeClosed
+        fun sendMessage(id: String, params: ChatSendMessageParams): HttpResponse =
+            sendMessage(id, params, RequestOptions.none())
+
+        /** @see sendMessage */
+        @MustBeClosed
+        fun sendMessage(
+            id: String,
+            params: ChatSendMessageParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse = sendMessage(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see sendMessage */
+        @MustBeClosed
+        fun sendMessage(params: ChatSendMessageParams): HttpResponse =
+            sendMessage(params, RequestOptions.none())
+
+        /** @see sendMessage */
+        @MustBeClosed
+        fun sendMessage(
+            params: ChatSendMessageParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse
+
+        /**
+         * Returns a raw HTTP response for `get /agent/v1/chat/{id}/stream`, but is otherwise the
+         * same as [ChatService.streamStreaming].
+         */
+        @MustBeClosed
+        fun streamStreaming(id: String): HttpResponseFor<StreamResponse<String>> =
+            streamStreaming(id, ChatStreamParams.none())
+
+        /** @see streamStreaming */
+        @MustBeClosed
+        fun streamStreaming(
+            id: String,
+            params: ChatStreamParams = ChatStreamParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<String>> =
+            streamStreaming(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see streamStreaming */
+        @MustBeClosed
+        fun streamStreaming(
+            id: String,
+            params: ChatStreamParams = ChatStreamParams.none(),
+        ): HttpResponseFor<StreamResponse<String>> =
+            streamStreaming(id, params, RequestOptions.none())
+
+        /** @see streamStreaming */
+        @MustBeClosed
+        fun streamStreaming(
+            params: ChatStreamParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<String>>
+
+        /** @see streamStreaming */
+        @MustBeClosed
+        fun streamStreaming(params: ChatStreamParams): HttpResponseFor<StreamResponse<String>> =
+            streamStreaming(params, RequestOptions.none())
+
+        /** @see streamStreaming */
+        @MustBeClosed
+        fun streamStreaming(
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<StreamResponse<String>> =
+            streamStreaming(id, ChatStreamParams.none(), requestOptions)
+    }
+}
