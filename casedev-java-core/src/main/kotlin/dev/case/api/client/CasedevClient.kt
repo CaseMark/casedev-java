@@ -14,6 +14,7 @@ import dev.case.api.services.blocking.MemoryService
 import dev.case.api.services.blocking.OcrService
 import dev.case.api.services.blocking.PrivilegeService
 import dev.case.api.services.blocking.SearchService
+import dev.case.api.services.blocking.SkillService
 import dev.case.api.services.blocking.SuperdocService
 import dev.case.api.services.blocking.SystemService
 import dev.case.api.services.blocking.TranslateService
@@ -79,6 +80,8 @@ interface CasedevClient {
 
     fun privilege(): PrivilegeService
 
+    fun skills(): SkillService
+
     fun search(): SearchService
 
     fun superdoc(): SuperdocService
@@ -133,6 +136,8 @@ interface CasedevClient {
         fun ocr(): OcrService.WithRawResponse
 
         fun privilege(): PrivilegeService.WithRawResponse
+
+        fun skills(): SkillService.WithRawResponse
 
         fun search(): SearchService.WithRawResponse
 

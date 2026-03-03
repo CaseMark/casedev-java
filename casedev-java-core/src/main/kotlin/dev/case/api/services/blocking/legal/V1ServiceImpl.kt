@@ -15,6 +15,8 @@ import dev.case.api.core.http.HttpResponseFor
 import dev.case.api.core.http.json
 import dev.case.api.core.http.parseable
 import dev.case.api.core.prepare
+import dev.case.api.models.legal.v1.V1DocketParams
+import dev.case.api.models.legal.v1.V1DocketResponse
 import dev.case.api.models.legal.v1.V1FindParams
 import dev.case.api.models.legal.v1.V1FindResponse
 import dev.case.api.models.legal.v1.V1GetCitationsFromUrlParams
@@ -23,6 +25,8 @@ import dev.case.api.models.legal.v1.V1GetCitationsParams
 import dev.case.api.models.legal.v1.V1GetCitationsResponse
 import dev.case.api.models.legal.v1.V1GetFullTextParams
 import dev.case.api.models.legal.v1.V1GetFullTextResponse
+import dev.case.api.models.legal.v1.V1ListCourtsParams
+import dev.case.api.models.legal.v1.V1ListCourtsResponse
 import dev.case.api.models.legal.v1.V1ListJurisdictionsParams
 import dev.case.api.models.legal.v1.V1ListJurisdictionsResponse
 import dev.case.api.models.legal.v1.V1PatentSearchParams
@@ -48,6 +52,10 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service =
         V1ServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun docket(params: V1DocketParams, requestOptions: RequestOptions): V1DocketResponse =
+        // post /legal/v1/docket
+        withRawResponse().docket(params, requestOptions).parse()
+
     override fun find(params: V1FindParams, requestOptions: RequestOptions): V1FindResponse =
         // post /legal/v1/find
         withRawResponse().find(params, requestOptions).parse()
@@ -72,6 +80,13 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     ): V1GetFullTextResponse =
         // post /legal/v1/full-text
         withRawResponse().getFullText(params, requestOptions).parse()
+
+    override fun listCourts(
+        params: V1ListCourtsParams,
+        requestOptions: RequestOptions,
+    ): V1ListCourtsResponse =
+        // post /legal/v1/courts
+        withRawResponse().listCourts(params, requestOptions).parse()
 
     override fun listJurisdictions(
         params: V1ListJurisdictionsParams,
@@ -124,6 +139,34 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             V1ServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        private val docketHandler: Handler<V1DocketResponse> =
+            jsonHandler<V1DocketResponse>(clientOptions.jsonMapper)
+
+        override fun docket(
+            params: V1DocketParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<V1DocketResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("legal", "v1", "docket")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { docketHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
 
         private val findHandler: Handler<V1FindResponse> =
             jsonHandler<V1FindResponse>(clientOptions.jsonMapper)
@@ -229,6 +272,34 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             return errorHandler.handle(response).parseable {
                 response
                     .use { getFullTextHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val listCourtsHandler: Handler<V1ListCourtsResponse> =
+            jsonHandler<V1ListCourtsResponse>(clientOptions.jsonMapper)
+
+        override fun listCourts(
+            params: V1ListCourtsParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<V1ListCourtsResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("legal", "v1", "courts")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { listCourtsHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

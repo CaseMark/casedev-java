@@ -6,6 +6,8 @@ import com.google.errorprone.annotations.MustBeClosed
 import dev.case.api.core.ClientOptions
 import dev.case.api.core.RequestOptions
 import dev.case.api.core.http.HttpResponseFor
+import dev.case.api.models.legal.v1.V1DocketParams
+import dev.case.api.models.legal.v1.V1DocketResponse
 import dev.case.api.models.legal.v1.V1FindParams
 import dev.case.api.models.legal.v1.V1FindResponse
 import dev.case.api.models.legal.v1.V1GetCitationsFromUrlParams
@@ -14,6 +16,8 @@ import dev.case.api.models.legal.v1.V1GetCitationsParams
 import dev.case.api.models.legal.v1.V1GetCitationsResponse
 import dev.case.api.models.legal.v1.V1GetFullTextParams
 import dev.case.api.models.legal.v1.V1GetFullTextResponse
+import dev.case.api.models.legal.v1.V1ListCourtsParams
+import dev.case.api.models.legal.v1.V1ListCourtsResponse
 import dev.case.api.models.legal.v1.V1ListJurisdictionsParams
 import dev.case.api.models.legal.v1.V1ListJurisdictionsResponse
 import dev.case.api.models.legal.v1.V1PatentSearchParams
@@ -41,6 +45,18 @@ interface V1Service {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service
+
+    /**
+     * Search federal court dockets or retrieve a specific docket with optional filing entries via
+     * CourtListener RECAP data.
+     */
+    fun docket(params: V1DocketParams): V1DocketResponse = docket(params, RequestOptions.none())
+
+    /** @see docket */
+    fun docket(
+        params: V1DocketParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): V1DocketResponse
 
     /**
      * Search for legal sources including cases, statutes, and regulations from authoritative legal
@@ -92,6 +108,26 @@ interface V1Service {
         params: V1GetFullTextParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): V1GetFullTextResponse
+
+    /**
+     * Returns CourtListener court IDs and names for docket filtering. Use these IDs in
+     * legal.docket() as the court parameter.
+     */
+    fun listCourts(): V1ListCourtsResponse = listCourts(V1ListCourtsParams.none())
+
+    /** @see listCourts */
+    fun listCourts(
+        params: V1ListCourtsParams = V1ListCourtsParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): V1ListCourtsResponse
+
+    /** @see listCourts */
+    fun listCourts(params: V1ListCourtsParams = V1ListCourtsParams.none()): V1ListCourtsResponse =
+        listCourts(params, RequestOptions.none())
+
+    /** @see listCourts */
+    fun listCourts(requestOptions: RequestOptions): V1ListCourtsResponse =
+        listCourts(V1ListCourtsParams.none(), requestOptions)
 
     /**
      * Search for a jurisdiction by name. Returns matching jurisdictions with their IDs for use in
@@ -194,6 +230,21 @@ interface V1Service {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service.WithRawResponse
 
         /**
+         * Returns a raw HTTP response for `post /legal/v1/docket`, but is otherwise the same as
+         * [V1Service.docket].
+         */
+        @MustBeClosed
+        fun docket(params: V1DocketParams): HttpResponseFor<V1DocketResponse> =
+            docket(params, RequestOptions.none())
+
+        /** @see docket */
+        @MustBeClosed
+        fun docket(
+            params: V1DocketParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<V1DocketResponse>
+
+        /**
          * Returns a raw HTTP response for `post /legal/v1/find`, but is otherwise the same as
          * [V1Service.find].
          */
@@ -254,6 +305,32 @@ interface V1Service {
             params: V1GetFullTextParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<V1GetFullTextResponse>
+
+        /**
+         * Returns a raw HTTP response for `post /legal/v1/courts`, but is otherwise the same as
+         * [V1Service.listCourts].
+         */
+        @MustBeClosed
+        fun listCourts(): HttpResponseFor<V1ListCourtsResponse> =
+            listCourts(V1ListCourtsParams.none())
+
+        /** @see listCourts */
+        @MustBeClosed
+        fun listCourts(
+            params: V1ListCourtsParams = V1ListCourtsParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<V1ListCourtsResponse>
+
+        /** @see listCourts */
+        @MustBeClosed
+        fun listCourts(
+            params: V1ListCourtsParams = V1ListCourtsParams.none()
+        ): HttpResponseFor<V1ListCourtsResponse> = listCourts(params, RequestOptions.none())
+
+        /** @see listCourts */
+        @MustBeClosed
+        fun listCourts(requestOptions: RequestOptions): HttpResponseFor<V1ListCourtsResponse> =
+            listCourts(V1ListCourtsParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /legal/v1/jurisdictions`, but is otherwise the same

@@ -69,7 +69,7 @@ private constructor(
     fun maxTokens(): Optional<Long> = body.maxTokens()
 
     /**
-     * Model to use for completion. Defaults to casemark/casemark-core-3 if not specified
+     * Model to use for completion. Defaults to casemark/casemark-core-6 if not specified
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -289,7 +289,7 @@ private constructor(
          */
         fun maxTokens(maxTokens: JsonField<Long>) = apply { body.maxTokens(maxTokens) }
 
-        /** Model to use for completion. Defaults to casemark/casemark-core-3 if not specified */
+        /** Model to use for completion. Defaults to casemark/casemark-core-6 if not specified */
         fun model(model: String) = apply { body.model(model) }
 
         /**
@@ -579,7 +579,7 @@ private constructor(
         fun maxTokens(): Optional<Long> = maxTokens.getOptional("max_tokens")
 
         /**
-         * Model to use for completion. Defaults to casemark/casemark-core-3 if not specified
+         * Model to use for completion. Defaults to casemark/casemark-core-6 if not specified
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -819,7 +819,7 @@ private constructor(
             fun maxTokens(maxTokens: JsonField<Long>) = apply { this.maxTokens = maxTokens }
 
             /**
-             * Model to use for completion. Defaults to casemark/casemark-core-3 if not specified
+             * Model to use for completion. Defaults to casemark/casemark-core-6 if not specified
              */
             fun model(model: String) = model(JsonField.of(model))
 

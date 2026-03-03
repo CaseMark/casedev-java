@@ -26,6 +26,8 @@ import dev.case.api.services.blocking.PrivilegeService
 import dev.case.api.services.blocking.PrivilegeServiceImpl
 import dev.case.api.services.blocking.SearchService
 import dev.case.api.services.blocking.SearchServiceImpl
+import dev.case.api.services.blocking.SkillService
+import dev.case.api.services.blocking.SkillServiceImpl
 import dev.case.api.services.blocking.SuperdocService
 import dev.case.api.services.blocking.SuperdocServiceImpl
 import dev.case.api.services.blocking.SystemService
@@ -83,6 +85,8 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
         PrivilegeServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val skills: SkillService by lazy { SkillServiceImpl(clientOptionsWithUserAgent) }
+
     private val search: SearchService by lazy { SearchServiceImpl(clientOptionsWithUserAgent) }
 
     private val superdoc: SuperdocService by lazy {
@@ -125,6 +129,8 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
     override fun ocr(): OcrService = ocr
 
     override fun privilege(): PrivilegeService = privilege
+
+    override fun skills(): SkillService = skills
 
     override fun search(): SearchService = search
 
@@ -185,6 +191,10 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
             PrivilegeServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val skills: SkillService.WithRawResponse by lazy {
+            SkillServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val search: SearchService.WithRawResponse by lazy {
             SearchServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -233,6 +243,8 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
         override fun ocr(): OcrService.WithRawResponse = ocr
 
         override fun privilege(): PrivilegeService.WithRawResponse = privilege
+
+        override fun skills(): SkillService.WithRawResponse = skills
 
         override fun search(): SearchService.WithRawResponse = search
 
