@@ -20,6 +20,7 @@ interface MemoryServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): MemoryServiceAsync
 
+    /** Persistent memory for AI agents with semantic search and 12 generic indexed tag fields */
     fun v1(): V1ServiceAsync
 
     /**
@@ -36,6 +37,9 @@ interface MemoryServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): MemoryServiceAsync.WithRawResponse
 
+        /**
+         * Persistent memory for AI agents with semantic search and 12 generic indexed tag fields
+         */
         fun v1(): V1ServiceAsync.WithRawResponse
     }
 }

@@ -21,6 +21,7 @@ class MemoryServiceAsyncImpl internal constructor(private val clientOptions: Cli
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): MemoryServiceAsync =
         MemoryServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Persistent memory for AI agents with semantic search and 12 generic indexed tag fields */
     override fun v1(): V1ServiceAsync = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,9 @@ class MemoryServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /**
+         * Persistent memory for AI agents with semantic search and 12 generic indexed tag fields
+         */
         override fun v1(): V1ServiceAsync.WithRawResponse = v1
     }
 }

@@ -20,6 +20,7 @@ import dev.case.api.models.privilege.v1.V1DetectResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Privilege detection for e-discovery and litigation workflows */
 class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     V1ServiceAsync {
 

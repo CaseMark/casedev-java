@@ -17,6 +17,7 @@ import dev.case.api.services.blocking.format.v1.TemplateService
 import dev.case.api.services.blocking.format.v1.TemplateServiceImpl
 import java.util.function.Consumer
 
+/** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
 class V1ServiceImpl internal constructor(private val clientOptions: ClientOptions) : V1Service {
 
     private val withRawResponse: V1Service.WithRawResponse by lazy {
@@ -30,6 +31,7 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service =
         V1ServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
     override fun templates(): TemplateService = templates
 
     override fun createDocument(
@@ -56,6 +58,7 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
         override fun templates(): TemplateService.WithRawResponse = templates
 
         override fun createDocument(

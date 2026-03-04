@@ -28,6 +28,7 @@ import dev.case.api.services.blocking.compute.v1.SecretService
 import dev.case.api.services.blocking.compute.v1.SecretServiceImpl
 import java.util.function.Consumer
 
+/** Serverless GPU and CPU infrastructure */
 class V1ServiceImpl internal constructor(private val clientOptions: ClientOptions) : V1Service {
 
     private val withRawResponse: V1Service.WithRawResponse by lazy {
@@ -49,12 +50,16 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service =
         V1ServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Serverless GPU and CPU infrastructure */
     override fun environments(): EnvironmentService = environments
 
+    /** Serverless GPU and CPU infrastructure */
     override fun instanceTypes(): InstanceTypeService = instanceTypes
 
+    /** Serverless GPU and CPU infrastructure */
     override fun instances(): InstanceService = instances
 
+    /** Serverless GPU and CPU infrastructure */
     override fun secrets(): SecretService = secrets
 
     override fun getPricing(params: V1GetPricingParams, requestOptions: RequestOptions) {
@@ -98,12 +103,16 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Serverless GPU and CPU infrastructure */
         override fun environments(): EnvironmentService.WithRawResponse = environments
 
+        /** Serverless GPU and CPU infrastructure */
         override fun instanceTypes(): InstanceTypeService.WithRawResponse = instanceTypes
 
+        /** Serverless GPU and CPU infrastructure */
         override fun instances(): InstanceService.WithRawResponse = instances
 
+        /** Serverless GPU and CPU infrastructure */
         override fun secrets(): SecretService.WithRawResponse = secrets
 
         private val getPricingHandler: Handler<Void?> = emptyHandler()

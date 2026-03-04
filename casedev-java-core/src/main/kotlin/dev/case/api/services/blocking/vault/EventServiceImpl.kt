@@ -23,6 +23,7 @@ class EventServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): EventService =
         EventServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun subscriptions(): SubscriptionService = subscriptions
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -39,6 +40,7 @@ class EventServiceImpl internal constructor(private val clientOptions: ClientOpt
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun subscriptions(): SubscriptionService.WithRawResponse = subscriptions
     }
 }

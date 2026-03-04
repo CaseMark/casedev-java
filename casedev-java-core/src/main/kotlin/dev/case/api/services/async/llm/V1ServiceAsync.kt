@@ -13,6 +13,7 @@ import dev.case.api.services.async.llm.v1.ChatServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Access 40+ language models through a unified API */
 interface V1ServiceAsync {
 
     /**
@@ -27,6 +28,7 @@ interface V1ServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync
 
+    /** Access 40+ language models through a unified API */
     fun chat(): ChatServiceAsync
 
     /**
@@ -79,6 +81,7 @@ interface V1ServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync.WithRawResponse
 
+        /** Access 40+ language models through a unified API */
         fun chat(): ChatServiceAsync.WithRawResponse
 
         /**

@@ -18,6 +18,7 @@ import dev.case.api.models.system.SystemListServicesParams
 import dev.case.api.models.system.SystemListServicesResponse
 import java.util.function.Consumer
 
+/** Public system metadata and discovery endpoints */
 class SystemServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     SystemService {
 

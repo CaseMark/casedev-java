@@ -25,6 +25,7 @@ import dev.case.api.models.format.v1.templates.TemplateRetrieveResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
 class TemplateServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     TemplateService {
 

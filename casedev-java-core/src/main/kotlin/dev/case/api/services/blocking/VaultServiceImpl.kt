@@ -47,6 +47,7 @@ import dev.case.api.services.blocking.vault.ObjectServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Secure document storage with semantic search and GraphRAG */
 class VaultServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     VaultService {
 
@@ -71,12 +72,16 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     override fun events(): EventService = events
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun graphrag(): GraphragService = graphrag
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun groups(): GroupService = groups
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun multipart(): MultipartService = multipart
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun objects(): ObjectService = objects
 
     override fun create(
@@ -174,12 +179,16 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         override fun events(): EventService.WithRawResponse = events
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun graphrag(): GraphragService.WithRawResponse = graphrag
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun groups(): GroupService.WithRawResponse = groups
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun multipart(): MultipartService.WithRawResponse = multipart
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun objects(): ObjectService.WithRawResponse = objects
 
         private val createHandler: Handler<VaultCreateResponse> =

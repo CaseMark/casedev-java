@@ -20,6 +20,7 @@ interface EventService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): EventService
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun subscriptions(): SubscriptionService
 
     /** A view of [EventService] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface EventService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): EventService.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun subscriptions(): SubscriptionService.WithRawResponse
     }
 }

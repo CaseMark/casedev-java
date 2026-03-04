@@ -23,6 +23,7 @@ class EventServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): EventServiceAsync =
         EventServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun subscriptions(): SubscriptionServiceAsync = subscriptions
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -39,6 +40,7 @@ class EventServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun subscriptions(): SubscriptionServiceAsync.WithRawResponse = subscriptions
     }
 }

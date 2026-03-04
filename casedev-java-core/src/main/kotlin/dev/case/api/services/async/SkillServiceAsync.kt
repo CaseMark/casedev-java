@@ -12,6 +12,7 @@ import dev.case.api.models.skills.SkillResolveResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Search and read legal AI skills for agents */
 interface SkillServiceAsync {
 
     /**

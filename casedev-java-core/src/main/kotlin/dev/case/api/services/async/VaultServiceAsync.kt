@@ -31,6 +31,7 @@ import dev.case.api.services.async.vault.ObjectServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Secure document storage with semantic search and GraphRAG */
 interface VaultServiceAsync {
 
     /**
@@ -47,12 +48,16 @@ interface VaultServiceAsync {
 
     fun events(): EventServiceAsync
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun graphrag(): GraphragServiceAsync
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun groups(): GroupServiceAsync
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun multipart(): MultipartServiceAsync
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun objects(): ObjectServiceAsync
 
     /**
@@ -327,12 +332,16 @@ interface VaultServiceAsync {
 
         fun events(): EventServiceAsync.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun graphrag(): GraphragServiceAsync.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun groups(): GroupServiceAsync.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun multipart(): MultipartServiceAsync.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun objects(): ObjectServiceAsync.WithRawResponse
 
         /**

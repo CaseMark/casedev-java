@@ -18,6 +18,7 @@ import dev.case.api.models.applications.v1.workflows.WorkflowGetStatusParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Web application deployment management */
 class WorkflowServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     WorkflowService {
 

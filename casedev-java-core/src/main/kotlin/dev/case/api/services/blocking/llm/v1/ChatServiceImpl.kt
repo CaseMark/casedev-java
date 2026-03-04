@@ -19,6 +19,7 @@ import dev.case.api.models.llm.v1.chat.ChatCreateCompletionParams
 import dev.case.api.models.llm.v1.chat.ChatCreateCompletionResponse
 import java.util.function.Consumer
 
+/** Access 40+ language models through a unified API */
 class ChatServiceImpl internal constructor(private val clientOptions: ClientOptions) : ChatService {
 
     private val withRawResponse: ChatService.WithRawResponse by lazy {

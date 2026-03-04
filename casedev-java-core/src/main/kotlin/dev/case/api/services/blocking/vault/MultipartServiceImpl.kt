@@ -23,6 +23,7 @@ import dev.case.api.models.vault.multipart.MultipartGetPartUrlsResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Secure document storage with semantic search and GraphRAG */
 class MultipartServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     MultipartService {
 

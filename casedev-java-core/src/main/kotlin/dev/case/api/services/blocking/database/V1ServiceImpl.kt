@@ -20,6 +20,7 @@ import dev.case.api.services.blocking.database.v1.ProjectService
 import dev.case.api.services.blocking.database.v1.ProjectServiceImpl
 import java.util.function.Consumer
 
+/** Serverless PostgreSQL databases with instant branching */
 class V1ServiceImpl internal constructor(private val clientOptions: ClientOptions) : V1Service {
 
     private val withRawResponse: V1Service.WithRawResponse by lazy {
@@ -33,6 +34,7 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service =
         V1ServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Serverless PostgreSQL databases with instant branching */
     override fun projects(): ProjectService = projects
 
     override fun getUsage(
@@ -59,6 +61,7 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Serverless PostgreSQL databases with instant branching */
         override fun projects(): ProjectService.WithRawResponse = projects
 
         private val getUsageHandler: Handler<V1GetUsageResponse> =

@@ -20,6 +20,7 @@ interface FormatService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): FormatService
 
+    /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
     fun v1(): V1Service
 
     /** A view of [FormatService] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface FormatService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): FormatService.WithRawResponse
 
+        /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
         fun v1(): V1Service.WithRawResponse
     }
 }

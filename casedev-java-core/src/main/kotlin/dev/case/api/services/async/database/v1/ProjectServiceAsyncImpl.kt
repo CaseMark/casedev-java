@@ -34,6 +34,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Serverless PostgreSQL databases with instant branching */
 class ProjectServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ProjectServiceAsync {
 

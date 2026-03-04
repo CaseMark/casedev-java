@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Web application deployment management */
 class DeploymentServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     DeploymentServiceAsync {
 

@@ -20,6 +20,7 @@ interface LegalService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): LegalService
 
+    /** Legal research tools including citation verification */
     fun v1(): V1Service
 
     /** A view of [LegalService] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface LegalService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): LegalService.WithRawResponse
 
+        /** Legal research tools including citation verification */
         fun v1(): V1Service.WithRawResponse
     }
 }

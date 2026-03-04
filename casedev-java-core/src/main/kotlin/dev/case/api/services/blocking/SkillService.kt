@@ -12,6 +12,7 @@ import dev.case.api.models.skills.SkillResolveParams
 import dev.case.api.models.skills.SkillResolveResponse
 import java.util.function.Consumer
 
+/** Search and read legal AI skills for agents */
 interface SkillService {
 
     /**

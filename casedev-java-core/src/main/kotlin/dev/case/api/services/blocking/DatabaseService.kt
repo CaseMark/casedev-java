@@ -20,6 +20,7 @@ interface DatabaseService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): DatabaseService
 
+    /** Serverless PostgreSQL databases with instant branching */
     fun v1(): V1Service
 
     /** A view of [DatabaseService] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface DatabaseService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): DatabaseService.WithRawResponse
 
+        /** Serverless PostgreSQL databases with instant branching */
         fun v1(): V1Service.WithRawResponse
     }
 }

@@ -19,6 +19,7 @@ import dev.case.api.models.privilege.v1.V1DetectParams
 import dev.case.api.models.privilege.v1.V1DetectResponse
 import java.util.function.Consumer
 
+/** Privilege detection for e-discovery and litigation workflows */
 class V1ServiceImpl internal constructor(private val clientOptions: ClientOptions) : V1Service {
 
     private val withRawResponse: V1Service.WithRawResponse by lazy {

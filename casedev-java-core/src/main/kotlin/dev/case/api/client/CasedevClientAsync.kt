@@ -60,6 +60,7 @@ interface CasedevClientAsync {
 
     fun agent(): AgentServiceAsync
 
+    /** Public system metadata and discovery endpoints */
     fun system(): SystemServiceAsync
 
     fun applications(): ApplicationServiceAsync
@@ -72,6 +73,7 @@ interface CasedevClientAsync {
 
     fun legal(): LegalServiceAsync
 
+    /** Access 40+ language models through a unified API */
     fun llm(): LlmServiceAsync
 
     fun memory(): MemoryServiceAsync
@@ -80,6 +82,7 @@ interface CasedevClientAsync {
 
     fun privilege(): PrivilegeServiceAsync
 
+    /** Search and read legal AI skills for agents */
     fun skills(): SkillServiceAsync
 
     fun search(): SearchServiceAsync
@@ -88,6 +91,7 @@ interface CasedevClientAsync {
 
     fun translate(): TranslateServiceAsync
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun vault(): VaultServiceAsync
 
     fun voice(): VoiceServiceAsync
@@ -121,6 +125,7 @@ interface CasedevClientAsync {
 
         fun agent(): AgentServiceAsync.WithRawResponse
 
+        /** Public system metadata and discovery endpoints */
         fun system(): SystemServiceAsync.WithRawResponse
 
         fun applications(): ApplicationServiceAsync.WithRawResponse
@@ -133,6 +138,7 @@ interface CasedevClientAsync {
 
         fun legal(): LegalServiceAsync.WithRawResponse
 
+        /** Access 40+ language models through a unified API */
         fun llm(): LlmServiceAsync.WithRawResponse
 
         fun memory(): MemoryServiceAsync.WithRawResponse
@@ -141,6 +147,7 @@ interface CasedevClientAsync {
 
         fun privilege(): PrivilegeServiceAsync.WithRawResponse
 
+        /** Search and read legal AI skills for agents */
         fun skills(): SkillServiceAsync.WithRawResponse
 
         fun search(): SearchServiceAsync.WithRawResponse
@@ -149,6 +156,7 @@ interface CasedevClientAsync {
 
         fun translate(): TranslateServiceAsync.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun vault(): VaultServiceAsync.WithRawResponse
 
         fun voice(): VoiceServiceAsync.WithRawResponse

@@ -21,6 +21,7 @@ class LegalServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): LegalService =
         LegalServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Legal research tools including citation verification */
     override fun v1(): V1Service = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class LegalServiceImpl internal constructor(private val clientOptions: ClientOpt
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Legal research tools including citation verification */
         override fun v1(): V1Service.WithRawResponse = v1
     }
 }

@@ -16,6 +16,7 @@ import dev.case.api.models.applications.v1.deployments.DeploymentRetrieveParams
 import dev.case.api.models.applications.v1.deployments.DeploymentStreamParams
 import java.util.function.Consumer
 
+/** Web application deployment management */
 interface DeploymentService {
 
     /**

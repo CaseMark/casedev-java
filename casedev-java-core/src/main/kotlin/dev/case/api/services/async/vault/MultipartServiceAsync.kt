@@ -12,6 +12,7 @@ import dev.case.api.models.vault.multipart.MultipartGetPartUrlsResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Secure document storage with semantic search and GraphRAG */
 interface MultipartServiceAsync {
 
     /**

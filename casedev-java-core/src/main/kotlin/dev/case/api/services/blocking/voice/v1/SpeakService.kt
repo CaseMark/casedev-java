@@ -9,6 +9,7 @@ import dev.case.api.core.http.HttpResponse
 import dev.case.api.models.voice.v1.speak.SpeakCreateParams
 import java.util.function.Consumer
 
+/** Audio transcription and text-to-speech */
 interface SpeakService {
 
     /**

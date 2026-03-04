@@ -16,6 +16,7 @@ import dev.case.api.services.blocking.compute.v1.InstanceTypeService
 import dev.case.api.services.blocking.compute.v1.SecretService
 import java.util.function.Consumer
 
+/** Serverless GPU and CPU infrastructure */
 interface V1Service {
 
     /**
@@ -30,12 +31,16 @@ interface V1Service {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service
 
+    /** Serverless GPU and CPU infrastructure */
     fun environments(): EnvironmentService
 
+    /** Serverless GPU and CPU infrastructure */
     fun instanceTypes(): InstanceTypeService
 
+    /** Serverless GPU and CPU infrastructure */
     fun instances(): InstanceService
 
+    /** Serverless GPU and CPU infrastructure */
     fun secrets(): SecretService
 
     /**
@@ -90,12 +95,16 @@ interface V1Service {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service.WithRawResponse
 
+        /** Serverless GPU and CPU infrastructure */
         fun environments(): EnvironmentService.WithRawResponse
 
+        /** Serverless GPU and CPU infrastructure */
         fun instanceTypes(): InstanceTypeService.WithRawResponse
 
+        /** Serverless GPU and CPU infrastructure */
         fun instances(): InstanceService.WithRawResponse
 
+        /** Serverless GPU and CPU infrastructure */
         fun secrets(): SecretService.WithRawResponse
 
         /**

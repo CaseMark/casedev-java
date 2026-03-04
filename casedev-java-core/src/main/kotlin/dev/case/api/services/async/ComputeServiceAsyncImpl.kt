@@ -21,6 +21,7 @@ class ComputeServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ComputeServiceAsync =
         ComputeServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Serverless GPU and CPU infrastructure */
     override fun v1(): V1ServiceAsync = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class ComputeServiceAsyncImpl internal constructor(private val clientOptions: Cl
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Serverless GPU and CPU infrastructure */
         override fun v1(): V1ServiceAsync.WithRawResponse = v1
     }
 }

@@ -18,6 +18,7 @@ import dev.case.api.models.voice.streaming.StreamingGetUrlParams
 import dev.case.api.models.voice.streaming.StreamingGetUrlResponse
 import java.util.function.Consumer
 
+/** Audio transcription and text-to-speech */
 class StreamingServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     StreamingService {
 

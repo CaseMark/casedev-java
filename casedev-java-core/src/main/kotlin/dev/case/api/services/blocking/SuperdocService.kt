@@ -20,6 +20,7 @@ interface SuperdocService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SuperdocService
 
+    /** Document conversion and template automation */
     fun v1(): V1Service
 
     /** A view of [SuperdocService] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface SuperdocService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): SuperdocService.WithRawResponse
 
+        /** Document conversion and template automation */
         fun v1(): V1Service.WithRawResponse
     }
 }

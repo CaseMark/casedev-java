@@ -33,6 +33,7 @@ import dev.case.api.models.database.v1.projects.ProjectRetrieveResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Serverless PostgreSQL databases with instant branching */
 class ProjectServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ProjectService {
 

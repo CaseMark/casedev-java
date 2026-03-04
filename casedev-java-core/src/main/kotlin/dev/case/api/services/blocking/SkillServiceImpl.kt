@@ -22,6 +22,7 @@ import dev.case.api.models.skills.SkillResolveResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Search and read legal AI skills for agents */
 class SkillServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     SkillService {
 

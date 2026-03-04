@@ -16,6 +16,7 @@ import dev.case.api.services.async.compute.v1.SecretServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Serverless GPU and CPU infrastructure */
 interface V1ServiceAsync {
 
     /**
@@ -30,12 +31,16 @@ interface V1ServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync
 
+    /** Serverless GPU and CPU infrastructure */
     fun environments(): EnvironmentServiceAsync
 
+    /** Serverless GPU and CPU infrastructure */
     fun instanceTypes(): InstanceTypeServiceAsync
 
+    /** Serverless GPU and CPU infrastructure */
     fun instances(): InstanceServiceAsync
 
+    /** Serverless GPU and CPU infrastructure */
     fun secrets(): SecretServiceAsync
 
     /**
@@ -92,12 +97,16 @@ interface V1ServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync.WithRawResponse
 
+        /** Serverless GPU and CPU infrastructure */
         fun environments(): EnvironmentServiceAsync.WithRawResponse
 
+        /** Serverless GPU and CPU infrastructure */
         fun instanceTypes(): InstanceTypeServiceAsync.WithRawResponse
 
+        /** Serverless GPU and CPU infrastructure */
         fun instances(): InstanceServiceAsync.WithRawResponse
 
+        /** Serverless GPU and CPU infrastructure */
         fun secrets(): SecretServiceAsync.WithRawResponse
 
         /**

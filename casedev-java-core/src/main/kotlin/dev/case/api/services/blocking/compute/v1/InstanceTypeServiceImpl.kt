@@ -18,6 +18,7 @@ import dev.case.api.models.compute.v1.instancetypes.InstanceTypeListParams
 import dev.case.api.models.compute.v1.instancetypes.InstanceTypeListResponse
 import java.util.function.Consumer
 
+/** Serverless GPU and CPU infrastructure */
 class InstanceTypeServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     InstanceTypeService {
 

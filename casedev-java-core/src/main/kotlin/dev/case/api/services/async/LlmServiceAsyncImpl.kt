@@ -21,6 +21,7 @@ import dev.case.api.services.async.llm.V1ServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Access 40+ language models through a unified API */
 class LlmServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     LlmServiceAsync {
 
@@ -35,6 +36,7 @@ class LlmServiceAsyncImpl internal constructor(private val clientOptions: Client
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): LlmServiceAsync =
         LlmServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Access 40+ language models through a unified API */
     override fun v1(): V1ServiceAsync = v1
 
     override fun getConfig(
@@ -61,6 +63,7 @@ class LlmServiceAsyncImpl internal constructor(private val clientOptions: Client
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Access 40+ language models through a unified API */
         override fun v1(): V1ServiceAsync.WithRawResponse = v1
 
         private val getConfigHandler: Handler<LlmGetConfigResponse> =
