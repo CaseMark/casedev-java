@@ -25,6 +25,7 @@ import dev.case.api.models.vault.graphrag.GraphragProcessObjectResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Secure document storage with semantic search and GraphRAG */
 class GraphragServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     GraphragService {
 

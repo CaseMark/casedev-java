@@ -10,6 +10,7 @@ import dev.case.api.models.superdoc.v1.V1AnnotateParams
 import dev.case.api.models.superdoc.v1.V1ConvertParams
 import java.util.function.Consumer
 
+/** Document conversion and template automation */
 interface V1Service {
 
     /**

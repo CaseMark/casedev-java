@@ -11,6 +11,7 @@ import dev.case.api.models.llm.LlmGetConfigResponse
 import dev.case.api.services.blocking.llm.V1Service
 import java.util.function.Consumer
 
+/** Access 40+ language models through a unified API */
 interface LlmService {
 
     /**
@@ -25,6 +26,7 @@ interface LlmService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): LlmService
 
+    /** Access 40+ language models through a unified API */
     fun v1(): V1Service
 
     /**
@@ -64,6 +66,7 @@ interface LlmService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): LlmService.WithRawResponse
 
+        /** Access 40+ language models through a unified API */
         fun v1(): V1Service.WithRawResponse
 
         /**

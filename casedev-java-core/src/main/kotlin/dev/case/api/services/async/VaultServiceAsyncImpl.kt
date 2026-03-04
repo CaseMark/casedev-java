@@ -48,6 +48,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Secure document storage with semantic search and GraphRAG */
 class VaultServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     VaultServiceAsync {
 
@@ -74,12 +75,16 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     override fun events(): EventServiceAsync = events
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun graphrag(): GraphragServiceAsync = graphrag
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun groups(): GroupServiceAsync = groups
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun multipart(): MultipartServiceAsync = multipart
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun objects(): ObjectServiceAsync = objects
 
     override fun create(
@@ -180,12 +185,16 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         override fun events(): EventServiceAsync.WithRawResponse = events
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun graphrag(): GraphragServiceAsync.WithRawResponse = graphrag
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun groups(): GroupServiceAsync.WithRawResponse = groups
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun multipart(): MultipartServiceAsync.WithRawResponse = multipart
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun objects(): ObjectServiceAsync.WithRawResponse = objects
 
         private val createHandler: Handler<VaultCreateResponse> =

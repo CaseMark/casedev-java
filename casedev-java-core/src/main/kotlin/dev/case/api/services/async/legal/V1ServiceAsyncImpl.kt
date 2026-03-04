@@ -42,6 +42,7 @@ import dev.case.api.models.legal.v1.V1VerifyResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Legal research tools including citation verification */
 class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     V1ServiceAsync {
 

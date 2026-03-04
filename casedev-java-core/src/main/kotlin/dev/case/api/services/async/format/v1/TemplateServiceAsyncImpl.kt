@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
 class TemplateServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     TemplateServiceAsync {
 

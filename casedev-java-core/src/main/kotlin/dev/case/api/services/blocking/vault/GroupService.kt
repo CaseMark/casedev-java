@@ -12,6 +12,7 @@ import dev.case.api.models.vault.groups.GroupListParams
 import dev.case.api.models.vault.groups.GroupUpdateParams
 import java.util.function.Consumer
 
+/** Secure document storage with semantic search and GraphRAG */
 interface GroupService {
 
     /**

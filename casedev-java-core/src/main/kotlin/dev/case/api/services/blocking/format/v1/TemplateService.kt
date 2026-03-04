@@ -14,6 +14,7 @@ import dev.case.api.models.format.v1.templates.TemplateRetrieveParams
 import dev.case.api.models.format.v1.templates.TemplateRetrieveResponse
 import java.util.function.Consumer
 
+/** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
 interface TemplateService {
 
     /**

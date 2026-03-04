@@ -130,6 +130,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     override fun agent(): AgentServiceAsync = agent
 
+    /** Public system metadata and discovery endpoints */
     override fun system(): SystemServiceAsync = system
 
     override fun applications(): ApplicationServiceAsync = applications
@@ -142,6 +143,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     override fun legal(): LegalServiceAsync = legal
 
+    /** Access 40+ language models through a unified API */
     override fun llm(): LlmServiceAsync = llm
 
     override fun memory(): MemoryServiceAsync = memory
@@ -150,6 +152,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     override fun privilege(): PrivilegeServiceAsync = privilege
 
+    /** Search and read legal AI skills for agents */
     override fun skills(): SkillServiceAsync = skills
 
     override fun search(): SearchServiceAsync = search
@@ -158,6 +161,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     override fun translate(): TranslateServiceAsync = translate
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun vault(): VaultServiceAsync = vault
 
     override fun voice(): VoiceServiceAsync = voice
@@ -244,6 +248,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         override fun agent(): AgentServiceAsync.WithRawResponse = agent
 
+        /** Public system metadata and discovery endpoints */
         override fun system(): SystemServiceAsync.WithRawResponse = system
 
         override fun applications(): ApplicationServiceAsync.WithRawResponse = applications
@@ -256,6 +261,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         override fun legal(): LegalServiceAsync.WithRawResponse = legal
 
+        /** Access 40+ language models through a unified API */
         override fun llm(): LlmServiceAsync.WithRawResponse = llm
 
         override fun memory(): MemoryServiceAsync.WithRawResponse = memory
@@ -264,6 +270,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         override fun privilege(): PrivilegeServiceAsync.WithRawResponse = privilege
 
+        /** Search and read legal AI skills for agents */
         override fun skills(): SkillServiceAsync.WithRawResponse = skills
 
         override fun search(): SearchServiceAsync.WithRawResponse = search
@@ -272,6 +279,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         override fun translate(): TranslateServiceAsync.WithRawResponse = translate
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun vault(): VaultServiceAsync.WithRawResponse = vault
 
         override fun voice(): VoiceServiceAsync.WithRawResponse = voice

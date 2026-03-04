@@ -20,6 +20,7 @@ interface LegalServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): LegalServiceAsync
 
+    /** Legal research tools including citation verification */
     fun v1(): V1ServiceAsync
 
     /** A view of [LegalServiceAsync] that provides access to raw HTTP responses for each method. */
@@ -34,6 +35,7 @@ interface LegalServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): LegalServiceAsync.WithRawResponse
 
+        /** Legal research tools including citation verification */
         fun v1(): V1ServiceAsync.WithRawResponse
     }
 }

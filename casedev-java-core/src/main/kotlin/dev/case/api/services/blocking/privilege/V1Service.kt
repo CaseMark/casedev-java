@@ -10,6 +10,7 @@ import dev.case.api.models.privilege.v1.V1DetectParams
 import dev.case.api.models.privilege.v1.V1DetectResponse
 import java.util.function.Consumer
 
+/** Privilege detection for e-discovery and litigation workflows */
 interface V1Service {
 
     /**

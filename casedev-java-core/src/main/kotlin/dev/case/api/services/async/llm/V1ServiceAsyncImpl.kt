@@ -24,6 +24,7 @@ import dev.case.api.services.async.llm.v1.ChatServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Access 40+ language models through a unified API */
 class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     V1ServiceAsync {
 
@@ -38,6 +39,7 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync =
         V1ServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Access 40+ language models through a unified API */
     override fun chat(): ChatServiceAsync = chat
 
     override fun createEmbedding(
@@ -71,6 +73,7 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Access 40+ language models through a unified API */
         override fun chat(): ChatServiceAsync.WithRawResponse = chat
 
         private val createEmbeddingHandler: Handler<V1CreateEmbeddingResponse> =

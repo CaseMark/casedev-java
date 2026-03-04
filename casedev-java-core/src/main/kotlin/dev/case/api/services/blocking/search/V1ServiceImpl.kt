@@ -31,6 +31,7 @@ import dev.case.api.models.search.v1.V1SimilarResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Web search, AI answers, and deep research */
 class V1ServiceImpl internal constructor(private val clientOptions: ClientOptions) : V1Service {
 
     private val withRawResponse: V1Service.WithRawResponse by lazy {

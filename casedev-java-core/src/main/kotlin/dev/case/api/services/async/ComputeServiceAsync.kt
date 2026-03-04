@@ -20,6 +20,7 @@ interface ComputeServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ComputeServiceAsync
 
+    /** Serverless GPU and CPU infrastructure */
     fun v1(): V1ServiceAsync
 
     /**
@@ -36,6 +37,7 @@ interface ComputeServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ComputeServiceAsync.WithRawResponse
 
+        /** Serverless GPU and CPU infrastructure */
         fun v1(): V1ServiceAsync.WithRawResponse
     }
 }

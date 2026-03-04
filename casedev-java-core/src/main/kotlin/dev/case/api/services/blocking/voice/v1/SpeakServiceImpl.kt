@@ -15,6 +15,7 @@ import dev.case.api.core.prepare
 import dev.case.api.models.voice.v1.speak.SpeakCreateParams
 import java.util.function.Consumer
 
+/** Audio transcription and text-to-speech */
 class SpeakServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     SpeakService {
 

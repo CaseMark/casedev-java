@@ -31,6 +31,7 @@ import dev.case.api.services.blocking.vault.MultipartService
 import dev.case.api.services.blocking.vault.ObjectService
 import java.util.function.Consumer
 
+/** Secure document storage with semantic search and GraphRAG */
 interface VaultService {
 
     /**
@@ -47,12 +48,16 @@ interface VaultService {
 
     fun events(): EventService
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun graphrag(): GraphragService
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun groups(): GroupService
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun multipart(): MultipartService
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun objects(): ObjectService
 
     /**
@@ -308,12 +313,16 @@ interface VaultService {
 
         fun events(): EventService.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun graphrag(): GraphragService.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun groups(): GroupService.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun multipart(): MultipartService.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun objects(): ObjectService.WithRawResponse
 
         /**

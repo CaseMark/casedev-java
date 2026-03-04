@@ -20,6 +20,7 @@ import dev.case.api.services.blocking.llm.V1Service
 import dev.case.api.services.blocking.llm.V1ServiceImpl
 import java.util.function.Consumer
 
+/** Access 40+ language models through a unified API */
 class LlmServiceImpl internal constructor(private val clientOptions: ClientOptions) : LlmService {
 
     private val withRawResponse: LlmService.WithRawResponse by lazy {
@@ -33,6 +34,7 @@ class LlmServiceImpl internal constructor(private val clientOptions: ClientOptio
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): LlmService =
         LlmServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Access 40+ language models through a unified API */
     override fun v1(): V1Service = v1
 
     override fun getConfig(
@@ -59,6 +61,7 @@ class LlmServiceImpl internal constructor(private val clientOptions: ClientOptio
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Access 40+ language models through a unified API */
         override fun v1(): V1Service.WithRawResponse = v1
 
         private val getConfigHandler: Handler<LlmGetConfigResponse> =

@@ -20,6 +20,7 @@ interface SearchServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SearchServiceAsync
 
+    /** Web search, AI answers, and deep research */
     fun v1(): V1ServiceAsync
 
     /**
@@ -36,6 +37,7 @@ interface SearchServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): SearchServiceAsync.WithRawResponse
 
+        /** Web search, AI answers, and deep research */
         fun v1(): V1ServiceAsync.WithRawResponse
     }
 }

@@ -41,6 +41,7 @@ import dev.case.api.models.legal.v1.V1VerifyParams
 import dev.case.api.models.legal.v1.V1VerifyResponse
 import java.util.function.Consumer
 
+/** Legal research tools including citation verification */
 class V1ServiceImpl internal constructor(private val clientOptions: ClientOptions) : V1Service {
 
     private val withRawResponse: V1Service.WithRawResponse by lazy {

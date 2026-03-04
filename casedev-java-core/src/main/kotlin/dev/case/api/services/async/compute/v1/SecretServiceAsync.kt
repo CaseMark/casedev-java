@@ -18,6 +18,7 @@ import dev.case.api.models.compute.v1.secrets.SecretUpdateGroupResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Serverless GPU and CPU infrastructure */
 interface SecretServiceAsync {
 
     /**

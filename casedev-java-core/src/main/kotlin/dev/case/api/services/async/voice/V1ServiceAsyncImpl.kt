@@ -21,6 +21,7 @@ import dev.case.api.services.async.voice.v1.SpeakServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Audio transcription and text-to-speech */
 class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     V1ServiceAsync {
 
@@ -35,6 +36,7 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync =
         V1ServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Audio transcription and text-to-speech */
     override fun speak(): SpeakServiceAsync = speak
 
     override fun listVoices(
@@ -61,6 +63,7 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Audio transcription and text-to-speech */
         override fun speak(): SpeakServiceAsync.WithRawResponse = speak
 
         private val listVoicesHandler: Handler<V1ListVoicesResponse> =

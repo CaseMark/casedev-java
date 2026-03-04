@@ -26,6 +26,7 @@ import dev.case.api.models.vault.objects.ObjectUpdateResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Secure document storage with semantic search and GraphRAG */
 interface ObjectServiceAsync {
 
     /**

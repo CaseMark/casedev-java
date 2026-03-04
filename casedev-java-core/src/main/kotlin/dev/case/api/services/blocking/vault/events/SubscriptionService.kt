@@ -13,6 +13,7 @@ import dev.case.api.models.vault.events.subscriptions.SubscriptionTestParams
 import dev.case.api.models.vault.events.subscriptions.SubscriptionUpdateParams
 import java.util.function.Consumer
 
+/** Secure document storage with semantic search and GraphRAG */
 interface SubscriptionService {
 
     /**

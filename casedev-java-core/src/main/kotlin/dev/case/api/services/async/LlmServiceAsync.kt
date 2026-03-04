@@ -11,6 +11,7 @@ import dev.case.api.services.async.llm.V1ServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Access 40+ language models through a unified API */
 interface LlmServiceAsync {
 
     /**
@@ -25,6 +26,7 @@ interface LlmServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): LlmServiceAsync
 
+    /** Access 40+ language models through a unified API */
     fun v1(): V1ServiceAsync
 
     /**
@@ -65,6 +67,7 @@ interface LlmServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): LlmServiceAsync.WithRawResponse
 
+        /** Access 40+ language models through a unified API */
         fun v1(): V1ServiceAsync.WithRawResponse
 
         /**

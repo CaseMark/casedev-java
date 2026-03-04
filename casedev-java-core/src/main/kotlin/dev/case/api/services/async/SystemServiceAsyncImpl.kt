@@ -19,6 +19,7 @@ import dev.case.api.models.system.SystemListServicesResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Public system metadata and discovery endpoints */
 class SystemServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     SystemServiceAsync {
 

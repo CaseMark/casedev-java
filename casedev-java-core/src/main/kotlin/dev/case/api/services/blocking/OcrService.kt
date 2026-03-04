@@ -20,6 +20,7 @@ interface OcrService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OcrService
 
+    /** Extract text from PDFs, images, and scanned documents */
     fun v1(): V1Service
 
     /** A view of [OcrService] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface OcrService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): OcrService.WithRawResponse
 
+        /** Extract text from PDFs, images, and scanned documents */
         fun v1(): V1Service.WithRawResponse
     }
 }

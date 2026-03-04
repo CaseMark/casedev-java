@@ -20,6 +20,7 @@ interface MemoryService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): MemoryService
 
+    /** Persistent memory for AI agents with semantic search and 12 generic indexed tag fields */
     fun v1(): V1Service
 
     /** A view of [MemoryService] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,9 @@ interface MemoryService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): MemoryService.WithRawResponse
 
+        /**
+         * Persistent memory for AI agents with semantic search and 12 generic indexed tag fields
+         */
         fun v1(): V1Service.WithRawResponse
     }
 }

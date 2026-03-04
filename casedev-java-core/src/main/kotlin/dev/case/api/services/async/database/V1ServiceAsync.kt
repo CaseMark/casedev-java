@@ -11,6 +11,7 @@ import dev.case.api.services.async.database.v1.ProjectServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Serverless PostgreSQL databases with instant branching */
 interface V1ServiceAsync {
 
     /**
@@ -25,6 +26,7 @@ interface V1ServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync
 
+    /** Serverless PostgreSQL databases with instant branching */
     fun projects(): ProjectServiceAsync
 
     /**
@@ -59,6 +61,7 @@ interface V1ServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync.WithRawResponse
 
+        /** Serverless PostgreSQL databases with instant branching */
         fun projects(): ProjectServiceAsync.WithRawResponse
 
         /**

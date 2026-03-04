@@ -27,6 +27,7 @@ import dev.case.api.models.compute.v1.instances.InstanceRetrieveResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Serverless GPU and CPU infrastructure */
 class InstanceServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     InstanceService {
 

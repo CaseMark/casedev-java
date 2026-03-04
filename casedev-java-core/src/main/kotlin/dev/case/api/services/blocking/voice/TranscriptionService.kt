@@ -14,6 +14,7 @@ import dev.case.api.models.voice.transcription.TranscriptionRetrieveParams
 import dev.case.api.models.voice.transcription.TranscriptionRetrieveResponse
 import java.util.function.Consumer
 
+/** Audio transcription and text-to-speech */
 interface TranscriptionService {
 
     /**

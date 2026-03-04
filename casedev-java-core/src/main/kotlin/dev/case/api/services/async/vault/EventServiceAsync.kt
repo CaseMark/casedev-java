@@ -20,6 +20,7 @@ interface EventServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): EventServiceAsync
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun subscriptions(): SubscriptionServiceAsync
 
     /** A view of [EventServiceAsync] that provides access to raw HTTP responses for each method. */
@@ -34,6 +35,7 @@ interface EventServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): EventServiceAsync.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun subscriptions(): SubscriptionServiceAsync.WithRawResponse
     }
 }

@@ -21,6 +21,7 @@ class FormatServiceImpl internal constructor(private val clientOptions: ClientOp
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FormatService =
         FormatServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
     override fun v1(): V1Service = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class FormatServiceImpl internal constructor(private val clientOptions: ClientOp
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
         override fun v1(): V1Service.WithRawResponse = v1
     }
 }

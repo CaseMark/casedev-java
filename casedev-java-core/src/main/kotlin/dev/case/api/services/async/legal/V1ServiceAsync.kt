@@ -32,6 +32,7 @@ import dev.case.api.models.legal.v1.V1VerifyResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Legal research tools including citation verification */
 interface V1ServiceAsync {
 
     /**
