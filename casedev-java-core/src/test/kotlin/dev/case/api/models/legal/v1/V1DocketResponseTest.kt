@@ -19,7 +19,7 @@ internal class V1DocketResponseTest {
                 .dateFiledAfter(LocalDate.parse("2019-12-27"))
                 .dateFiledBefore(LocalDate.parse("2019-12-27"))
                 .docket(
-                    V1DocketResponse.Docket.builder()
+                    DocketDetail.builder()
                         .id("id")
                         .assignedTo("assignedTo")
                         .caseName("caseName")
@@ -36,7 +36,7 @@ internal class V1DocketResponseTest {
                         .build()
                 )
                 .addDocket(
-                    V1DocketResponse.Docket.builder()
+                    DocketSearchResult.builder()
                         .id("id")
                         .assignedTo("assignedTo")
                         .caseName("caseName")
@@ -84,7 +84,7 @@ internal class V1DocketResponseTest {
         assertThat(v1DocketResponse.dateFiledBefore()).contains(LocalDate.parse("2019-12-27"))
         assertThat(v1DocketResponse.docket())
             .contains(
-                V1DocketResponse.Docket.builder()
+                DocketDetail.builder()
                     .id("id")
                     .assignedTo("assignedTo")
                     .caseName("caseName")
@@ -102,7 +102,7 @@ internal class V1DocketResponseTest {
             )
         assertThat(v1DocketResponse.dockets().getOrNull())
             .containsExactly(
-                V1DocketResponse.Docket.builder()
+                DocketSearchResult.builder()
                     .id("id")
                     .assignedTo("assignedTo")
                     .caseName("caseName")
@@ -156,7 +156,7 @@ internal class V1DocketResponseTest {
                 .dateFiledAfter(LocalDate.parse("2019-12-27"))
                 .dateFiledBefore(LocalDate.parse("2019-12-27"))
                 .docket(
-                    V1DocketResponse.Docket.builder()
+                    DocketDetail.builder()
                         .id("id")
                         .assignedTo("assignedTo")
                         .caseName("caseName")
@@ -173,7 +173,7 @@ internal class V1DocketResponseTest {
                         .build()
                 )
                 .addDocket(
-                    V1DocketResponse.Docket.builder()
+                    DocketSearchResult.builder()
                         .id("id")
                         .assignedTo("assignedTo")
                         .caseName("caseName")
