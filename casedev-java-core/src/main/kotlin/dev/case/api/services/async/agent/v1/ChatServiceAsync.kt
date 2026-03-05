@@ -15,6 +15,7 @@ import dev.case.api.models.agent.v1.chat.ChatCreateParams
 import dev.case.api.models.agent.v1.chat.ChatCreateResponse
 import dev.case.api.models.agent.v1.chat.ChatDeleteParams
 import dev.case.api.models.agent.v1.chat.ChatDeleteResponse
+import dev.case.api.models.agent.v1.chat.ChatRespondParams
 import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v1.chat.ChatStreamParams
 import java.util.concurrent.CompletableFuture
@@ -118,6 +119,31 @@ interface ChatServiceAsync {
     /** @see cancel */
     fun cancel(id: String, requestOptions: RequestOptions): CompletableFuture<ChatCancelResponse> =
         cancel(id, ChatCancelParams.none(), requestOptions)
+
+    /**
+     * Streams a single assistant turn as normalized state events with stable turn, message, and
+     * part ids.
+     */
+    fun respondStreaming(id: String, params: ChatRespondParams): AsyncStreamResponse<String> =
+        respondStreaming(id, params, RequestOptions.none())
+
+    /** @see respondStreaming */
+    fun respondStreaming(
+        id: String,
+        params: ChatRespondParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<String> =
+        respondStreaming(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see respondStreaming */
+    fun respondStreaming(params: ChatRespondParams): AsyncStreamResponse<String> =
+        respondStreaming(params, RequestOptions.none())
+
+    /** @see respondStreaming */
+    fun respondStreaming(
+        params: ChatRespondParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<String>
 
     /** Proxies a message to the OpenCode session bound to this chat. */
     fun sendMessage(id: String, params: ChatSendMessageParams): CompletableFuture<Void?> =
@@ -291,6 +317,40 @@ interface ChatServiceAsync {
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ChatCancelResponse>> =
             cancel(id, ChatCancelParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /agent/v1/chat/{id}/respond`, but is otherwise the
+         * same as [ChatServiceAsync.respondStreaming].
+         */
+        @MustBeClosed
+        fun respondStreaming(
+            id: String,
+            params: ChatRespondParams,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
+            respondStreaming(id, params, RequestOptions.none())
+
+        /** @see respondStreaming */
+        @MustBeClosed
+        fun respondStreaming(
+            id: String,
+            params: ChatRespondParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
+            respondStreaming(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see respondStreaming */
+        @MustBeClosed
+        fun respondStreaming(
+            params: ChatRespondParams
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
+            respondStreaming(params, RequestOptions.none())
+
+        /** @see respondStreaming */
+        @MustBeClosed
+        fun respondStreaming(
+            params: ChatRespondParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>>
 
         /**
          * Returns a raw HTTP response for `post /agent/v1/chat/{id}/message`, but is otherwise the
