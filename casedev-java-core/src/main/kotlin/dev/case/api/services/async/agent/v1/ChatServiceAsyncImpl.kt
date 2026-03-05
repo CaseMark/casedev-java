@@ -28,6 +28,7 @@ import dev.case.api.models.agent.v1.chat.ChatCreateParams
 import dev.case.api.models.agent.v1.chat.ChatCreateResponse
 import dev.case.api.models.agent.v1.chat.ChatDeleteParams
 import dev.case.api.models.agent.v1.chat.ChatDeleteResponse
+import dev.case.api.models.agent.v1.chat.ChatRespondParams
 import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v1.chat.ChatStreamParams
 import java.util.concurrent.CompletableFuture
@@ -66,6 +67,16 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
     ): CompletableFuture<ChatCancelResponse> =
         // post /agent/v1/chat/{id}/cancel
         withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
+
+    override fun respondStreaming(
+        params: ChatRespondParams,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<String> =
+        // post /agent/v1/chat/{id}/respond
+        withRawResponse()
+            .respondStreaming(params, requestOptions)
+            .thenApply { it.parse() }
+            .toAsync(clientOptions.streamHandlerExecutor)
 
     override fun sendMessage(
         params: ChatSendMessageParams,
@@ -192,6 +203,35 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
                                     it.validate()
                                 }
                             }
+                    }
+                }
+        }
+
+        private val respondStreamingHandler: Handler<StreamResponse<String>> =
+            sseHandler(clientOptions.jsonMapper).mapJson<String>()
+
+        override fun respondStreaming(
+            params: ChatRespondParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("agent", "v1", "chat", params._pathParam(0), "respond")
+                    .putHeader("Accept", "text/event-stream")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response.let { respondStreamingHandler.handle(it) }
                     }
                 }
         }

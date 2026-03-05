@@ -2,13 +2,17 @@
 
 package dev.case.api.services.async.agent.v1
 
+import com.google.errorprone.annotations.MustBeClosed
 import dev.case.api.core.ClientOptions
 import dev.case.api.core.RequestOptions
+import dev.case.api.core.http.AsyncStreamResponse
 import dev.case.api.core.http.HttpResponseFor
+import dev.case.api.core.http.StreamResponse
 import dev.case.api.models.agent.v1.run.RunCancelParams
 import dev.case.api.models.agent.v1.run.RunCancelResponse
 import dev.case.api.models.agent.v1.run.RunCreateParams
 import dev.case.api.models.agent.v1.run.RunCreateResponse
+import dev.case.api.models.agent.v1.run.RunEventsParams
 import dev.case.api.models.agent.v1.run.RunExecParams
 import dev.case.api.models.agent.v1.run.RunExecResponse
 import dev.case.api.models.agent.v1.run.RunGetDetailsParams
@@ -78,6 +82,38 @@ interface RunServiceAsync {
     /** @see cancel */
     fun cancel(id: String, requestOptions: RequestOptions): CompletableFuture<RunCancelResponse> =
         cancel(id, RunCancelParams.none(), requestOptions)
+
+    /** Streams real-time run events over SSE. Supports replay using Last-Event-ID. */
+    fun eventsStreaming(id: String): AsyncStreamResponse<String> =
+        eventsStreaming(id, RunEventsParams.none())
+
+    /** @see eventsStreaming */
+    fun eventsStreaming(
+        id: String,
+        params: RunEventsParams = RunEventsParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<String> =
+        eventsStreaming(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see eventsStreaming */
+    fun eventsStreaming(
+        id: String,
+        params: RunEventsParams = RunEventsParams.none(),
+    ): AsyncStreamResponse<String> = eventsStreaming(id, params, RequestOptions.none())
+
+    /** @see eventsStreaming */
+    fun eventsStreaming(
+        params: RunEventsParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<String>
+
+    /** @see eventsStreaming */
+    fun eventsStreaming(params: RunEventsParams): AsyncStreamResponse<String> =
+        eventsStreaming(params, RequestOptions.none())
+
+    /** @see eventsStreaming */
+    fun eventsStreaming(id: String, requestOptions: RequestOptions): AsyncStreamResponse<String> =
+        eventsStreaming(id, RunEventsParams.none(), requestOptions)
 
     /**
      * Starts execution of a queued run. The agent runs in a durable workflow — poll /run/:id/status
@@ -268,6 +304,55 @@ interface RunServiceAsync {
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunCancelResponse>> =
             cancel(id, RunCancelParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /agent/v1/run/{id}/events`, but is otherwise the
+         * same as [RunServiceAsync.eventsStreaming].
+         */
+        @MustBeClosed
+        fun eventsStreaming(
+            id: String
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
+            eventsStreaming(id, RunEventsParams.none())
+
+        /** @see eventsStreaming */
+        @MustBeClosed
+        fun eventsStreaming(
+            id: String,
+            params: RunEventsParams = RunEventsParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
+            eventsStreaming(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see eventsStreaming */
+        @MustBeClosed
+        fun eventsStreaming(
+            id: String,
+            params: RunEventsParams = RunEventsParams.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
+            eventsStreaming(id, params, RequestOptions.none())
+
+        /** @see eventsStreaming */
+        @MustBeClosed
+        fun eventsStreaming(
+            params: RunEventsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>>
+
+        /** @see eventsStreaming */
+        @MustBeClosed
+        fun eventsStreaming(
+            params: RunEventsParams
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
+            eventsStreaming(params, RequestOptions.none())
+
+        /** @see eventsStreaming */
+        @MustBeClosed
+        fun eventsStreaming(
+            id: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
+            eventsStreaming(id, RunEventsParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /agent/v1/run/{id}/exec`, but is otherwise the same

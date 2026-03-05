@@ -26,6 +26,7 @@ import dev.case.api.models.agent.v1.chat.ChatCreateParams
 import dev.case.api.models.agent.v1.chat.ChatCreateResponse
 import dev.case.api.models.agent.v1.chat.ChatDeleteParams
 import dev.case.api.models.agent.v1.chat.ChatDeleteResponse
+import dev.case.api.models.agent.v1.chat.ChatRespondParams
 import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v1.chat.ChatStreamParams
 import java.util.function.Consumer
@@ -62,6 +63,13 @@ class ChatServiceImpl internal constructor(private val clientOptions: ClientOpti
     ): ChatCancelResponse =
         // post /agent/v1/chat/{id}/cancel
         withRawResponse().cancel(params, requestOptions).parse()
+
+    override fun respondStreaming(
+        params: ChatRespondParams,
+        requestOptions: RequestOptions,
+    ): StreamResponse<String> =
+        // post /agent/v1/chat/{id}/respond
+        withRawResponse().respondStreaming(params, requestOptions).parse()
 
     override fun sendMessage(params: ChatSendMessageParams, requestOptions: RequestOptions) {
         // post /agent/v1/chat/{id}/message
@@ -175,6 +183,32 @@ class ChatServiceImpl internal constructor(private val clientOptions: ClientOpti
                             it.validate()
                         }
                     }
+            }
+        }
+
+        private val respondStreamingHandler: Handler<StreamResponse<String>> =
+            sseHandler(clientOptions.jsonMapper).mapJson<String>()
+
+        override fun respondStreaming(
+            params: ChatRespondParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<StreamResponse<String>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("agent", "v1", "chat", params._pathParam(0), "respond")
+                    .putHeader("Accept", "text/event-stream")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response.let { respondStreamingHandler.handle(it) }
             }
         }
 
