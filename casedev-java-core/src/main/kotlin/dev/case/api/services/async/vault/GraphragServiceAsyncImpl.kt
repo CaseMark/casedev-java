@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Secure document storage with semantic search and GraphRAG */
 class GraphragServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     GraphragServiceAsync {
 

@@ -11,6 +11,7 @@ import dev.case.api.models.database.v1.V1GetUsageResponse
 import dev.case.api.services.blocking.database.v1.ProjectService
 import java.util.function.Consumer
 
+/** Serverless PostgreSQL databases with instant branching */
 interface V1Service {
 
     /**
@@ -25,6 +26,7 @@ interface V1Service {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service
 
+    /** Serverless PostgreSQL databases with instant branching */
     fun projects(): ProjectService
 
     /**
@@ -58,6 +60,7 @@ interface V1Service {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service.WithRawResponse
 
+        /** Serverless PostgreSQL databases with instant branching */
         fun projects(): ProjectService.WithRawResponse
 
         /**

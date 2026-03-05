@@ -20,6 +20,7 @@ interface SuperdocServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SuperdocServiceAsync
 
+    /** Document conversion and template automation */
     fun v1(): V1ServiceAsync
 
     /**
@@ -36,6 +37,7 @@ interface SuperdocServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): SuperdocServiceAsync.WithRawResponse
 
+        /** Document conversion and template automation */
         fun v1(): V1ServiceAsync.WithRawResponse
     }
 }

@@ -21,6 +21,7 @@ class DatabaseServiceAsyncImpl internal constructor(private val clientOptions: C
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): DatabaseServiceAsync =
         DatabaseServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Serverless PostgreSQL databases with instant branching */
     override fun v1(): V1ServiceAsync = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class DatabaseServiceAsyncImpl internal constructor(private val clientOptions: C
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Serverless PostgreSQL databases with instant branching */
         override fun v1(): V1ServiceAsync.WithRawResponse = v1
     }
 }

@@ -24,6 +24,7 @@ import dev.case.api.models.ocr.v1.V1RetrieveResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Extract text from PDFs, images, and scanned documents */
 class V1ServiceImpl internal constructor(private val clientOptions: ClientOptions) : V1Service {
 
     private val withRawResponse: V1Service.WithRawResponse by lazy {

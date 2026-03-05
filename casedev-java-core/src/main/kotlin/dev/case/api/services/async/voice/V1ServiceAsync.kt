@@ -11,6 +11,7 @@ import dev.case.api.services.async.voice.v1.SpeakServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Audio transcription and text-to-speech */
 interface V1ServiceAsync {
 
     /**
@@ -25,6 +26,7 @@ interface V1ServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync
 
+    /** Audio transcription and text-to-speech */
     fun speak(): SpeakServiceAsync
 
     /**
@@ -61,6 +63,7 @@ interface V1ServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync.WithRawResponse
 
+        /** Audio transcription and text-to-speech */
         fun speak(): SpeakServiceAsync.WithRawResponse
 
         /**

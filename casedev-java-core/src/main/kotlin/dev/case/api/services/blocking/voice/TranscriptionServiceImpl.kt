@@ -25,6 +25,7 @@ import dev.case.api.models.voice.transcription.TranscriptionRetrieveResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Audio transcription and text-to-speech */
 class TranscriptionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     TranscriptionService {
 

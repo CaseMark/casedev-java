@@ -20,6 +20,7 @@ import dev.case.api.models.llm.v1.chat.ChatCreateCompletionResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Access 40+ language models through a unified API */
 class ChatServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ChatServiceAsync {
 

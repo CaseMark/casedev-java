@@ -29,6 +29,7 @@ import dev.case.api.models.compute.v1.secrets.SecretUpdateGroupResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Serverless GPU and CPU infrastructure */
 class SecretServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     SecretService {
 

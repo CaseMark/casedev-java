@@ -14,6 +14,7 @@ import dev.case.api.services.async.MemoryServiceAsync
 import dev.case.api.services.async.OcrServiceAsync
 import dev.case.api.services.async.PrivilegeServiceAsync
 import dev.case.api.services.async.SearchServiceAsync
+import dev.case.api.services.async.SkillServiceAsync
 import dev.case.api.services.async.SuperdocServiceAsync
 import dev.case.api.services.async.SystemServiceAsync
 import dev.case.api.services.async.TranslateServiceAsync
@@ -59,6 +60,7 @@ interface CasedevClientAsync {
 
     fun agent(): AgentServiceAsync
 
+    /** Public system metadata and discovery endpoints */
     fun system(): SystemServiceAsync
 
     fun applications(): ApplicationServiceAsync
@@ -71,6 +73,7 @@ interface CasedevClientAsync {
 
     fun legal(): LegalServiceAsync
 
+    /** Access 40+ language models through a unified API */
     fun llm(): LlmServiceAsync
 
     fun memory(): MemoryServiceAsync
@@ -79,12 +82,16 @@ interface CasedevClientAsync {
 
     fun privilege(): PrivilegeServiceAsync
 
+    /** Search and read legal AI skills for agents */
+    fun skills(): SkillServiceAsync
+
     fun search(): SearchServiceAsync
 
     fun superdoc(): SuperdocServiceAsync
 
     fun translate(): TranslateServiceAsync
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun vault(): VaultServiceAsync
 
     fun voice(): VoiceServiceAsync
@@ -118,6 +125,7 @@ interface CasedevClientAsync {
 
         fun agent(): AgentServiceAsync.WithRawResponse
 
+        /** Public system metadata and discovery endpoints */
         fun system(): SystemServiceAsync.WithRawResponse
 
         fun applications(): ApplicationServiceAsync.WithRawResponse
@@ -130,6 +138,7 @@ interface CasedevClientAsync {
 
         fun legal(): LegalServiceAsync.WithRawResponse
 
+        /** Access 40+ language models through a unified API */
         fun llm(): LlmServiceAsync.WithRawResponse
 
         fun memory(): MemoryServiceAsync.WithRawResponse
@@ -138,12 +147,16 @@ interface CasedevClientAsync {
 
         fun privilege(): PrivilegeServiceAsync.WithRawResponse
 
+        /** Search and read legal AI skills for agents */
+        fun skills(): SkillServiceAsync.WithRawResponse
+
         fun search(): SearchServiceAsync.WithRawResponse
 
         fun superdoc(): SuperdocServiceAsync.WithRawResponse
 
         fun translate(): TranslateServiceAsync.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun vault(): VaultServiceAsync.WithRawResponse
 
         fun voice(): VoiceServiceAsync.WithRawResponse

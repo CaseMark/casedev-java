@@ -16,6 +16,7 @@ import dev.case.api.models.compute.v1.instances.InstanceRetrieveParams
 import dev.case.api.models.compute.v1.instances.InstanceRetrieveResponse
 import java.util.function.Consumer
 
+/** Serverless GPU and CPU infrastructure */
 interface InstanceService {
 
     /**

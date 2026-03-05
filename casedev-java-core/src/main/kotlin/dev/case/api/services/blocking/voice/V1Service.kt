@@ -11,6 +11,7 @@ import dev.case.api.models.voice.v1.V1ListVoicesResponse
 import dev.case.api.services.blocking.voice.v1.SpeakService
 import java.util.function.Consumer
 
+/** Audio transcription and text-to-speech */
 interface V1Service {
 
     /**
@@ -25,6 +26,7 @@ interface V1Service {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service
 
+    /** Audio transcription and text-to-speech */
     fun speak(): SpeakService
 
     /**
@@ -59,6 +61,7 @@ interface V1Service {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service.WithRawResponse
 
+        /** Audio transcription and text-to-speech */
         fun speak(): SpeakService.WithRawResponse
 
         /**

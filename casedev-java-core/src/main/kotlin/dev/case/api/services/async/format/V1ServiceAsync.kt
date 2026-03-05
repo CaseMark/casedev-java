@@ -10,6 +10,7 @@ import dev.case.api.services.async.format.v1.TemplateServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
 interface V1ServiceAsync {
 
     /**
@@ -24,6 +25,7 @@ interface V1ServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync
 
+    /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
     fun templates(): TemplateServiceAsync
 
     /**
@@ -50,6 +52,7 @@ interface V1ServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync.WithRawResponse
 
+        /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
         fun templates(): TemplateServiceAsync.WithRawResponse
 
         /**

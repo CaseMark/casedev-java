@@ -18,6 +18,7 @@ import dev.case.api.services.async.format.v1.TemplateServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
 class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     V1ServiceAsync {
 
@@ -32,6 +33,7 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync =
         V1ServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
     override fun templates(): TemplateServiceAsync = templates
 
     override fun createDocument(
@@ -58,6 +60,7 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
         override fun templates(): TemplateServiceAsync.WithRawResponse = templates
 
         override fun createDocument(

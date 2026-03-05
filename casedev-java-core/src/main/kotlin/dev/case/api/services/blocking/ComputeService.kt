@@ -20,6 +20,7 @@ interface ComputeService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ComputeService
 
+    /** Serverless GPU and CPU infrastructure */
     fun v1(): V1Service
 
     /** A view of [ComputeService] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface ComputeService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ComputeService.WithRawResponse
 
+        /** Serverless GPU and CPU infrastructure */
         fun v1(): V1Service.WithRawResponse
     }
 }

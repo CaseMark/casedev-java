@@ -20,6 +20,7 @@ interface PrivilegeService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): PrivilegeService
 
+    /** Privilege detection for e-discovery and litigation workflows */
     fun v1(): V1Service
 
     /** A view of [PrivilegeService] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface PrivilegeService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): PrivilegeService.WithRawResponse
 
+        /** Privilege detection for e-discovery and litigation workflows */
         fun v1(): V1Service.WithRawResponse
     }
 }

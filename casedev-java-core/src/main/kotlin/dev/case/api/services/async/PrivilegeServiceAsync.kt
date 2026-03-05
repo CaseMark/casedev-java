@@ -20,6 +20,7 @@ interface PrivilegeServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): PrivilegeServiceAsync
 
+    /** Privilege detection for e-discovery and litigation workflows */
     fun v1(): V1ServiceAsync
 
     /**
@@ -36,6 +37,7 @@ interface PrivilegeServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): PrivilegeServiceAsync.WithRawResponse
 
+        /** Privilege detection for e-discovery and litigation workflows */
         fun v1(): V1ServiceAsync.WithRawResponse
     }
 }

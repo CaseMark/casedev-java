@@ -10,6 +10,7 @@ import dev.case.api.models.voice.streaming.StreamingGetUrlResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Audio transcription and text-to-speech */
 interface StreamingServiceAsync {
 
     /**

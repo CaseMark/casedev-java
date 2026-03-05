@@ -31,6 +31,7 @@ import dev.case.api.services.async.vault.ObjectServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Secure document storage with semantic search and GraphRAG */
 interface VaultServiceAsync {
 
     /**
@@ -47,12 +48,16 @@ interface VaultServiceAsync {
 
     fun events(): EventServiceAsync
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun graphrag(): GraphragServiceAsync
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun groups(): GroupServiceAsync
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun multipart(): MultipartServiceAsync
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun objects(): ObjectServiceAsync
 
     /**
@@ -233,10 +238,12 @@ interface VaultServiceAsync {
 
     /**
      * Triggers ingestion workflow for a vault object to extract text, generate chunks, and create
-     * embeddings. For supported file types (PDF, DOCX, TXT, RTF, XML, audio, video), processing
-     * happens asynchronously. For unsupported types (images, archives, etc.), the file is marked as
-     * completed immediately without text extraction. GraphRAG indexing must be triggered separately
-     * via POST /vault/:id/graphrag/:objectId.
+     * embeddings. For supported file types (PDF, DOCX, TXT, RTF, XML, ZIP, audio, video),
+     * processing happens asynchronously. ZIP archives are unpacked recursively up to 5 levels, and
+     * each extracted file is created as an independent vault object and ingested via the normal
+     * pipeline. For unsupported types (images, etc.), the file is marked as completed immediately
+     * without text extraction. GraphRAG indexing must be triggered separately via POST
+     * /vault/:id/graphrag/:objectId.
      */
     fun ingest(
         objectId: String,
@@ -327,12 +334,16 @@ interface VaultServiceAsync {
 
         fun events(): EventServiceAsync.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun graphrag(): GraphragServiceAsync.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun groups(): GroupServiceAsync.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun multipart(): MultipartServiceAsync.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun objects(): ObjectServiceAsync.WithRawResponse
 
         /**

@@ -14,6 +14,7 @@ import dev.case.api.services.blocking.MemoryService
 import dev.case.api.services.blocking.OcrService
 import dev.case.api.services.blocking.PrivilegeService
 import dev.case.api.services.blocking.SearchService
+import dev.case.api.services.blocking.SkillService
 import dev.case.api.services.blocking.SuperdocService
 import dev.case.api.services.blocking.SystemService
 import dev.case.api.services.blocking.TranslateService
@@ -59,6 +60,7 @@ interface CasedevClient {
 
     fun agent(): AgentService
 
+    /** Public system metadata and discovery endpoints */
     fun system(): SystemService
 
     fun applications(): ApplicationService
@@ -71,6 +73,7 @@ interface CasedevClient {
 
     fun legal(): LegalService
 
+    /** Access 40+ language models through a unified API */
     fun llm(): LlmService
 
     fun memory(): MemoryService
@@ -79,12 +82,16 @@ interface CasedevClient {
 
     fun privilege(): PrivilegeService
 
+    /** Search and read legal AI skills for agents */
+    fun skills(): SkillService
+
     fun search(): SearchService
 
     fun superdoc(): SuperdocService
 
     fun translate(): TranslateService
 
+    /** Secure document storage with semantic search and GraphRAG */
     fun vault(): VaultService
 
     fun voice(): VoiceService
@@ -114,6 +121,7 @@ interface CasedevClient {
 
         fun agent(): AgentService.WithRawResponse
 
+        /** Public system metadata and discovery endpoints */
         fun system(): SystemService.WithRawResponse
 
         fun applications(): ApplicationService.WithRawResponse
@@ -126,6 +134,7 @@ interface CasedevClient {
 
         fun legal(): LegalService.WithRawResponse
 
+        /** Access 40+ language models through a unified API */
         fun llm(): LlmService.WithRawResponse
 
         fun memory(): MemoryService.WithRawResponse
@@ -134,12 +143,16 @@ interface CasedevClient {
 
         fun privilege(): PrivilegeService.WithRawResponse
 
+        /** Search and read legal AI skills for agents */
+        fun skills(): SkillService.WithRawResponse
+
         fun search(): SearchService.WithRawResponse
 
         fun superdoc(): SuperdocService.WithRawResponse
 
         fun translate(): TranslateService.WithRawResponse
 
+        /** Secure document storage with semantic search and GraphRAG */
         fun vault(): VaultService.WithRawResponse
 
         fun voice(): VoiceService.WithRawResponse

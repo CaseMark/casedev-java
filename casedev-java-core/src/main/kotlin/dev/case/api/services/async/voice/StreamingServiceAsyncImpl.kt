@@ -19,6 +19,7 @@ import dev.case.api.models.voice.streaming.StreamingGetUrlResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Audio transcription and text-to-speech */
 class StreamingServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     StreamingServiceAsync {
 

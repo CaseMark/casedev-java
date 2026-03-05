@@ -22,10 +22,13 @@ interface VoiceServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VoiceServiceAsync
 
+    /** Audio transcription and text-to-speech */
     fun streaming(): StreamingServiceAsync
 
+    /** Audio transcription and text-to-speech */
     fun transcription(): TranscriptionServiceAsync
 
+    /** Audio transcription and text-to-speech */
     fun v1(): V1ServiceAsync
 
     /** A view of [VoiceServiceAsync] that provides access to raw HTTP responses for each method. */
@@ -40,10 +43,13 @@ interface VoiceServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): VoiceServiceAsync.WithRawResponse
 
+        /** Audio transcription and text-to-speech */
         fun streaming(): StreamingServiceAsync.WithRawResponse
 
+        /** Audio transcription and text-to-speech */
         fun transcription(): TranscriptionServiceAsync.WithRawResponse
 
+        /** Audio transcription and text-to-speech */
         fun v1(): V1ServiceAsync.WithRawResponse
     }
 }

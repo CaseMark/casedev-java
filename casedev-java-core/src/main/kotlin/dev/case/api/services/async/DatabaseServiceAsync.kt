@@ -20,6 +20,7 @@ interface DatabaseServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): DatabaseServiceAsync
 
+    /** Serverless PostgreSQL databases with instant branching */
     fun v1(): V1ServiceAsync
 
     /**
@@ -36,6 +37,7 @@ interface DatabaseServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): DatabaseServiceAsync.WithRawResponse
 
+        /** Serverless PostgreSQL databases with instant branching */
         fun v1(): V1ServiceAsync.WithRawResponse
     }
 }

@@ -26,6 +26,7 @@ import dev.case.api.models.applications.v1.deployments.DeploymentStreamParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Web application deployment management */
 class DeploymentServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     DeploymentService {
 

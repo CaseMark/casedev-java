@@ -20,6 +20,7 @@ interface OcrServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OcrServiceAsync
 
+    /** Extract text from PDFs, images, and scanned documents */
     fun v1(): V1ServiceAsync
 
     /** A view of [OcrServiceAsync] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface OcrServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): OcrServiceAsync.WithRawResponse
 
+        /** Extract text from PDFs, images, and scanned documents */
         fun v1(): V1ServiceAsync.WithRawResponse
     }
 }

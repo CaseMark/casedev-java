@@ -20,6 +20,7 @@ import dev.case.api.models.search.v1.V1SimilarResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Web search, AI answers, and deep research */
 interface V1ServiceAsync {
 
     /**

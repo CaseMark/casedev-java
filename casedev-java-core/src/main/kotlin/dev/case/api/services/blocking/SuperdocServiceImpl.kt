@@ -21,6 +21,7 @@ class SuperdocServiceImpl internal constructor(private val clientOptions: Client
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): SuperdocService =
         SuperdocServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Document conversion and template automation */
     override fun v1(): V1Service = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class SuperdocServiceImpl internal constructor(private val clientOptions: Client
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Document conversion and template automation */
         override fun v1(): V1Service.WithRawResponse = v1
     }
 }

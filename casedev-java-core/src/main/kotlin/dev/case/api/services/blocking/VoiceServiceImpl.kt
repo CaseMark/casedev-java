@@ -31,10 +31,13 @@ class VoiceServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VoiceService =
         VoiceServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Audio transcription and text-to-speech */
     override fun streaming(): StreamingService = streaming
 
+    /** Audio transcription and text-to-speech */
     override fun transcription(): TranscriptionService = transcription
 
+    /** Audio transcription and text-to-speech */
     override fun v1(): V1Service = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -59,10 +62,13 @@ class VoiceServiceImpl internal constructor(private val clientOptions: ClientOpt
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Audio transcription and text-to-speech */
         override fun streaming(): StreamingService.WithRawResponse = streaming
 
+        /** Audio transcription and text-to-speech */
         override fun transcription(): TranscriptionService.WithRawResponse = transcription
 
+        /** Audio transcription and text-to-speech */
         override fun v1(): V1Service.WithRawResponse = v1
     }
 }

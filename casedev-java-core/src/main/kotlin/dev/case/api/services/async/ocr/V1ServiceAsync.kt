@@ -14,6 +14,7 @@ import dev.case.api.models.ocr.v1.V1RetrieveResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Extract text from PDFs, images, and scanned documents */
 interface V1ServiceAsync {
 
     /**

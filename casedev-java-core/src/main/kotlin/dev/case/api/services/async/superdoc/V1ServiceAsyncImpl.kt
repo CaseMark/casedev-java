@@ -18,6 +18,7 @@ import dev.case.api.models.superdoc.v1.V1ConvertParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Document conversion and template automation */
 class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     V1ServiceAsync {
 

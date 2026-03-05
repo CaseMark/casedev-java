@@ -12,6 +12,7 @@ import dev.case.api.models.vault.multipart.MultipartGetPartUrlsParams
 import dev.case.api.models.vault.multipart.MultipartGetPartUrlsResponse
 import java.util.function.Consumer
 
+/** Secure document storage with semantic search and GraphRAG */
 interface MultipartService {
 
     /**

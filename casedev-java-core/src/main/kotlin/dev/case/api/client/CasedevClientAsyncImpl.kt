@@ -26,6 +26,8 @@ import dev.case.api.services.async.PrivilegeServiceAsync
 import dev.case.api.services.async.PrivilegeServiceAsyncImpl
 import dev.case.api.services.async.SearchServiceAsync
 import dev.case.api.services.async.SearchServiceAsyncImpl
+import dev.case.api.services.async.SkillServiceAsync
+import dev.case.api.services.async.SkillServiceAsyncImpl
 import dev.case.api.services.async.SuperdocServiceAsync
 import dev.case.api.services.async.SuperdocServiceAsyncImpl
 import dev.case.api.services.async.SystemServiceAsync
@@ -95,6 +97,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         PrivilegeServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val skills: SkillServiceAsync by lazy {
+        SkillServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val search: SearchServiceAsync by lazy {
         SearchServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -124,6 +130,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     override fun agent(): AgentServiceAsync = agent
 
+    /** Public system metadata and discovery endpoints */
     override fun system(): SystemServiceAsync = system
 
     override fun applications(): ApplicationServiceAsync = applications
@@ -136,6 +143,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     override fun legal(): LegalServiceAsync = legal
 
+    /** Access 40+ language models through a unified API */
     override fun llm(): LlmServiceAsync = llm
 
     override fun memory(): MemoryServiceAsync = memory
@@ -144,12 +152,16 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     override fun privilege(): PrivilegeServiceAsync = privilege
 
+    /** Search and read legal AI skills for agents */
+    override fun skills(): SkillServiceAsync = skills
+
     override fun search(): SearchServiceAsync = search
 
     override fun superdoc(): SuperdocServiceAsync = superdoc
 
     override fun translate(): TranslateServiceAsync = translate
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun vault(): VaultServiceAsync = vault
 
     override fun voice(): VoiceServiceAsync = voice
@@ -203,6 +215,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
             PrivilegeServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val skills: SkillServiceAsync.WithRawResponse by lazy {
+            SkillServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val search: SearchServiceAsync.WithRawResponse by lazy {
             SearchServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -232,6 +248,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         override fun agent(): AgentServiceAsync.WithRawResponse = agent
 
+        /** Public system metadata and discovery endpoints */
         override fun system(): SystemServiceAsync.WithRawResponse = system
 
         override fun applications(): ApplicationServiceAsync.WithRawResponse = applications
@@ -244,6 +261,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         override fun legal(): LegalServiceAsync.WithRawResponse = legal
 
+        /** Access 40+ language models through a unified API */
         override fun llm(): LlmServiceAsync.WithRawResponse = llm
 
         override fun memory(): MemoryServiceAsync.WithRawResponse = memory
@@ -252,12 +270,16 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         override fun privilege(): PrivilegeServiceAsync.WithRawResponse = privilege
 
+        /** Search and read legal AI skills for agents */
+        override fun skills(): SkillServiceAsync.WithRawResponse = skills
+
         override fun search(): SearchServiceAsync.WithRawResponse = search
 
         override fun superdoc(): SuperdocServiceAsync.WithRawResponse = superdoc
 
         override fun translate(): TranslateServiceAsync.WithRawResponse = translate
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun vault(): VaultServiceAsync.WithRawResponse = vault
 
         override fun voice(): VoiceServiceAsync.WithRawResponse = voice

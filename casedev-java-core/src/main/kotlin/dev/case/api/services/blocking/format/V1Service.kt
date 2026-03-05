@@ -10,6 +10,7 @@ import dev.case.api.models.format.v1.V1CreateDocumentParams
 import dev.case.api.services.blocking.format.v1.TemplateService
 import java.util.function.Consumer
 
+/** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
 interface V1Service {
 
     /**
@@ -24,6 +25,7 @@ interface V1Service {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service
 
+    /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
     fun templates(): TemplateService
 
     /**
@@ -52,6 +54,7 @@ interface V1Service {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service.WithRawResponse
 
+        /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
         fun templates(): TemplateService.WithRawResponse
 
         /**

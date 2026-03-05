@@ -10,6 +10,7 @@ import dev.case.api.models.system.SystemListServicesResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Public system metadata and discovery endpoints */
 interface SystemServiceAsync {
 
     /**

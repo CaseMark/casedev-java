@@ -21,6 +21,7 @@ class ComputeServiceImpl internal constructor(private val clientOptions: ClientO
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ComputeService =
         ComputeServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Serverless GPU and CPU infrastructure */
     override fun v1(): V1Service = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class ComputeServiceImpl internal constructor(private val clientOptions: ClientO
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Serverless GPU and CPU infrastructure */
         override fun v1(): V1Service.WithRawResponse = v1
     }
 }

@@ -20,6 +20,7 @@ class OcrServiceImpl internal constructor(private val clientOptions: ClientOptio
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OcrService =
         OcrServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Extract text from PDFs, images, and scanned documents */
     override fun v1(): V1Service = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -36,6 +37,7 @@ class OcrServiceImpl internal constructor(private val clientOptions: ClientOptio
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Extract text from PDFs, images, and scanned documents */
         override fun v1(): V1Service.WithRawResponse = v1
     }
 }

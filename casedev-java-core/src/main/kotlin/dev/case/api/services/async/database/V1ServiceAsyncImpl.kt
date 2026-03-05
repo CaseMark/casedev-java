@@ -21,6 +21,7 @@ import dev.case.api.services.async.database.v1.ProjectServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Serverless PostgreSQL databases with instant branching */
 class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     V1ServiceAsync {
 
@@ -35,6 +36,7 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync =
         V1ServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Serverless PostgreSQL databases with instant branching */
     override fun projects(): ProjectServiceAsync = projects
 
     override fun getUsage(
@@ -61,6 +63,7 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Serverless PostgreSQL databases with instant branching */
         override fun projects(): ProjectServiceAsync.WithRawResponse = projects
 
         private val getUsageHandler: Handler<V1GetUsageResponse> =

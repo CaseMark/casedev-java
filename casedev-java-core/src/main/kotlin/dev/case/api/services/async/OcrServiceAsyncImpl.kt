@@ -21,6 +21,7 @@ class OcrServiceAsyncImpl internal constructor(private val clientOptions: Client
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OcrServiceAsync =
         OcrServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Extract text from PDFs, images, and scanned documents */
     override fun v1(): V1ServiceAsync = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class OcrServiceAsyncImpl internal constructor(private val clientOptions: Client
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Extract text from PDFs, images, and scanned documents */
         override fun v1(): V1ServiceAsync.WithRawResponse = v1
     }
 }

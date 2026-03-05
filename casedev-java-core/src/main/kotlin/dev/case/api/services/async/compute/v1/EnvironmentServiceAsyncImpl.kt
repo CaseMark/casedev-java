@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Serverless GPU and CPU infrastructure */
 class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     EnvironmentServiceAsync {
 

@@ -22,10 +22,12 @@ interface V1Service {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service
 
+    /** Web application deployment management */
     fun deployments(): DeploymentService
 
     fun projects(): ProjectService
 
+    /** Web application deployment management */
     fun workflows(): WorkflowService
 
     /** A view of [V1Service] that provides access to raw HTTP responses for each method. */
@@ -38,10 +40,12 @@ interface V1Service {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service.WithRawResponse
 
+        /** Web application deployment management */
         fun deployments(): DeploymentService.WithRawResponse
 
         fun projects(): ProjectService.WithRawResponse
 
+        /** Web application deployment management */
         fun workflows(): WorkflowService.WithRawResponse
     }
 }

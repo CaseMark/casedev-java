@@ -28,10 +28,12 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service =
         V1ServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Web application deployment management */
     override fun deployments(): DeploymentService = deployments
 
     override fun projects(): ProjectService = projects
 
+    /** Web application deployment management */
     override fun workflows(): WorkflowService = workflows
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -56,10 +58,12 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Web application deployment management */
         override fun deployments(): DeploymentService.WithRawResponse = deployments
 
         override fun projects(): ProjectService.WithRawResponse = projects
 
+        /** Web application deployment management */
         override fun workflows(): WorkflowService.WithRawResponse = workflows
     }
 }

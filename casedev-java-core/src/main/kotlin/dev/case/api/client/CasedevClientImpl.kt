@@ -26,6 +26,8 @@ import dev.case.api.services.blocking.PrivilegeService
 import dev.case.api.services.blocking.PrivilegeServiceImpl
 import dev.case.api.services.blocking.SearchService
 import dev.case.api.services.blocking.SearchServiceImpl
+import dev.case.api.services.blocking.SkillService
+import dev.case.api.services.blocking.SkillServiceImpl
 import dev.case.api.services.blocking.SuperdocService
 import dev.case.api.services.blocking.SuperdocServiceImpl
 import dev.case.api.services.blocking.SystemService
@@ -83,6 +85,8 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
         PrivilegeServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val skills: SkillService by lazy { SkillServiceImpl(clientOptionsWithUserAgent) }
+
     private val search: SearchService by lazy { SearchServiceImpl(clientOptionsWithUserAgent) }
 
     private val superdoc: SuperdocService by lazy {
@@ -106,6 +110,7 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
     override fun agent(): AgentService = agent
 
+    /** Public system metadata and discovery endpoints */
     override fun system(): SystemService = system
 
     override fun applications(): ApplicationService = applications
@@ -118,6 +123,7 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
     override fun legal(): LegalService = legal
 
+    /** Access 40+ language models through a unified API */
     override fun llm(): LlmService = llm
 
     override fun memory(): MemoryService = memory
@@ -126,12 +132,16 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
     override fun privilege(): PrivilegeService = privilege
 
+    /** Search and read legal AI skills for agents */
+    override fun skills(): SkillService = skills
+
     override fun search(): SearchService = search
 
     override fun superdoc(): SuperdocService = superdoc
 
     override fun translate(): TranslateService = translate
 
+    /** Secure document storage with semantic search and GraphRAG */
     override fun vault(): VaultService = vault
 
     override fun voice(): VoiceService = voice
@@ -185,6 +195,10 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
             PrivilegeServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val skills: SkillService.WithRawResponse by lazy {
+            SkillServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val search: SearchService.WithRawResponse by lazy {
             SearchServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -214,6 +228,7 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
         override fun agent(): AgentService.WithRawResponse = agent
 
+        /** Public system metadata and discovery endpoints */
         override fun system(): SystemService.WithRawResponse = system
 
         override fun applications(): ApplicationService.WithRawResponse = applications
@@ -226,6 +241,7 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
         override fun legal(): LegalService.WithRawResponse = legal
 
+        /** Access 40+ language models through a unified API */
         override fun llm(): LlmService.WithRawResponse = llm
 
         override fun memory(): MemoryService.WithRawResponse = memory
@@ -234,12 +250,16 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
         override fun privilege(): PrivilegeService.WithRawResponse = privilege
 
+        /** Search and read legal AI skills for agents */
+        override fun skills(): SkillService.WithRawResponse = skills
+
         override fun search(): SearchService.WithRawResponse = search
 
         override fun superdoc(): SuperdocService.WithRawResponse = superdoc
 
         override fun translate(): TranslateService.WithRawResponse = translate
 
+        /** Secure document storage with semantic search and GraphRAG */
         override fun vault(): VaultService.WithRawResponse = vault
 
         override fun voice(): VoiceService.WithRawResponse = voice

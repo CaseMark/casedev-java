@@ -14,6 +14,7 @@ import dev.case.api.models.vault.graphrag.GraphragProcessObjectParams
 import dev.case.api.models.vault.graphrag.GraphragProcessObjectResponse
 import java.util.function.Consumer
 
+/** Secure document storage with semantic search and GraphRAG */
 interface GraphragService {
 
     /**

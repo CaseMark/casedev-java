@@ -20,6 +20,7 @@ interface SearchService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SearchService
 
+    /** Web search, AI answers, and deep research */
     fun v1(): V1Service
 
     /** A view of [SearchService] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface SearchService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): SearchService.WithRawResponse
 
+        /** Web search, AI answers, and deep research */
         fun v1(): V1Service.WithRawResponse
     }
 }

@@ -5,6 +5,8 @@ package dev.case.api.services.async.agent
 import dev.case.api.core.ClientOptions
 import dev.case.api.services.async.agent.v1.AgentServiceAsync
 import dev.case.api.services.async.agent.v1.AgentServiceAsyncImpl
+import dev.case.api.services.async.agent.v1.ChatServiceAsync
+import dev.case.api.services.async.agent.v1.ChatServiceAsyncImpl
 import dev.case.api.services.async.agent.v1.ExecuteServiceAsync
 import dev.case.api.services.async.agent.v1.ExecuteServiceAsyncImpl
 import dev.case.api.services.async.agent.v1.RunServiceAsync
@@ -24,6 +26,8 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
 
     private val execute: ExecuteServiceAsync by lazy { ExecuteServiceAsyncImpl(clientOptions) }
 
+    private val chat: ChatServiceAsync by lazy { ChatServiceAsyncImpl(clientOptions) }
+
     override fun withRawResponse(): V1ServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync =
@@ -34,6 +38,8 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun run(): RunServiceAsync = run
 
     override fun execute(): ExecuteServiceAsync = execute
+
+    override fun chat(): ChatServiceAsync = chat
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         V1ServiceAsync.WithRawResponse {
@@ -50,6 +56,10 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
             ExecuteServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val chat: ChatServiceAsync.WithRawResponse by lazy {
+            ChatServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): V1ServiceAsync.WithRawResponse =
@@ -62,5 +72,7 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
         override fun run(): RunServiceAsync.WithRawResponse = run
 
         override fun execute(): ExecuteServiceAsync.WithRawResponse = execute
+
+        override fun chat(): ChatServiceAsync.WithRawResponse = chat
     }
 }

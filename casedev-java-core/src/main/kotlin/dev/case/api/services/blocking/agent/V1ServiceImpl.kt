@@ -5,6 +5,8 @@ package dev.case.api.services.blocking.agent
 import dev.case.api.core.ClientOptions
 import dev.case.api.services.blocking.agent.v1.AgentService
 import dev.case.api.services.blocking.agent.v1.AgentServiceImpl
+import dev.case.api.services.blocking.agent.v1.ChatService
+import dev.case.api.services.blocking.agent.v1.ChatServiceImpl
 import dev.case.api.services.blocking.agent.v1.ExecuteService
 import dev.case.api.services.blocking.agent.v1.ExecuteServiceImpl
 import dev.case.api.services.blocking.agent.v1.RunService
@@ -23,6 +25,8 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
 
     private val execute: ExecuteService by lazy { ExecuteServiceImpl(clientOptions) }
 
+    private val chat: ChatService by lazy { ChatServiceImpl(clientOptions) }
+
     override fun withRawResponse(): V1Service.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service =
@@ -33,6 +37,8 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     override fun run(): RunService = run
 
     override fun execute(): ExecuteService = execute
+
+    override fun chat(): ChatService = chat
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         V1Service.WithRawResponse {
@@ -49,6 +55,10 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             ExecuteServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val chat: ChatService.WithRawResponse by lazy {
+            ChatServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): V1Service.WithRawResponse =
@@ -61,5 +71,7 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
         override fun run(): RunService.WithRawResponse = run
 
         override fun execute(): ExecuteService.WithRawResponse = execute
+
+        override fun chat(): ChatService.WithRawResponse = chat
     }
 }

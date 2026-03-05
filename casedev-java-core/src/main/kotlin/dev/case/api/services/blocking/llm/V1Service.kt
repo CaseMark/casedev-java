@@ -13,6 +13,7 @@ import dev.case.api.models.llm.v1.V1ListModelsResponse
 import dev.case.api.services.blocking.llm.v1.ChatService
 import java.util.function.Consumer
 
+/** Access 40+ language models through a unified API */
 interface V1Service {
 
     /**
@@ -27,6 +28,7 @@ interface V1Service {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service
 
+    /** Access 40+ language models through a unified API */
     fun chat(): ChatService
 
     /**
@@ -76,6 +78,7 @@ interface V1Service {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service.WithRawResponse
 
+        /** Access 40+ language models through a unified API */
         fun chat(): ChatService.WithRawResponse
 
         /**

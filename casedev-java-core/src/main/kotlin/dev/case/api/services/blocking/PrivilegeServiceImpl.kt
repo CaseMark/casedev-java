@@ -21,6 +21,7 @@ class PrivilegeServiceImpl internal constructor(private val clientOptions: Clien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PrivilegeService =
         PrivilegeServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Privilege detection for e-discovery and litigation workflows */
     override fun v1(): V1Service = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class PrivilegeServiceImpl internal constructor(private val clientOptions: Clien
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Privilege detection for e-discovery and litigation workflows */
         override fun v1(): V1Service.WithRawResponse = v1
     }
 }

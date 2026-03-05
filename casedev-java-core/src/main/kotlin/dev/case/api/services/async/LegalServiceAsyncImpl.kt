@@ -21,6 +21,7 @@ class LegalServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): LegalServiceAsync =
         LegalServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Legal research tools including citation verification */
     override fun v1(): V1ServiceAsync = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class LegalServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Legal research tools including citation verification */
         override fun v1(): V1ServiceAsync.WithRawResponse = v1
     }
 }

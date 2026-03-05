@@ -22,6 +22,7 @@ import dev.case.api.models.database.v1.projects.ProjectRetrieveResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Serverless PostgreSQL databases with instant branching */
 interface ProjectServiceAsync {
 
     /**

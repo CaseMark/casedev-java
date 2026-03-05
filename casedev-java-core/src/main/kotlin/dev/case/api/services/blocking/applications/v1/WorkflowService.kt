@@ -9,6 +9,7 @@ import dev.case.api.core.http.HttpResponse
 import dev.case.api.models.applications.v1.workflows.WorkflowGetStatusParams
 import java.util.function.Consumer
 
+/** Web application deployment management */
 interface WorkflowService {
 
     /**

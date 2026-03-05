@@ -20,6 +20,7 @@ import dev.case.api.models.memory.v1.V1SearchResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Persistent memory for AI agents with semantic search and 12 generic indexed tag fields */
 interface V1ServiceAsync {
 
     /**

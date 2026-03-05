@@ -29,6 +29,7 @@ import dev.case.api.services.async.compute.v1.SecretServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Serverless GPU and CPU infrastructure */
 class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     V1ServiceAsync {
 
@@ -53,12 +54,16 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync =
         V1ServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Serverless GPU and CPU infrastructure */
     override fun environments(): EnvironmentServiceAsync = environments
 
+    /** Serverless GPU and CPU infrastructure */
     override fun instanceTypes(): InstanceTypeServiceAsync = instanceTypes
 
+    /** Serverless GPU and CPU infrastructure */
     override fun instances(): InstanceServiceAsync = instances
 
+    /** Serverless GPU and CPU infrastructure */
     override fun secrets(): SecretServiceAsync = secrets
 
     override fun getPricing(
@@ -104,12 +109,16 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Serverless GPU and CPU infrastructure */
         override fun environments(): EnvironmentServiceAsync.WithRawResponse = environments
 
+        /** Serverless GPU and CPU infrastructure */
         override fun instanceTypes(): InstanceTypeServiceAsync.WithRawResponse = instanceTypes
 
+        /** Serverless GPU and CPU infrastructure */
         override fun instances(): InstanceServiceAsync.WithRawResponse = instances
 
+        /** Serverless GPU and CPU infrastructure */
         override fun secrets(): SecretServiceAsync.WithRawResponse = secrets
 
         private val getPricingHandler: Handler<Void?> = emptyHandler()

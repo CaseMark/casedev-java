@@ -20,6 +20,7 @@ interface FormatServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): FormatServiceAsync
 
+    /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
     fun v1(): V1ServiceAsync
 
     /**
@@ -36,6 +37,7 @@ interface FormatServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): FormatServiceAsync.WithRawResponse
 
+        /** Document formatting and template rendering (MD/JSON to PDF/DOCX) */
         fun v1(): V1ServiceAsync.WithRawResponse
     }
 }
