@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.4.0 (2026-03-05)
+
+Full Changelog: [v0.3.0...v0.4.0](https://github.com/CaseMark/casedev-java/compare/v0.3.0...v0.4.0)
+
+### Features
+
+* **api:** api update ([796a468](https://github.com/CaseMark/casedev-java/commit/796a468ab08059eacdc631d3c52ed93b38617b4b))
+* **api:** api update ([3858449](https://github.com/CaseMark/casedev-java/commit/3858449f55f07e9e3705780e66baeaf034ae1709))
+* **api:** api update ([3376a78](https://github.com/CaseMark/casedev-java/commit/3376a78ff57edb5adbff1e19980741f10bcb65cd))
+* **api:** api update ([81de2e6](https://github.com/CaseMark/casedev-java/commit/81de2e61aecacb6179600cea59068a6a414e2d9a))
+
+
+### Bug Fixes
+
+* deduplicate CI Slack alerts at workflow level, not PR level ([#12](https://github.com/CaseMark/casedev-java/issues/12)) ([1ea3238](https://github.com/CaseMark/casedev-java/commit/1ea323871d3d4339ce307a7a9661e20d58acd2cf))
+
+
+### Chores
+
+* **internal:** codegen related update ([79b7af1](https://github.com/CaseMark/casedev-java/commit/79b7af1cad0f15d4991433cd399e52b952c6f052))
+
 ## 0.3.0 (2026-02-26)
 
 Full Changelog: [v0.2.2...v0.3.0](https://github.com/CaseMark/casedev-java/compare/v0.2.2...v0.3.0)
