@@ -8,18 +8,24 @@ import dev.case.api.core.checkRequired
 import dev.case.api.core.handlers.errorBodyHandler
 import dev.case.api.core.handlers.errorHandler
 import dev.case.api.core.handlers.jsonHandler
+import dev.case.api.core.handlers.mapJson
+import dev.case.api.core.handlers.sseHandler
+import dev.case.api.core.http.AsyncStreamResponse
 import dev.case.api.core.http.HttpMethod
 import dev.case.api.core.http.HttpRequest
 import dev.case.api.core.http.HttpResponse
 import dev.case.api.core.http.HttpResponse.Handler
 import dev.case.api.core.http.HttpResponseFor
+import dev.case.api.core.http.StreamResponse
 import dev.case.api.core.http.json
 import dev.case.api.core.http.parseable
+import dev.case.api.core.http.toAsync
 import dev.case.api.core.prepareAsync
 import dev.case.api.models.agent.v1.run.RunCancelParams
 import dev.case.api.models.agent.v1.run.RunCancelResponse
 import dev.case.api.models.agent.v1.run.RunCreateParams
 import dev.case.api.models.agent.v1.run.RunCreateResponse
+import dev.case.api.models.agent.v1.run.RunEventsParams
 import dev.case.api.models.agent.v1.run.RunExecParams
 import dev.case.api.models.agent.v1.run.RunExecResponse
 import dev.case.api.models.agent.v1.run.RunGetDetailsParams
@@ -57,6 +63,16 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
     ): CompletableFuture<RunCancelResponse> =
         // post /agent/v1/run/{id}/cancel
         withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
+
+    override fun eventsStreaming(
+        params: RunEventsParams,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<String> =
+        // get /agent/v1/run/{id}/events
+        withRawResponse()
+            .eventsStreaming(params, requestOptions)
+            .thenApply { it.parse() }
+            .toAsync(clientOptions.streamHandlerExecutor)
 
     override fun exec(
         params: RunExecParams,
@@ -160,6 +176,34 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                                     it.validate()
                                 }
                             }
+                    }
+                }
+        }
+
+        private val eventsStreamingHandler: Handler<StreamResponse<String>> =
+            sseHandler(clientOptions.jsonMapper).mapJson<String>()
+
+        override fun eventsStreaming(
+            params: RunEventsParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("agent", "v1", "run", params._pathParam(0), "events")
+                    .putHeader("Accept", "text/event-stream")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response.let { eventsStreamingHandler.handle(it) }
                     }
                 }
         }

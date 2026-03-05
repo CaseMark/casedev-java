@@ -14,6 +14,7 @@ import dev.case.api.models.agent.v1.chat.ChatCreateParams
 import dev.case.api.models.agent.v1.chat.ChatCreateResponse
 import dev.case.api.models.agent.v1.chat.ChatDeleteParams
 import dev.case.api.models.agent.v1.chat.ChatDeleteResponse
+import dev.case.api.models.agent.v1.chat.ChatRespondParams
 import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v1.chat.ChatStreamParams
 import java.util.function.Consumer
@@ -105,6 +106,34 @@ interface ChatService {
     /** @see cancel */
     fun cancel(id: String, requestOptions: RequestOptions): ChatCancelResponse =
         cancel(id, ChatCancelParams.none(), requestOptions)
+
+    /**
+     * Streams a single assistant turn as normalized state events with stable turn, message, and
+     * part ids.
+     */
+    @MustBeClosed
+    fun respondStreaming(id: String, params: ChatRespondParams): StreamResponse<String> =
+        respondStreaming(id, params, RequestOptions.none())
+
+    /** @see respondStreaming */
+    @MustBeClosed
+    fun respondStreaming(
+        id: String,
+        params: ChatRespondParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<String> = respondStreaming(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see respondStreaming */
+    @MustBeClosed
+    fun respondStreaming(params: ChatRespondParams): StreamResponse<String> =
+        respondStreaming(params, RequestOptions.none())
+
+    /** @see respondStreaming */
+    @MustBeClosed
+    fun respondStreaming(
+        params: ChatRespondParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<String>
 
     /** Proxies a message to the OpenCode session bound to this chat. */
     fun sendMessage(id: String, params: ChatSendMessageParams) =
@@ -286,6 +315,38 @@ interface ChatService {
             id: String,
             requestOptions: RequestOptions,
         ): HttpResponseFor<ChatCancelResponse> = cancel(id, ChatCancelParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /agent/v1/chat/{id}/respond`, but is otherwise the
+         * same as [ChatService.respondStreaming].
+         */
+        @MustBeClosed
+        fun respondStreaming(
+            id: String,
+            params: ChatRespondParams,
+        ): HttpResponseFor<StreamResponse<String>> =
+            respondStreaming(id, params, RequestOptions.none())
+
+        /** @see respondStreaming */
+        @MustBeClosed
+        fun respondStreaming(
+            id: String,
+            params: ChatRespondParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<String>> =
+            respondStreaming(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see respondStreaming */
+        @MustBeClosed
+        fun respondStreaming(params: ChatRespondParams): HttpResponseFor<StreamResponse<String>> =
+            respondStreaming(params, RequestOptions.none())
+
+        /** @see respondStreaming */
+        @MustBeClosed
+        fun respondStreaming(
+            params: ChatRespondParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<String>>
 
         /**
          * Returns a raw HTTP response for `post /agent/v1/chat/{id}/message`, but is otherwise the

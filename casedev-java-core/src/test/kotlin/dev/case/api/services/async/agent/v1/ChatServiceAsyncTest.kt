@@ -6,6 +6,7 @@ import dev.case.api.TestServerExtension
 import dev.case.api.client.okhttp.CasedevOkHttpClientAsync
 import dev.case.api.core.JsonValue
 import dev.case.api.models.agent.v1.chat.ChatCreateParams
+import dev.case.api.models.agent.v1.chat.ChatRespondParams
 import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v1.chat.ChatStreamParams
 import org.junit.jupiter.api.Disabled
@@ -61,6 +62,28 @@ internal class ChatServiceAsyncTest {
 
         val response = responseFuture.get()
         response.validate()
+    }
+
+    @Disabled("Mock server doesn't support text/event-stream responses")
+    @Test
+    fun respondStreaming() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val chatServiceAsync = client.agent().v1().chat()
+
+        val responseStreamResponse =
+            chatServiceAsync.respondStreaming(
+                ChatRespondParams.builder()
+                    .id("id")
+                    .body(JsonValue.from(mapOf<String, Any>()))
+                    .build()
+            )
+
+        val onCompleteFuture = responseStreamResponse.subscribe {}.onCompleteFuture()
+        onCompleteFuture.get()
     }
 
     @Test
