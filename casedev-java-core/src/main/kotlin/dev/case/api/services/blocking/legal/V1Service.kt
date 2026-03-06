@@ -8,6 +8,8 @@ import dev.case.api.core.RequestOptions
 import dev.case.api.core.http.HttpResponseFor
 import dev.case.api.models.legal.v1.V1DocketParams
 import dev.case.api.models.legal.v1.V1DocketResponse
+import dev.case.api.models.legal.v1.V1DraftParams
+import dev.case.api.models.legal.v1.V1DraftResponse
 import dev.case.api.models.legal.v1.V1FindParams
 import dev.case.api.models.legal.v1.V1FindResponse
 import dev.case.api.models.legal.v1.V1GetCitationsFromUrlParams
@@ -58,6 +60,18 @@ interface V1Service {
         params: V1DocketParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): V1DocketResponse
+
+    /**
+     * Generate a legal document with structured inputs. Powered by an agent that handles research,
+     * formatting, citation verification, and vault upload. Returns a run ID for polling.
+     */
+    fun draft(params: V1DraftParams): V1DraftResponse = draft(params, RequestOptions.none())
+
+    /** @see draft */
+    fun draft(
+        params: V1DraftParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): V1DraftResponse
 
     /**
      * Search for legal sources including cases, statutes, and regulations from authoritative legal
@@ -244,6 +258,21 @@ interface V1Service {
             params: V1DocketParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<V1DocketResponse>
+
+        /**
+         * Returns a raw HTTP response for `post /legal/v1/draft`, but is otherwise the same as
+         * [V1Service.draft].
+         */
+        @MustBeClosed
+        fun draft(params: V1DraftParams): HttpResponseFor<V1DraftResponse> =
+            draft(params, RequestOptions.none())
+
+        /** @see draft */
+        @MustBeClosed
+        fun draft(
+            params: V1DraftParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<V1DraftResponse>
 
         /**
          * Returns a raw HTTP response for `post /legal/v1/find`, but is otherwise the same as

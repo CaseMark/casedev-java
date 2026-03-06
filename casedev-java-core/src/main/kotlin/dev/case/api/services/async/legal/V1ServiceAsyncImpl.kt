@@ -17,6 +17,8 @@ import dev.case.api.core.http.parseable
 import dev.case.api.core.prepareAsync
 import dev.case.api.models.legal.v1.V1DocketParams
 import dev.case.api.models.legal.v1.V1DocketResponse
+import dev.case.api.models.legal.v1.V1DraftParams
+import dev.case.api.models.legal.v1.V1DraftResponse
 import dev.case.api.models.legal.v1.V1FindParams
 import dev.case.api.models.legal.v1.V1FindResponse
 import dev.case.api.models.legal.v1.V1GetCitationsFromUrlParams
@@ -61,6 +63,13 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     ): CompletableFuture<V1DocketResponse> =
         // post /legal/v1/docket
         withRawResponse().docket(params, requestOptions).thenApply { it.parse() }
+
+    override fun draft(
+        params: V1DraftParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<V1DraftResponse> =
+        // post /legal/v1/draft
+        withRawResponse().draft(params, requestOptions).thenApply { it.parse() }
 
     override fun find(
         params: V1FindParams,
@@ -174,6 +183,37 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                     errorHandler.handle(response).parseable {
                         response
                             .use { docketHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val draftHandler: Handler<V1DraftResponse> =
+            jsonHandler<V1DraftResponse>(clientOptions.jsonMapper)
+
+        override fun draft(
+            params: V1DraftParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<V1DraftResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("legal", "v1", "draft")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { draftHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

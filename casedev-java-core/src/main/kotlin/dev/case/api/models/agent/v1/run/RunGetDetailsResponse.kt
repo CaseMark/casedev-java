@@ -632,16 +632,32 @@ private constructor(
     class Result
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val finalResponse: JsonField<FinalResponse>,
         private val logs: JsonField<Logs>,
         private val output: JsonField<String>,
+        private val outputObjectIds: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
+            @JsonProperty("finalResponse")
+            @ExcludeMissing
+            finalResponse: JsonField<FinalResponse> = JsonMissing.of(),
             @JsonProperty("logs") @ExcludeMissing logs: JsonField<Logs> = JsonMissing.of(),
             @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
-        ) : this(logs, output, mutableMapOf())
+            @JsonProperty("outputObjectIds")
+            @ExcludeMissing
+            outputObjectIds: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(finalResponse, logs, output, outputObjectIds, mutableMapOf())
+
+        /**
+         * Compact agent-facing result summary and execution issues
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun finalResponse(): Optional<FinalResponse> = finalResponse.getOptional("finalResponse")
 
         /**
          * Sandbox execution logs (OpenCode server + runner script)
@@ -658,6 +674,23 @@ private constructor(
         fun output(): Optional<String> = output.getOptional("output")
 
         /**
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun outputObjectIds(): Optional<List<String>> =
+            outputObjectIds.getOptional("outputObjectIds")
+
+        /**
+         * Returns the raw JSON value of [finalResponse].
+         *
+         * Unlike [finalResponse], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("finalResponse")
+        @ExcludeMissing
+        fun _finalResponse(): JsonField<FinalResponse> = finalResponse
+
+        /**
          * Returns the raw JSON value of [logs].
          *
          * Unlike [logs], this method doesn't throw if the JSON field has an unexpected type.
@@ -670,6 +703,16 @@ private constructor(
          * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
+
+        /**
+         * Returns the raw JSON value of [outputObjectIds].
+         *
+         * Unlike [outputObjectIds], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("outputObjectIds")
+        @ExcludeMissing
+        fun _outputObjectIds(): JsonField<List<String>> = outputObjectIds
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -692,15 +735,38 @@ private constructor(
         /** A builder for [Result]. */
         class Builder internal constructor() {
 
+            private var finalResponse: JsonField<FinalResponse> = JsonMissing.of()
             private var logs: JsonField<Logs> = JsonMissing.of()
             private var output: JsonField<String> = JsonMissing.of()
+            private var outputObjectIds: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(result: Result) = apply {
+                finalResponse = result.finalResponse
                 logs = result.logs
                 output = result.output
+                outputObjectIds = result.outputObjectIds.map { it.toMutableList() }
                 additionalProperties = result.additionalProperties.toMutableMap()
+            }
+
+            /** Compact agent-facing result summary and execution issues */
+            fun finalResponse(finalResponse: FinalResponse?) =
+                finalResponse(JsonField.ofNullable(finalResponse))
+
+            /** Alias for calling [Builder.finalResponse] with `finalResponse.orElse(null)`. */
+            fun finalResponse(finalResponse: Optional<FinalResponse>) =
+                finalResponse(finalResponse.getOrNull())
+
+            /**
+             * Sets [Builder.finalResponse] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.finalResponse] with a well-typed [FinalResponse]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun finalResponse(finalResponse: JsonField<FinalResponse>) = apply {
+                this.finalResponse = finalResponse
             }
 
             /** Sandbox execution logs (OpenCode server + runner script) */
@@ -729,6 +795,32 @@ private constructor(
              */
             fun output(output: JsonField<String>) = apply { this.output = output }
 
+            fun outputObjectIds(outputObjectIds: List<String>) =
+                outputObjectIds(JsonField.of(outputObjectIds))
+
+            /**
+             * Sets [Builder.outputObjectIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.outputObjectIds] with a well-typed `List<String>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun outputObjectIds(outputObjectIds: JsonField<List<String>>) = apply {
+                this.outputObjectIds = outputObjectIds.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [outputObjectIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addOutputObjectId(outputObjectId: String) = apply {
+                outputObjectIds =
+                    (outputObjectIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("outputObjectIds", it).add(outputObjectId)
+                    }
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -753,7 +845,14 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Result = Result(logs, output, additionalProperties.toMutableMap())
+            fun build(): Result =
+                Result(
+                    finalResponse,
+                    logs,
+                    output,
+                    (outputObjectIds ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -763,8 +862,10 @@ private constructor(
                 return@apply
             }
 
+            finalResponse().ifPresent { it.validate() }
             logs().ifPresent { it.validate() }
             output()
+            outputObjectIds()
             validated = true
         }
 
@@ -784,8 +885,263 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (logs.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (output.asKnown().isPresent) 1 else 0)
+            (finalResponse.asKnown().getOrNull()?.validity() ?: 0) +
+                (logs.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (output.asKnown().isPresent) 1 else 0) +
+                (outputObjectIds.asKnown().getOrNull()?.size ?: 0)
+
+        /** Compact agent-facing result summary and execution issues */
+        class FinalResponse
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val createdObjectIds: JsonField<List<String>>,
+            private val issues: JsonField<List<String>>,
+            private val summary: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("createdObjectIds")
+                @ExcludeMissing
+                createdObjectIds: JsonField<List<String>> = JsonMissing.of(),
+                @JsonProperty("issues")
+                @ExcludeMissing
+                issues: JsonField<List<String>> = JsonMissing.of(),
+                @JsonProperty("summary")
+                @ExcludeMissing
+                summary: JsonField<String> = JsonMissing.of(),
+            ) : this(createdObjectIds, issues, summary, mutableMapOf())
+
+            /**
+             * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun createdObjectIds(): Optional<List<String>> =
+                createdObjectIds.getOptional("createdObjectIds")
+
+            /**
+             * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun issues(): Optional<List<String>> = issues.getOptional("issues")
+
+            /**
+             * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun summary(): Optional<String> = summary.getOptional("summary")
+
+            /**
+             * Returns the raw JSON value of [createdObjectIds].
+             *
+             * Unlike [createdObjectIds], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("createdObjectIds")
+            @ExcludeMissing
+            fun _createdObjectIds(): JsonField<List<String>> = createdObjectIds
+
+            /**
+             * Returns the raw JSON value of [issues].
+             *
+             * Unlike [issues], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("issues") @ExcludeMissing fun _issues(): JsonField<List<String>> = issues
+
+            /**
+             * Returns the raw JSON value of [summary].
+             *
+             * Unlike [summary], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("summary") @ExcludeMissing fun _summary(): JsonField<String> = summary
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [FinalResponse]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [FinalResponse]. */
+            class Builder internal constructor() {
+
+                private var createdObjectIds: JsonField<MutableList<String>>? = null
+                private var issues: JsonField<MutableList<String>>? = null
+                private var summary: JsonField<String> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(finalResponse: FinalResponse) = apply {
+                    createdObjectIds = finalResponse.createdObjectIds.map { it.toMutableList() }
+                    issues = finalResponse.issues.map { it.toMutableList() }
+                    summary = finalResponse.summary
+                    additionalProperties = finalResponse.additionalProperties.toMutableMap()
+                }
+
+                fun createdObjectIds(createdObjectIds: List<String>) =
+                    createdObjectIds(JsonField.of(createdObjectIds))
+
+                /**
+                 * Sets [Builder.createdObjectIds] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.createdObjectIds] with a well-typed
+                 * `List<String>` value instead. This method is primarily for setting the field to
+                 * an undocumented or not yet supported value.
+                 */
+                fun createdObjectIds(createdObjectIds: JsonField<List<String>>) = apply {
+                    this.createdObjectIds = createdObjectIds.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [String] to [createdObjectIds].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addCreatedObjectId(createdObjectId: String) = apply {
+                    createdObjectIds =
+                        (createdObjectIds ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("createdObjectIds", it).add(createdObjectId)
+                        }
+                }
+
+                fun issues(issues: List<String>) = issues(JsonField.of(issues))
+
+                /**
+                 * Sets [Builder.issues] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.issues] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun issues(issues: JsonField<List<String>>) = apply {
+                    this.issues = issues.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [String] to [issues].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addIssue(issue: String) = apply {
+                    issues =
+                        (issues ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("issues", it).add(issue)
+                        }
+                }
+
+                fun summary(summary: String) = summary(JsonField.of(summary))
+
+                /**
+                 * Sets [Builder.summary] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.summary] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun summary(summary: JsonField<String>) = apply { this.summary = summary }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [FinalResponse].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): FinalResponse =
+                    FinalResponse(
+                        (createdObjectIds ?: JsonMissing.of()).map { it.toImmutable() },
+                        (issues ?: JsonMissing.of()).map { it.toImmutable() },
+                        summary,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): FinalResponse = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                createdObjectIds()
+                issues()
+                summary()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: CasedevInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (createdObjectIds.asKnown().getOrNull()?.size ?: 0) +
+                    (issues.asKnown().getOrNull()?.size ?: 0) +
+                    (if (summary.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is FinalResponse &&
+                    createdObjectIds == other.createdObjectIds &&
+                    issues == other.issues &&
+                    summary == other.summary &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(createdObjectIds, issues, summary, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "FinalResponse{createdObjectIds=$createdObjectIds, issues=$issues, summary=$summary, additionalProperties=$additionalProperties}"
+        }
 
         /** Sandbox execution logs (OpenCode server + runner script) */
         class Logs
@@ -979,17 +1335,21 @@ private constructor(
             }
 
             return other is Result &&
+                finalResponse == other.finalResponse &&
                 logs == other.logs &&
                 output == other.output &&
+                outputObjectIds == other.outputObjectIds &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(logs, output, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(finalResponse, logs, output, outputObjectIds, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Result{logs=$logs, output=$output, additionalProperties=$additionalProperties}"
+            "Result{finalResponse=$finalResponse, logs=$logs, output=$output, outputObjectIds=$outputObjectIds, additionalProperties=$additionalProperties}"
     }
 
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
