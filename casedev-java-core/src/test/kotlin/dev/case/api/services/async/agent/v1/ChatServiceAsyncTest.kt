@@ -27,7 +27,12 @@ internal class ChatServiceAsyncTest {
 
         val chatFuture =
             chatServiceAsync.create(
-                ChatCreateParams.builder().idleTimeoutMs(0L).model("model").title("title").build()
+                ChatCreateParams.builder()
+                    .idleTimeoutMs(0L)
+                    .model("model")
+                    .title("title")
+                    .addVaultId("string")
+                    .build()
             )
 
         val chat = chatFuture.get()

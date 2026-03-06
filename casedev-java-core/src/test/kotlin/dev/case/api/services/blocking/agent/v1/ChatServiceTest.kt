@@ -27,7 +27,12 @@ internal class ChatServiceTest {
 
         val chat =
             chatService.create(
-                ChatCreateParams.builder().idleTimeoutMs(0L).model("model").title("title").build()
+                ChatCreateParams.builder()
+                    .idleTimeoutMs(0L)
+                    .model("model")
+                    .title("title")
+                    .addVaultId("string")
+                    .build()
             )
 
         chat.validate()
