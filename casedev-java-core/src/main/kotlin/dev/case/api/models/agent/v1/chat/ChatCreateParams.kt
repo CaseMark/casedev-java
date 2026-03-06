@@ -11,8 +11,10 @@ import dev.case.api.core.JsonField
 import dev.case.api.core.JsonMissing
 import dev.case.api.core.JsonValue
 import dev.case.api.core.Params
+import dev.case.api.core.checkKnown
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
+import dev.case.api.core.toImmutable
 import dev.case.api.errors.CasedevInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -55,6 +57,14 @@ private constructor(
     fun title(): Optional<String> = body.title()
 
     /**
+     * Restrict the chat session to specific vault IDs
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun vaultIds(): Optional<List<String>> = body.vaultIds()
+
+    /**
      * Returns the raw JSON value of [idleTimeoutMs].
      *
      * Unlike [idleTimeoutMs], this method doesn't throw if the JSON field has an unexpected type.
@@ -74,6 +84,13 @@ private constructor(
      * Unlike [title], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _title(): JsonField<String> = body._title()
+
+    /**
+     * Returns the raw JSON value of [vaultIds].
+     *
+     * Unlike [vaultIds], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _vaultIds(): JsonField<List<String>> = body._vaultIds()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -115,6 +132,7 @@ private constructor(
          * - [idleTimeoutMs]
          * - [model]
          * - [title]
+         * - [vaultIds]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -168,6 +186,28 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun title(title: JsonField<String>) = apply { body.title(title) }
+
+        /** Restrict the chat session to specific vault IDs */
+        fun vaultIds(vaultIds: List<String>?) = apply { body.vaultIds(vaultIds) }
+
+        /** Alias for calling [Builder.vaultIds] with `vaultIds.orElse(null)`. */
+        fun vaultIds(vaultIds: Optional<List<String>>) = vaultIds(vaultIds.getOrNull())
+
+        /**
+         * Sets [Builder.vaultIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vaultIds] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun vaultIds(vaultIds: JsonField<List<String>>) = apply { body.vaultIds(vaultIds) }
+
+        /**
+         * Adds a single [String] to [vaultIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addVaultId(vaultId: String) = apply { body.addVaultId(vaultId) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -307,6 +347,7 @@ private constructor(
         private val idleTimeoutMs: JsonField<Long>,
         private val model: JsonField<String>,
         private val title: JsonField<String>,
+        private val vaultIds: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -317,7 +358,10 @@ private constructor(
             idleTimeoutMs: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
             @JsonProperty("title") @ExcludeMissing title: JsonField<String> = JsonMissing.of(),
-        ) : this(idleTimeoutMs, model, title, mutableMapOf())
+            @JsonProperty("vaultIds")
+            @ExcludeMissing
+            vaultIds: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(idleTimeoutMs, model, title, vaultIds, mutableMapOf())
 
         /**
          * Idle timeout before session is eligible for snapshot/termination. Defaults to 15 minutes.
@@ -344,6 +388,14 @@ private constructor(
         fun title(): Optional<String> = title.getOptional("title")
 
         /**
+         * Restrict the chat session to specific vault IDs
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun vaultIds(): Optional<List<String>> = vaultIds.getOptional("vaultIds")
+
+        /**
          * Returns the raw JSON value of [idleTimeoutMs].
          *
          * Unlike [idleTimeoutMs], this method doesn't throw if the JSON field has an unexpected
@@ -366,6 +418,15 @@ private constructor(
          * Unlike [title], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("title") @ExcludeMissing fun _title(): JsonField<String> = title
+
+        /**
+         * Returns the raw JSON value of [vaultIds].
+         *
+         * Unlike [vaultIds], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("vaultIds")
+        @ExcludeMissing
+        fun _vaultIds(): JsonField<List<String>> = vaultIds
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -391,6 +452,7 @@ private constructor(
             private var idleTimeoutMs: JsonField<Long> = JsonMissing.of()
             private var model: JsonField<String> = JsonMissing.of()
             private var title: JsonField<String> = JsonMissing.of()
+            private var vaultIds: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -398,6 +460,7 @@ private constructor(
                 idleTimeoutMs = body.idleTimeoutMs
                 model = body.model
                 title = body.title
+                vaultIds = body.vaultIds.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -457,6 +520,35 @@ private constructor(
              */
             fun title(title: JsonField<String>) = apply { this.title = title }
 
+            /** Restrict the chat session to specific vault IDs */
+            fun vaultIds(vaultIds: List<String>?) = vaultIds(JsonField.ofNullable(vaultIds))
+
+            /** Alias for calling [Builder.vaultIds] with `vaultIds.orElse(null)`. */
+            fun vaultIds(vaultIds: Optional<List<String>>) = vaultIds(vaultIds.getOrNull())
+
+            /**
+             * Sets [Builder.vaultIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.vaultIds] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun vaultIds(vaultIds: JsonField<List<String>>) = apply {
+                this.vaultIds = vaultIds.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [vaultIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addVaultId(vaultId: String) = apply {
+                vaultIds =
+                    (vaultIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("vaultIds", it).add(vaultId)
+                    }
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -482,7 +574,13 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Body =
-                Body(idleTimeoutMs, model, title, additionalProperties.toMutableMap())
+                Body(
+                    idleTimeoutMs,
+                    model,
+                    title,
+                    (vaultIds ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -495,6 +593,7 @@ private constructor(
             idleTimeoutMs()
             model()
             title()
+            vaultIds()
             validated = true
         }
 
@@ -516,7 +615,8 @@ private constructor(
         internal fun validity(): Int =
             (if (idleTimeoutMs.asKnown().isPresent) 1 else 0) +
                 (if (model.asKnown().isPresent) 1 else 0) +
-                (if (title.asKnown().isPresent) 1 else 0)
+                (if (title.asKnown().isPresent) 1 else 0) +
+                (vaultIds.asKnown().getOrNull()?.size ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -527,17 +627,18 @@ private constructor(
                 idleTimeoutMs == other.idleTimeoutMs &&
                 model == other.model &&
                 title == other.title &&
+                vaultIds == other.vaultIds &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(idleTimeoutMs, model, title, additionalProperties)
+            Objects.hash(idleTimeoutMs, model, title, vaultIds, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{idleTimeoutMs=$idleTimeoutMs, model=$model, title=$title, additionalProperties=$additionalProperties}"
+            "Body{idleTimeoutMs=$idleTimeoutMs, model=$model, title=$title, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
