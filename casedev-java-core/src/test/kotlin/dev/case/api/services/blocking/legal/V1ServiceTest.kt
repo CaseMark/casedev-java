@@ -5,6 +5,7 @@ package dev.case.api.services.blocking.legal
 import dev.case.api.TestServerExtension
 import dev.case.api.client.okhttp.CasedevOkHttpClient
 import dev.case.api.models.legal.v1.V1DocketParams
+import dev.case.api.models.legal.v1.V1DraftParams
 import dev.case.api.models.legal.v1.V1FindParams
 import dev.case.api.models.legal.v1.V1GetCitationsFromUrlParams
 import dev.case.api.models.legal.v1.V1GetCitationsParams
@@ -45,6 +46,39 @@ internal class V1ServiceTest {
                     .live(true)
                     .offset(0L)
                     .query("xx")
+                    .build()
+            )
+
+        response.validate()
+    }
+
+    @Test
+    fun draft() {
+        val client =
+            CasedevOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val v1Service = client.legal().v1()
+
+        val response =
+            v1Service.draft(
+                V1DraftParams.builder()
+                    .instructions("xxxxxxxxxx")
+                    .vaultId("vault_id")
+                    .citations(true)
+                    .format("format")
+                    .length(
+                        V1DraftParams.Length.builder()
+                            .target(0.0)
+                            .unit(V1DraftParams.Length.Unit.WORDS)
+                            .build()
+                    )
+                    .model("model")
+                    .addObjectId("string")
+                    .outputName("output_name")
+                    .outputType(V1DraftParams.OutputType.PDF)
+                    .verified(true)
                     .build()
             )
 

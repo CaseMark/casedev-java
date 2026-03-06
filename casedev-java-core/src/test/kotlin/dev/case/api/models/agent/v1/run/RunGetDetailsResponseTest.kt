@@ -26,6 +26,13 @@ internal class RunGetDetailsResponseTest {
                 .prompt("prompt")
                 .result(
                     RunGetDetailsResponse.Result.builder()
+                        .finalResponse(
+                            RunGetDetailsResponse.Result.FinalResponse.builder()
+                                .addCreatedObjectId("string")
+                                .addIssue("string")
+                                .summary("summary")
+                                .build()
+                        )
                         .logs(
                             RunGetDetailsResponse.Result.Logs.builder()
                                 .opencode("opencode")
@@ -33,6 +40,7 @@ internal class RunGetDetailsResponseTest {
                                 .build()
                         )
                         .output("output")
+                        .addOutputObjectId("string")
                         .build()
                 )
                 .startedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
@@ -74,6 +82,13 @@ internal class RunGetDetailsResponseTest {
         assertThat(runGetDetailsResponse.result())
             .contains(
                 RunGetDetailsResponse.Result.builder()
+                    .finalResponse(
+                        RunGetDetailsResponse.Result.FinalResponse.builder()
+                            .addCreatedObjectId("string")
+                            .addIssue("string")
+                            .summary("summary")
+                            .build()
+                    )
                     .logs(
                         RunGetDetailsResponse.Result.Logs.builder()
                             .opencode("opencode")
@@ -81,6 +96,7 @@ internal class RunGetDetailsResponseTest {
                             .build()
                     )
                     .output("output")
+                    .addOutputObjectId("string")
                     .build()
             )
         assertThat(runGetDetailsResponse.startedAt())
@@ -127,6 +143,13 @@ internal class RunGetDetailsResponseTest {
                 .prompt("prompt")
                 .result(
                     RunGetDetailsResponse.Result.builder()
+                        .finalResponse(
+                            RunGetDetailsResponse.Result.FinalResponse.builder()
+                                .addCreatedObjectId("string")
+                                .addIssue("string")
+                                .summary("summary")
+                                .build()
+                        )
                         .logs(
                             RunGetDetailsResponse.Result.Logs.builder()
                                 .opencode("opencode")
@@ -134,6 +157,7 @@ internal class RunGetDetailsResponseTest {
                                 .build()
                         )
                         .output("output")
+                        .addOutputObjectId("string")
                         .build()
                 )
                 .startedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
