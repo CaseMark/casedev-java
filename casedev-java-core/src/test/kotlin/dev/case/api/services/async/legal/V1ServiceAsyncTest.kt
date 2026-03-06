@@ -5,6 +5,7 @@ package dev.case.api.services.async.legal
 import dev.case.api.TestServerExtension
 import dev.case.api.client.okhttp.CasedevOkHttpClientAsync
 import dev.case.api.models.legal.v1.V1DocketParams
+import dev.case.api.models.legal.v1.V1DraftParams
 import dev.case.api.models.legal.v1.V1FindParams
 import dev.case.api.models.legal.v1.V1GetCitationsFromUrlParams
 import dev.case.api.models.legal.v1.V1GetCitationsParams
@@ -45,6 +46,40 @@ internal class V1ServiceAsyncTest {
                     .live(true)
                     .offset(0L)
                     .query("xx")
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Test
+    fun draft() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val v1ServiceAsync = client.legal().v1()
+
+        val responseFuture =
+            v1ServiceAsync.draft(
+                V1DraftParams.builder()
+                    .instructions("xxxxxxxxxx")
+                    .vaultId("vault_id")
+                    .citations(true)
+                    .format("format")
+                    .length(
+                        V1DraftParams.Length.builder()
+                            .target(0.0)
+                            .unit(V1DraftParams.Length.Unit.WORDS)
+                            .build()
+                    )
+                    .model("model")
+                    .addObjectId("string")
+                    .outputName("output_name")
+                    .outputType(V1DraftParams.OutputType.PDF)
+                    .verified(true)
                     .build()
             )
 
