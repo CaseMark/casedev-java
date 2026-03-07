@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.2 (2026-03-07)
+
+Full Changelog: [v0.7.1...v0.7.2](https://github.com/CaseMark/casedev-java/compare/v0.7.1...v0.7.2)
+
+### Chores
+
+* **test:** do not count install time for mock server timeout ([88bf899](https://github.com/CaseMark/casedev-java/commit/88bf899b34fefc9b4aeb59967e40c5a9330af16a))
+
 ## 0.7.1 (2026-03-07)
 
 Full Changelog: [v0.7.0...v0.7.1](https://github.com/CaseMark/casedev-java/compare/v0.7.0...v0.7.1)
