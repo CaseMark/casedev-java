@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.1 (2026-03-07)
+
+Full Changelog: [v0.7.0...v0.7.1](https://github.com/CaseMark/casedev-java/compare/v0.7.0...v0.7.1)
+
+### Chores
+
+* **internal:** bump palantir-java-format ([70a9a28](https://github.com/CaseMark/casedev-java/commit/70a9a2804d6c39f2a5016759fcd75adfa679ba53))
+* **internal:** codegen related update ([ca29030](https://github.com/CaseMark/casedev-java/commit/ca29030d569e1e00f0610669565e4a6c076b7d1a))
+
 ## 0.7.0 (2026-03-06)
 
 Full Changelog: [v0.6.0...v0.7.0](https://github.com/CaseMark/casedev-java/compare/v0.6.0...v0.7.0)
