@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.3 (2026-03-07)
+
+Full Changelog: [v0.7.2...v0.7.3](https://github.com/CaseMark/casedev-java/compare/v0.7.2...v0.7.3)
+
+### Chores
+
+* **ci:** skip uploading artifacts on stainless-internal branches ([4dd47c5](https://github.com/CaseMark/casedev-java/commit/4dd47c5222edf588e5351ebf2d0493b2b76b7699))
+
 ## 0.7.2 (2026-03-07)
 
 Full Changelog: [v0.7.1...v0.7.2](https://github.com/CaseMark/casedev-java/compare/v0.7.1...v0.7.2)
