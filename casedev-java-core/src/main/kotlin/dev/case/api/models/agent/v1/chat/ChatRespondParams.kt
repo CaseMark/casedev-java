@@ -13,7 +13,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Streams a single assistant turn as normalized state events with stable turn, message, and part
- * ids.
+ * ids. Emits session.usage before turn.completed when token data is available.
  */
 class ChatRespondParams
 private constructor(

@@ -255,6 +255,9 @@ private constructor(
         private val ingestionStatus: JsonField<String>,
         private val chunkCount: JsonField<Double>,
         private val ingestionCompletedAt: JsonField<OffsetDateTime>,
+        private val ingestionError: JsonField<String>,
+        private val ingestionStartedAt: JsonField<OffsetDateTime>,
+        private val ingestionWorkflowId: JsonField<String>,
         private val metadata: JsonValue,
         private val pageCount: JsonField<Double>,
         private val path: JsonField<String>,
@@ -286,6 +289,15 @@ private constructor(
             @JsonProperty("ingestionCompletedAt")
             @ExcludeMissing
             ingestionCompletedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
+            @JsonProperty("ingestionError")
+            @ExcludeMissing
+            ingestionError: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("ingestionStartedAt")
+            @ExcludeMissing
+            ingestionStartedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
+            @JsonProperty("ingestionWorkflowId")
+            @ExcludeMissing
+            ingestionWorkflowId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("metadata") @ExcludeMissing metadata: JsonValue = JsonMissing.of(),
             @JsonProperty("pageCount")
             @ExcludeMissing
@@ -309,6 +321,9 @@ private constructor(
             ingestionStatus,
             chunkCount,
             ingestionCompletedAt,
+            ingestionError,
+            ingestionStartedAt,
+            ingestionWorkflowId,
             metadata,
             pageCount,
             path,
@@ -375,6 +390,32 @@ private constructor(
          */
         fun ingestionCompletedAt(): Optional<OffsetDateTime> =
             ingestionCompletedAt.getOptional("ingestionCompletedAt")
+
+        /**
+         * Failure reason when ingestion status is a failed state
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun ingestionError(): Optional<String> = ingestionError.getOptional("ingestionError")
+
+        /**
+         * When ingestion processing began
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun ingestionStartedAt(): Optional<OffsetDateTime> =
+            ingestionStartedAt.getOptional("ingestionStartedAt")
+
+        /**
+         * Durable workflow run ID for the active or last ingestion attempt
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun ingestionWorkflowId(): Optional<String> =
+            ingestionWorkflowId.getOptional("ingestionWorkflowId")
 
         /**
          * Custom metadata associated with the document
@@ -496,6 +537,36 @@ private constructor(
         fun _ingestionCompletedAt(): JsonField<OffsetDateTime> = ingestionCompletedAt
 
         /**
+         * Returns the raw JSON value of [ingestionError].
+         *
+         * Unlike [ingestionError], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("ingestionError")
+        @ExcludeMissing
+        fun _ingestionError(): JsonField<String> = ingestionError
+
+        /**
+         * Returns the raw JSON value of [ingestionStartedAt].
+         *
+         * Unlike [ingestionStartedAt], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("ingestionStartedAt")
+        @ExcludeMissing
+        fun _ingestionStartedAt(): JsonField<OffsetDateTime> = ingestionStartedAt
+
+        /**
+         * Returns the raw JSON value of [ingestionWorkflowId].
+         *
+         * Unlike [ingestionWorkflowId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("ingestionWorkflowId")
+        @ExcludeMissing
+        fun _ingestionWorkflowId(): JsonField<String> = ingestionWorkflowId
+
+        /**
          * Returns the raw JSON value of [pageCount].
          *
          * Unlike [pageCount], this method doesn't throw if the JSON field has an unexpected type.
@@ -580,6 +651,9 @@ private constructor(
             private var ingestionStatus: JsonField<String>? = null
             private var chunkCount: JsonField<Double> = JsonMissing.of()
             private var ingestionCompletedAt: JsonField<OffsetDateTime> = JsonMissing.of()
+            private var ingestionError: JsonField<String> = JsonMissing.of()
+            private var ingestionStartedAt: JsonField<OffsetDateTime> = JsonMissing.of()
+            private var ingestionWorkflowId: JsonField<String> = JsonMissing.of()
             private var metadata: JsonValue = JsonMissing.of()
             private var pageCount: JsonField<Double> = JsonMissing.of()
             private var path: JsonField<String> = JsonMissing.of()
@@ -598,6 +672,9 @@ private constructor(
                 ingestionStatus = object_.ingestionStatus
                 chunkCount = object_.chunkCount
                 ingestionCompletedAt = object_.ingestionCompletedAt
+                ingestionError = object_.ingestionError
+                ingestionStartedAt = object_.ingestionStartedAt
+                ingestionWorkflowId = object_.ingestionWorkflowId
                 metadata = object_.metadata
                 pageCount = object_.pageCount
                 path = object_.path
@@ -700,6 +777,69 @@ private constructor(
              */
             fun ingestionCompletedAt(ingestionCompletedAt: JsonField<OffsetDateTime>) = apply {
                 this.ingestionCompletedAt = ingestionCompletedAt
+            }
+
+            /** Failure reason when ingestion status is a failed state */
+            fun ingestionError(ingestionError: String?) =
+                ingestionError(JsonField.ofNullable(ingestionError))
+
+            /** Alias for calling [Builder.ingestionError] with `ingestionError.orElse(null)`. */
+            fun ingestionError(ingestionError: Optional<String>) =
+                ingestionError(ingestionError.getOrNull())
+
+            /**
+             * Sets [Builder.ingestionError] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ingestionError] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun ingestionError(ingestionError: JsonField<String>) = apply {
+                this.ingestionError = ingestionError
+            }
+
+            /** When ingestion processing began */
+            fun ingestionStartedAt(ingestionStartedAt: OffsetDateTime?) =
+                ingestionStartedAt(JsonField.ofNullable(ingestionStartedAt))
+
+            /**
+             * Alias for calling [Builder.ingestionStartedAt] with
+             * `ingestionStartedAt.orElse(null)`.
+             */
+            fun ingestionStartedAt(ingestionStartedAt: Optional<OffsetDateTime>) =
+                ingestionStartedAt(ingestionStartedAt.getOrNull())
+
+            /**
+             * Sets [Builder.ingestionStartedAt] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ingestionStartedAt] with a well-typed
+             * [OffsetDateTime] value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
+             */
+            fun ingestionStartedAt(ingestionStartedAt: JsonField<OffsetDateTime>) = apply {
+                this.ingestionStartedAt = ingestionStartedAt
+            }
+
+            /** Durable workflow run ID for the active or last ingestion attempt */
+            fun ingestionWorkflowId(ingestionWorkflowId: String?) =
+                ingestionWorkflowId(JsonField.ofNullable(ingestionWorkflowId))
+
+            /**
+             * Alias for calling [Builder.ingestionWorkflowId] with
+             * `ingestionWorkflowId.orElse(null)`.
+             */
+            fun ingestionWorkflowId(ingestionWorkflowId: Optional<String>) =
+                ingestionWorkflowId(ingestionWorkflowId.getOrNull())
+
+            /**
+             * Sets [Builder.ingestionWorkflowId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ingestionWorkflowId] with a well-typed [String]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun ingestionWorkflowId(ingestionWorkflowId: JsonField<String>) = apply {
+                this.ingestionWorkflowId = ingestionWorkflowId
             }
 
             /** Custom metadata associated with the document */
@@ -838,6 +978,9 @@ private constructor(
                     checkRequired("ingestionStatus", ingestionStatus),
                     chunkCount,
                     ingestionCompletedAt,
+                    ingestionError,
+                    ingestionStartedAt,
+                    ingestionWorkflowId,
                     metadata,
                     pageCount,
                     path,
@@ -863,6 +1006,9 @@ private constructor(
             ingestionStatus()
             chunkCount()
             ingestionCompletedAt()
+            ingestionError()
+            ingestionStartedAt()
+            ingestionWorkflowId()
             pageCount()
             path()
             sizeBytes()
@@ -895,6 +1041,9 @@ private constructor(
                 (if (ingestionStatus.asKnown().isPresent) 1 else 0) +
                 (if (chunkCount.asKnown().isPresent) 1 else 0) +
                 (if (ingestionCompletedAt.asKnown().isPresent) 1 else 0) +
+                (if (ingestionError.asKnown().isPresent) 1 else 0) +
+                (if (ingestionStartedAt.asKnown().isPresent) 1 else 0) +
+                (if (ingestionWorkflowId.asKnown().isPresent) 1 else 0) +
                 (if (pageCount.asKnown().isPresent) 1 else 0) +
                 (if (path.asKnown().isPresent) 1 else 0) +
                 (if (sizeBytes.asKnown().isPresent) 1 else 0) +
@@ -915,6 +1064,9 @@ private constructor(
                 ingestionStatus == other.ingestionStatus &&
                 chunkCount == other.chunkCount &&
                 ingestionCompletedAt == other.ingestionCompletedAt &&
+                ingestionError == other.ingestionError &&
+                ingestionStartedAt == other.ingestionStartedAt &&
+                ingestionWorkflowId == other.ingestionWorkflowId &&
                 metadata == other.metadata &&
                 pageCount == other.pageCount &&
                 path == other.path &&
@@ -934,6 +1086,9 @@ private constructor(
                 ingestionStatus,
                 chunkCount,
                 ingestionCompletedAt,
+                ingestionError,
+                ingestionStartedAt,
+                ingestionWorkflowId,
                 metadata,
                 pageCount,
                 path,
@@ -948,7 +1103,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Object{id=$id, contentType=$contentType, createdAt=$createdAt, filename=$filename, ingestionStatus=$ingestionStatus, chunkCount=$chunkCount, ingestionCompletedAt=$ingestionCompletedAt, metadata=$metadata, pageCount=$pageCount, path=$path, sizeBytes=$sizeBytes, tags=$tags, textLength=$textLength, vectorCount=$vectorCount, additionalProperties=$additionalProperties}"
+            "Object{id=$id, contentType=$contentType, createdAt=$createdAt, filename=$filename, ingestionStatus=$ingestionStatus, chunkCount=$chunkCount, ingestionCompletedAt=$ingestionCompletedAt, ingestionError=$ingestionError, ingestionStartedAt=$ingestionStartedAt, ingestionWorkflowId=$ingestionWorkflowId, metadata=$metadata, pageCount=$pageCount, path=$path, sizeBytes=$sizeBytes, tags=$tags, textLength=$textLength, vectorCount=$vectorCount, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
