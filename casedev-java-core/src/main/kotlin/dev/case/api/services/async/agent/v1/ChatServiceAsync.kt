@@ -15,9 +15,11 @@ import dev.case.api.models.agent.v1.chat.ChatCreateParams
 import dev.case.api.models.agent.v1.chat.ChatCreateResponse
 import dev.case.api.models.agent.v1.chat.ChatDeleteParams
 import dev.case.api.models.agent.v1.chat.ChatDeleteResponse
+import dev.case.api.models.agent.v1.chat.ChatReplyToQuestionParams
 import dev.case.api.models.agent.v1.chat.ChatRespondParams
 import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v1.chat.ChatStreamParams
+import dev.case.api.models.agent.v1.chat.ChatUiStreamParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -120,9 +122,33 @@ interface ChatServiceAsync {
     fun cancel(id: String, requestOptions: RequestOptions): CompletableFuture<ChatCancelResponse> =
         cancel(id, ChatCancelParams.none(), requestOptions)
 
+    /** Answers a pending OpenCode question for the chat session bound to this agent chat. */
+    fun replyToQuestion(
+        requestId: String,
+        params: ChatReplyToQuestionParams,
+    ): CompletableFuture<Void?> = replyToQuestion(requestId, params, RequestOptions.none())
+
+    /** @see replyToQuestion */
+    fun replyToQuestion(
+        requestId: String,
+        params: ChatReplyToQuestionParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?> =
+        replyToQuestion(params.toBuilder().requestId(requestId).build(), requestOptions)
+
+    /** @see replyToQuestion */
+    fun replyToQuestion(params: ChatReplyToQuestionParams): CompletableFuture<Void?> =
+        replyToQuestion(params, RequestOptions.none())
+
+    /** @see replyToQuestion */
+    fun replyToQuestion(
+        params: ChatReplyToQuestionParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?>
+
     /**
      * Streams a single assistant turn as normalized state events with stable turn, message, and
-     * part ids.
+     * part ids. Emits session.usage before turn.completed when token data is available.
      */
     fun respondStreaming(id: String, params: ChatRespondParams): AsyncStreamResponse<String> =
         respondStreaming(id, params, RequestOptions.none())
@@ -200,6 +226,31 @@ interface ChatServiceAsync {
     /** @see streamStreaming */
     fun streamStreaming(id: String, requestOptions: RequestOptions): AsyncStreamResponse<String> =
         streamStreaming(id, ChatStreamParams.none(), requestOptions)
+
+    /**
+     * Streams a single assistant turn as AI SDK UIMessageChunk SSE events for direct client
+     * rendering.
+     */
+    fun uiStreamStreaming(id: String, params: ChatUiStreamParams): AsyncStreamResponse<String> =
+        uiStreamStreaming(id, params, RequestOptions.none())
+
+    /** @see uiStreamStreaming */
+    fun uiStreamStreaming(
+        id: String,
+        params: ChatUiStreamParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<String> =
+        uiStreamStreaming(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see uiStreamStreaming */
+    fun uiStreamStreaming(params: ChatUiStreamParams): AsyncStreamResponse<String> =
+        uiStreamStreaming(params, RequestOptions.none())
+
+    /** @see uiStreamStreaming */
+    fun uiStreamStreaming(
+        params: ChatUiStreamParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<String>
 
     /** A view of [ChatServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -319,6 +370,34 @@ interface ChatServiceAsync {
             cancel(id, ChatCancelParams.none(), requestOptions)
 
         /**
+         * Returns a raw HTTP response for `post /agent/v1/chat/{id}/question/{requestID}/reply`,
+         * but is otherwise the same as [ChatServiceAsync.replyToQuestion].
+         */
+        fun replyToQuestion(
+            requestId: String,
+            params: ChatReplyToQuestionParams,
+        ): CompletableFuture<HttpResponse> =
+            replyToQuestion(requestId, params, RequestOptions.none())
+
+        /** @see replyToQuestion */
+        fun replyToQuestion(
+            requestId: String,
+            params: ChatReplyToQuestionParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse> =
+            replyToQuestion(params.toBuilder().requestId(requestId).build(), requestOptions)
+
+        /** @see replyToQuestion */
+        fun replyToQuestion(params: ChatReplyToQuestionParams): CompletableFuture<HttpResponse> =
+            replyToQuestion(params, RequestOptions.none())
+
+        /** @see replyToQuestion */
+        fun replyToQuestion(
+            params: ChatReplyToQuestionParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse>
+
+        /**
          * Returns a raw HTTP response for `post /agent/v1/chat/{id}/respond`, but is otherwise the
          * same as [ChatServiceAsync.respondStreaming].
          */
@@ -427,5 +506,39 @@ interface ChatServiceAsync {
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
             streamStreaming(id, ChatStreamParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /agent/v1/chat/{id}/ui-stream`, but is otherwise
+         * the same as [ChatServiceAsync.uiStreamStreaming].
+         */
+        @MustBeClosed
+        fun uiStreamStreaming(
+            id: String,
+            params: ChatUiStreamParams,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
+            uiStreamStreaming(id, params, RequestOptions.none())
+
+        /** @see uiStreamStreaming */
+        @MustBeClosed
+        fun uiStreamStreaming(
+            id: String,
+            params: ChatUiStreamParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
+            uiStreamStreaming(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see uiStreamStreaming */
+        @MustBeClosed
+        fun uiStreamStreaming(
+            params: ChatUiStreamParams
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> =
+            uiStreamStreaming(params, RequestOptions.none())
+
+        /** @see uiStreamStreaming */
+        @MustBeClosed
+        fun uiStreamStreaming(
+            params: ChatUiStreamParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>>
     }
 }
