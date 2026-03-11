@@ -6,6 +6,7 @@ import dev.case.api.TestServerExtension
 import dev.case.api.client.okhttp.CasedevOkHttpClientAsync
 import dev.case.api.core.JsonValue
 import dev.case.api.models.agent.v1.agents.AgentCreateParams
+import dev.case.api.models.agent.v1.agents.AgentListParams
 import dev.case.api.models.agent.v1.agents.AgentUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -94,7 +95,8 @@ internal class AgentServiceAsyncTest {
                 .build()
         val agentServiceAsync = client.agent().v1().agents()
 
-        val agentsFuture = agentServiceAsync.list()
+        val agentsFuture =
+            agentServiceAsync.list(AgentListParams.builder().cursor("cursor").limit(1L).build())
 
         val agents = agentsFuture.get()
         agents.validate()

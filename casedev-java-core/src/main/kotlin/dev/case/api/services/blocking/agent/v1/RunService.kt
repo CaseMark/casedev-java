@@ -18,10 +18,16 @@ import dev.case.api.models.agent.v1.run.RunGetDetailsParams
 import dev.case.api.models.agent.v1.run.RunGetDetailsResponse
 import dev.case.api.models.agent.v1.run.RunGetStatusParams
 import dev.case.api.models.agent.v1.run.RunGetStatusResponse
+import dev.case.api.models.agent.v1.run.RunListParams
+import dev.case.api.models.agent.v1.run.RunListResponse
 import dev.case.api.models.agent.v1.run.RunWatchParams
 import dev.case.api.models.agent.v1.run.RunWatchResponse
 import java.util.function.Consumer
 
+/**
+ * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+ * workflows
+ */
 interface RunService {
 
     /**
@@ -44,6 +50,26 @@ interface RunService {
         params: RunCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RunCreateResponse
+
+    /**
+     * Lists agent runs for the authenticated organization. Supports filtering by agent, status, and
+     * cursor-based pagination.
+     */
+    fun list(): RunListResponse = list(RunListParams.none())
+
+    /** @see list */
+    fun list(
+        params: RunListParams = RunListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): RunListResponse
+
+    /** @see list */
+    fun list(params: RunListParams = RunListParams.none()): RunListResponse =
+        list(params, RequestOptions.none())
+
+    /** @see list */
+    fun list(requestOptions: RequestOptions): RunListResponse =
+        list(RunListParams.none(), requestOptions)
 
     /**
      * Cancels a running or queued run. Idempotent — cancelling a finished run returns its current
@@ -249,6 +275,29 @@ interface RunService {
             params: RunCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<RunCreateResponse>
+
+        /**
+         * Returns a raw HTTP response for `get /agent/v1/run`, but is otherwise the same as
+         * [RunService.list].
+         */
+        @MustBeClosed fun list(): HttpResponseFor<RunListResponse> = list(RunListParams.none())
+
+        /** @see list */
+        @MustBeClosed
+        fun list(
+            params: RunListParams = RunListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<RunListResponse>
+
+        /** @see list */
+        @MustBeClosed
+        fun list(params: RunListParams = RunListParams.none()): HttpResponseFor<RunListResponse> =
+            list(params, RequestOptions.none())
+
+        /** @see list */
+        @MustBeClosed
+        fun list(requestOptions: RequestOptions): HttpResponseFor<RunListResponse> =
+            list(RunListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /agent/v1/run/{id}/cancel`, but is otherwise the

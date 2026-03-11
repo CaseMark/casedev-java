@@ -19,11 +19,17 @@ import dev.case.api.models.agent.v1.run.RunGetDetailsParams
 import dev.case.api.models.agent.v1.run.RunGetDetailsResponse
 import dev.case.api.models.agent.v1.run.RunGetStatusParams
 import dev.case.api.models.agent.v1.run.RunGetStatusResponse
+import dev.case.api.models.agent.v1.run.RunListParams
+import dev.case.api.models.agent.v1.run.RunListResponse
 import dev.case.api.models.agent.v1.run.RunWatchParams
 import dev.case.api.models.agent.v1.run.RunWatchResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/**
+ * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+ * workflows
+ */
 interface RunServiceAsync {
 
     /**
@@ -47,6 +53,26 @@ interface RunServiceAsync {
         params: RunCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<RunCreateResponse>
+
+    /**
+     * Lists agent runs for the authenticated organization. Supports filtering by agent, status, and
+     * cursor-based pagination.
+     */
+    fun list(): CompletableFuture<RunListResponse> = list(RunListParams.none())
+
+    /** @see list */
+    fun list(
+        params: RunListParams = RunListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<RunListResponse>
+
+    /** @see list */
+    fun list(params: RunListParams = RunListParams.none()): CompletableFuture<RunListResponse> =
+        list(params, RequestOptions.none())
+
+    /** @see list */
+    fun list(requestOptions: RequestOptions): CompletableFuture<RunListResponse> =
+        list(RunListParams.none(), requestOptions)
 
     /**
      * Cancels a running or queued run. Idempotent — cancelling a finished run returns its current
@@ -265,6 +291,29 @@ interface RunServiceAsync {
             params: RunCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<RunCreateResponse>>
+
+        /**
+         * Returns a raw HTTP response for `get /agent/v1/run`, but is otherwise the same as
+         * [RunServiceAsync.list].
+         */
+        fun list(): CompletableFuture<HttpResponseFor<RunListResponse>> = list(RunListParams.none())
+
+        /** @see list */
+        fun list(
+            params: RunListParams = RunListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<RunListResponse>>
+
+        /** @see list */
+        fun list(
+            params: RunListParams = RunListParams.none()
+        ): CompletableFuture<HttpResponseFor<RunListResponse>> = list(params, RequestOptions.none())
+
+        /** @see list */
+        fun list(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<RunListResponse>> =
+            list(RunListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /agent/v1/run/{id}/cancel`, but is otherwise the

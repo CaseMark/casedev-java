@@ -2,7 +2,7 @@
 
 package dev.case.api.models.agent.v1.chat
 
-import dev.case.api.core.JsonValue
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -10,16 +10,20 @@ internal class ChatSendMessageParamsTest {
 
     @Test
     fun create() {
-        ChatSendMessageParams.builder().id("id").body(JsonValue.from(mapOf<String, Any>())).build()
+        ChatSendMessageParams.builder()
+            .id("id")
+            .addPart(
+                ChatSendMessageParams.Part.builder()
+                    .text("text")
+                    .type(ChatSendMessageParams.Part.Type.TEXT)
+                    .build()
+            )
+            .build()
     }
 
     @Test
     fun pathParams() {
-        val params =
-            ChatSendMessageParams.builder()
-                .id("id")
-                .body(JsonValue.from(mapOf<String, Any>()))
-                .build()
+        val params = ChatSendMessageParams.builder().id("id").build()
 
         assertThat(params._pathParam(0)).isEqualTo("id")
         // out-of-bound path param
@@ -31,11 +35,29 @@ internal class ChatSendMessageParamsTest {
         val params =
             ChatSendMessageParams.builder()
                 .id("id")
-                .body(JsonValue.from(mapOf<String, Any>()))
+                .addPart(
+                    ChatSendMessageParams.Part.builder()
+                        .text("text")
+                        .type(ChatSendMessageParams.Part.Type.TEXT)
+                        .build()
+                )
                 .build()
 
         val body = params._body()
 
-        assertThat(body).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.parts().getOrNull())
+            .containsExactly(
+                ChatSendMessageParams.Part.builder()
+                    .text("text")
+                    .type(ChatSendMessageParams.Part.Type.TEXT)
+                    .build()
+            )
+    }
+
+    @Test
+    fun bodyWithoutOptionalFields() {
+        val params = ChatSendMessageParams.builder().id("id").build()
+
+        val body = params._body()
     }
 }

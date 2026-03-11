@@ -18,6 +18,10 @@ import dev.case.api.models.agent.v1.agents.AgentUpdateResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/**
+ * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+ * workflows
+ */
 interface AgentServiceAsync {
 
     /**

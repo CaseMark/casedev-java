@@ -30,6 +30,10 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/**
+ * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+ * workflows
+ */
 class AgentServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     AgentServiceAsync {
 

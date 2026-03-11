@@ -19,6 +19,10 @@ import dev.case.api.models.agent.v1.execute.ExecuteCreateParams
 import dev.case.api.models.agent.v1.execute.ExecuteCreateResponse
 import java.util.function.Consumer
 
+/**
+ * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+ * workflows
+ */
 class ExecuteServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ExecuteService {
 

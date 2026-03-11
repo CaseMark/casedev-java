@@ -13,6 +13,7 @@ internal class RunCreateParamsTest {
         RunCreateParams.builder()
             .agentId("agentId")
             .prompt("prompt")
+            .callbackUrl("https://example.com")
             .guidance("guidance")
             .model("model")
             .addObjectId("string")
@@ -25,6 +26,7 @@ internal class RunCreateParamsTest {
             RunCreateParams.builder()
                 .agentId("agentId")
                 .prompt("prompt")
+                .callbackUrl("https://example.com")
                 .guidance("guidance")
                 .model("model")
                 .addObjectId("string")
@@ -34,6 +36,7 @@ internal class RunCreateParamsTest {
 
         assertThat(body.agentId()).isEqualTo("agentId")
         assertThat(body.prompt()).isEqualTo("prompt")
+        assertThat(body.callbackUrl()).contains("https://example.com")
         assertThat(body.guidance()).contains("guidance")
         assertThat(body.model()).contains("model")
         assertThat(body.objectIds().getOrNull()).containsExactly("string")

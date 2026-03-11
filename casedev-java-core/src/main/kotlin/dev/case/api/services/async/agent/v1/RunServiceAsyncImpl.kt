@@ -32,12 +32,18 @@ import dev.case.api.models.agent.v1.run.RunGetDetailsParams
 import dev.case.api.models.agent.v1.run.RunGetDetailsResponse
 import dev.case.api.models.agent.v1.run.RunGetStatusParams
 import dev.case.api.models.agent.v1.run.RunGetStatusResponse
+import dev.case.api.models.agent.v1.run.RunListParams
+import dev.case.api.models.agent.v1.run.RunListResponse
 import dev.case.api.models.agent.v1.run.RunWatchParams
 import dev.case.api.models.agent.v1.run.RunWatchResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/**
+ * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+ * workflows
+ */
 class RunServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     RunServiceAsync {
 
@@ -56,6 +62,13 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
     ): CompletableFuture<RunCreateResponse> =
         // post /agent/v1/run
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+
+    override fun list(
+        params: RunListParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<RunListResponse> =
+        // get /agent/v1/run
+        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun cancel(
         params: RunCancelParams,
@@ -137,6 +150,36 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val listHandler: Handler<RunListResponse> =
+            jsonHandler<RunListResponse>(clientOptions.jsonMapper)
+
+        override fun list(
+            params: RunListParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<RunListResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("agent", "v1", "run")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { listHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

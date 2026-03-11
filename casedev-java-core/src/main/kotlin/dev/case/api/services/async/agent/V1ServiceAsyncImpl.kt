@@ -33,12 +33,28 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync =
         V1ServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     override fun agents(): AgentServiceAsync = agents
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     override fun run(): RunServiceAsync = run
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     override fun execute(): ExecuteServiceAsync = execute
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     override fun chat(): ChatServiceAsync = chat
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -67,12 +83,28 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         override fun agents(): AgentServiceAsync.WithRawResponse = agents
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         override fun run(): RunServiceAsync.WithRawResponse = run
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         override fun execute(): ExecuteServiceAsync.WithRawResponse = execute
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         override fun chat(): ChatServiceAsync.WithRawResponse = chat
     }
 }

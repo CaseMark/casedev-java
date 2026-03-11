@@ -32,12 +32,28 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service =
         V1ServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     override fun agents(): AgentService = agents
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     override fun run(): RunService = run
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     override fun execute(): ExecuteService = execute
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     override fun chat(): ChatService = chat
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -66,12 +82,28 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         override fun agents(): AgentService.WithRawResponse = agents
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         override fun run(): RunService.WithRawResponse = run
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         override fun execute(): ExecuteService.WithRawResponse = execute
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         override fun chat(): ChatService.WithRawResponse = chat
     }
 }

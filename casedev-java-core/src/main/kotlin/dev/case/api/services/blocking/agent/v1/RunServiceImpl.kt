@@ -30,11 +30,17 @@ import dev.case.api.models.agent.v1.run.RunGetDetailsParams
 import dev.case.api.models.agent.v1.run.RunGetDetailsResponse
 import dev.case.api.models.agent.v1.run.RunGetStatusParams
 import dev.case.api.models.agent.v1.run.RunGetStatusResponse
+import dev.case.api.models.agent.v1.run.RunListParams
+import dev.case.api.models.agent.v1.run.RunListResponse
 import dev.case.api.models.agent.v1.run.RunWatchParams
 import dev.case.api.models.agent.v1.run.RunWatchResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/**
+ * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+ * workflows
+ */
 class RunServiceImpl internal constructor(private val clientOptions: ClientOptions) : RunService {
 
     private val withRawResponse: RunService.WithRawResponse by lazy {
@@ -52,6 +58,10 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
     ): RunCreateResponse =
         // post /agent/v1/run
         withRawResponse().create(params, requestOptions).parse()
+
+    override fun list(params: RunListParams, requestOptions: RequestOptions): RunListResponse =
+        // get /agent/v1/run
+        withRawResponse().list(params, requestOptions).parse()
 
     override fun cancel(
         params: RunCancelParams,
@@ -122,6 +132,33 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val listHandler: Handler<RunListResponse> =
+            jsonHandler<RunListResponse>(clientOptions.jsonMapper)
+
+        override fun list(
+            params: RunListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<RunListResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("agent", "v1", "run")
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { listHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

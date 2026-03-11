@@ -18,9 +18,12 @@ import dev.case.api.models.agent.v1.chat.ChatReplyToQuestionParams
 import dev.case.api.models.agent.v1.chat.ChatRespondParams
 import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v1.chat.ChatStreamParams
-import dev.case.api.models.agent.v1.chat.ChatUiStreamParams
 import java.util.function.Consumer
 
+/**
+ * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+ * workflows
+ */
 interface ChatService {
 
     /**
@@ -131,25 +134,35 @@ interface ChatService {
     )
 
     /**
-     * Streams a single assistant turn as normalized state events with stable turn, message, and
-     * part ids. Emits session.usage before turn.completed when token data is available.
+     * Streams a single assistant turn as normalized SSE events with stable turn, message, and part
+     * IDs. Emits events: `turn.started`, `turn.status`, `message.created`, `message.part.updated`,
+     * `message.completed`, `session.usage`, `turn.completed`.
+     *
+     * **When to use this endpoint:** Recommended for building custom chat UIs that need real-time
+     * streaming progress. This is the primary streaming endpoint for new integrations.
+     *
+     * **Alternatives:**
+     * - `POST /chat/:id/message` — synchronous, returns complete response as JSON (best for
+     *   server-to-server)
      */
     @MustBeClosed
-    fun respondStreaming(id: String, params: ChatRespondParams): StreamResponse<String> =
-        respondStreaming(id, params, RequestOptions.none())
+    fun respondStreaming(id: String): StreamResponse<String> =
+        respondStreaming(id, ChatRespondParams.none())
 
     /** @see respondStreaming */
     @MustBeClosed
     fun respondStreaming(
         id: String,
-        params: ChatRespondParams,
+        params: ChatRespondParams = ChatRespondParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<String> = respondStreaming(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see respondStreaming */
     @MustBeClosed
-    fun respondStreaming(params: ChatRespondParams): StreamResponse<String> =
-        respondStreaming(params, RequestOptions.none())
+    fun respondStreaming(
+        id: String,
+        params: ChatRespondParams = ChatRespondParams.none(),
+    ): StreamResponse<String> = respondStreaming(id, params, RequestOptions.none())
 
     /** @see respondStreaming */
     @MustBeClosed
@@ -158,25 +171,52 @@ interface ChatService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<String>
 
-    /** Proxies a message to the OpenCode session bound to this chat. */
-    fun sendMessage(id: String, params: ChatSendMessageParams) =
-        sendMessage(id, params, RequestOptions.none())
+    /** @see respondStreaming */
+    @MustBeClosed
+    fun respondStreaming(params: ChatRespondParams): StreamResponse<String> =
+        respondStreaming(params, RequestOptions.none())
+
+    /** @see respondStreaming */
+    @MustBeClosed
+    fun respondStreaming(id: String, requestOptions: RequestOptions): StreamResponse<String> =
+        respondStreaming(id, ChatRespondParams.none(), requestOptions)
+
+    /**
+     * Sends a message and returns the complete response as a single JSON body. Blocks until the
+     * agent turn completes.
+     *
+     * **When to use this endpoint:** Best for server-to-server integrations, background processing,
+     * or any context where you want the full response in one call without managing an SSE stream.
+     *
+     * **Alternatives:**
+     * - `POST /chat/:id/respond` — streaming SSE with normalized events (recommended for custom
+     *   chat UIs)
+     */
+    fun sendMessage(id: String) = sendMessage(id, ChatSendMessageParams.none())
 
     /** @see sendMessage */
     fun sendMessage(
         id: String,
-        params: ChatSendMessageParams,
+        params: ChatSendMessageParams = ChatSendMessageParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ) = sendMessage(params.toBuilder().id(id).build(), requestOptions)
 
     /** @see sendMessage */
-    fun sendMessage(params: ChatSendMessageParams) = sendMessage(params, RequestOptions.none())
+    fun sendMessage(id: String, params: ChatSendMessageParams = ChatSendMessageParams.none()) =
+        sendMessage(id, params, RequestOptions.none())
 
     /** @see sendMessage */
     fun sendMessage(
         params: ChatSendMessageParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     )
+
+    /** @see sendMessage */
+    fun sendMessage(params: ChatSendMessageParams) = sendMessage(params, RequestOptions.none())
+
+    /** @see sendMessage */
+    fun sendMessage(id: String, requestOptions: RequestOptions) =
+        sendMessage(id, ChatSendMessageParams.none(), requestOptions)
 
     /**
      * Relays OpenCode SSE events for this chat. Supports replay from buffered events using
@@ -217,34 +257,6 @@ interface ChatService {
     @MustBeClosed
     fun streamStreaming(id: String, requestOptions: RequestOptions): StreamResponse<String> =
         streamStreaming(id, ChatStreamParams.none(), requestOptions)
-
-    /**
-     * Streams a single assistant turn as AI SDK UIMessageChunk SSE events for direct client
-     * rendering.
-     */
-    @MustBeClosed
-    fun uiStreamStreaming(id: String, params: ChatUiStreamParams): StreamResponse<String> =
-        uiStreamStreaming(id, params, RequestOptions.none())
-
-    /** @see uiStreamStreaming */
-    @MustBeClosed
-    fun uiStreamStreaming(
-        id: String,
-        params: ChatUiStreamParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): StreamResponse<String> = uiStreamStreaming(params.toBuilder().id(id).build(), requestOptions)
-
-    /** @see uiStreamStreaming */
-    @MustBeClosed
-    fun uiStreamStreaming(params: ChatUiStreamParams): StreamResponse<String> =
-        uiStreamStreaming(params, RequestOptions.none())
-
-    /** @see uiStreamStreaming */
-    @MustBeClosed
-    fun uiStreamStreaming(
-        params: ChatUiStreamParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): StreamResponse<String>
 
     /** A view of [ChatService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -401,20 +413,32 @@ interface ChatService {
          * same as [ChatService.respondStreaming].
          */
         @MustBeClosed
+        fun respondStreaming(id: String): HttpResponseFor<StreamResponse<String>> =
+            respondStreaming(id, ChatRespondParams.none())
+
+        /** @see respondStreaming */
+        @MustBeClosed
         fun respondStreaming(
             id: String,
-            params: ChatRespondParams,
+            params: ChatRespondParams = ChatRespondParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<String>> =
+            respondStreaming(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see respondStreaming */
+        @MustBeClosed
+        fun respondStreaming(
+            id: String,
+            params: ChatRespondParams = ChatRespondParams.none(),
         ): HttpResponseFor<StreamResponse<String>> =
             respondStreaming(id, params, RequestOptions.none())
 
         /** @see respondStreaming */
         @MustBeClosed
         fun respondStreaming(
-            id: String,
             params: ChatRespondParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<StreamResponse<String>> =
-            respondStreaming(params.toBuilder().id(id).build(), requestOptions)
+        ): HttpResponseFor<StreamResponse<String>>
 
         /** @see respondStreaming */
         @MustBeClosed
@@ -424,25 +448,39 @@ interface ChatService {
         /** @see respondStreaming */
         @MustBeClosed
         fun respondStreaming(
-            params: ChatRespondParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<StreamResponse<String>>
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<StreamResponse<String>> =
+            respondStreaming(id, ChatRespondParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /agent/v1/chat/{id}/message`, but is otherwise the
          * same as [ChatService.sendMessage].
          */
         @MustBeClosed
-        fun sendMessage(id: String, params: ChatSendMessageParams): HttpResponse =
-            sendMessage(id, params, RequestOptions.none())
+        fun sendMessage(id: String): HttpResponse = sendMessage(id, ChatSendMessageParams.none())
 
         /** @see sendMessage */
         @MustBeClosed
         fun sendMessage(
             id: String,
-            params: ChatSendMessageParams,
+            params: ChatSendMessageParams = ChatSendMessageParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponse = sendMessage(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see sendMessage */
+        @MustBeClosed
+        fun sendMessage(
+            id: String,
+            params: ChatSendMessageParams = ChatSendMessageParams.none(),
+        ): HttpResponse = sendMessage(id, params, RequestOptions.none())
+
+        /** @see sendMessage */
+        @MustBeClosed
+        fun sendMessage(
+            params: ChatSendMessageParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse
 
         /** @see sendMessage */
         @MustBeClosed
@@ -451,10 +489,8 @@ interface ChatService {
 
         /** @see sendMessage */
         @MustBeClosed
-        fun sendMessage(
-            params: ChatSendMessageParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        fun sendMessage(id: String, requestOptions: RequestOptions): HttpResponse =
+            sendMessage(id, ChatSendMessageParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /agent/v1/chat/{id}/stream`, but is otherwise the
@@ -500,37 +536,5 @@ interface ChatService {
             requestOptions: RequestOptions,
         ): HttpResponseFor<StreamResponse<String>> =
             streamStreaming(id, ChatStreamParams.none(), requestOptions)
-
-        /**
-         * Returns a raw HTTP response for `post /agent/v1/chat/{id}/ui-stream`, but is otherwise
-         * the same as [ChatService.uiStreamStreaming].
-         */
-        @MustBeClosed
-        fun uiStreamStreaming(
-            id: String,
-            params: ChatUiStreamParams,
-        ): HttpResponseFor<StreamResponse<String>> =
-            uiStreamStreaming(id, params, RequestOptions.none())
-
-        /** @see uiStreamStreaming */
-        @MustBeClosed
-        fun uiStreamStreaming(
-            id: String,
-            params: ChatUiStreamParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<StreamResponse<String>> =
-            uiStreamStreaming(params.toBuilder().id(id).build(), requestOptions)
-
-        /** @see uiStreamStreaming */
-        @MustBeClosed
-        fun uiStreamStreaming(params: ChatUiStreamParams): HttpResponseFor<StreamResponse<String>> =
-            uiStreamStreaming(params, RequestOptions.none())
-
-        /** @see uiStreamStreaming */
-        @MustBeClosed
-        fun uiStreamStreaming(
-            params: ChatUiStreamParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<StreamResponse<String>>
     }
 }
