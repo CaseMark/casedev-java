@@ -11,7 +11,10 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Delete vault group */
+/**
+ * Soft-deletes a vault group that no longer has any active vaults assigned. This operation is
+ * blocked when the group still contains vaults.
+ */
 class GroupDeleteParams
 private constructor(
     private val groupId: String?,

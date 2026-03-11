@@ -23,7 +23,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Create a new web application project */
+/**
+ * Creates a new application project, validates GitHub access, provisions a default case.dev domain,
+ * and starts the deployment workflow. The initial response returns as soon as the workflow is
+ * queued so clients can poll for progress.
+ */
 class ProjectCreateParams
 private constructor(
     private val body: Body,
@@ -32,7 +36,7 @@ private constructor(
 ) : Params {
 
     /**
-     * GitHub repository URL or "owner/repo"
+     * GitHub repository URL or owner/repo identifier
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -40,7 +44,7 @@ private constructor(
     fun gitRepo(): String = body.gitRepo()
 
     /**
-     * Project name
+     * Human-readable project name
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -48,7 +52,7 @@ private constructor(
     fun name(): String = body.name()
 
     /**
-     * Custom build command
+     * Custom build command to override the framework default
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -56,7 +60,7 @@ private constructor(
     fun buildCommand(): Optional<String> = body.buildCommand()
 
     /**
-     * Environment variables to set on the project
+     * Environment variables to create before the first deployment
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -64,7 +68,7 @@ private constructor(
     fun environmentVariables(): Optional<List<EnvironmentVariable>> = body.environmentVariables()
 
     /**
-     * Framework (e.g., "nextjs", "remix", "astro")
+     * Framework preset for the hosting project, such as nextjs or remix
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -72,7 +76,7 @@ private constructor(
     fun framework(): Optional<String> = body.framework()
 
     /**
-     * Git branch to deploy
+     * Git branch to deploy. Defaults to main.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -80,7 +84,7 @@ private constructor(
     fun gitBranch(): Optional<String> = body.gitBranch()
 
     /**
-     * Custom install command
+     * Custom install command to override the framework default
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -88,7 +92,7 @@ private constructor(
     fun installCommand(): Optional<String> = body.installCommand()
 
     /**
-     * Build output directory
+     * Build output directory relative to the project root
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -96,7 +100,7 @@ private constructor(
     fun outputDirectory(): Optional<String> = body.outputDirectory()
 
     /**
-     * Root directory of the project
+     * Repository subdirectory that contains the app to deploy
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -219,7 +223,7 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** GitHub repository URL or "owner/repo" */
+        /** GitHub repository URL or owner/repo identifier */
         fun gitRepo(gitRepo: String) = apply { body.gitRepo(gitRepo) }
 
         /**
@@ -230,7 +234,7 @@ private constructor(
          */
         fun gitRepo(gitRepo: JsonField<String>) = apply { body.gitRepo(gitRepo) }
 
-        /** Project name */
+        /** Human-readable project name */
         fun name(name: String) = apply { body.name(name) }
 
         /**
@@ -241,7 +245,7 @@ private constructor(
          */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
-        /** Custom build command */
+        /** Custom build command to override the framework default */
         fun buildCommand(buildCommand: String) = apply { body.buildCommand(buildCommand) }
 
         /**
@@ -255,7 +259,7 @@ private constructor(
             body.buildCommand(buildCommand)
         }
 
-        /** Environment variables to set on the project */
+        /** Environment variables to create before the first deployment */
         fun environmentVariables(environmentVariables: List<EnvironmentVariable>) = apply {
             body.environmentVariables(environmentVariables)
         }
@@ -281,7 +285,7 @@ private constructor(
             body.addEnvironmentVariable(environmentVariable)
         }
 
-        /** Framework (e.g., "nextjs", "remix", "astro") */
+        /** Framework preset for the hosting project, such as nextjs or remix */
         fun framework(framework: String) = apply { body.framework(framework) }
 
         /**
@@ -293,7 +297,7 @@ private constructor(
          */
         fun framework(framework: JsonField<String>) = apply { body.framework(framework) }
 
-        /** Git branch to deploy */
+        /** Git branch to deploy. Defaults to main. */
         fun gitBranch(gitBranch: String) = apply { body.gitBranch(gitBranch) }
 
         /**
@@ -305,7 +309,7 @@ private constructor(
          */
         fun gitBranch(gitBranch: JsonField<String>) = apply { body.gitBranch(gitBranch) }
 
-        /** Custom install command */
+        /** Custom install command to override the framework default */
         fun installCommand(installCommand: String) = apply { body.installCommand(installCommand) }
 
         /**
@@ -319,7 +323,7 @@ private constructor(
             body.installCommand(installCommand)
         }
 
-        /** Build output directory */
+        /** Build output directory relative to the project root */
         fun outputDirectory(outputDirectory: String) = apply {
             body.outputDirectory(outputDirectory)
         }
@@ -335,7 +339,7 @@ private constructor(
             body.outputDirectory(outputDirectory)
         }
 
-        /** Root directory of the project */
+        /** Repository subdirectory that contains the app to deploy */
         fun rootDirectory(rootDirectory: String) = apply { body.rootDirectory(rootDirectory) }
 
         /**
@@ -547,7 +551,7 @@ private constructor(
         )
 
         /**
-         * GitHub repository URL or "owner/repo"
+         * GitHub repository URL or owner/repo identifier
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -555,7 +559,7 @@ private constructor(
         fun gitRepo(): String = gitRepo.getRequired("gitRepo")
 
         /**
-         * Project name
+         * Human-readable project name
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -563,7 +567,7 @@ private constructor(
         fun name(): String = name.getRequired("name")
 
         /**
-         * Custom build command
+         * Custom build command to override the framework default
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -571,7 +575,7 @@ private constructor(
         fun buildCommand(): Optional<String> = buildCommand.getOptional("buildCommand")
 
         /**
-         * Environment variables to set on the project
+         * Environment variables to create before the first deployment
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -580,7 +584,7 @@ private constructor(
             environmentVariables.getOptional("environmentVariables")
 
         /**
-         * Framework (e.g., "nextjs", "remix", "astro")
+         * Framework preset for the hosting project, such as nextjs or remix
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -588,7 +592,7 @@ private constructor(
         fun framework(): Optional<String> = framework.getOptional("framework")
 
         /**
-         * Git branch to deploy
+         * Git branch to deploy. Defaults to main.
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -596,7 +600,7 @@ private constructor(
         fun gitBranch(): Optional<String> = gitBranch.getOptional("gitBranch")
 
         /**
-         * Custom install command
+         * Custom install command to override the framework default
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -604,7 +608,7 @@ private constructor(
         fun installCommand(): Optional<String> = installCommand.getOptional("installCommand")
 
         /**
-         * Build output directory
+         * Build output directory relative to the project root
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -612,7 +616,7 @@ private constructor(
         fun outputDirectory(): Optional<String> = outputDirectory.getOptional("outputDirectory")
 
         /**
-         * Root directory of the project
+         * Repository subdirectory that contains the app to deploy
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -751,7 +755,7 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** GitHub repository URL or "owner/repo" */
+            /** GitHub repository URL or owner/repo identifier */
             fun gitRepo(gitRepo: String) = gitRepo(JsonField.of(gitRepo))
 
             /**
@@ -763,7 +767,7 @@ private constructor(
              */
             fun gitRepo(gitRepo: JsonField<String>) = apply { this.gitRepo = gitRepo }
 
-            /** Project name */
+            /** Human-readable project name */
             fun name(name: String) = name(JsonField.of(name))
 
             /**
@@ -775,7 +779,7 @@ private constructor(
              */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
-            /** Custom build command */
+            /** Custom build command to override the framework default */
             fun buildCommand(buildCommand: String) = buildCommand(JsonField.of(buildCommand))
 
             /**
@@ -789,7 +793,7 @@ private constructor(
                 this.buildCommand = buildCommand
             }
 
-            /** Environment variables to set on the project */
+            /** Environment variables to create before the first deployment */
             fun environmentVariables(environmentVariables: List<EnvironmentVariable>) =
                 environmentVariables(JsonField.of(environmentVariables))
 
@@ -817,7 +821,7 @@ private constructor(
                     }
             }
 
-            /** Framework (e.g., "nextjs", "remix", "astro") */
+            /** Framework preset for the hosting project, such as nextjs or remix */
             fun framework(framework: String) = framework(JsonField.of(framework))
 
             /**
@@ -829,7 +833,7 @@ private constructor(
              */
             fun framework(framework: JsonField<String>) = apply { this.framework = framework }
 
-            /** Git branch to deploy */
+            /** Git branch to deploy. Defaults to main. */
             fun gitBranch(gitBranch: String) = gitBranch(JsonField.of(gitBranch))
 
             /**
@@ -841,7 +845,7 @@ private constructor(
              */
             fun gitBranch(gitBranch: JsonField<String>) = apply { this.gitBranch = gitBranch }
 
-            /** Custom install command */
+            /** Custom install command to override the framework default */
             fun installCommand(installCommand: String) =
                 installCommand(JsonField.of(installCommand))
 
@@ -856,7 +860,7 @@ private constructor(
                 this.installCommand = installCommand
             }
 
-            /** Build output directory */
+            /** Build output directory relative to the project root */
             fun outputDirectory(outputDirectory: String) =
                 outputDirectory(JsonField.of(outputDirectory))
 
@@ -871,7 +875,7 @@ private constructor(
                 this.outputDirectory = outputDirectory
             }
 
-            /** Root directory of the project */
+            /** Repository subdirectory that contains the app to deploy */
             fun rootDirectory(rootDirectory: String) = rootDirectory(JsonField.of(rootDirectory))
 
             /**
@@ -1045,7 +1049,7 @@ private constructor(
         fun key(): String = key.getRequired("key")
 
         /**
-         * Deployment targets for this variable
+         * Deployment targets that should receive this variable
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -1061,7 +1065,7 @@ private constructor(
         fun value(): String = value.getRequired("value")
 
         /**
-         * Variable type
+         * Storage mode for the environment variable value
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1153,7 +1157,7 @@ private constructor(
              */
             fun key(key: JsonField<String>) = apply { this.key = key }
 
-            /** Deployment targets for this variable */
+            /** Deployment targets that should receive this variable */
             fun target(target: List<Target>) = target(JsonField.of(target))
 
             /**
@@ -1191,7 +1195,7 @@ private constructor(
              */
             fun value(value: JsonField<String>) = apply { this.value = value }
 
-            /** Variable type */
+            /** Storage mode for the environment variable value */
             fun type(type: Type) = type(JsonField.of(type))
 
             /**
@@ -1416,7 +1420,7 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        /** Variable type */
+        /** Storage mode for the environment variable value */
         class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**

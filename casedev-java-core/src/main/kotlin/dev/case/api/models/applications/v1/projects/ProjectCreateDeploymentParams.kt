@@ -23,7 +23,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Trigger a new deployment for a project. */
+/**
+ * Starts a new deployment for an existing project using its saved repository and hosting
+ * configuration. Any environment variables passed in the request are merged into the deployment
+ * workflow before the build starts.
+ */
 class ProjectCreateDeploymentParams
 private constructor(
     private val id: String?,
@@ -470,7 +474,7 @@ private constructor(
         fun key(): String = key.getRequired("key")
 
         /**
-         * Deployment targets for this variable
+         * Deployment targets that should receive this variable
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -486,7 +490,7 @@ private constructor(
         fun value(): String = value.getRequired("value")
 
         /**
-         * Variable type
+         * Storage mode for the environment variable value
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -578,7 +582,7 @@ private constructor(
              */
             fun key(key: JsonField<String>) = apply { this.key = key }
 
-            /** Deployment targets for this variable */
+            /** Deployment targets that should receive this variable */
             fun target(target: List<Target>) = target(JsonField.of(target))
 
             /**
@@ -616,7 +620,7 @@ private constructor(
              */
             fun value(value: JsonField<String>) = apply { this.value = value }
 
-            /** Variable type */
+            /** Storage mode for the environment variable value */
             fun type(type: Type) = type(JsonField.of(type))
 
             /**
@@ -841,7 +845,7 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        /** Variable type */
+        /** Storage mode for the environment variable value */
         class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**

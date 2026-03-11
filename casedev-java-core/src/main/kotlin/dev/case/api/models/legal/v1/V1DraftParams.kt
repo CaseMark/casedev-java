@@ -1121,6 +1121,8 @@ private constructor(
         fun target(): Optional<Double> = target.getOptional("target")
 
         /**
+         * Whether the target length is measured in words or pages
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -1184,6 +1186,7 @@ private constructor(
              */
             fun target(target: JsonField<Double>) = apply { this.target = target }
 
+            /** Whether the target length is measured in words or pages */
             fun unit(unit: Unit) = unit(JsonField.of(unit))
 
             /**
@@ -1253,6 +1256,7 @@ private constructor(
             (if (target.asKnown().isPresent) 1 else 0) +
                 (unit.asKnown().getOrNull()?.validity() ?: 0)
 
+        /** Whether the target length is measured in words or pages */
         class Unit @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**

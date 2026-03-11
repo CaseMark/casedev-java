@@ -46,12 +46,16 @@ private constructor(
     fun jurisdiction(): Optional<String> = body.jurisdiction()
 
     /**
+     * Maximum number of courts to return
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun limit(): Optional<Long> = body.limit()
 
     /**
+     * Number of courts to skip before returning results
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -172,6 +176,7 @@ private constructor(
             body.jurisdiction(jurisdiction)
         }
 
+        /** Maximum number of courts to return */
         fun limit(limit: Long) = apply { body.limit(limit) }
 
         /**
@@ -182,6 +187,7 @@ private constructor(
          */
         fun limit(limit: JsonField<Long>) = apply { body.limit(limit) }
 
+        /** Number of courts to skip before returning results */
         fun offset(offset: Long) = apply { body.offset(offset) }
 
         /**
@@ -380,12 +386,16 @@ private constructor(
         fun jurisdiction(): Optional<String> = jurisdiction.getOptional("jurisdiction")
 
         /**
+         * Maximum number of courts to return
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun limit(): Optional<Long> = limit.getOptional("limit")
 
         /**
+         * Number of courts to skip before returning results
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -501,6 +511,7 @@ private constructor(
                 this.jurisdiction = jurisdiction
             }
 
+            /** Maximum number of courts to return */
             fun limit(limit: Long) = limit(JsonField.of(limit))
 
             /**
@@ -512,6 +523,7 @@ private constructor(
              */
             fun limit(limit: JsonField<Long>) = apply { this.limit = limit }
 
+            /** Number of courts to skip before returning results */
             fun offset(offset: Long) = offset(JsonField.of(offset))
 
             /**
