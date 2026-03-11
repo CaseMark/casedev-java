@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.1 (2026-03-11)
+
+Full Changelog: [v0.8.0...v0.8.1](https://github.com/CaseMark/casedev-java/compare/v0.8.0...v0.8.1)
+
+### Bug Fixes
+
+* **client:** incorrect `Retry-After` parsing ([788d30d](https://github.com/CaseMark/casedev-java/commit/788d30db02a311038b17535204932bcdd753d4c4))
+
 ## 0.8.0 (2026-03-09)
 
 Full Changelog: [v0.7.3...v0.8.0](https://github.com/CaseMark/casedev-java/compare/v0.7.3...v0.8.0)
