@@ -20,7 +20,10 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Cancel a running deployment */
+/**
+ * Cancels a running deployment after verifying that the referenced project belongs to the
+ * authenticated organization. Use this when a build is stuck, misconfigured, or no longer needed.
+ */
 class DeploymentCancelParams
 private constructor(
     private val id: String?,
@@ -32,7 +35,7 @@ private constructor(
     fun id(): Optional<String> = Optional.ofNullable(id)
 
     /**
-     * Project ID (for authorization)
+     * Project ID used to verify access to the deployment
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -99,7 +102,7 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** Project ID (for authorization) */
+        /** Project ID used to verify access to the deployment */
         fun projectId(projectId: String) = apply { body.projectId(projectId) }
 
         /**
@@ -276,7 +279,7 @@ private constructor(
         ) : this(projectId, mutableMapOf())
 
         /**
-         * Project ID (for authorization)
+         * Project ID used to verify access to the deployment
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -327,7 +330,7 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** Project ID (for authorization) */
+            /** Project ID used to verify access to the deployment */
             fun projectId(projectId: String) = projectId(JsonField.of(projectId))
 
             /**

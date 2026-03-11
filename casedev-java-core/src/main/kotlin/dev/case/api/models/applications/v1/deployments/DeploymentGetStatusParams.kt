@@ -9,7 +9,10 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Get the current status of a deployment */
+/**
+ * Returns the current status of a deployment without fetching full build logs. Use this endpoint
+ * for lightweight polling while a deployment is building or waiting to become ready.
+ */
 class DeploymentGetStatusParams
 private constructor(
     private val id: String?,

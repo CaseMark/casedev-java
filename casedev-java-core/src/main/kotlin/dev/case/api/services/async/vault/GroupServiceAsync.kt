@@ -27,24 +27,23 @@ interface GroupServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): GroupServiceAsync
 
-    /** Create vault group */
-    fun create(): CompletableFuture<Void?> = create(GroupCreateParams.none())
-
-    /** @see create */
-    fun create(
-        params: GroupCreateParams = GroupCreateParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
-
-    /** @see create */
-    fun create(params: GroupCreateParams = GroupCreateParams.none()): CompletableFuture<Void?> =
+    /**
+     * Creates a vault group for organizing vaults and applying group-scoped access controls.
+     * Group-scoped API keys cannot create or manage vault groups.
+     */
+    fun create(params: GroupCreateParams): CompletableFuture<Void?> =
         create(params, RequestOptions.none())
 
     /** @see create */
-    fun create(requestOptions: RequestOptions): CompletableFuture<Void?> =
-        create(GroupCreateParams.none(), requestOptions)
+    fun create(
+        params: GroupCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?>
 
-    /** Update vault group */
+    /**
+     * Updates a vault group for the authenticated organization. Only provided fields are changed,
+     * and setting description to null removes the current description.
+     */
     fun update(groupId: String): CompletableFuture<Void?> =
         update(groupId, GroupUpdateParams.none())
 
@@ -76,7 +75,10 @@ interface GroupServiceAsync {
     fun update(groupId: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
         update(groupId, GroupUpdateParams.none(), requestOptions)
 
-    /** List vault groups */
+    /**
+     * Lists vault groups visible to the authenticated organization. Group-scoped API keys only
+     * receive groups within their allowed scope.
+     */
     fun list(): CompletableFuture<Void?> = list(GroupListParams.none())
 
     /** @see list */
@@ -93,7 +95,10 @@ interface GroupServiceAsync {
     fun list(requestOptions: RequestOptions): CompletableFuture<Void?> =
         list(GroupListParams.none(), requestOptions)
 
-    /** Delete vault group */
+    /**
+     * Soft-deletes a vault group that no longer has any active vaults assigned. This operation is
+     * blocked when the group still contains vaults.
+     */
     fun delete(groupId: String): CompletableFuture<Void?> =
         delete(groupId, GroupDeleteParams.none())
 
@@ -141,22 +146,14 @@ interface GroupServiceAsync {
          * Returns a raw HTTP response for `post /vault/groups`, but is otherwise the same as
          * [GroupServiceAsync.create].
          */
-        fun create(): CompletableFuture<HttpResponse> = create(GroupCreateParams.none())
+        fun create(params: GroupCreateParams): CompletableFuture<HttpResponse> =
+            create(params, RequestOptions.none())
 
         /** @see create */
         fun create(
-            params: GroupCreateParams = GroupCreateParams.none(),
+            params: GroupCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse>
-
-        /** @see create */
-        fun create(
-            params: GroupCreateParams = GroupCreateParams.none()
-        ): CompletableFuture<HttpResponse> = create(params, RequestOptions.none())
-
-        /** @see create */
-        fun create(requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
-            create(GroupCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /vault/groups/{groupId}`, but is otherwise the

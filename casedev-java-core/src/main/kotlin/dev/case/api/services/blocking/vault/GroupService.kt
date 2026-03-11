@@ -27,23 +27,19 @@ interface GroupService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): GroupService
 
-    /** Create vault group */
-    fun create() = create(GroupCreateParams.none())
+    /**
+     * Creates a vault group for organizing vaults and applying group-scoped access controls.
+     * Group-scoped API keys cannot create or manage vault groups.
+     */
+    fun create(params: GroupCreateParams) = create(params, RequestOptions.none())
 
     /** @see create */
-    fun create(
-        params: GroupCreateParams = GroupCreateParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    fun create(params: GroupCreateParams, requestOptions: RequestOptions = RequestOptions.none())
 
-    /** @see create */
-    fun create(params: GroupCreateParams = GroupCreateParams.none()) =
-        create(params, RequestOptions.none())
-
-    /** @see create */
-    fun create(requestOptions: RequestOptions) = create(GroupCreateParams.none(), requestOptions)
-
-    /** Update vault group */
+    /**
+     * Updates a vault group for the authenticated organization. Only provided fields are changed,
+     * and setting description to null removes the current description.
+     */
     fun update(groupId: String) = update(groupId, GroupUpdateParams.none())
 
     /** @see update */
@@ -67,7 +63,10 @@ interface GroupService {
     fun update(groupId: String, requestOptions: RequestOptions) =
         update(groupId, GroupUpdateParams.none(), requestOptions)
 
-    /** List vault groups */
+    /**
+     * Lists vault groups visible to the authenticated organization. Group-scoped API keys only
+     * receive groups within their allowed scope.
+     */
     fun list() = list(GroupListParams.none())
 
     /** @see list */
@@ -82,7 +81,10 @@ interface GroupService {
     /** @see list */
     fun list(requestOptions: RequestOptions) = list(GroupListParams.none(), requestOptions)
 
-    /** Delete vault group */
+    /**
+     * Soft-deletes a vault group that no longer has any active vaults assigned. This operation is
+     * blocked when the group still contains vaults.
+     */
     fun delete(groupId: String) = delete(groupId, GroupDeleteParams.none())
 
     /** @see delete */
@@ -120,24 +122,15 @@ interface GroupService {
          * Returns a raw HTTP response for `post /vault/groups`, but is otherwise the same as
          * [GroupService.create].
          */
-        @MustBeClosed fun create(): HttpResponse = create(GroupCreateParams.none())
+        @MustBeClosed
+        fun create(params: GroupCreateParams): HttpResponse = create(params, RequestOptions.none())
 
         /** @see create */
         @MustBeClosed
         fun create(
-            params: GroupCreateParams = GroupCreateParams.none(),
+            params: GroupCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponse
-
-        /** @see create */
-        @MustBeClosed
-        fun create(params: GroupCreateParams = GroupCreateParams.none()): HttpResponse =
-            create(params, RequestOptions.none())
-
-        /** @see create */
-        @MustBeClosed
-        fun create(requestOptions: RequestOptions): HttpResponse =
-            create(GroupCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /vault/groups/{groupId}`, but is otherwise the

@@ -6,13 +6,26 @@ import dev.case.api.core.Params
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
-/** List all web application projects */
+/**
+ * Lists application projects and deployed Thurgood apps for the authenticated organization. Use
+ * enrich=true to include additional hosting metadata for projects linked to Vercel.
+ */
 class ProjectListParams
 private constructor(
+    private val enrich: Boolean?,
+    private val limit: Double?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
+
+    /** Whether to include additional hosting metadata from Vercel */
+    fun enrich(): Optional<Boolean> = Optional.ofNullable(enrich)
+
+    /** Maximum number of projects to return from each backing source */
+    fun limit(): Optional<Double> = Optional.ofNullable(limit)
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -33,14 +46,44 @@ private constructor(
     /** A builder for [ProjectListParams]. */
     class Builder internal constructor() {
 
+        private var enrich: Boolean? = null
+        private var limit: Double? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(projectListParams: ProjectListParams) = apply {
+            enrich = projectListParams.enrich
+            limit = projectListParams.limit
             additionalHeaders = projectListParams.additionalHeaders.toBuilder()
             additionalQueryParams = projectListParams.additionalQueryParams.toBuilder()
         }
+
+        /** Whether to include additional hosting metadata from Vercel */
+        fun enrich(enrich: Boolean?) = apply { this.enrich = enrich }
+
+        /**
+         * Alias for [Builder.enrich].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun enrich(enrich: Boolean) = enrich(enrich as Boolean?)
+
+        /** Alias for calling [Builder.enrich] with `enrich.orElse(null)`. */
+        fun enrich(enrich: Optional<Boolean>) = enrich(enrich.getOrNull())
+
+        /** Maximum number of projects to return from each backing source */
+        fun limit(limit: Double?) = apply { this.limit = limit }
+
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun limit(limit: Double) = limit(limit as Double?)
+
+        /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
+        fun limit(limit: Optional<Double>) = limit(limit.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -146,12 +189,24 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): ProjectListParams =
-            ProjectListParams(additionalHeaders.build(), additionalQueryParams.build())
+            ProjectListParams(
+                enrich,
+                limit,
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
     }
 
     override fun _headers(): Headers = additionalHeaders
 
-    override fun _queryParams(): QueryParams = additionalQueryParams
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                enrich?.let { put("enrich", it.toString()) }
+                limit?.let { put("limit", it.toString()) }
+                putAll(additionalQueryParams)
+            }
+            .build()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -159,12 +214,15 @@ private constructor(
         }
 
         return other is ProjectListParams &&
+            enrich == other.enrich &&
+            limit == other.limit &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = Objects.hash(additionalHeaders, additionalQueryParams)
+    override fun hashCode(): Int =
+        Objects.hash(enrich, limit, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "ProjectListParams{additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "ProjectListParams{enrich=$enrich, limit=$limit, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

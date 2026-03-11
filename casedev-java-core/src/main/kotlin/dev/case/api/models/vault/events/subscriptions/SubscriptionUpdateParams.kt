@@ -39,36 +39,48 @@ private constructor(
     fun subscriptionId(): Optional<String> = Optional.ofNullable(subscriptionId)
 
     /**
+     * Updated webhook endpoint URL for deliveries
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun callbackUrl(): Optional<String> = body.callbackUrl()
 
     /**
+     * Whether to remove the existing signing secret
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun clearSigningSecret(): Optional<Boolean> = body.clearSigningSecret()
 
     /**
+     * Updated event types to deliver for this subscription
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun eventTypes(): Optional<List<String>> = body.eventTypes()
 
     /**
+     * Whether the subscription should continue delivering events
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun isActive(): Optional<Boolean> = body.isActive()
 
     /**
+     * Updated vault object IDs to limit notifications to. Pass an empty array to remove the filter.
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun objectIds(): Optional<List<String>> = body.objectIds()
 
     /**
+     * Replacement secret used to sign webhook deliveries
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -180,6 +192,7 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
+        /** Updated webhook endpoint URL for deliveries */
         fun callbackUrl(callbackUrl: String) = apply { body.callbackUrl(callbackUrl) }
 
         /**
@@ -191,6 +204,7 @@ private constructor(
          */
         fun callbackUrl(callbackUrl: JsonField<String>) = apply { body.callbackUrl(callbackUrl) }
 
+        /** Whether to remove the existing signing secret */
         fun clearSigningSecret(clearSigningSecret: Boolean) = apply {
             body.clearSigningSecret(clearSigningSecret)
         }
@@ -206,6 +220,7 @@ private constructor(
             body.clearSigningSecret(clearSigningSecret)
         }
 
+        /** Updated event types to deliver for this subscription */
         fun eventTypes(eventTypes: List<String>) = apply { body.eventTypes(eventTypes) }
 
         /**
@@ -224,6 +239,7 @@ private constructor(
          */
         fun addEventType(eventType: String) = apply { body.addEventType(eventType) }
 
+        /** Whether the subscription should continue delivering events */
         fun isActive(isActive: Boolean) = apply { body.isActive(isActive) }
 
         /**
@@ -235,6 +251,10 @@ private constructor(
          */
         fun isActive(isActive: JsonField<Boolean>) = apply { body.isActive(isActive) }
 
+        /**
+         * Updated vault object IDs to limit notifications to. Pass an empty array to remove the
+         * filter.
+         */
         fun objectIds(objectIds: List<String>) = apply { body.objectIds(objectIds) }
 
         /**
@@ -253,6 +273,7 @@ private constructor(
          */
         fun addObjectId(objectId: String) = apply { body.addObjectId(objectId) }
 
+        /** Replacement secret used to sign webhook deliveries */
         fun signingSecret(signingSecret: String) = apply { body.signingSecret(signingSecret) }
 
         /**
@@ -461,12 +482,16 @@ private constructor(
         )
 
         /**
+         * Updated webhook endpoint URL for deliveries
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun callbackUrl(): Optional<String> = callbackUrl.getOptional("callbackUrl")
 
         /**
+         * Whether to remove the existing signing secret
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -474,24 +499,33 @@ private constructor(
             clearSigningSecret.getOptional("clearSigningSecret")
 
         /**
+         * Updated event types to deliver for this subscription
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun eventTypes(): Optional<List<String>> = eventTypes.getOptional("eventTypes")
 
         /**
+         * Whether the subscription should continue delivering events
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun isActive(): Optional<Boolean> = isActive.getOptional("isActive")
 
         /**
+         * Updated vault object IDs to limit notifications to. Pass an empty array to remove the
+         * filter.
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun objectIds(): Optional<List<String>> = objectIds.getOptional("objectIds")
 
         /**
+         * Replacement secret used to sign webhook deliveries
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -591,6 +625,7 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
+            /** Updated webhook endpoint URL for deliveries */
             fun callbackUrl(callbackUrl: String) = callbackUrl(JsonField.of(callbackUrl))
 
             /**
@@ -604,6 +639,7 @@ private constructor(
                 this.callbackUrl = callbackUrl
             }
 
+            /** Whether to remove the existing signing secret */
             fun clearSigningSecret(clearSigningSecret: Boolean) =
                 clearSigningSecret(JsonField.of(clearSigningSecret))
 
@@ -618,6 +654,7 @@ private constructor(
                 this.clearSigningSecret = clearSigningSecret
             }
 
+            /** Updated event types to deliver for this subscription */
             fun eventTypes(eventTypes: List<String>) = eventTypes(JsonField.of(eventTypes))
 
             /**
@@ -643,6 +680,7 @@ private constructor(
                     }
             }
 
+            /** Whether the subscription should continue delivering events */
             fun isActive(isActive: Boolean) = isActive(JsonField.of(isActive))
 
             /**
@@ -654,6 +692,10 @@ private constructor(
              */
             fun isActive(isActive: JsonField<Boolean>) = apply { this.isActive = isActive }
 
+            /**
+             * Updated vault object IDs to limit notifications to. Pass an empty array to remove the
+             * filter.
+             */
             fun objectIds(objectIds: List<String>) = objectIds(JsonField.of(objectIds))
 
             /**
@@ -679,6 +721,7 @@ private constructor(
                     }
             }
 
+            /** Replacement secret used to sign webhook deliveries */
             fun signingSecret(signingSecret: String) = signingSecret(JsonField.of(signingSecret))
 
             /**

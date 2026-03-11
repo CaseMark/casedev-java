@@ -31,7 +31,11 @@ interface DeploymentServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): DeploymentServiceAsync
 
-    /** Trigger a new deployment for a project */
+    /**
+     * Creates a deployment for an existing project by fetching repository files from GitHub and
+     * uploading them to the hosting provider. Use ref to deploy a branch, tag, or commit other than
+     * the project default branch.
+     */
     fun create(params: DeploymentCreateParams): CompletableFuture<Void?> =
         create(params, RequestOptions.none())
 
@@ -41,7 +45,10 @@ interface DeploymentServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
-    /** Get details of a specific deployment including build logs */
+    /**
+     * Returns deployment details for one project in the authenticated organization. Set
+     * includeLogs=true to include recent build output in the response.
+     */
     fun retrieve(id: String, params: DeploymentRetrieveParams): CompletableFuture<Void?> =
         retrieve(id, params, RequestOptions.none())
 
@@ -62,7 +69,10 @@ interface DeploymentServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
-    /** List deployments for a project */
+    /**
+     * Lists recent deployments for one project in the authenticated organization. Use the optional
+     * filters to narrow results by target or deployment state.
+     */
     fun list(params: DeploymentListParams): CompletableFuture<Void?> =
         list(params, RequestOptions.none())
 
@@ -72,7 +82,11 @@ interface DeploymentServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
-    /** Cancel a running deployment */
+    /**
+     * Cancels a running deployment after verifying that the referenced project belongs to the
+     * authenticated organization. Use this when a build is stuck, misconfigured, or no longer
+     * needed.
+     */
     fun cancel(id: String, params: DeploymentCancelParams): CompletableFuture<Void?> =
         cancel(id, params, RequestOptions.none())
 
@@ -112,7 +126,10 @@ interface DeploymentServiceAsync {
     fun createFromFiles(requestOptions: RequestOptions): CompletableFuture<Void?> =
         createFromFiles(DeploymentCreateFromFilesParams.none(), requestOptions)
 
-    /** Get build logs for a specific deployment */
+    /**
+     * Returns build and runtime log events for a deployment after verifying access to the owning
+     * project. Use this when you need detailed output for a failed or in-progress build.
+     */
     fun getLogs(id: String, params: DeploymentGetLogsParams): CompletableFuture<Void?> =
         getLogs(id, params, RequestOptions.none())
 
@@ -133,7 +150,10 @@ interface DeploymentServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
-    /** Get the current status of a deployment */
+    /**
+     * Returns the current status of a deployment without fetching full build logs. Use this
+     * endpoint for lightweight polling while a deployment is building or waiting to become ready.
+     */
     fun getStatus(id: String): CompletableFuture<Void?> =
         getStatus(id, DeploymentGetStatusParams.none())
 

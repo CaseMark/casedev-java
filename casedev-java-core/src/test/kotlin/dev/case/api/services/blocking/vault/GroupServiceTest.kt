@@ -4,6 +4,8 @@ package dev.case.api.services.blocking.vault
 
 import dev.case.api.TestServerExtension
 import dev.case.api.client.okhttp.CasedevOkHttpClient
+import dev.case.api.models.vault.groups.GroupCreateParams
+import dev.case.api.models.vault.groups.GroupUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -19,7 +21,9 @@ internal class GroupServiceTest {
                 .build()
         val groupService = client.vault().groups()
 
-        groupService.create()
+        groupService.create(
+            GroupCreateParams.builder().name("name").description("description").build()
+        )
     }
 
     @Test
@@ -31,7 +35,13 @@ internal class GroupServiceTest {
                 .build()
         val groupService = client.vault().groups()
 
-        groupService.update("groupId")
+        groupService.update(
+            GroupUpdateParams.builder()
+                .groupId("groupId")
+                .description("description")
+                .name("name")
+                .build()
+        )
     }
 
     @Test

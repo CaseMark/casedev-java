@@ -14,6 +14,7 @@ import dev.case.api.models.applications.v1.projects.ProjectDeleteParams
 import dev.case.api.models.applications.v1.projects.ProjectGetRuntimeLogsParams
 import dev.case.api.models.applications.v1.projects.ProjectListDeploymentsParams
 import dev.case.api.models.applications.v1.projects.ProjectListEnvParams
+import dev.case.api.models.applications.v1.projects.ProjectListParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -77,7 +78,8 @@ internal class ProjectServiceAsyncTest {
                 .build()
         val projectServiceAsync = client.applications().v1().projects()
 
-        val projectsFuture = projectServiceAsync.list()
+        val projectsFuture =
+            projectServiceAsync.list(ProjectListParams.builder().enrich(true).limit(0.0).build())
 
         val projects = projectsFuture.get()
         projects.validate()

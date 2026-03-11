@@ -60,6 +60,8 @@ private constructor(
     fun inputFormat(): Optional<InputFormat> = body.inputFormat()
 
     /**
+     * Optional template composition and styling settings used during document generation
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -182,6 +184,7 @@ private constructor(
             body.inputFormat(inputFormat)
         }
 
+        /** Optional template composition and styling settings used during document generation */
         fun options(options: Options) = apply { body.options(options) }
 
         /**
@@ -383,6 +386,8 @@ private constructor(
         fun inputFormat(): Optional<InputFormat> = inputFormat.getOptional("input_format")
 
         /**
+         * Optional template composition and styling settings used during document generation
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -505,6 +510,9 @@ private constructor(
                 this.inputFormat = inputFormat
             }
 
+            /**
+             * Optional template composition and styling settings used during document generation
+             */
             fun options(options: Options) = options(JsonField.of(options))
 
             /**
@@ -886,6 +894,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** Optional template composition and styling settings used during document generation */
     class Options
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(

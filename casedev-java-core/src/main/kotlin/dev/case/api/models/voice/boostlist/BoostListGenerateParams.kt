@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package dev.case.api.models.applications.v1.deployments
+package dev.case.api.models.voice.boostlist
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -12,9 +12,11 @@ import dev.case.api.core.JsonField
 import dev.case.api.core.JsonMissing
 import dev.case.api.core.JsonValue
 import dev.case.api.core.Params
+import dev.case.api.core.checkKnown
 import dev.case.api.core.checkRequired
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
+import dev.case.api.core.toImmutable
 import dev.case.api.errors.CasedevInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -22,11 +24,10 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Creates a deployment for an existing project by fetching repository files from GitHub and
- * uploading them to the hosting provider. Use ref to deploy a branch, tag, or commit other than the
- * project default branch.
+ * Generates a categorized word boost list from a completed transcription job. Extracts entities
+ * from the pass-1 transcript for use as `word_boost` in a second transcription pass.
  */
-class DeploymentCreateParams
+class BoostListGenerateParams
 private constructor(
     private val body: Body,
     private val additionalHeaders: Headers,
@@ -34,49 +35,35 @@ private constructor(
 ) : Params {
 
     /**
-     * Project ID to deploy
+     * Completed pass-1 transcription job ID (tr_...)
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun projectId(): String = body.projectId()
+    fun transcriptionJobId(): String = body.transcriptionJobId()
 
     /**
-     * Git branch, tag, or commit to deploy. Defaults to the project branch.
+     * Optional filter for entity categories to extract
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun ref(): Optional<String> = body.ref()
+    fun categories(): Optional<List<Category>> = body.categories()
 
     /**
-     * Deployment target environment
+     * Returns the raw JSON value of [transcriptionJobId].
      *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Unlike [transcriptionJobId], this method doesn't throw if the JSON field has an unexpected
+     * type.
      */
-    fun target(): Optional<Target> = body.target()
+    fun _transcriptionJobId(): JsonField<String> = body._transcriptionJobId()
 
     /**
-     * Returns the raw JSON value of [projectId].
+     * Returns the raw JSON value of [categories].
      *
-     * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [categories], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _projectId(): JsonField<String> = body._projectId()
-
-    /**
-     * Returns the raw JSON value of [ref].
-     *
-     * Unlike [ref], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _ref(): JsonField<String> = body._ref()
-
-    /**
-     * Returns the raw JSON value of [target].
-     *
-     * Unlike [target], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _target(): JsonField<Target> = body._target()
+    fun _categories(): JsonField<List<Category>> = body._categories()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -91,17 +78,17 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [DeploymentCreateParams].
+         * Returns a mutable builder for constructing an instance of [BoostListGenerateParams].
          *
          * The following fields are required:
          * ```java
-         * .projectId()
+         * .transcriptionJobId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [DeploymentCreateParams]. */
+    /** A builder for [BoostListGenerateParams]. */
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -109,10 +96,10 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(deploymentCreateParams: DeploymentCreateParams) = apply {
-            body = deploymentCreateParams.body.toBuilder()
-            additionalHeaders = deploymentCreateParams.additionalHeaders.toBuilder()
-            additionalQueryParams = deploymentCreateParams.additionalQueryParams.toBuilder()
+        internal fun from(boostListGenerateParams: BoostListGenerateParams) = apply {
+            body = boostListGenerateParams.body.toBuilder()
+            additionalHeaders = boostListGenerateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = boostListGenerateParams.additionalQueryParams.toBuilder()
         }
 
         /**
@@ -120,45 +107,47 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
-         * - [projectId]
-         * - [ref]
-         * - [target]
+         * - [transcriptionJobId]
+         * - [categories]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** Project ID to deploy */
-        fun projectId(projectId: String) = apply { body.projectId(projectId) }
+        /** Completed pass-1 transcription job ID (tr_...) */
+        fun transcriptionJobId(transcriptionJobId: String) = apply {
+            body.transcriptionJobId(transcriptionJobId)
+        }
 
         /**
-         * Sets [Builder.projectId] to an arbitrary JSON value.
+         * Sets [Builder.transcriptionJobId] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.projectId] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.transcriptionJobId] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun projectId(projectId: JsonField<String>) = apply { body.projectId(projectId) }
+        fun transcriptionJobId(transcriptionJobId: JsonField<String>) = apply {
+            body.transcriptionJobId(transcriptionJobId)
+        }
 
-        /** Git branch, tag, or commit to deploy. Defaults to the project branch. */
-        fun ref(ref: String) = apply { body.ref(ref) }
+        /** Optional filter for entity categories to extract */
+        fun categories(categories: List<Category>) = apply { body.categories(categories) }
 
         /**
-         * Sets [Builder.ref] to an arbitrary JSON value.
+         * Sets [Builder.categories] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.ref] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * You should usually call [Builder.categories] with a well-typed `List<Category>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun ref(ref: JsonField<String>) = apply { body.ref(ref) }
-
-        /** Deployment target environment */
-        fun target(target: Target) = apply { body.target(target) }
+        fun categories(categories: JsonField<List<Category>>) = apply {
+            body.categories(categories)
+        }
 
         /**
-         * Sets [Builder.target] to an arbitrary JSON value.
+         * Adds a single [Category] to [categories].
          *
-         * You should usually call [Builder.target] with a well-typed [Target] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun target(target: JsonField<Target>) = apply { body.target(target) }
+        fun addCategory(category: Category) = apply { body.addCategory(category) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -278,19 +267,19 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [DeploymentCreateParams].
+         * Returns an immutable instance of [BoostListGenerateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
          * The following fields are required:
          * ```java
-         * .projectId()
+         * .transcriptionJobId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): DeploymentCreateParams =
-            DeploymentCreateParams(
+        fun build(): BoostListGenerateParams =
+            BoostListGenerateParams(
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -306,65 +295,55 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val projectId: JsonField<String>,
-        private val ref: JsonField<String>,
-        private val target: JsonField<Target>,
+        private val transcriptionJobId: JsonField<String>,
+        private val categories: JsonField<List<Category>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("projectId")
+            @JsonProperty("transcription_job_id")
             @ExcludeMissing
-            projectId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("ref") @ExcludeMissing ref: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("target") @ExcludeMissing target: JsonField<Target> = JsonMissing.of(),
-        ) : this(projectId, ref, target, mutableMapOf())
+            transcriptionJobId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("categories")
+            @ExcludeMissing
+            categories: JsonField<List<Category>> = JsonMissing.of(),
+        ) : this(transcriptionJobId, categories, mutableMapOf())
 
         /**
-         * Project ID to deploy
+         * Completed pass-1 transcription job ID (tr_...)
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun projectId(): String = projectId.getRequired("projectId")
+        fun transcriptionJobId(): String = transcriptionJobId.getRequired("transcription_job_id")
 
         /**
-         * Git branch, tag, or commit to deploy. Defaults to the project branch.
+         * Optional filter for entity categories to extract
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun ref(): Optional<String> = ref.getOptional("ref")
+        fun categories(): Optional<List<Category>> = categories.getOptional("categories")
 
         /**
-         * Deployment target environment
+         * Returns the raw JSON value of [transcriptionJobId].
          *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Unlike [transcriptionJobId], this method doesn't throw if the JSON field has an
+         * unexpected type.
          */
-        fun target(): Optional<Target> = target.getOptional("target")
+        @JsonProperty("transcription_job_id")
+        @ExcludeMissing
+        fun _transcriptionJobId(): JsonField<String> = transcriptionJobId
 
         /**
-         * Returns the raw JSON value of [projectId].
+         * Returns the raw JSON value of [categories].
          *
-         * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected type.
+         * Unlike [categories], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("projectId") @ExcludeMissing fun _projectId(): JsonField<String> = projectId
-
-        /**
-         * Returns the raw JSON value of [ref].
-         *
-         * Unlike [ref], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("ref") @ExcludeMissing fun _ref(): JsonField<String> = ref
-
-        /**
-         * Returns the raw JSON value of [target].
-         *
-         * Unlike [target], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("target") @ExcludeMissing fun _target(): JsonField<Target> = target
+        @JsonProperty("categories")
+        @ExcludeMissing
+        fun _categories(): JsonField<List<Category>> = categories
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -385,7 +364,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .projectId()
+             * .transcriptionJobId()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -394,54 +373,57 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var projectId: JsonField<String>? = null
-            private var ref: JsonField<String> = JsonMissing.of()
-            private var target: JsonField<Target> = JsonMissing.of()
+            private var transcriptionJobId: JsonField<String>? = null
+            private var categories: JsonField<MutableList<Category>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
-                projectId = body.projectId
-                ref = body.ref
-                target = body.target
+                transcriptionJobId = body.transcriptionJobId
+                categories = body.categories.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** Project ID to deploy */
-            fun projectId(projectId: String) = projectId(JsonField.of(projectId))
+            /** Completed pass-1 transcription job ID (tr_...) */
+            fun transcriptionJobId(transcriptionJobId: String) =
+                transcriptionJobId(JsonField.of(transcriptionJobId))
 
             /**
-             * Sets [Builder.projectId] to an arbitrary JSON value.
+             * Sets [Builder.transcriptionJobId] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.projectId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.transcriptionJobId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
+            fun transcriptionJobId(transcriptionJobId: JsonField<String>) = apply {
+                this.transcriptionJobId = transcriptionJobId
+            }
 
-            /** Git branch, tag, or commit to deploy. Defaults to the project branch. */
-            fun ref(ref: String) = ref(JsonField.of(ref))
-
-            /**
-             * Sets [Builder.ref] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.ref] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun ref(ref: JsonField<String>) = apply { this.ref = ref }
-
-            /** Deployment target environment */
-            fun target(target: Target) = target(JsonField.of(target))
+            /** Optional filter for entity categories to extract */
+            fun categories(categories: List<Category>) = categories(JsonField.of(categories))
 
             /**
-             * Sets [Builder.target] to an arbitrary JSON value.
+             * Sets [Builder.categories] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.target] with a well-typed [Target] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.categories] with a well-typed `List<Category>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun target(target: JsonField<Target>) = apply { this.target = target }
+            fun categories(categories: JsonField<List<Category>>) = apply {
+                this.categories = categories.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [Category] to [categories].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addCategory(category: Category) = apply {
+                categories =
+                    (categories ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("categories", it).add(category)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -469,16 +451,15 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .projectId()
+             * .transcriptionJobId()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
                 Body(
-                    checkRequired("projectId", projectId),
-                    ref,
-                    target,
+                    checkRequired("transcriptionJobId", transcriptionJobId),
+                    (categories ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -490,9 +471,8 @@ private constructor(
                 return@apply
             }
 
-            projectId()
-            ref()
-            target().ifPresent { it.validate() }
+            transcriptionJobId()
+            categories().ifPresent { it.forEach { it.validate() } }
             validated = true
         }
 
@@ -512,9 +492,8 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (projectId.asKnown().isPresent) 1 else 0) +
-                (if (ref.asKnown().isPresent) 1 else 0) +
-                (target.asKnown().getOrNull()?.validity() ?: 0)
+            (if (transcriptionJobId.asKnown().isPresent) 1 else 0) +
+                (categories.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -522,24 +501,22 @@ private constructor(
             }
 
             return other is Body &&
-                projectId == other.projectId &&
-                ref == other.ref &&
-                target == other.target &&
+                transcriptionJobId == other.transcriptionJobId &&
+                categories == other.categories &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(projectId, ref, target, additionalProperties)
+            Objects.hash(transcriptionJobId, categories, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{projectId=$projectId, ref=$ref, target=$target, additionalProperties=$additionalProperties}"
+            "Body{transcriptionJobId=$transcriptionJobId, categories=$categories, additionalProperties=$additionalProperties}"
     }
 
-    /** Deployment target environment */
-    class Target @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+    class Category @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -553,32 +530,48 @@ private constructor(
 
         companion object {
 
-            @JvmField val PRODUCTION = of("production")
+            @JvmField val PERSON = of("person")
 
-            @JvmField val PREVIEW = of("preview")
+            @JvmField val ORGANIZATION = of("organization")
 
-            @JvmStatic fun of(value: String) = Target(JsonField.of(value))
+            @JvmField val LEGAL_TERM = of("legal_term")
+
+            @JvmField val MEDICAL = of("medical")
+
+            @JvmField val CITATION = of("citation")
+
+            @JvmField val EMAIL = of("email")
+
+            @JvmStatic fun of(value: String) = Category(JsonField.of(value))
         }
 
-        /** An enum containing [Target]'s known values. */
+        /** An enum containing [Category]'s known values. */
         enum class Known {
-            PRODUCTION,
-            PREVIEW,
+            PERSON,
+            ORGANIZATION,
+            LEGAL_TERM,
+            MEDICAL,
+            CITATION,
+            EMAIL,
         }
 
         /**
-         * An enum containing [Target]'s known values, as well as an [_UNKNOWN] member.
+         * An enum containing [Category]'s known values, as well as an [_UNKNOWN] member.
          *
-         * An instance of [Target] can contain an unknown value in a couple of cases:
+         * An instance of [Category] can contain an unknown value in a couple of cases:
          * - It was deserialized from data that doesn't match any known member. For example, if the
          *   SDK is on an older version than the API, then the API may respond with new members that
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
-            PRODUCTION,
-            PREVIEW,
-            /** An enum member indicating that [Target] was instantiated with an unknown value. */
+            PERSON,
+            ORGANIZATION,
+            LEGAL_TERM,
+            MEDICAL,
+            CITATION,
+            EMAIL,
+            /** An enum member indicating that [Category] was instantiated with an unknown value. */
             _UNKNOWN,
         }
 
@@ -591,8 +584,12 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
-                PRODUCTION -> Value.PRODUCTION
-                PREVIEW -> Value.PREVIEW
+                PERSON -> Value.PERSON
+                ORGANIZATION -> Value.ORGANIZATION
+                LEGAL_TERM -> Value.LEGAL_TERM
+                MEDICAL -> Value.MEDICAL
+                CITATION -> Value.CITATION
+                EMAIL -> Value.EMAIL
                 else -> Value._UNKNOWN
             }
 
@@ -607,9 +604,13 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
-                PRODUCTION -> Known.PRODUCTION
-                PREVIEW -> Known.PREVIEW
-                else -> throw CasedevInvalidDataException("Unknown Target: $value")
+                PERSON -> Known.PERSON
+                ORGANIZATION -> Known.ORGANIZATION
+                LEGAL_TERM -> Known.LEGAL_TERM
+                MEDICAL -> Known.MEDICAL
+                CITATION -> Known.CITATION
+                EMAIL -> Known.EMAIL
+                else -> throw CasedevInvalidDataException("Unknown Category: $value")
             }
 
         /**
@@ -626,7 +627,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Target = apply {
+        fun validate(): Category = apply {
             if (validated) {
                 return@apply
             }
@@ -656,7 +657,7 @@ private constructor(
                 return true
             }
 
-            return other is Target && value == other.value
+            return other is Category && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -669,7 +670,7 @@ private constructor(
             return true
         }
 
-        return other is DeploymentCreateParams &&
+        return other is BoostListGenerateParams &&
             body == other.body &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
@@ -678,5 +679,5 @@ private constructor(
     override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "DeploymentCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "BoostListGenerateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

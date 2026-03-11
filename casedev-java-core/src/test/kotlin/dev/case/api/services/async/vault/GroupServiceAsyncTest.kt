@@ -4,6 +4,8 @@ package dev.case.api.services.async.vault
 
 import dev.case.api.TestServerExtension
 import dev.case.api.client.okhttp.CasedevOkHttpClientAsync
+import dev.case.api.models.vault.groups.GroupCreateParams
+import dev.case.api.models.vault.groups.GroupUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -19,7 +21,10 @@ internal class GroupServiceAsyncTest {
                 .build()
         val groupServiceAsync = client.vault().groups()
 
-        val future = groupServiceAsync.create()
+        val future =
+            groupServiceAsync.create(
+                GroupCreateParams.builder().name("name").description("description").build()
+            )
 
         val response = future.get()
     }
@@ -33,7 +38,14 @@ internal class GroupServiceAsyncTest {
                 .build()
         val groupServiceAsync = client.vault().groups()
 
-        val future = groupServiceAsync.update("groupId")
+        val future =
+            groupServiceAsync.update(
+                GroupUpdateParams.builder()
+                    .groupId("groupId")
+                    .description("description")
+                    .name("name")
+                    .build()
+            )
 
         val response = future.get()
     }
