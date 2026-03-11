@@ -25,6 +25,12 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Creates an ephemeral agent and immediately executes a run. Returns the run ID for polling status
  * and results. This is the fastest way to run an agent without managing agent lifecycle.
+ *
+ * **Ephemeral agent lifecycle:** The agent created by this endpoint is automatically soft-deleted
+ * and its scoped API key revoked when the run completes (whether it succeeds, fails, or times out).
+ * Ephemeral agents do not appear in GET /agent/v1/agents listings. The returned agentId is valid
+ * only for the duration of the run — do not store it for reuse. For persistent, reusable agents,
+ * use POST /agent/v1/agents instead.
  */
 class ExecuteCreateParams
 private constructor(
@@ -42,7 +48,8 @@ private constructor(
     fun prompt(): String = body.prompt()
 
     /**
-     * Denylist of tools the agent cannot use
+     * Denylist of tools the agent cannot use. Mutually exclusive with enabledTools — set one or the
+     * other, not both.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -50,7 +57,8 @@ private constructor(
     fun disabledTools(): Optional<List<String>> = body.disabledTools()
 
     /**
-     * Allowlist of tools the agent can use
+     * Allowlist of tools the agent can use. Mutually exclusive with disabledTools — set one or the
+     * other, not both.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -230,7 +238,10 @@ private constructor(
          */
         fun prompt(prompt: JsonField<String>) = apply { body.prompt(prompt) }
 
-        /** Denylist of tools the agent cannot use */
+        /**
+         * Denylist of tools the agent cannot use. Mutually exclusive with enabledTools — set one or
+         * the other, not both.
+         */
         fun disabledTools(disabledTools: List<String>?) = apply {
             body.disabledTools(disabledTools)
         }
@@ -257,7 +268,10 @@ private constructor(
          */
         fun addDisabledTool(disabledTool: String) = apply { body.addDisabledTool(disabledTool) }
 
-        /** Allowlist of tools the agent can use */
+        /**
+         * Allowlist of tools the agent can use. Mutually exclusive with disabledTools — set one or
+         * the other, not both.
+         */
         fun enabledTools(enabledTools: List<String>?) = apply { body.enabledTools(enabledTools) }
 
         /** Alias for calling [Builder.enabledTools] with `enabledTools.orElse(null)`. */
@@ -587,7 +601,8 @@ private constructor(
         fun prompt(): String = prompt.getRequired("prompt")
 
         /**
-         * Denylist of tools the agent cannot use
+         * Denylist of tools the agent cannot use. Mutually exclusive with enabledTools — set one or
+         * the other, not both.
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -595,7 +610,8 @@ private constructor(
         fun disabledTools(): Optional<List<String>> = disabledTools.getOptional("disabledTools")
 
         /**
-         * Allowlist of tools the agent can use
+         * Allowlist of tools the agent can use. Mutually exclusive with disabledTools — set one or
+         * the other, not both.
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -792,7 +808,10 @@ private constructor(
              */
             fun prompt(prompt: JsonField<String>) = apply { this.prompt = prompt }
 
-            /** Denylist of tools the agent cannot use */
+            /**
+             * Denylist of tools the agent cannot use. Mutually exclusive with enabledTools — set
+             * one or the other, not both.
+             */
             fun disabledTools(disabledTools: List<String>?) =
                 disabledTools(JsonField.ofNullable(disabledTools))
 
@@ -823,7 +842,10 @@ private constructor(
                     }
             }
 
-            /** Allowlist of tools the agent can use */
+            /**
+             * Allowlist of tools the agent can use. Mutually exclusive with disabledTools — set one
+             * or the other, not both.
+             */
             fun enabledTools(enabledTools: List<String>?) =
                 enabledTools(JsonField.ofNullable(enabledTools))
 

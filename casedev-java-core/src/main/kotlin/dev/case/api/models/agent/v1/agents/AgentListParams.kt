@@ -6,13 +6,25 @@ import dev.case.api.core.Params
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Lists all active agents for the authenticated organization. */
 class AgentListParams
 private constructor(
+    private val cursor: String?,
+    private val limit: Long?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
+
+    /**
+     * Pagination cursor (agent ID from previous page). Returns agents created before this agent.
+     */
+    fun cursor(): Optional<String> = Optional.ofNullable(cursor)
+
+    /** Maximum number of agents to return (default 50, max 250) */
+    fun limit(): Optional<Long> = Optional.ofNullable(limit)
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -33,14 +45,40 @@ private constructor(
     /** A builder for [AgentListParams]. */
     class Builder internal constructor() {
 
+        private var cursor: String? = null
+        private var limit: Long? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(agentListParams: AgentListParams) = apply {
+            cursor = agentListParams.cursor
+            limit = agentListParams.limit
             additionalHeaders = agentListParams.additionalHeaders.toBuilder()
             additionalQueryParams = agentListParams.additionalQueryParams.toBuilder()
         }
+
+        /**
+         * Pagination cursor (agent ID from previous page). Returns agents created before this
+         * agent.
+         */
+        fun cursor(cursor: String?) = apply { this.cursor = cursor }
+
+        /** Alias for calling [Builder.cursor] with `cursor.orElse(null)`. */
+        fun cursor(cursor: Optional<String>) = cursor(cursor.getOrNull())
+
+        /** Maximum number of agents to return (default 50, max 250) */
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun limit(limit: Long) = limit(limit as Long?)
+
+        /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
+        fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -146,12 +184,19 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): AgentListParams =
-            AgentListParams(additionalHeaders.build(), additionalQueryParams.build())
+            AgentListParams(cursor, limit, additionalHeaders.build(), additionalQueryParams.build())
     }
 
     override fun _headers(): Headers = additionalHeaders
 
-    override fun _queryParams(): QueryParams = additionalQueryParams
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                cursor?.let { put("cursor", it) }
+                limit?.let { put("limit", it.toString()) }
+                putAll(additionalQueryParams)
+            }
+            .build()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -159,12 +204,15 @@ private constructor(
         }
 
         return other is AgentListParams &&
+            cursor == other.cursor &&
+            limit == other.limit &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = Objects.hash(additionalHeaders, additionalQueryParams)
+    override fun hashCode(): Int =
+        Objects.hash(cursor, limit, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "AgentListParams{additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "AgentListParams{cursor=$cursor, limit=$limit, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

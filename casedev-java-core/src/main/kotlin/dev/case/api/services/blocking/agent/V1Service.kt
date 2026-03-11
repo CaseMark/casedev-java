@@ -23,12 +23,28 @@ interface V1Service {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     fun agents(): AgentService
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     fun run(): RunService
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     fun execute(): ExecuteService
 
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
     fun chat(): ChatService
 
     /** A view of [V1Service] that provides access to raw HTTP responses for each method. */
@@ -41,12 +57,28 @@ interface V1Service {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1Service.WithRawResponse
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         fun agents(): AgentService.WithRawResponse
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         fun run(): RunService.WithRawResponse
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         fun execute(): ExecuteService.WithRawResponse
 
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
         fun chat(): ChatService.WithRawResponse
     }
 }

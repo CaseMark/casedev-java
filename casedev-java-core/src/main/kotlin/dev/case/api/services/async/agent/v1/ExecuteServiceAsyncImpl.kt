@@ -20,6 +20,10 @@ import dev.case.api.models.agent.v1.execute.ExecuteCreateResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/**
+ * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+ * workflows
+ */
 class ExecuteServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ExecuteServiceAsync {
 

@@ -29,6 +29,10 @@ import dev.case.api.models.agent.v1.agents.AgentUpdateResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/**
+ * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+ * workflows
+ */
 class AgentServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     AgentService {
 

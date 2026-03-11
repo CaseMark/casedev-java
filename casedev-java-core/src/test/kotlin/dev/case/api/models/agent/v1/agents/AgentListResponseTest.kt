@@ -27,6 +27,8 @@ internal class AgentListResponseTest {
                         .addVaultId("string")
                         .build()
                 )
+                .hasMore(true)
+                .nextCursor("nextCursor")
                 .build()
 
         assertThat(agentListResponse.agents().getOrNull())
@@ -42,6 +44,8 @@ internal class AgentListResponseTest {
                     .addVaultId("string")
                     .build()
             )
+        assertThat(agentListResponse.hasMore()).contains(true)
+        assertThat(agentListResponse.nextCursor()).contains("nextCursor")
     }
 
     @Test
@@ -61,6 +65,8 @@ internal class AgentListResponseTest {
                         .addVaultId("string")
                         .build()
                 )
+                .hasMore(true)
+                .nextCursor("nextCursor")
                 .build()
 
         val roundtrippedAgentListResponse =

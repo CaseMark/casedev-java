@@ -39,12 +39,18 @@ private constructor(
     fun description(): Optional<String> = body.description()
 
     /**
+     * Denylist of tools the agent cannot use. Mutually exclusive with enabledTools — set one or the
+     * other, not both. Pass null to clear.
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun disabledTools(): Optional<List<String>> = body.disabledTools()
 
     /**
+     * Allowlist of tools the agent can use. Mutually exclusive with disabledTools — set one or the
+     * other, not both. Pass null to clear.
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -208,6 +214,10 @@ private constructor(
          */
         fun description(description: JsonField<String>) = apply { body.description(description) }
 
+        /**
+         * Denylist of tools the agent cannot use. Mutually exclusive with enabledTools — set one or
+         * the other, not both. Pass null to clear.
+         */
         fun disabledTools(disabledTools: List<String>?) = apply {
             body.disabledTools(disabledTools)
         }
@@ -234,6 +244,10 @@ private constructor(
          */
         fun addDisabledTool(disabledTool: String) = apply { body.addDisabledTool(disabledTool) }
 
+        /**
+         * Allowlist of tools the agent can use. Mutually exclusive with disabledTools — set one or
+         * the other, not both. Pass null to clear.
+         */
         fun enabledTools(enabledTools: List<String>?) = apply { body.enabledTools(enabledTools) }
 
         /** Alias for calling [Builder.enabledTools] with `enabledTools.orElse(null)`. */
@@ -538,12 +552,18 @@ private constructor(
         fun description(): Optional<String> = description.getOptional("description")
 
         /**
+         * Denylist of tools the agent cannot use. Mutually exclusive with enabledTools — set one or
+         * the other, not both. Pass null to clear.
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun disabledTools(): Optional<List<String>> = disabledTools.getOptional("disabledTools")
 
         /**
+         * Allowlist of tools the agent can use. Mutually exclusive with disabledTools — set one or
+         * the other, not both. Pass null to clear.
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -717,6 +737,10 @@ private constructor(
                 this.description = description
             }
 
+            /**
+             * Denylist of tools the agent cannot use. Mutually exclusive with enabledTools — set
+             * one or the other, not both. Pass null to clear.
+             */
             fun disabledTools(disabledTools: List<String>?) =
                 disabledTools(JsonField.ofNullable(disabledTools))
 
@@ -747,6 +771,10 @@ private constructor(
                     }
             }
 
+            /**
+             * Allowlist of tools the agent can use. Mutually exclusive with disabledTools — set one
+             * or the other, not both. Pass null to clear.
+             */
             fun enabledTools(enabledTools: List<String>?) =
                 enabledTools(JsonField.ofNullable(enabledTools))
 
