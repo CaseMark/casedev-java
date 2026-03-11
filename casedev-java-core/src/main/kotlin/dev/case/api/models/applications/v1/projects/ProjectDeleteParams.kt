@@ -11,7 +11,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Delete a web application project */
+/**
+ * Soft-deletes an application project or deployed Thurgood app from Case.dev. By default it also
+ * removes the linked hosting project; set deleteFromHosting=false to keep the external hosting
+ * resources intact.
+ */
 class ProjectDeleteParams
 private constructor(
     private val id: String?,
@@ -23,7 +27,7 @@ private constructor(
 
     fun id(): Optional<String> = Optional.ofNullable(id)
 
-    /** Also delete the project from hosting (default: true) */
+    /** Whether to also delete the linked hosting project. Defaults to true. */
     fun deleteFromHosting(): Optional<Boolean> = Optional.ofNullable(deleteFromHosting)
 
     /** Additional body properties to send with the request. */
@@ -68,7 +72,7 @@ private constructor(
         /** Alias for calling [Builder.id] with `id.orElse(null)`. */
         fun id(id: Optional<String>) = id(id.getOrNull())
 
-        /** Also delete the project from hosting (default: true) */
+        /** Whether to also delete the linked hosting project. Defaults to true. */
         fun deleteFromHosting(deleteFromHosting: Boolean?) = apply {
             this.deleteFromHosting = deleteFromHosting
         }

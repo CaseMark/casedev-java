@@ -14,6 +14,7 @@ import dev.case.api.models.applications.v1.projects.ProjectDeleteParams
 import dev.case.api.models.applications.v1.projects.ProjectGetRuntimeLogsParams
 import dev.case.api.models.applications.v1.projects.ProjectListDeploymentsParams
 import dev.case.api.models.applications.v1.projects.ProjectListEnvParams
+import dev.case.api.models.applications.v1.projects.ProjectListParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -72,7 +73,8 @@ internal class ProjectServiceTest {
                 .build()
         val projectService = client.applications().v1().projects()
 
-        val projects = projectService.list()
+        val projects =
+            projectService.list(ProjectListParams.builder().enrich(true).limit(0.0).build())
 
         projects.validate()
     }

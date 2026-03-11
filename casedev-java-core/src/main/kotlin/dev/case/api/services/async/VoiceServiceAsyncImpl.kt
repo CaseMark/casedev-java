@@ -3,6 +3,8 @@
 package dev.case.api.services.async
 
 import dev.case.api.core.ClientOptions
+import dev.case.api.services.async.voice.BoostListServiceAsync
+import dev.case.api.services.async.voice.BoostListServiceAsyncImpl
 import dev.case.api.services.async.voice.StreamingServiceAsync
 import dev.case.api.services.async.voice.StreamingServiceAsyncImpl
 import dev.case.api.services.async.voice.TranscriptionServiceAsync
@@ -22,6 +24,10 @@ class VoiceServiceAsyncImpl internal constructor(private val clientOptions: Clie
         StreamingServiceAsyncImpl(clientOptions)
     }
 
+    private val boostList: BoostListServiceAsync by lazy {
+        BoostListServiceAsyncImpl(clientOptions)
+    }
+
     private val transcription: TranscriptionServiceAsync by lazy {
         TranscriptionServiceAsyncImpl(clientOptions)
     }
@@ -37,6 +43,9 @@ class VoiceServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun streaming(): StreamingServiceAsync = streaming
 
     /** Audio transcription and text-to-speech */
+    override fun boostList(): BoostListServiceAsync = boostList
+
+    /** Audio transcription and text-to-speech */
     override fun transcription(): TranscriptionServiceAsync = transcription
 
     /** Audio transcription and text-to-speech */
@@ -47,6 +56,10 @@ class VoiceServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         private val streaming: StreamingServiceAsync.WithRawResponse by lazy {
             StreamingServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val boostList: BoostListServiceAsync.WithRawResponse by lazy {
+            BoostListServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val transcription: TranscriptionServiceAsync.WithRawResponse by lazy {
@@ -66,6 +79,9 @@ class VoiceServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         /** Audio transcription and text-to-speech */
         override fun streaming(): StreamingServiceAsync.WithRawResponse = streaming
+
+        /** Audio transcription and text-to-speech */
+        override fun boostList(): BoostListServiceAsync.WithRawResponse = boostList
 
         /** Audio transcription and text-to-speech */
         override fun transcription(): TranscriptionServiceAsync.WithRawResponse = transcription

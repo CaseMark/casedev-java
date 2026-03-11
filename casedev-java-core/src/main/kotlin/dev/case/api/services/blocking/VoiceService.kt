@@ -3,6 +3,7 @@
 package dev.case.api.services.blocking
 
 import dev.case.api.core.ClientOptions
+import dev.case.api.services.blocking.voice.BoostListService
 import dev.case.api.services.blocking.voice.StreamingService
 import dev.case.api.services.blocking.voice.TranscriptionService
 import dev.case.api.services.blocking.voice.V1Service
@@ -26,6 +27,9 @@ interface VoiceService {
     fun streaming(): StreamingService
 
     /** Audio transcription and text-to-speech */
+    fun boostList(): BoostListService
+
+    /** Audio transcription and text-to-speech */
     fun transcription(): TranscriptionService
 
     /** Audio transcription and text-to-speech */
@@ -43,6 +47,9 @@ interface VoiceService {
 
         /** Audio transcription and text-to-speech */
         fun streaming(): StreamingService.WithRawResponse
+
+        /** Audio transcription and text-to-speech */
+        fun boostList(): BoostListService.WithRawResponse
 
         /** Audio transcription and text-to-speech */
         fun transcription(): TranscriptionService.WithRawResponse

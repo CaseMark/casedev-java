@@ -32,12 +32,16 @@ private constructor(
     fun id(): Optional<String> = Optional.ofNullable(id)
 
     /**
+     * Vault object ID associated with the multipart upload
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun objectId(): String = body.objectId()
 
     /**
+     * Multipart upload ID returned when the upload was initialized
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -112,6 +116,7 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
+        /** Vault object ID associated with the multipart upload */
         fun objectId(objectId: String) = apply { body.objectId(objectId) }
 
         /**
@@ -122,6 +127,7 @@ private constructor(
          */
         fun objectId(objectId: JsonField<String>) = apply { body.objectId(objectId) }
 
+        /** Multipart upload ID returned when the upload was initialized */
         fun uploadId(uploadId: String) = apply { body.uploadId(uploadId) }
 
         /**
@@ -300,12 +306,16 @@ private constructor(
         ) : this(objectId, uploadId, mutableMapOf())
 
         /**
+         * Vault object ID associated with the multipart upload
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun objectId(): String = objectId.getRequired("objectId")
 
         /**
+         * Multipart upload ID returned when the upload was initialized
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
@@ -365,6 +375,7 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
+            /** Vault object ID associated with the multipart upload */
             fun objectId(objectId: String) = objectId(JsonField.of(objectId))
 
             /**
@@ -376,6 +387,7 @@ private constructor(
              */
             fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
 
+            /** Multipart upload ID returned when the upload was initialized */
             fun uploadId(uploadId: String) = uploadId(JsonField.of(uploadId))
 
             /**

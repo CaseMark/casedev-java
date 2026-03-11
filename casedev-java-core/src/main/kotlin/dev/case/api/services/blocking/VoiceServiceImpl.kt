@@ -3,6 +3,8 @@
 package dev.case.api.services.blocking
 
 import dev.case.api.core.ClientOptions
+import dev.case.api.services.blocking.voice.BoostListService
+import dev.case.api.services.blocking.voice.BoostListServiceImpl
 import dev.case.api.services.blocking.voice.StreamingService
 import dev.case.api.services.blocking.voice.StreamingServiceImpl
 import dev.case.api.services.blocking.voice.TranscriptionService
@@ -20,6 +22,8 @@ class VoiceServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     private val streaming: StreamingService by lazy { StreamingServiceImpl(clientOptions) }
 
+    private val boostList: BoostListService by lazy { BoostListServiceImpl(clientOptions) }
+
     private val transcription: TranscriptionService by lazy {
         TranscriptionServiceImpl(clientOptions)
     }
@@ -35,6 +39,9 @@ class VoiceServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun streaming(): StreamingService = streaming
 
     /** Audio transcription and text-to-speech */
+    override fun boostList(): BoostListService = boostList
+
+    /** Audio transcription and text-to-speech */
     override fun transcription(): TranscriptionService = transcription
 
     /** Audio transcription and text-to-speech */
@@ -45,6 +52,10 @@ class VoiceServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         private val streaming: StreamingService.WithRawResponse by lazy {
             StreamingServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val boostList: BoostListService.WithRawResponse by lazy {
+            BoostListServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val transcription: TranscriptionService.WithRawResponse by lazy {
@@ -64,6 +75,9 @@ class VoiceServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         /** Audio transcription and text-to-speech */
         override fun streaming(): StreamingService.WithRawResponse = streaming
+
+        /** Audio transcription and text-to-speech */
+        override fun boostList(): BoostListService.WithRawResponse = boostList
 
         /** Audio transcription and text-to-speech */
         override fun transcription(): TranscriptionService.WithRawResponse = transcription

@@ -7,7 +7,10 @@ import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
 import java.util.Objects
 
-/** List vault groups */
+/**
+ * Lists vault groups visible to the authenticated organization. Group-scoped API keys only receive
+ * groups within their allowed scope.
+ */
 class GroupListParams
 private constructor(
     private val additionalHeaders: Headers,

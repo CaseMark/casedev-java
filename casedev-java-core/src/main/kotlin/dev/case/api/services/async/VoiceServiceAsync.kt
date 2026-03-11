@@ -3,6 +3,7 @@
 package dev.case.api.services.async
 
 import dev.case.api.core.ClientOptions
+import dev.case.api.services.async.voice.BoostListServiceAsync
 import dev.case.api.services.async.voice.StreamingServiceAsync
 import dev.case.api.services.async.voice.TranscriptionServiceAsync
 import dev.case.api.services.async.voice.V1ServiceAsync
@@ -26,6 +27,9 @@ interface VoiceServiceAsync {
     fun streaming(): StreamingServiceAsync
 
     /** Audio transcription and text-to-speech */
+    fun boostList(): BoostListServiceAsync
+
+    /** Audio transcription and text-to-speech */
     fun transcription(): TranscriptionServiceAsync
 
     /** Audio transcription and text-to-speech */
@@ -45,6 +49,9 @@ interface VoiceServiceAsync {
 
         /** Audio transcription and text-to-speech */
         fun streaming(): StreamingServiceAsync.WithRawResponse
+
+        /** Audio transcription and text-to-speech */
+        fun boostList(): BoostListServiceAsync.WithRawResponse
 
         /** Audio transcription and text-to-speech */
         fun transcription(): TranscriptionServiceAsync.WithRawResponse

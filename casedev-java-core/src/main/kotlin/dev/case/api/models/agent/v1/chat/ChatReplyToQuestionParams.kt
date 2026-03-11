@@ -37,6 +37,8 @@ private constructor(
     fun requestId(): Optional<String> = Optional.ofNullable(requestId)
 
     /**
+     * Answer selections for each prompt element in the pending question
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -107,6 +109,7 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
+        /** Answer selections for each prompt element in the pending question */
         fun answers(answers: List<List<String>>) = apply { body.answers(answers) }
 
         /**
@@ -293,6 +296,8 @@ private constructor(
         ) : this(answers, mutableMapOf())
 
         /**
+         * Answer selections for each prompt element in the pending question
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
@@ -344,6 +349,7 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
+            /** Answer selections for each prompt element in the pending question */
             fun answers(answers: List<List<String>>) = answers(JsonField.of(answers))
 
             /**

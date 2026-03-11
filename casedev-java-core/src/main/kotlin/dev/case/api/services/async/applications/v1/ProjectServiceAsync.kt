@@ -37,7 +37,11 @@ interface ProjectServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ProjectServiceAsync
 
-    /** Create a new web application project */
+    /**
+     * Creates a new application project, validates GitHub access, provisions a default case.dev
+     * domain, and starts the deployment workflow. The initial response returns as soon as the
+     * workflow is queued so clients can poll for progress.
+     */
     fun create(params: ProjectCreateParams): CompletableFuture<Void?> =
         create(params, RequestOptions.none())
 
@@ -47,7 +51,11 @@ interface ProjectServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
-    /** Get details of a specific web application project */
+    /**
+     * Returns project details, domains, and recent deployment information for one application
+     * project or deployed Thurgood app. Use this endpoint when you need a single record with
+     * hosting metadata for a details view.
+     */
     fun retrieve(id: String): CompletableFuture<Void?> = retrieve(id, ProjectRetrieveParams.none())
 
     /** @see retrieve */
@@ -77,7 +85,10 @@ interface ProjectServiceAsync {
     fun retrieve(id: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
         retrieve(id, ProjectRetrieveParams.none(), requestOptions)
 
-    /** List all web application projects */
+    /**
+     * Lists application projects and deployed Thurgood apps for the authenticated organization. Use
+     * enrich=true to include additional hosting metadata for projects linked to Vercel.
+     */
     fun list(): CompletableFuture<ProjectListResponse> = list(ProjectListParams.none())
 
     /** @see list */
@@ -95,7 +106,11 @@ interface ProjectServiceAsync {
     fun list(requestOptions: RequestOptions): CompletableFuture<ProjectListResponse> =
         list(ProjectListParams.none(), requestOptions)
 
-    /** Delete a web application project */
+    /**
+     * Soft-deletes an application project or deployed Thurgood app from Case.dev. By default it
+     * also removes the linked hosting project; set deleteFromHosting=false to keep the external
+     * hosting resources intact.
+     */
     fun delete(id: String): CompletableFuture<Void?> = delete(id, ProjectDeleteParams.none())
 
     /** @see delete */
@@ -125,7 +140,11 @@ interface ProjectServiceAsync {
     fun delete(id: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
         delete(id, ProjectDeleteParams.none(), requestOptions)
 
-    /** Trigger a new deployment for a project. */
+    /**
+     * Starts a new deployment for an existing project using its saved repository and hosting
+     * configuration. Any environment variables passed in the request are merged into the deployment
+     * workflow before the build starts.
+     */
     fun createDeployment(id: String): CompletableFuture<Void?> =
         createDeployment(id, ProjectCreateDeploymentParams.none())
 
@@ -273,7 +292,11 @@ interface ProjectServiceAsync {
     fun getRuntimeLogs(id: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
         getRuntimeLogs(id, ProjectGetRuntimeLogsParams.none(), requestOptions)
 
-    /** List deployments for a specific project */
+    /**
+     * Lists deployments for one project in the authenticated organization. If the hosting project
+     * has not been created yet, this endpoint returns an empty list with a progress message instead
+     * of failing.
+     */
     fun listDeployments(id: String): CompletableFuture<Void?> =
         listDeployments(id, ProjectListDeploymentsParams.none())
 

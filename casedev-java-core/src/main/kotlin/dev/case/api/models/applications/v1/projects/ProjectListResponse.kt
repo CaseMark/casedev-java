@@ -33,6 +33,8 @@ private constructor(
     ) : this(projects, mutableMapOf())
 
     /**
+     * Projects and deployed apps visible to the organization
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -75,6 +77,7 @@ private constructor(
             additionalProperties = projectListResponse.additionalProperties.toMutableMap()
         }
 
+        /** Projects and deployed apps visible to the organization */
         fun projects(projects: List<Project>) = projects(JsonField.of(projects))
 
         /**
@@ -214,60 +217,80 @@ private constructor(
         )
 
         /**
+         * Project identifier
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun id(): Optional<String> = id.getOptional("id")
 
         /**
+         * When the project record was created
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun createdAt(): Optional<String> = createdAt.getOptional("createdAt")
 
         /**
+         * Custom or generated domains assigned to the project
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun domains(): Optional<List<Domain>> = domains.getOptional("domains")
 
         /**
+         * Detected or configured application framework
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun framework(): Optional<String> = framework.getOptional("framework")
 
         /**
+         * Default Git branch used for deployments
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun gitBranch(): Optional<String> = gitBranch.getOptional("gitBranch")
 
         /**
+         * Connected Git repository in owner/repo format
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun gitRepo(): Optional<String> = gitRepo.getOptional("gitRepo")
 
         /**
+         * Project display name
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun name(): Optional<String> = name.getOptional("name")
 
         /**
+         * Current project deployment status
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun status(): Optional<String> = status.getOptional("status")
 
         /**
+         * When the project record was last updated
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun updatedAt(): Optional<String> = updatedAt.getOptional("updatedAt")
 
         /**
+         * Hosting provider project ID, when linked
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -394,6 +417,7 @@ private constructor(
                 additionalProperties = project.additionalProperties.toMutableMap()
             }
 
+            /** Project identifier */
             fun id(id: String) = id(JsonField.of(id))
 
             /**
@@ -405,6 +429,7 @@ private constructor(
              */
             fun id(id: JsonField<String>) = apply { this.id = id }
 
+            /** When the project record was created */
             fun createdAt(createdAt: String) = createdAt(JsonField.of(createdAt))
 
             /**
@@ -416,6 +441,7 @@ private constructor(
              */
             fun createdAt(createdAt: JsonField<String>) = apply { this.createdAt = createdAt }
 
+            /** Custom or generated domains assigned to the project */
             fun domains(domains: List<Domain>) = domains(JsonField.of(domains))
 
             /**
@@ -441,6 +467,7 @@ private constructor(
                     }
             }
 
+            /** Detected or configured application framework */
             fun framework(framework: String) = framework(JsonField.of(framework))
 
             /**
@@ -452,6 +479,7 @@ private constructor(
              */
             fun framework(framework: JsonField<String>) = apply { this.framework = framework }
 
+            /** Default Git branch used for deployments */
             fun gitBranch(gitBranch: String) = gitBranch(JsonField.of(gitBranch))
 
             /**
@@ -463,6 +491,7 @@ private constructor(
              */
             fun gitBranch(gitBranch: JsonField<String>) = apply { this.gitBranch = gitBranch }
 
+            /** Connected Git repository in owner/repo format */
             fun gitRepo(gitRepo: String) = gitRepo(JsonField.of(gitRepo))
 
             /**
@@ -474,6 +503,7 @@ private constructor(
              */
             fun gitRepo(gitRepo: JsonField<String>) = apply { this.gitRepo = gitRepo }
 
+            /** Project display name */
             fun name(name: String) = name(JsonField.of(name))
 
             /**
@@ -485,6 +515,7 @@ private constructor(
              */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
+            /** Current project deployment status */
             fun status(status: String) = status(JsonField.of(status))
 
             /**
@@ -496,6 +527,7 @@ private constructor(
              */
             fun status(status: JsonField<String>) = apply { this.status = status }
 
+            /** When the project record was last updated */
             fun updatedAt(updatedAt: String) = updatedAt(JsonField.of(updatedAt))
 
             /**
@@ -507,6 +539,7 @@ private constructor(
              */
             fun updatedAt(updatedAt: JsonField<String>) = apply { this.updatedAt = updatedAt }
 
+            /** Hosting provider project ID, when linked */
             fun vercelProjectId(vercelProjectId: String) =
                 vercelProjectId(JsonField.of(vercelProjectId))
 
@@ -633,24 +666,32 @@ private constructor(
             ) : this(id, domain, isPrimary, isVerified, mutableMapOf())
 
             /**
+             * Domain record identifier
+             *
              * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
             fun id(): Optional<String> = id.getOptional("id")
 
             /**
+             * Hostname assigned to the project
+             *
              * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
             fun domain(): Optional<String> = domain.getOptional("domain")
 
             /**
+             * Whether this is the primary project domain
+             *
              * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
             fun isPrimary(): Optional<Boolean> = isPrimary.getOptional("isPrimary")
 
             /**
+             * Whether the domain has been verified by the hosting provider
+             *
              * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
@@ -726,6 +767,7 @@ private constructor(
                     additionalProperties = domain.additionalProperties.toMutableMap()
                 }
 
+                /** Domain record identifier */
                 fun id(id: String) = id(JsonField.of(id))
 
                 /**
@@ -737,6 +779,7 @@ private constructor(
                  */
                 fun id(id: JsonField<String>) = apply { this.id = id }
 
+                /** Hostname assigned to the project */
                 fun domain(domain: String) = domain(JsonField.of(domain))
 
                 /**
@@ -748,6 +791,7 @@ private constructor(
                  */
                 fun domain(domain: JsonField<String>) = apply { this.domain = domain }
 
+                /** Whether this is the primary project domain */
                 fun isPrimary(isPrimary: Boolean) = isPrimary(JsonField.of(isPrimary))
 
                 /**
@@ -759,6 +803,7 @@ private constructor(
                  */
                 fun isPrimary(isPrimary: JsonField<Boolean>) = apply { this.isPrimary = isPrimary }
 
+                /** Whether the domain has been verified by the hosting provider */
                 fun isVerified(isVerified: Boolean) = isVerified(JsonField.of(isVerified))
 
                 /**

@@ -14,7 +14,10 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** List deployments for a project */
+/**
+ * Lists recent deployments for one project in the authenticated organization. Use the optional
+ * filters to narrow results by target or deployment state.
+ */
 class DeploymentListParams
 private constructor(
     private val projectId: String,
@@ -25,16 +28,16 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /** Project ID */
+    /** Project ID to list deployments for */
     fun projectId(): String = projectId
 
     /** Maximum number of deployments to return */
     fun limit(): Optional<Double> = Optional.ofNullable(limit)
 
-    /** Filter by deployment state */
+    /** Deployment state to filter by */
     fun state(): Optional<String> = Optional.ofNullable(state)
 
-    /** Filter by deployment target */
+    /** Deployment target to filter by */
     fun target(): Optional<Target> = Optional.ofNullable(target)
 
     /** Additional headers to send with the request. */
@@ -78,7 +81,7 @@ private constructor(
             additionalQueryParams = deploymentListParams.additionalQueryParams.toBuilder()
         }
 
-        /** Project ID */
+        /** Project ID to list deployments for */
         fun projectId(projectId: String) = apply { this.projectId = projectId }
 
         /** Maximum number of deployments to return */
@@ -94,13 +97,13 @@ private constructor(
         /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Double>) = limit(limit.getOrNull())
 
-        /** Filter by deployment state */
+        /** Deployment state to filter by */
         fun state(state: String?) = apply { this.state = state }
 
         /** Alias for calling [Builder.state] with `state.orElse(null)`. */
         fun state(state: Optional<String>) = state(state.getOrNull())
 
-        /** Filter by deployment target */
+        /** Deployment target to filter by */
         fun target(target: Target?) = apply { this.target = target }
 
         /** Alias for calling [Builder.target] with `target.orElse(null)`. */
@@ -240,7 +243,7 @@ private constructor(
             }
             .build()
 
-    /** Filter by deployment target */
+    /** Deployment target to filter by */
     class Target @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**

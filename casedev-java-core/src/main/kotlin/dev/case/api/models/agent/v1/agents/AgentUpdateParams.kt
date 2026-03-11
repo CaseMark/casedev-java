@@ -33,6 +33,8 @@ private constructor(
     fun id(): Optional<String> = Optional.ofNullable(id)
 
     /**
+     * Updated agent description. Pass null to clear if supported by the client.
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -57,24 +59,32 @@ private constructor(
     fun enabledTools(): Optional<List<String>> = body.enabledTools()
 
     /**
+     * Updated system instructions that guide agent behavior
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun instructions(): Optional<String> = body.instructions()
 
     /**
+     * Model identifier the agent should use for future runs
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun model(): Optional<String> = body.model()
 
     /**
+     * Updated agent display name
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun name(): Optional<String> = body.name()
 
     /**
+     * Sandbox configuration override for future agent runs. Pass null to clear.
+     *
      * This arbitrary value can be deserialized into a custom type using the `convert` method:
      * ```java
      * MyClass myObject = agentUpdateParams.sandbox().convert(MyClass.class);
@@ -83,12 +93,16 @@ private constructor(
     fun _sandbox(): JsonValue = body._sandbox()
 
     /**
+     * Vault group IDs the agent can access. Pass null to clear.
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun vaultGroups(): Optional<List<String>> = body.vaultGroups()
 
     /**
+     * Vault IDs the agent can access directly. Pass null to clear.
+     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -203,7 +217,11 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        fun description(description: String) = apply { body.description(description) }
+        /** Updated agent description. Pass null to clear if supported by the client. */
+        fun description(description: String?) = apply { body.description(description) }
+
+        /** Alias for calling [Builder.description] with `description.orElse(null)`. */
+        fun description(description: Optional<String>) = description(description.getOrNull())
 
         /**
          * Sets [Builder.description] to an arbitrary JSON value.
@@ -272,6 +290,7 @@ private constructor(
          */
         fun addEnabledTool(enabledTool: String) = apply { body.addEnabledTool(enabledTool) }
 
+        /** Updated system instructions that guide agent behavior */
         fun instructions(instructions: String) = apply { body.instructions(instructions) }
 
         /**
@@ -285,6 +304,7 @@ private constructor(
             body.instructions(instructions)
         }
 
+        /** Model identifier the agent should use for future runs */
         fun model(model: String) = apply { body.model(model) }
 
         /**
@@ -295,6 +315,7 @@ private constructor(
          */
         fun model(model: JsonField<String>) = apply { body.model(model) }
 
+        /** Updated agent display name */
         fun name(name: String) = apply { body.name(name) }
 
         /**
@@ -305,8 +326,10 @@ private constructor(
          */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
+        /** Sandbox configuration override for future agent runs. Pass null to clear. */
         fun sandbox(sandbox: JsonValue) = apply { body.sandbox(sandbox) }
 
+        /** Vault group IDs the agent can access. Pass null to clear. */
         fun vaultGroups(vaultGroups: List<String>?) = apply { body.vaultGroups(vaultGroups) }
 
         /** Alias for calling [Builder.vaultGroups] with `vaultGroups.orElse(null)`. */
@@ -330,6 +353,7 @@ private constructor(
          */
         fun addVaultGroup(vaultGroup: String) = apply { body.addVaultGroup(vaultGroup) }
 
+        /** Vault IDs the agent can access directly. Pass null to clear. */
         fun vaultIds(vaultIds: List<String>?) = apply { body.vaultIds(vaultIds) }
 
         /** Alias for calling [Builder.vaultIds] with `vaultIds.orElse(null)`. */
@@ -546,6 +570,8 @@ private constructor(
         )
 
         /**
+         * Updated agent description. Pass null to clear if supported by the client.
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -570,24 +596,32 @@ private constructor(
         fun enabledTools(): Optional<List<String>> = enabledTools.getOptional("enabledTools")
 
         /**
+         * Updated system instructions that guide agent behavior
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun instructions(): Optional<String> = instructions.getOptional("instructions")
 
         /**
+         * Model identifier the agent should use for future runs
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun model(): Optional<String> = model.getOptional("model")
 
         /**
+         * Updated agent display name
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun name(): Optional<String> = name.getOptional("name")
 
         /**
+         * Sandbox configuration override for future agent runs. Pass null to clear.
+         *
          * This arbitrary value can be deserialized into a custom type using the `convert` method:
          * ```java
          * MyClass myObject = body.sandbox().convert(MyClass.class);
@@ -596,12 +630,16 @@ private constructor(
         @JsonProperty("sandbox") @ExcludeMissing fun _sandbox(): JsonValue = sandbox
 
         /**
+         * Vault group IDs the agent can access. Pass null to clear.
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun vaultGroups(): Optional<List<String>> = vaultGroups.getOptional("vaultGroups")
 
         /**
+         * Vault IDs the agent can access directly. Pass null to clear.
+         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -724,7 +762,11 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            fun description(description: String) = description(JsonField.of(description))
+            /** Updated agent description. Pass null to clear if supported by the client. */
+            fun description(description: String?) = description(JsonField.ofNullable(description))
+
+            /** Alias for calling [Builder.description] with `description.orElse(null)`. */
+            fun description(description: Optional<String>) = description(description.getOrNull())
 
             /**
              * Sets [Builder.description] to an arbitrary JSON value.
@@ -805,6 +847,7 @@ private constructor(
                     }
             }
 
+            /** Updated system instructions that guide agent behavior */
             fun instructions(instructions: String) = instructions(JsonField.of(instructions))
 
             /**
@@ -818,6 +861,7 @@ private constructor(
                 this.instructions = instructions
             }
 
+            /** Model identifier the agent should use for future runs */
             fun model(model: String) = model(JsonField.of(model))
 
             /**
@@ -829,6 +873,7 @@ private constructor(
              */
             fun model(model: JsonField<String>) = apply { this.model = model }
 
+            /** Updated agent display name */
             fun name(name: String) = name(JsonField.of(name))
 
             /**
@@ -840,8 +885,10 @@ private constructor(
              */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
+            /** Sandbox configuration override for future agent runs. Pass null to clear. */
             fun sandbox(sandbox: JsonValue) = apply { this.sandbox = sandbox }
 
+            /** Vault group IDs the agent can access. Pass null to clear. */
             fun vaultGroups(vaultGroups: List<String>?) =
                 vaultGroups(JsonField.ofNullable(vaultGroups))
 
@@ -872,6 +919,7 @@ private constructor(
                     }
             }
 
+            /** Vault IDs the agent can access directly. Pass null to clear. */
             fun vaultIds(vaultIds: List<String>?) = vaultIds(JsonField.ofNullable(vaultIds))
 
             /** Alias for calling [Builder.vaultIds] with `vaultIds.orElse(null)`. */

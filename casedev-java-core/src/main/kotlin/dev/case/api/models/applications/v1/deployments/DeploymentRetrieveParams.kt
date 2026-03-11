@@ -10,7 +10,10 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Get details of a specific deployment including build logs */
+/**
+ * Returns deployment details for one project in the authenticated organization. Set
+ * includeLogs=true to include recent build output in the response.
+ */
 class DeploymentRetrieveParams
 private constructor(
     private val id: String?,
@@ -22,10 +25,10 @@ private constructor(
 
     fun id(): Optional<String> = Optional.ofNullable(id)
 
-    /** Project ID (for authorization) */
+    /** Project ID used to verify access to the deployment */
     fun projectId(): String = projectId
 
-    /** Include build logs */
+    /** Whether to include build logs in the response */
     fun includeLogs(): Optional<Boolean> = Optional.ofNullable(includeLogs)
 
     /** Additional headers to send with the request. */
@@ -72,10 +75,10 @@ private constructor(
         /** Alias for calling [Builder.id] with `id.orElse(null)`. */
         fun id(id: Optional<String>) = id(id.getOrNull())
 
-        /** Project ID (for authorization) */
+        /** Project ID used to verify access to the deployment */
         fun projectId(projectId: String) = apply { this.projectId = projectId }
 
-        /** Include build logs */
+        /** Whether to include build logs in the response */
         fun includeLogs(includeLogs: Boolean?) = apply { this.includeLogs = includeLogs }
 
         /**

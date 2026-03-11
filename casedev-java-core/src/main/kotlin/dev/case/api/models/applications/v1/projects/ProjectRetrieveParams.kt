@@ -9,7 +9,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Get details of a specific web application project */
+/**
+ * Returns project details, domains, and recent deployment information for one application project
+ * or deployed Thurgood app. Use this endpoint when you need a single record with hosting metadata
+ * for a details view.
+ */
 class ProjectRetrieveParams
 private constructor(
     private val id: String?,
