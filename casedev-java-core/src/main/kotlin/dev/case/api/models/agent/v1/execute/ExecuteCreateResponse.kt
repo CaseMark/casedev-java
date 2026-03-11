@@ -36,7 +36,8 @@ private constructor(
     ) : this(agentId, message, runId, status, mutableMapOf())
 
     /**
-     * Ephemeral agent ID (auto-created)
+     * Ephemeral agent ID (auto-created). This agent is soft-deleted when the run completes and
+     * should not be stored for reuse.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -127,7 +128,10 @@ private constructor(
             additionalProperties = executeCreateResponse.additionalProperties.toMutableMap()
         }
 
-        /** Ephemeral agent ID (auto-created) */
+        /**
+         * Ephemeral agent ID (auto-created). This agent is soft-deleted when the run completes and
+         * should not be stored for reuse.
+         */
         fun agentId(agentId: String) = agentId(JsonField.of(agentId))
 
         /**

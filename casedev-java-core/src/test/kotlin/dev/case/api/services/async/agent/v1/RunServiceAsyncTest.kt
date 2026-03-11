@@ -6,6 +6,7 @@ import dev.case.api.TestServerExtension
 import dev.case.api.client.okhttp.CasedevOkHttpClientAsync
 import dev.case.api.models.agent.v1.run.RunCreateParams
 import dev.case.api.models.agent.v1.run.RunEventsParams
+import dev.case.api.models.agent.v1.run.RunListParams
 import dev.case.api.models.agent.v1.run.RunWatchParams
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -28,6 +29,7 @@ internal class RunServiceAsyncTest {
                 RunCreateParams.builder()
                     .agentId("agentId")
                     .prompt("prompt")
+                    .callbackUrl("https://example.com")
                     .guidance("guidance")
                     .model("model")
                     .addObjectId("string")
@@ -36,6 +38,29 @@ internal class RunServiceAsyncTest {
 
         val run = runFuture.get()
         run.validate()
+    }
+
+    @Test
+    fun list() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val runServiceAsync = client.agent().v1().run()
+
+        val runsFuture =
+            runServiceAsync.list(
+                RunListParams.builder()
+                    .agentId("agentId")
+                    .cursor("cursor")
+                    .limit(1L)
+                    .status(RunListParams.Status.QUEUED)
+                    .build()
+            )
+
+        val runs = runsFuture.get()
+        runs.validate()
     }
 
     @Test

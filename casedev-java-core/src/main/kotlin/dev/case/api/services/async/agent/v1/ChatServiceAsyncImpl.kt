@@ -32,11 +32,14 @@ import dev.case.api.models.agent.v1.chat.ChatReplyToQuestionParams
 import dev.case.api.models.agent.v1.chat.ChatRespondParams
 import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v1.chat.ChatStreamParams
-import dev.case.api.models.agent.v1.chat.ChatUiStreamParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/**
+ * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+ * workflows
+ */
 class ChatServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ChatServiceAsync {
 
@@ -101,16 +104,6 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
         // get /agent/v1/chat/{id}/stream
         withRawResponse()
             .streamStreaming(params, requestOptions)
-            .thenApply { it.parse() }
-            .toAsync(clientOptions.streamHandlerExecutor)
-
-    override fun uiStreamStreaming(
-        params: ChatUiStreamParams,
-        requestOptions: RequestOptions,
-    ): AsyncStreamResponse<String> =
-        // post /agent/v1/chat/{id}/ui-stream
-        withRawResponse()
-            .uiStreamStreaming(params, requestOptions)
             .thenApply { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
 
@@ -341,35 +334,6 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response.let { streamStreamingHandler.handle(it) }
-                    }
-                }
-        }
-
-        private val uiStreamStreamingHandler: Handler<StreamResponse<String>> =
-            sseHandler(clientOptions.jsonMapper).mapJson<String>()
-
-        override fun uiStreamStreaming(
-            params: ChatUiStreamParams,
-            requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<StreamResponse<String>>> {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("id", params.id().getOrNull())
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("agent", "v1", "chat", params._pathParam(0), "ui-stream")
-                    .putHeader("Accept", "text/event-stream")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response.let { uiStreamStreamingHandler.handle(it) }
                     }
                 }
         }

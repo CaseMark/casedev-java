@@ -47,6 +47,16 @@ private constructor(
     fun prompt(): String = body.prompt()
 
     /**
+     * HTTPS callback URL to receive a notification when the run completes. Registered atomically
+     * with the run — eliminates the race condition of calling /watch after /exec. Additional
+     * watchers can still be added via POST /run/:id/watch.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun callbackUrl(): Optional<String> = body.callbackUrl()
+
+    /**
      * Additional guidance for this run
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -84,6 +94,13 @@ private constructor(
      * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _prompt(): JsonField<String> = body._prompt()
+
+    /**
+     * Returns the raw JSON value of [callbackUrl].
+     *
+     * Unlike [callbackUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _callbackUrl(): JsonField<String> = body._callbackUrl()
 
     /**
      * Returns the raw JSON value of [guidance].
@@ -151,9 +168,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [agentId]
          * - [prompt]
+         * - [callbackUrl]
          * - [guidance]
          * - [model]
-         * - [objectIds]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -179,6 +196,25 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun prompt(prompt: JsonField<String>) = apply { body.prompt(prompt) }
+
+        /**
+         * HTTPS callback URL to receive a notification when the run completes. Registered
+         * atomically with the run — eliminates the race condition of calling /watch after /exec.
+         * Additional watchers can still be added via POST /run/:id/watch.
+         */
+        fun callbackUrl(callbackUrl: String?) = apply { body.callbackUrl(callbackUrl) }
+
+        /** Alias for calling [Builder.callbackUrl] with `callbackUrl.orElse(null)`. */
+        fun callbackUrl(callbackUrl: Optional<String>) = callbackUrl(callbackUrl.getOrNull())
+
+        /**
+         * Sets [Builder.callbackUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.callbackUrl] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun callbackUrl(callbackUrl: JsonField<String>) = apply { body.callbackUrl(callbackUrl) }
 
         /** Additional guidance for this run */
         fun guidance(guidance: String?) = apply { body.guidance(guidance) }
@@ -378,6 +414,7 @@ private constructor(
     private constructor(
         private val agentId: JsonField<String>,
         private val prompt: JsonField<String>,
+        private val callbackUrl: JsonField<String>,
         private val guidance: JsonField<String>,
         private val model: JsonField<String>,
         private val objectIds: JsonField<List<String>>,
@@ -388,6 +425,9 @@ private constructor(
         private constructor(
             @JsonProperty("agentId") @ExcludeMissing agentId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("callbackUrl")
+            @ExcludeMissing
+            callbackUrl: JsonField<String> = JsonMissing.of(),
             @JsonProperty("guidance")
             @ExcludeMissing
             guidance: JsonField<String> = JsonMissing.of(),
@@ -395,7 +435,7 @@ private constructor(
             @JsonProperty("objectIds")
             @ExcludeMissing
             objectIds: JsonField<List<String>> = JsonMissing.of(),
-        ) : this(agentId, prompt, guidance, model, objectIds, mutableMapOf())
+        ) : this(agentId, prompt, callbackUrl, guidance, model, objectIds, mutableMapOf())
 
         /**
          * ID of the agent to run
@@ -412,6 +452,16 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun prompt(): String = prompt.getRequired("prompt")
+
+        /**
+         * HTTPS callback URL to receive a notification when the run completes. Registered
+         * atomically with the run — eliminates the race condition of calling /watch after /exec.
+         * Additional watchers can still be added via POST /run/:id/watch.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun callbackUrl(): Optional<String> = callbackUrl.getOptional("callbackUrl")
 
         /**
          * Additional guidance for this run
@@ -451,6 +501,15 @@ private constructor(
          * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<String> = prompt
+
+        /**
+         * Returns the raw JSON value of [callbackUrl].
+         *
+         * Unlike [callbackUrl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("callbackUrl")
+        @ExcludeMissing
+        fun _callbackUrl(): JsonField<String> = callbackUrl
 
         /**
          * Returns the raw JSON value of [guidance].
@@ -506,6 +565,7 @@ private constructor(
 
             private var agentId: JsonField<String>? = null
             private var prompt: JsonField<String>? = null
+            private var callbackUrl: JsonField<String> = JsonMissing.of()
             private var guidance: JsonField<String> = JsonMissing.of()
             private var model: JsonField<String> = JsonMissing.of()
             private var objectIds: JsonField<MutableList<String>>? = null
@@ -515,6 +575,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 agentId = body.agentId
                 prompt = body.prompt
+                callbackUrl = body.callbackUrl
                 guidance = body.guidance
                 model = body.model
                 objectIds = body.objectIds.map { it.toMutableList() }
@@ -544,6 +605,27 @@ private constructor(
              * supported value.
              */
             fun prompt(prompt: JsonField<String>) = apply { this.prompt = prompt }
+
+            /**
+             * HTTPS callback URL to receive a notification when the run completes. Registered
+             * atomically with the run — eliminates the race condition of calling /watch after
+             * /exec. Additional watchers can still be added via POST /run/:id/watch.
+             */
+            fun callbackUrl(callbackUrl: String?) = callbackUrl(JsonField.ofNullable(callbackUrl))
+
+            /** Alias for calling [Builder.callbackUrl] with `callbackUrl.orElse(null)`. */
+            fun callbackUrl(callbackUrl: Optional<String>) = callbackUrl(callbackUrl.getOrNull())
+
+            /**
+             * Sets [Builder.callbackUrl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.callbackUrl] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun callbackUrl(callbackUrl: JsonField<String>) = apply {
+                this.callbackUrl = callbackUrl
+            }
 
             /** Additional guidance for this run */
             fun guidance(guidance: String?) = guidance(JsonField.ofNullable(guidance))
@@ -643,6 +725,7 @@ private constructor(
                 Body(
                     checkRequired("agentId", agentId),
                     checkRequired("prompt", prompt),
+                    callbackUrl,
                     guidance,
                     model,
                     (objectIds ?: JsonMissing.of()).map { it.toImmutable() },
@@ -659,6 +742,7 @@ private constructor(
 
             agentId()
             prompt()
+            callbackUrl()
             guidance()
             model()
             objectIds()
@@ -683,6 +767,7 @@ private constructor(
         internal fun validity(): Int =
             (if (agentId.asKnown().isPresent) 1 else 0) +
                 (if (prompt.asKnown().isPresent) 1 else 0) +
+                (if (callbackUrl.asKnown().isPresent) 1 else 0) +
                 (if (guidance.asKnown().isPresent) 1 else 0) +
                 (if (model.asKnown().isPresent) 1 else 0) +
                 (objectIds.asKnown().getOrNull()?.size ?: 0)
@@ -695,6 +780,7 @@ private constructor(
             return other is Body &&
                 agentId == other.agentId &&
                 prompt == other.prompt &&
+                callbackUrl == other.callbackUrl &&
                 guidance == other.guidance &&
                 model == other.model &&
                 objectIds == other.objectIds &&
@@ -702,13 +788,21 @@ private constructor(
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(agentId, prompt, guidance, model, objectIds, additionalProperties)
+            Objects.hash(
+                agentId,
+                prompt,
+                callbackUrl,
+                guidance,
+                model,
+                objectIds,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{agentId=$agentId, prompt=$prompt, guidance=$guidance, model=$model, objectIds=$objectIds, additionalProperties=$additionalProperties}"
+            "Body{agentId=$agentId, prompt=$prompt, callbackUrl=$callbackUrl, guidance=$guidance, model=$model, objectIds=$objectIds, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
