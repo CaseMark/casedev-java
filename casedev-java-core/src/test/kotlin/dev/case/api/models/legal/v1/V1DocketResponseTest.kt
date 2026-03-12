@@ -72,6 +72,15 @@ internal class V1DocketResponseTest {
                 )
                 .found(0L)
                 .includeEntries(true)
+                .live(true)
+                .pacerFees(
+                    V1DocketResponse.PacerFees.builder()
+                        .currency(V1DocketResponse.PacerFees.Currency.USD)
+                        .fetchDurationMs(0L)
+                        .maxPacerCost(0.0)
+                        .serviceFee(0.0)
+                        .build()
+                )
                 .pagination(
                     V1DocketResponse.Pagination.builder().limit(0L).offset(0L).returned(0L).build()
                 )
@@ -139,6 +148,16 @@ internal class V1DocketResponseTest {
             )
         assertThat(v1DocketResponse.found()).contains(0L)
         assertThat(v1DocketResponse.includeEntries()).contains(true)
+        assertThat(v1DocketResponse.live()).contains(true)
+        assertThat(v1DocketResponse.pacerFees())
+            .contains(
+                V1DocketResponse.PacerFees.builder()
+                    .currency(V1DocketResponse.PacerFees.Currency.USD)
+                    .fetchDurationMs(0L)
+                    .maxPacerCost(0.0)
+                    .serviceFee(0.0)
+                    .build()
+            )
         assertThat(v1DocketResponse.pagination())
             .contains(
                 V1DocketResponse.Pagination.builder().limit(0L).offset(0L).returned(0L).build()
@@ -209,6 +228,15 @@ internal class V1DocketResponseTest {
                 )
                 .found(0L)
                 .includeEntries(true)
+                .live(true)
+                .pacerFees(
+                    V1DocketResponse.PacerFees.builder()
+                        .currency(V1DocketResponse.PacerFees.Currency.USD)
+                        .fetchDurationMs(0L)
+                        .maxPacerCost(0.0)
+                        .serviceFee(0.0)
+                        .build()
+                )
                 .pagination(
                     V1DocketResponse.Pagination.builder().limit(0L).offset(0L).returned(0L).build()
                 )

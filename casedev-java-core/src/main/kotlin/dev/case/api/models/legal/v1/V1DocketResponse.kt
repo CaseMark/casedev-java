@@ -31,6 +31,8 @@ private constructor(
     private val entries: JsonField<List<Entry>>,
     private val found: JsonField<Long>,
     private val includeEntries: JsonField<Boolean>,
+    private val live: JsonField<Boolean>,
+    private val pacerFees: JsonField<PacerFees>,
     private val pagination: JsonField<Pagination>,
     private val query: JsonField<String>,
     private val type: JsonField<Type>,
@@ -55,6 +57,10 @@ private constructor(
         @JsonProperty("includeEntries")
         @ExcludeMissing
         includeEntries: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("live") @ExcludeMissing live: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("pacerFees")
+        @ExcludeMissing
+        pacerFees: JsonField<PacerFees> = JsonMissing.of(),
         @JsonProperty("pagination")
         @ExcludeMissing
         pagination: JsonField<Pagination> = JsonMissing.of(),
@@ -69,6 +75,8 @@ private constructor(
         entries,
         found,
         includeEntries,
+        live,
+        pacerFees,
         pagination,
         query,
         type,
@@ -136,6 +144,22 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun includeEntries(): Optional<Boolean> = includeEntries.getOptional("includeEntries")
+
+    /**
+     * Whether this was a live PACER fetch (lookup mode only)
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun live(): Optional<Boolean> = live.getOptional("live")
+
+    /**
+     * PACER fee information (present when live: true)
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun pacerFees(): Optional<PacerFees> = pacerFees.getOptional("pacerFees")
 
     /**
      * Pagination info for entry list (lookup mode with includeEntries)
@@ -224,6 +248,20 @@ private constructor(
     fun _includeEntries(): JsonField<Boolean> = includeEntries
 
     /**
+     * Returns the raw JSON value of [live].
+     *
+     * Unlike [live], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("live") @ExcludeMissing fun _live(): JsonField<Boolean> = live
+
+    /**
+     * Returns the raw JSON value of [pacerFees].
+     *
+     * Unlike [pacerFees], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("pacerFees") @ExcludeMissing fun _pacerFees(): JsonField<PacerFees> = pacerFees
+
+    /**
      * Returns the raw JSON value of [pagination].
      *
      * Unlike [pagination], this method doesn't throw if the JSON field has an unexpected type.
@@ -275,6 +313,8 @@ private constructor(
         private var entries: JsonField<MutableList<Entry>>? = null
         private var found: JsonField<Long> = JsonMissing.of()
         private var includeEntries: JsonField<Boolean> = JsonMissing.of()
+        private var live: JsonField<Boolean> = JsonMissing.of()
+        private var pacerFees: JsonField<PacerFees> = JsonMissing.of()
         private var pagination: JsonField<Pagination> = JsonMissing.of()
         private var query: JsonField<String> = JsonMissing.of()
         private var type: JsonField<Type> = JsonMissing.of()
@@ -290,6 +330,8 @@ private constructor(
             entries = v1DocketResponse.entries.map { it.toMutableList() }
             found = v1DocketResponse.found
             includeEntries = v1DocketResponse.includeEntries
+            live = v1DocketResponse.live
+            pacerFees = v1DocketResponse.pacerFees
             pagination = v1DocketResponse.pagination
             query = v1DocketResponse.query
             type = v1DocketResponse.type
@@ -442,6 +484,32 @@ private constructor(
             this.includeEntries = includeEntries
         }
 
+        /** Whether this was a live PACER fetch (lookup mode only) */
+        fun live(live: Boolean) = live(JsonField.of(live))
+
+        /**
+         * Sets [Builder.live] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.live] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun live(live: JsonField<Boolean>) = apply { this.live = live }
+
+        /** PACER fee information (present when live: true) */
+        fun pacerFees(pacerFees: PacerFees?) = pacerFees(JsonField.ofNullable(pacerFees))
+
+        /** Alias for calling [Builder.pacerFees] with `pacerFees.orElse(null)`. */
+        fun pacerFees(pacerFees: Optional<PacerFees>) = pacerFees(pacerFees.getOrNull())
+
+        /**
+         * Sets [Builder.pacerFees] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.pacerFees] with a well-typed [PacerFees] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun pacerFees(pacerFees: JsonField<PacerFees>) = apply { this.pacerFees = pacerFees }
+
         /** Pagination info for entry list (lookup mode with includeEntries) */
         fun pagination(pagination: Pagination?) = pagination(JsonField.ofNullable(pagination))
 
@@ -515,6 +583,8 @@ private constructor(
                 (entries ?: JsonMissing.of()).map { it.toImmutable() },
                 found,
                 includeEntries,
+                live,
+                pacerFees,
                 pagination,
                 query,
                 type,
@@ -537,6 +607,8 @@ private constructor(
         entries().ifPresent { it.forEach { it.validate() } }
         found()
         includeEntries()
+        live()
+        pacerFees().ifPresent { it.validate() }
         pagination().ifPresent { it.validate() }
         query()
         type().ifPresent { it.validate() }
@@ -566,6 +638,8 @@ private constructor(
             (entries.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (found.asKnown().isPresent) 1 else 0) +
             (if (includeEntries.asKnown().isPresent) 1 else 0) +
+            (if (live.asKnown().isPresent) 1 else 0) +
+            (pacerFees.asKnown().getOrNull()?.validity() ?: 0) +
             (pagination.asKnown().getOrNull()?.validity() ?: 0) +
             (if (query.asKnown().isPresent) 1 else 0) +
             (type.asKnown().getOrNull()?.validity() ?: 0)
@@ -1288,6 +1362,403 @@ private constructor(
             "Entry{date=$date, description=$description, documents=$documents, entryNumber=$entryNumber, additionalProperties=$additionalProperties}"
     }
 
+    /** PACER fee information (present when live: true) */
+    class PacerFees
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val currency: JsonField<Currency>,
+        private val fetchDurationMs: JsonField<Long>,
+        private val maxPacerCost: JsonField<Double>,
+        private val serviceFee: JsonField<Double>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("currency")
+            @ExcludeMissing
+            currency: JsonField<Currency> = JsonMissing.of(),
+            @JsonProperty("fetchDurationMs")
+            @ExcludeMissing
+            fetchDurationMs: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("maxPacerCost")
+            @ExcludeMissing
+            maxPacerCost: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("serviceFee")
+            @ExcludeMissing
+            serviceFee: JsonField<Double> = JsonMissing.of(),
+        ) : this(currency, fetchDurationMs, maxPacerCost, serviceFee, mutableMapOf())
+
+        /**
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun currency(): Optional<Currency> = currency.getOptional("currency")
+
+        /**
+         * Time taken for PACER fetch in milliseconds
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun fetchDurationMs(): Optional<Long> = fetchDurationMs.getOptional("fetchDurationMs")
+
+        /**
+         * Maximum PACER charge per docket in USD
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun maxPacerCost(): Optional<Double> = maxPacerCost.getOptional("maxPacerCost")
+
+        /**
+         * CaseMark service fee in USD
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun serviceFee(): Optional<Double> = serviceFee.getOptional("serviceFee")
+
+        /**
+         * Returns the raw JSON value of [currency].
+         *
+         * Unlike [currency], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("currency") @ExcludeMissing fun _currency(): JsonField<Currency> = currency
+
+        /**
+         * Returns the raw JSON value of [fetchDurationMs].
+         *
+         * Unlike [fetchDurationMs], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("fetchDurationMs")
+        @ExcludeMissing
+        fun _fetchDurationMs(): JsonField<Long> = fetchDurationMs
+
+        /**
+         * Returns the raw JSON value of [maxPacerCost].
+         *
+         * Unlike [maxPacerCost], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("maxPacerCost")
+        @ExcludeMissing
+        fun _maxPacerCost(): JsonField<Double> = maxPacerCost
+
+        /**
+         * Returns the raw JSON value of [serviceFee].
+         *
+         * Unlike [serviceFee], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("serviceFee")
+        @ExcludeMissing
+        fun _serviceFee(): JsonField<Double> = serviceFee
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [PacerFees]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [PacerFees]. */
+        class Builder internal constructor() {
+
+            private var currency: JsonField<Currency> = JsonMissing.of()
+            private var fetchDurationMs: JsonField<Long> = JsonMissing.of()
+            private var maxPacerCost: JsonField<Double> = JsonMissing.of()
+            private var serviceFee: JsonField<Double> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(pacerFees: PacerFees) = apply {
+                currency = pacerFees.currency
+                fetchDurationMs = pacerFees.fetchDurationMs
+                maxPacerCost = pacerFees.maxPacerCost
+                serviceFee = pacerFees.serviceFee
+                additionalProperties = pacerFees.additionalProperties.toMutableMap()
+            }
+
+            fun currency(currency: Currency) = currency(JsonField.of(currency))
+
+            /**
+             * Sets [Builder.currency] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.currency] with a well-typed [Currency] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun currency(currency: JsonField<Currency>) = apply { this.currency = currency }
+
+            /** Time taken for PACER fetch in milliseconds */
+            fun fetchDurationMs(fetchDurationMs: Long) =
+                fetchDurationMs(JsonField.of(fetchDurationMs))
+
+            /**
+             * Sets [Builder.fetchDurationMs] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.fetchDurationMs] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun fetchDurationMs(fetchDurationMs: JsonField<Long>) = apply {
+                this.fetchDurationMs = fetchDurationMs
+            }
+
+            /** Maximum PACER charge per docket in USD */
+            fun maxPacerCost(maxPacerCost: Double) = maxPacerCost(JsonField.of(maxPacerCost))
+
+            /**
+             * Sets [Builder.maxPacerCost] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxPacerCost] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun maxPacerCost(maxPacerCost: JsonField<Double>) = apply {
+                this.maxPacerCost = maxPacerCost
+            }
+
+            /** CaseMark service fee in USD */
+            fun serviceFee(serviceFee: Double) = serviceFee(JsonField.of(serviceFee))
+
+            /**
+             * Sets [Builder.serviceFee] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.serviceFee] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun serviceFee(serviceFee: JsonField<Double>) = apply { this.serviceFee = serviceFee }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [PacerFees].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): PacerFees =
+                PacerFees(
+                    currency,
+                    fetchDurationMs,
+                    maxPacerCost,
+                    serviceFee,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): PacerFees = apply {
+            if (validated) {
+                return@apply
+            }
+
+            currency().ifPresent { it.validate() }
+            fetchDurationMs()
+            maxPacerCost()
+            serviceFee()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: CasedevInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (currency.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (fetchDurationMs.asKnown().isPresent) 1 else 0) +
+                (if (maxPacerCost.asKnown().isPresent) 1 else 0) +
+                (if (serviceFee.asKnown().isPresent) 1 else 0)
+
+        class Currency @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val USD = of("USD")
+
+                @JvmStatic fun of(value: String) = Currency(JsonField.of(value))
+            }
+
+            /** An enum containing [Currency]'s known values. */
+            enum class Known {
+                USD
+            }
+
+            /**
+             * An enum containing [Currency]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Currency] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                USD,
+                /**
+                 * An enum member indicating that [Currency] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    USD -> Value.USD
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws CasedevInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    USD -> Known.USD
+                    else -> throw CasedevInvalidDataException("Unknown Currency: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws CasedevInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    CasedevInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Currency = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: CasedevInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Currency && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PacerFees &&
+                currency == other.currency &&
+                fetchDurationMs == other.fetchDurationMs &&
+                maxPacerCost == other.maxPacerCost &&
+                serviceFee == other.serviceFee &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(currency, fetchDurationMs, maxPacerCost, serviceFee, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "PacerFees{currency=$currency, fetchDurationMs=$fetchDurationMs, maxPacerCost=$maxPacerCost, serviceFee=$serviceFee, additionalProperties=$additionalProperties}"
+    }
+
     /** Pagination info for entry list (lookup mode with includeEntries) */
     class Pagination
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -1633,6 +2104,8 @@ private constructor(
             entries == other.entries &&
             found == other.found &&
             includeEntries == other.includeEntries &&
+            live == other.live &&
+            pacerFees == other.pacerFees &&
             pagination == other.pagination &&
             query == other.query &&
             type == other.type &&
@@ -1649,6 +2122,8 @@ private constructor(
             entries,
             found,
             includeEntries,
+            live,
+            pacerFees,
             pagination,
             query,
             type,
@@ -1659,5 +2134,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "V1DocketResponse{court=$court, dateFiledAfter=$dateFiledAfter, dateFiledBefore=$dateFiledBefore, docket=$docket, dockets=$dockets, entries=$entries, found=$found, includeEntries=$includeEntries, pagination=$pagination, query=$query, type=$type, additionalProperties=$additionalProperties}"
+        "V1DocketResponse{court=$court, dateFiledAfter=$dateFiledAfter, dateFiledBefore=$dateFiledBefore, docket=$docket, dockets=$dockets, entries=$entries, found=$found, includeEntries=$includeEntries, live=$live, pacerFees=$pacerFees, pagination=$pagination, query=$query, type=$type, additionalProperties=$additionalProperties}"
 }
