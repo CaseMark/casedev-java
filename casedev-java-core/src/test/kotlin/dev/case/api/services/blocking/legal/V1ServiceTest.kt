@@ -37,6 +37,7 @@ internal class V1ServiceTest {
             v1Service.docket(
                 V1DocketParams.builder()
                     .type(V1DocketParams.Type.SEARCH)
+                    .acknowledgePacerFees(true)
                     .court("court")
                     .dateFiledAfter(LocalDate.parse("2019-12-27"))
                     .dateFiledBefore(LocalDate.parse("2019-12-27"))

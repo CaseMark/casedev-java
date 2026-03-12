@@ -323,7 +323,7 @@ private constructor(
         ) : this(id, fullName, jurisdiction, pacerCourtId, shortName, mutableMapOf())
 
         /**
-         * CourtListener court slug
+         * Court slug (use as the court parameter in legal.docket())
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -433,7 +433,7 @@ private constructor(
                 additionalProperties = court.additionalProperties.toMutableMap()
             }
 
-            /** CourtListener court slug */
+            /** Court slug (use as the court parameter in legal.docket()) */
             fun id(id: String) = id(JsonField.of(id))
 
             /**

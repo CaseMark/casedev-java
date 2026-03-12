@@ -23,8 +23,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Search federal court dockets or retrieve a specific docket with optional filing entries via
- * CourtListener RECAP data.
+ * Search federal court dockets or retrieve a specific docket with optional filing entries. Use
+ * legal.listCourts() to resolve court slugs for filtering.
  */
 class V1DocketParams
 private constructor(
@@ -42,7 +42,17 @@ private constructor(
     fun type(): Type = body.type()
 
     /**
-     * Optional CourtListener court slug (e.g. "nysd", "ca9", "cafc")
+     * Required when live: true. Acknowledges that PACER fees (up to $3.00 per docket) plus a $0.05
+     * service fee will be charged to your account.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun acknowledgePacerFees(): Optional<Boolean> = body.acknowledgePacerFees()
+
+    /**
+     * Optional court slug for filtering (e.g. "nysd", "ca9", "cafc"). Use legal.listCourts() to
+     * find slugs.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -66,7 +76,7 @@ private constructor(
     fun dateFiledBefore(): Optional<LocalDate> = body.dateFiledBefore()
 
     /**
-     * CourtListener docket ID (required for lookup)
+     * Docket ID (required for lookup)
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -74,7 +84,8 @@ private constructor(
     fun docketId(): Optional<String> = body.docketId()
 
     /**
-     * Include docket entries/filings in lookup responses
+     * Include docket entries/filings in lookup responses. Coming soon — currently returns 501. The
+     * parameter is accepted for forward compatibility.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -90,7 +101,9 @@ private constructor(
     fun limit(): Optional<Long> = body.limit()
 
     /**
-     * Reserved for future PACER live fetch support. Setting true currently returns 400.
+     * Trigger a live PACER fetch for dockets not yet in the RECAP archive. Requires
+     * acknowledgePacerFees: true. PACER charges up to $3.00 per docket sheet plus a $0.05 service
+     * fee. Only valid with type: "lookup".
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -119,6 +132,14 @@ private constructor(
      * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _type(): JsonField<Type> = body._type()
+
+    /**
+     * Returns the raw JSON value of [acknowledgePacerFees].
+     *
+     * Unlike [acknowledgePacerFees], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _acknowledgePacerFees(): JsonField<Boolean> = body._acknowledgePacerFees()
 
     /**
      * Returns the raw JSON value of [court].
@@ -226,10 +247,10 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [type]
+         * - [acknowledgePacerFees]
          * - [court]
          * - [dateFiledAfter]
          * - [dateFiledBefore]
-         * - [docketId]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -245,7 +266,29 @@ private constructor(
          */
         fun type(type: JsonField<Type>) = apply { body.type(type) }
 
-        /** Optional CourtListener court slug (e.g. "nysd", "ca9", "cafc") */
+        /**
+         * Required when live: true. Acknowledges that PACER fees (up to $3.00 per docket) plus a
+         * $0.05 service fee will be charged to your account.
+         */
+        fun acknowledgePacerFees(acknowledgePacerFees: Boolean) = apply {
+            body.acknowledgePacerFees(acknowledgePacerFees)
+        }
+
+        /**
+         * Sets [Builder.acknowledgePacerFees] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.acknowledgePacerFees] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun acknowledgePacerFees(acknowledgePacerFees: JsonField<Boolean>) = apply {
+            body.acknowledgePacerFees(acknowledgePacerFees)
+        }
+
+        /**
+         * Optional court slug for filtering (e.g. "nysd", "ca9", "cafc"). Use legal.listCourts() to
+         * find slugs.
+         */
         fun court(court: String) = apply { body.court(court) }
 
         /**
@@ -288,7 +331,7 @@ private constructor(
             body.dateFiledBefore(dateFiledBefore)
         }
 
-        /** CourtListener docket ID (required for lookup) */
+        /** Docket ID (required for lookup) */
         fun docketId(docketId: String) = apply { body.docketId(docketId) }
 
         /**
@@ -299,7 +342,10 @@ private constructor(
          */
         fun docketId(docketId: JsonField<String>) = apply { body.docketId(docketId) }
 
-        /** Include docket entries/filings in lookup responses */
+        /**
+         * Include docket entries/filings in lookup responses. Coming soon — currently returns 501.
+         * The parameter is accepted for forward compatibility.
+         */
         fun includeEntries(includeEntries: Boolean) = apply { body.includeEntries(includeEntries) }
 
         /**
@@ -324,7 +370,11 @@ private constructor(
          */
         fun limit(limit: JsonField<Long>) = apply { body.limit(limit) }
 
-        /** Reserved for future PACER live fetch support. Setting true currently returns 400. */
+        /**
+         * Trigger a live PACER fetch for dockets not yet in the RECAP archive. Requires
+         * acknowledgePacerFees: true. PACER charges up to $3.00 per docket sheet plus a $0.05
+         * service fee. Only valid with type: "lookup".
+         */
         fun live(live: Boolean) = apply { body.live(live) }
 
         /**
@@ -500,6 +550,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonField<Type>,
+        private val acknowledgePacerFees: JsonField<Boolean>,
         private val court: JsonField<String>,
         private val dateFiledAfter: JsonField<LocalDate>,
         private val dateFiledBefore: JsonField<LocalDate>,
@@ -515,6 +566,9 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+            @JsonProperty("acknowledgePacerFees")
+            @ExcludeMissing
+            acknowledgePacerFees: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("court") @ExcludeMissing court: JsonField<String> = JsonMissing.of(),
             @JsonProperty("dateFiledAfter")
             @ExcludeMissing
@@ -534,6 +588,7 @@ private constructor(
             @JsonProperty("query") @ExcludeMissing query: JsonField<String> = JsonMissing.of(),
         ) : this(
             type,
+            acknowledgePacerFees,
             court,
             dateFiledAfter,
             dateFiledBefore,
@@ -555,7 +610,18 @@ private constructor(
         fun type(): Type = type.getRequired("type")
 
         /**
-         * Optional CourtListener court slug (e.g. "nysd", "ca9", "cafc")
+         * Required when live: true. Acknowledges that PACER fees (up to $3.00 per docket) plus a
+         * $0.05 service fee will be charged to your account.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun acknowledgePacerFees(): Optional<Boolean> =
+            acknowledgePacerFees.getOptional("acknowledgePacerFees")
+
+        /**
+         * Optional court slug for filtering (e.g. "nysd", "ca9", "cafc"). Use legal.listCourts() to
+         * find slugs.
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -579,7 +645,7 @@ private constructor(
         fun dateFiledBefore(): Optional<LocalDate> = dateFiledBefore.getOptional("dateFiledBefore")
 
         /**
-         * CourtListener docket ID (required for lookup)
+         * Docket ID (required for lookup)
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -587,7 +653,8 @@ private constructor(
         fun docketId(): Optional<String> = docketId.getOptional("docketId")
 
         /**
-         * Include docket entries/filings in lookup responses
+         * Include docket entries/filings in lookup responses. Coming soon — currently returns 501.
+         * The parameter is accepted for forward compatibility.
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -603,7 +670,9 @@ private constructor(
         fun limit(): Optional<Long> = limit.getOptional("limit")
 
         /**
-         * Reserved for future PACER live fetch support. Setting true currently returns 400.
+         * Trigger a live PACER fetch for dockets not yet in the RECAP archive. Requires
+         * acknowledgePacerFees: true. PACER charges up to $3.00 per docket sheet plus a $0.05
+         * service fee. Only valid with type: "lookup".
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -632,6 +701,16 @@ private constructor(
          * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+        /**
+         * Returns the raw JSON value of [acknowledgePacerFees].
+         *
+         * Unlike [acknowledgePacerFees], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("acknowledgePacerFees")
+        @ExcludeMissing
+        fun _acknowledgePacerFees(): JsonField<Boolean> = acknowledgePacerFees
 
         /**
          * Returns the raw JSON value of [court].
@@ -734,6 +813,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var type: JsonField<Type>? = null
+            private var acknowledgePacerFees: JsonField<Boolean> = JsonMissing.of()
             private var court: JsonField<String> = JsonMissing.of()
             private var dateFiledAfter: JsonField<LocalDate> = JsonMissing.of()
             private var dateFiledBefore: JsonField<LocalDate> = JsonMissing.of()
@@ -748,6 +828,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 type = body.type
+                acknowledgePacerFees = body.acknowledgePacerFees
                 court = body.court
                 dateFiledAfter = body.dateFiledAfter
                 dateFiledBefore = body.dateFiledBefore
@@ -772,7 +853,28 @@ private constructor(
              */
             fun type(type: JsonField<Type>) = apply { this.type = type }
 
-            /** Optional CourtListener court slug (e.g. "nysd", "ca9", "cafc") */
+            /**
+             * Required when live: true. Acknowledges that PACER fees (up to $3.00 per docket) plus
+             * a $0.05 service fee will be charged to your account.
+             */
+            fun acknowledgePacerFees(acknowledgePacerFees: Boolean) =
+                acknowledgePacerFees(JsonField.of(acknowledgePacerFees))
+
+            /**
+             * Sets [Builder.acknowledgePacerFees] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.acknowledgePacerFees] with a well-typed [Boolean]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun acknowledgePacerFees(acknowledgePacerFees: JsonField<Boolean>) = apply {
+                this.acknowledgePacerFees = acknowledgePacerFees
+            }
+
+            /**
+             * Optional court slug for filtering (e.g. "nysd", "ca9", "cafc"). Use
+             * legal.listCourts() to find slugs.
+             */
             fun court(court: String) = court(JsonField.of(court))
 
             /**
@@ -814,7 +916,7 @@ private constructor(
                 this.dateFiledBefore = dateFiledBefore
             }
 
-            /** CourtListener docket ID (required for lookup) */
+            /** Docket ID (required for lookup) */
             fun docketId(docketId: String) = docketId(JsonField.of(docketId))
 
             /**
@@ -826,7 +928,10 @@ private constructor(
              */
             fun docketId(docketId: JsonField<String>) = apply { this.docketId = docketId }
 
-            /** Include docket entries/filings in lookup responses */
+            /**
+             * Include docket entries/filings in lookup responses. Coming soon — currently
+             * returns 501. The parameter is accepted for forward compatibility.
+             */
             fun includeEntries(includeEntries: Boolean) =
                 includeEntries(JsonField.of(includeEntries))
 
@@ -853,7 +958,11 @@ private constructor(
              */
             fun limit(limit: JsonField<Long>) = apply { this.limit = limit }
 
-            /** Reserved for future PACER live fetch support. Setting true currently returns 400. */
+            /**
+             * Trigger a live PACER fetch for dockets not yet in the RECAP archive. Requires
+             * acknowledgePacerFees: true. PACER charges up to $3.00 per docket sheet plus a $0.05
+             * service fee. Only valid with type: "lookup".
+             */
             fun live(live: Boolean) = live(JsonField.of(live))
 
             /**
@@ -923,6 +1032,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     checkRequired("type", type),
+                    acknowledgePacerFees,
                     court,
                     dateFiledAfter,
                     dateFiledBefore,
@@ -944,6 +1054,7 @@ private constructor(
             }
 
             type().validate()
+            acknowledgePacerFees()
             court()
             dateFiledAfter()
             dateFiledBefore()
@@ -973,6 +1084,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (type.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (acknowledgePacerFees.asKnown().isPresent) 1 else 0) +
                 (if (court.asKnown().isPresent) 1 else 0) +
                 (if (dateFiledAfter.asKnown().isPresent) 1 else 0) +
                 (if (dateFiledBefore.asKnown().isPresent) 1 else 0) +
@@ -990,6 +1102,7 @@ private constructor(
 
             return other is Body &&
                 type == other.type &&
+                acknowledgePacerFees == other.acknowledgePacerFees &&
                 court == other.court &&
                 dateFiledAfter == other.dateFiledAfter &&
                 dateFiledBefore == other.dateFiledBefore &&
@@ -1005,6 +1118,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 type,
+                acknowledgePacerFees,
                 court,
                 dateFiledAfter,
                 dateFiledBefore,
@@ -1021,7 +1135,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{type=$type, court=$court, dateFiledAfter=$dateFiledAfter, dateFiledBefore=$dateFiledBefore, docketId=$docketId, includeEntries=$includeEntries, limit=$limit, live=$live, offset=$offset, query=$query, additionalProperties=$additionalProperties}"
+            "Body{type=$type, acknowledgePacerFees=$acknowledgePacerFees, court=$court, dateFiledAfter=$dateFiledAfter, dateFiledBefore=$dateFiledBefore, docketId=$docketId, includeEntries=$includeEntries, limit=$limit, live=$live, offset=$offset, query=$query, additionalProperties=$additionalProperties}"
     }
 
     /** Search dockets or look up a docket by ID */

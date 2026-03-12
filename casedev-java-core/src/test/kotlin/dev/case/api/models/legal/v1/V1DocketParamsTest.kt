@@ -12,6 +12,7 @@ internal class V1DocketParamsTest {
     fun create() {
         V1DocketParams.builder()
             .type(V1DocketParams.Type.SEARCH)
+            .acknowledgePacerFees(true)
             .court("court")
             .dateFiledAfter(LocalDate.parse("2019-12-27"))
             .dateFiledBefore(LocalDate.parse("2019-12-27"))
@@ -29,6 +30,7 @@ internal class V1DocketParamsTest {
         val params =
             V1DocketParams.builder()
                 .type(V1DocketParams.Type.SEARCH)
+                .acknowledgePacerFees(true)
                 .court("court")
                 .dateFiledAfter(LocalDate.parse("2019-12-27"))
                 .dateFiledBefore(LocalDate.parse("2019-12-27"))
@@ -43,6 +45,7 @@ internal class V1DocketParamsTest {
         val body = params._body()
 
         assertThat(body.type()).isEqualTo(V1DocketParams.Type.SEARCH)
+        assertThat(body.acknowledgePacerFees()).contains(true)
         assertThat(body.court()).contains("court")
         assertThat(body.dateFiledAfter()).contains(LocalDate.parse("2019-12-27"))
         assertThat(body.dateFiledBefore()).contains(LocalDate.parse("2019-12-27"))
