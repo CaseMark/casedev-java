@@ -50,8 +50,8 @@ interface V1ServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): V1ServiceAsync
 
     /**
-     * Search federal court dockets or retrieve a specific docket with optional filing entries via
-     * CourtListener RECAP data.
+     * Search federal court dockets or retrieve a specific docket with optional filing entries. Use
+     * legal.listCourts() to resolve court slugs for filtering.
      */
     fun docket(params: V1DocketParams): CompletableFuture<V1DocketResponse> =
         docket(params, RequestOptions.none())
@@ -130,8 +130,8 @@ interface V1ServiceAsync {
     ): CompletableFuture<V1GetFullTextResponse>
 
     /**
-     * Returns CourtListener court IDs and names for docket filtering. Use these IDs in
-     * legal.docket() as the court parameter.
+     * Returns court IDs (slugs) and names for use with the docket search endpoint. Use the returned
+     * court ID as the `court` parameter in legal.docket().
      */
     fun listCourts(): CompletableFuture<V1ListCourtsResponse> =
         listCourts(V1ListCourtsParams.none())

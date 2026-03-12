@@ -19,8 +19,8 @@ import java.util.Objects
 import java.util.Optional
 
 /**
- * Returns CourtListener court IDs and names for docket filtering. Use these IDs in legal.docket()
- * as the court parameter.
+ * Returns court IDs (slugs) and names for use with the docket search endpoint. Use the returned
+ * court ID as the `court` parameter in legal.docket().
  */
 class V1ListCourtsParams
 private constructor(
@@ -30,7 +30,7 @@ private constructor(
 ) : Params {
 
     /**
-     * Only return courts currently in use by CourtListener
+     * Only return courts with available docket data
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -38,7 +38,8 @@ private constructor(
     fun inUseOnly(): Optional<Boolean> = body.inUseOnly()
 
     /**
-     * Optional CourtListener jurisdiction code filter (e.g. FD, F, S)
+     * Optional jurisdiction code filter (e.g. FD for Federal District, F for all Federal, S for
+     * State)
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -150,7 +151,7 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** Only return courts currently in use by CourtListener */
+        /** Only return courts with available docket data */
         fun inUseOnly(inUseOnly: Boolean) = apply { body.inUseOnly(inUseOnly) }
 
         /**
@@ -162,7 +163,10 @@ private constructor(
          */
         fun inUseOnly(inUseOnly: JsonField<Boolean>) = apply { body.inUseOnly(inUseOnly) }
 
-        /** Optional CourtListener jurisdiction code filter (e.g. FD, F, S) */
+        /**
+         * Optional jurisdiction code filter (e.g. FD for Federal District, F for all Federal, S for
+         * State)
+         */
         fun jurisdiction(jurisdiction: String) = apply { body.jurisdiction(jurisdiction) }
 
         /**
@@ -370,7 +374,7 @@ private constructor(
         ) : this(inUseOnly, jurisdiction, limit, offset, query, mutableMapOf())
 
         /**
-         * Only return courts currently in use by CourtListener
+         * Only return courts with available docket data
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -378,7 +382,8 @@ private constructor(
         fun inUseOnly(): Optional<Boolean> = inUseOnly.getOptional("inUseOnly")
 
         /**
-         * Optional CourtListener jurisdiction code filter (e.g. FD, F, S)
+         * Optional jurisdiction code filter (e.g. FD for Federal District, F for all Federal, S for
+         * State)
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -485,7 +490,7 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** Only return courts currently in use by CourtListener */
+            /** Only return courts with available docket data */
             fun inUseOnly(inUseOnly: Boolean) = inUseOnly(JsonField.of(inUseOnly))
 
             /**
@@ -497,7 +502,10 @@ private constructor(
              */
             fun inUseOnly(inUseOnly: JsonField<Boolean>) = apply { this.inUseOnly = inUseOnly }
 
-            /** Optional CourtListener jurisdiction code filter (e.g. FD, F, S) */
+            /**
+             * Optional jurisdiction code filter (e.g. FD for Federal District, F for all Federal, S
+             * for State)
+             */
             fun jurisdiction(jurisdiction: String) = jurisdiction(JsonField.of(jurisdiction))
 
             /**

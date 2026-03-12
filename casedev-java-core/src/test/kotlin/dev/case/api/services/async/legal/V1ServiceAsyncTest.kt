@@ -37,6 +37,7 @@ internal class V1ServiceAsyncTest {
             v1ServiceAsync.docket(
                 V1DocketParams.builder()
                     .type(V1DocketParams.Type.SEARCH)
+                    .acknowledgePacerFees(true)
                     .court("court")
                     .dateFiledAfter(LocalDate.parse("2019-12-27"))
                     .dateFiledBefore(LocalDate.parse("2019-12-27"))
