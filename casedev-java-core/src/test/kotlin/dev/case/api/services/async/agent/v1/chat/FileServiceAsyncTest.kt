@@ -47,7 +47,9 @@ internal class FileServiceAsyncTest {
         stubFor(get(anyUrl()).willReturn(ok().withBody("abc")))
 
         val responseFuture =
-            fileServiceAsync.download(FileDownloadParams.builder().id("id").path("path").build())
+            fileServiceAsync.download(
+                FileDownloadParams.builder().id("id").filePath("filePath").build()
+            )
 
         val response = responseFuture.get()
         assertThat(response.body()).hasContent("abc")

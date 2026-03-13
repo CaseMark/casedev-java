@@ -67,16 +67,16 @@ interface FileServiceAsync {
      * Downloads a file from the sandbox workspace by path. Only available while the sandbox is
      * running.
      */
-    fun download(path: String, params: FileDownloadParams): CompletableFuture<HttpResponse> =
-        download(path, params, RequestOptions.none())
+    fun download(filePath: String, params: FileDownloadParams): CompletableFuture<HttpResponse> =
+        download(filePath, params, RequestOptions.none())
 
     /** @see download */
     fun download(
-        path: String,
+        filePath: String,
         params: FileDownloadParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<HttpResponse> =
-        download(params.toBuilder().path(path).build(), requestOptions)
+        download(params.toBuilder().filePath(filePath).build(), requestOptions)
 
     /** @see download */
     fun download(params: FileDownloadParams): CompletableFuture<HttpResponse> =
@@ -138,19 +138,21 @@ interface FileServiceAsync {
             list(id, FileListParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `get /agent/v1/chat/{id}/files/{path}`, but is otherwise
-         * the same as [FileServiceAsync.download].
+         * Returns a raw HTTP response for `get /agent/v1/chat/{id}/files/{filePath}`, but is
+         * otherwise the same as [FileServiceAsync.download].
          */
-        fun download(path: String, params: FileDownloadParams): CompletableFuture<HttpResponse> =
-            download(path, params, RequestOptions.none())
+        fun download(
+            filePath: String,
+            params: FileDownloadParams,
+        ): CompletableFuture<HttpResponse> = download(filePath, params, RequestOptions.none())
 
         /** @see download */
         fun download(
-            path: String,
+            filePath: String,
             params: FileDownloadParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse> =
-            download(params.toBuilder().path(path).build(), requestOptions)
+            download(params.toBuilder().filePath(filePath).build(), requestOptions)
 
         /** @see download */
         fun download(params: FileDownloadParams): CompletableFuture<HttpResponse> =

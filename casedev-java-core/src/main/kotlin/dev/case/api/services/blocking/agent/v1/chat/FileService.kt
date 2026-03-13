@@ -65,16 +65,16 @@ interface FileService {
      * running.
      */
     @MustBeClosed
-    fun download(path: String, params: FileDownloadParams): HttpResponse =
-        download(path, params, RequestOptions.none())
+    fun download(filePath: String, params: FileDownloadParams): HttpResponse =
+        download(filePath, params, RequestOptions.none())
 
     /** @see download */
     @MustBeClosed
     fun download(
-        path: String,
+        filePath: String,
         params: FileDownloadParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): HttpResponse = download(params.toBuilder().path(path).build(), requestOptions)
+    ): HttpResponse = download(params.toBuilder().filePath(filePath).build(), requestOptions)
 
     /** @see download */
     @MustBeClosed
@@ -138,20 +138,20 @@ interface FileService {
             list(id, FileListParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `get /agent/v1/chat/{id}/files/{path}`, but is otherwise
-         * the same as [FileService.download].
+         * Returns a raw HTTP response for `get /agent/v1/chat/{id}/files/{filePath}`, but is
+         * otherwise the same as [FileService.download].
          */
         @MustBeClosed
-        fun download(path: String, params: FileDownloadParams): HttpResponse =
-            download(path, params, RequestOptions.none())
+        fun download(filePath: String, params: FileDownloadParams): HttpResponse =
+            download(filePath, params, RequestOptions.none())
 
         /** @see download */
         @MustBeClosed
         fun download(
-            path: String,
+            filePath: String,
             params: FileDownloadParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = download(params.toBuilder().path(path).build(), requestOptions)
+        ): HttpResponse = download(params.toBuilder().filePath(filePath).build(), requestOptions)
 
         /** @see download */
         @MustBeClosed

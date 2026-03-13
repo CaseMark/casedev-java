@@ -16,14 +16,14 @@ import kotlin.jvm.optionals.getOrNull
 class FileDownloadParams
 private constructor(
     private val id: String,
-    private val path: String?,
+    private val filePath: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     fun id(): String = id
 
-    fun path(): Optional<String> = Optional.ofNullable(path)
+    fun filePath(): Optional<String> = Optional.ofNullable(filePath)
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -50,24 +50,24 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: String? = null
-        private var path: String? = null
+        private var filePath: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(fileDownloadParams: FileDownloadParams) = apply {
             id = fileDownloadParams.id
-            path = fileDownloadParams.path
+            filePath = fileDownloadParams.filePath
             additionalHeaders = fileDownloadParams.additionalHeaders.toBuilder()
             additionalQueryParams = fileDownloadParams.additionalQueryParams.toBuilder()
         }
 
         fun id(id: String) = apply { this.id = id }
 
-        fun path(path: String?) = apply { this.path = path }
+        fun filePath(filePath: String?) = apply { this.filePath = filePath }
 
-        /** Alias for calling [Builder.path] with `path.orElse(null)`. */
-        fun path(path: Optional<String>) = path(path.getOrNull())
+        /** Alias for calling [Builder.filePath] with `filePath.orElse(null)`. */
+        fun filePath(filePath: Optional<String>) = filePath(filePath.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -182,7 +182,7 @@ private constructor(
         fun build(): FileDownloadParams =
             FileDownloadParams(
                 checkRequired("id", id),
-                path,
+                filePath,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -191,7 +191,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> id
-            1 -> path ?: ""
+            1 -> filePath ?: ""
             else -> ""
         }
 
@@ -206,13 +206,14 @@ private constructor(
 
         return other is FileDownloadParams &&
             id == other.id &&
-            path == other.path &&
+            filePath == other.filePath &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = Objects.hash(id, path, additionalHeaders, additionalQueryParams)
+    override fun hashCode(): Int =
+        Objects.hash(id, filePath, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "FileDownloadParams{id=$id, path=$path, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "FileDownloadParams{id=$id, filePath=$filePath, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
