@@ -30,6 +30,8 @@ import dev.case.api.models.agent.v1.chat.ChatReplyToQuestionParams
 import dev.case.api.models.agent.v1.chat.ChatRespondParams
 import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v1.chat.ChatStreamParams
+import dev.case.api.services.blocking.agent.v1.chat.FileService
+import dev.case.api.services.blocking.agent.v1.chat.FileServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -43,10 +45,18 @@ class ChatServiceImpl internal constructor(private val clientOptions: ClientOpti
         WithRawResponseImpl(clientOptions)
     }
 
+    private val files: FileService by lazy { FileServiceImpl(clientOptions) }
+
     override fun withRawResponse(): ChatService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatService =
         ChatServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
+    override fun files(): FileService = files
 
     override fun create(
         params: ChatCreateParams,
@@ -102,12 +112,22 @@ class ChatServiceImpl internal constructor(private val clientOptions: ClientOpti
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val files: FileService.WithRawResponse by lazy {
+            FileServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ChatService.WithRawResponse =
             ChatServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
+        override fun files(): FileService.WithRawResponse = files
 
         private val createHandler: Handler<ChatCreateResponse> =
             jsonHandler<ChatCreateResponse>(clientOptions.jsonMapper)
