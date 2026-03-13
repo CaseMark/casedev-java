@@ -46,7 +46,7 @@ internal class FileServiceTest {
         stubFor(get(anyUrl()).willReturn(ok().withBody("abc")))
 
         val response =
-            fileService.download(FileDownloadParams.builder().id("id").path("path").build())
+            fileService.download(FileDownloadParams.builder().id("id").filePath("filePath").build())
 
         assertThat(response.body()).hasContent("abc")
     }

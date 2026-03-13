@@ -204,7 +204,7 @@ import dev.case.api.models.agent.v1.chat.files.FileDownloadParams;
 
 FileDownloadParams params = FileDownloadParams.builder()
     .id("id")
-    .path("path")
+    .filePath("filePath")
     .build();
 HttpResponse response = client.agent().v1().chat().files().download(params);
 ```
