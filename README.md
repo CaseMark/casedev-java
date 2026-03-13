@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/dev.case.api/casedev-java)](https://central.sonatype.com/artifact/dev.case.api/casedev-java/0.11.0)
-[![javadoc](https://javadoc.io/badge2/dev.case.api/casedev-java/0.11.0/javadoc.svg)](https://javadoc.io/doc/dev.case.api/casedev-java/0.11.0)
+[![Maven Central](https://img.shields.io/maven-central/v/dev.case.api/casedev-java)](https://central.sonatype.com/artifact/dev.case.api/casedev-java/0.12.0)
+[![javadoc](https://javadoc.io/badge2/dev.case.api/casedev-java/0.12.0/javadoc.svg)](https://javadoc.io/doc/dev.case.api/casedev-java/0.12.0)
 
 <!-- x-release-please-end -->
 
@@ -13,7 +13,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [docs.case.dev](https://docs.case.dev). Javadocs are available on [javadoc.io](https://javadoc.io/doc/dev.case.api/casedev-java/0.11.0).
+The REST API documentation can be found on [docs.case.dev](https://docs.case.dev). Javadocs are available on [javadoc.io](https://javadoc.io/doc/dev.case.api/casedev-java/0.12.0).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +24,7 @@ The REST API documentation can be found on [docs.case.dev](https://docs.case.dev
 ### Gradle
 
 ```kotlin
-implementation("dev.case.api:casedev-java:0.11.0")
+implementation("dev.case.api:casedev-java:0.12.0")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ implementation("dev.case.api:casedev-java:0.11.0")
 <dependency>
   <groupId>dev.case.api</groupId>
   <artifactId>casedev-java</artifactId>
-  <version>0.11.0</version>
+  <version>0.12.0</version>
 </dependency>
 ```
 
@@ -200,13 +200,13 @@ These methods return [`HttpResponse`](casedev-java-core/src/main/kotlin/dev/case
 
 ```java
 import dev.case.api.core.http.HttpResponse;
-import dev.case.api.models.format.v1.V1CreateDocumentParams;
+import dev.case.api.models.agent.v1.chat.files.FileDownloadParams;
 
-V1CreateDocumentParams params = V1CreateDocumentParams.builder()
-    .content("content")
-    .outputFormat(V1CreateDocumentParams.OutputFormat.PDF)
+FileDownloadParams params = FileDownloadParams.builder()
+    .id("id")
+    .path("path")
     .build();
-HttpResponse response = client.format().v1().createDocument(params);
+HttpResponse response = client.agent().v1().chat().files().download(params);
 ```
 
 To save the response content to a file, use the [`Files.copy(...)`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#copy-java.io.InputStream-java.nio.file.Path-java.nio.file.CopyOption...-) method:
@@ -217,7 +217,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-try (HttpResponse response = client.format().v1().createDocument(params)) {
+try (HttpResponse response = client.agent().v1().chat().files().download(params)) {
     Files.copy(
         response.body(),
         Paths.get(path),
@@ -236,7 +236,7 @@ import dev.case.api.core.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-try (HttpResponse response = client.format().v1().createDocument(params)) {
+try (HttpResponse response = client.agent().v1().chat().files().download(params)) {
     response.body().transferTo(Files.newOutputStream(Paths.get(path)));
 } catch (Exception e) {
     System.out.println("Something went wrong!");
