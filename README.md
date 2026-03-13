@@ -200,13 +200,13 @@ These methods return [`HttpResponse`](casedev-java-core/src/main/kotlin/dev/case
 
 ```java
 import dev.case.api.core.http.HttpResponse;
-import dev.case.api.models.format.v1.V1CreateDocumentParams;
+import dev.case.api.models.agent.v1.chat.files.FileDownloadParams;
 
-V1CreateDocumentParams params = V1CreateDocumentParams.builder()
-    .content("content")
-    .outputFormat(V1CreateDocumentParams.OutputFormat.PDF)
+FileDownloadParams params = FileDownloadParams.builder()
+    .id("id")
+    .path("path")
     .build();
-HttpResponse response = client.format().v1().createDocument(params);
+HttpResponse response = client.agent().v1().chat().files().download(params);
 ```
 
 To save the response content to a file, use the [`Files.copy(...)`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#copy-java.io.InputStream-java.nio.file.Path-java.nio.file.CopyOption...-) method:
@@ -217,7 +217,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-try (HttpResponse response = client.format().v1().createDocument(params)) {
+try (HttpResponse response = client.agent().v1().chat().files().download(params)) {
     Files.copy(
         response.body(),
         Paths.get(path),
@@ -236,7 +236,7 @@ import dev.case.api.core.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-try (HttpResponse response = client.format().v1().createDocument(params)) {
+try (HttpResponse response = client.agent().v1().chat().files().download(params)) {
     response.body().transferTo(Files.newOutputStream(Paths.get(path)));
 } catch (Exception e) {
     System.out.println("Something went wrong!");

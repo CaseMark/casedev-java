@@ -32,6 +32,8 @@ import dev.case.api.models.agent.v1.chat.ChatReplyToQuestionParams
 import dev.case.api.models.agent.v1.chat.ChatRespondParams
 import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v1.chat.ChatStreamParams
+import dev.case.api.services.async.agent.v1.chat.FileServiceAsync
+import dev.case.api.services.async.agent.v1.chat.FileServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -47,10 +49,18 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
         WithRawResponseImpl(clientOptions)
     }
 
+    private val files: FileServiceAsync by lazy { FileServiceAsyncImpl(clientOptions) }
+
     override fun withRawResponse(): ChatServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatServiceAsync =
         ChatServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
+    override fun files(): FileServiceAsync = files
 
     override fun create(
         params: ChatCreateParams,
@@ -113,12 +123,22 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val files: FileServiceAsync.WithRawResponse by lazy {
+            FileServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ChatServiceAsync.WithRawResponse =
             ChatServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
+        override fun files(): FileServiceAsync.WithRawResponse = files
 
         private val createHandler: Handler<ChatCreateResponse> =
             jsonHandler<ChatCreateResponse>(clientOptions.jsonMapper)

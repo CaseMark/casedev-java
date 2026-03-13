@@ -19,6 +19,7 @@ import dev.case.api.models.agent.v1.chat.ChatReplyToQuestionParams
 import dev.case.api.models.agent.v1.chat.ChatRespondParams
 import dev.case.api.models.agent.v1.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v1.chat.ChatStreamParams
+import dev.case.api.services.async.agent.v1.chat.FileServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -39,6 +40,12 @@ interface ChatServiceAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatServiceAsync
+
+    /**
+     * Create, manage, and execute AI agents with tool access, sandbox environments, and async run
+     * workflows
+     */
+    fun files(): FileServiceAsync
 
     /**
      * Creates a persistent OpenCode chat session in a Modal sandbox. Session state is retained and
@@ -277,6 +284,12 @@ interface ChatServiceAsync {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatServiceAsync.WithRawResponse
+
+        /**
+         * Create, manage, and execute AI agents with tool access, sandbox environments, and async
+         * run workflows
+         */
+        fun files(): FileServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /agent/v1/chat`, but is otherwise the same as
