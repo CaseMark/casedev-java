@@ -9,15 +9,15 @@ internal class FileDownloadParamsTest {
 
     @Test
     fun create() {
-        FileDownloadParams.builder().id("id").path("path").build()
+        FileDownloadParams.builder().id("id").filePath("filePath").build()
     }
 
     @Test
     fun pathParams() {
-        val params = FileDownloadParams.builder().id("id").path("path").build()
+        val params = FileDownloadParams.builder().id("id").filePath("filePath").build()
 
         assertThat(params._pathParam(0)).isEqualTo("id")
-        assertThat(params._pathParam(1)).isEqualTo("path")
+        assertThat(params._pathParam(1)).isEqualTo("filePath")
         // out-of-bound path param
         assertThat(params._pathParam(2)).isEqualTo("")
     }
