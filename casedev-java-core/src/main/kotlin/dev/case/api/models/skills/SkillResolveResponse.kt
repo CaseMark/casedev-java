@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.case.api.core.Enum
 import dev.case.api.core.ExcludeMissing
 import dev.case.api.core.JsonField
 import dev.case.api.core.JsonMissing
@@ -215,6 +216,7 @@ private constructor(
         private val name: JsonField<String>,
         private val score: JsonField<Double>,
         private val slug: JsonField<String>,
+        private val source: JsonField<Source>,
         private val summary: JsonField<String>,
         private val tags: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -225,9 +227,10 @@ private constructor(
             @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
             @JsonProperty("score") @ExcludeMissing score: JsonField<Double> = JsonMissing.of(),
             @JsonProperty("slug") @ExcludeMissing slug: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("source") @ExcludeMissing source: JsonField<Source> = JsonMissing.of(),
             @JsonProperty("summary") @ExcludeMissing summary: JsonField<String> = JsonMissing.of(),
             @JsonProperty("tags") @ExcludeMissing tags: JsonField<List<String>> = JsonMissing.of(),
-        ) : this(name, score, slug, summary, tags, mutableMapOf())
+        ) : this(name, score, slug, source, summary, tags, mutableMapOf())
 
         /**
          * Skill name
@@ -252,6 +255,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun slug(): Optional<String> = slug.getOptional("slug")
+
+        /**
+         * Whether the skill is curated or org-custom
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun source(): Optional<Source> = source.getOptional("source")
 
         /**
          * Brief skill description
@@ -291,6 +302,13 @@ private constructor(
         @JsonProperty("slug") @ExcludeMissing fun _slug(): JsonField<String> = slug
 
         /**
+         * Returns the raw JSON value of [source].
+         *
+         * Unlike [source], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("source") @ExcludeMissing fun _source(): JsonField<Source> = source
+
+        /**
          * Returns the raw JSON value of [summary].
          *
          * Unlike [summary], this method doesn't throw if the JSON field has an unexpected type.
@@ -328,6 +346,7 @@ private constructor(
             private var name: JsonField<String> = JsonMissing.of()
             private var score: JsonField<Double> = JsonMissing.of()
             private var slug: JsonField<String> = JsonMissing.of()
+            private var source: JsonField<Source> = JsonMissing.of()
             private var summary: JsonField<String> = JsonMissing.of()
             private var tags: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -337,6 +356,7 @@ private constructor(
                 name = result.name
                 score = result.score
                 slug = result.slug
+                source = result.source
                 summary = result.summary
                 tags = result.tags.map { it.toMutableList() }
                 additionalProperties = result.additionalProperties.toMutableMap()
@@ -377,6 +397,18 @@ private constructor(
              * value.
              */
             fun slug(slug: JsonField<String>) = apply { this.slug = slug }
+
+            /** Whether the skill is curated or org-custom */
+            fun source(source: Source) = source(JsonField.of(source))
+
+            /**
+             * Sets [Builder.source] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.source] with a well-typed [Source] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun source(source: JsonField<Source>) = apply { this.source = source }
 
             /** Brief skill description */
             fun summary(summary: String) = summary(JsonField.of(summary))
@@ -443,6 +475,7 @@ private constructor(
                     name,
                     score,
                     slug,
+                    source,
                     summary,
                     (tags ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
@@ -459,6 +492,7 @@ private constructor(
             name()
             score()
             slug()
+            source().ifPresent { it.validate() }
             summary()
             tags()
             validated = true
@@ -483,8 +517,139 @@ private constructor(
             (if (name.asKnown().isPresent) 1 else 0) +
                 (if (score.asKnown().isPresent) 1 else 0) +
                 (if (slug.asKnown().isPresent) 1 else 0) +
+                (source.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (summary.asKnown().isPresent) 1 else 0) +
                 (tags.asKnown().getOrNull()?.size ?: 0)
+
+        /** Whether the skill is curated or org-custom */
+        class Source @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val CURATED = of("curated")
+
+                @JvmField val CUSTOM = of("custom")
+
+                @JvmStatic fun of(value: String) = Source(JsonField.of(value))
+            }
+
+            /** An enum containing [Source]'s known values. */
+            enum class Known {
+                CURATED,
+                CUSTOM,
+            }
+
+            /**
+             * An enum containing [Source]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Source] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                CURATED,
+                CUSTOM,
+                /**
+                 * An enum member indicating that [Source] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    CURATED -> Value.CURATED
+                    CUSTOM -> Value.CUSTOM
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws CasedevInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    CURATED -> Known.CURATED
+                    CUSTOM -> Known.CUSTOM
+                    else -> throw CasedevInvalidDataException("Unknown Source: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws CasedevInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    CasedevInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Source = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: CasedevInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Source && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -495,19 +660,20 @@ private constructor(
                 name == other.name &&
                 score == other.score &&
                 slug == other.slug &&
+                source == other.source &&
                 summary == other.summary &&
                 tags == other.tags &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(name, score, slug, summary, tags, additionalProperties)
+            Objects.hash(name, score, slug, source, summary, tags, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Result{name=$name, score=$score, slug=$slug, summary=$summary, tags=$tags, additionalProperties=$additionalProperties}"
+            "Result{name=$name, score=$score, slug=$slug, source=$source, summary=$summary, tags=$tags, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
