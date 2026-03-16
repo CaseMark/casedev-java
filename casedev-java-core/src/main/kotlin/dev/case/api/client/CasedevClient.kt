@@ -10,8 +10,10 @@ import dev.case.api.services.blocking.DatabaseService
 import dev.case.api.services.blocking.FormatService
 import dev.case.api.services.blocking.LegalService
 import dev.case.api.services.blocking.LlmService
+import dev.case.api.services.blocking.MailService
 import dev.case.api.services.blocking.MemoryService
 import dev.case.api.services.blocking.OcrService
+import dev.case.api.services.blocking.OperatorService
 import dev.case.api.services.blocking.PrivilegeService
 import dev.case.api.services.blocking.SearchService
 import dev.case.api.services.blocking.SkillService
@@ -82,6 +84,10 @@ interface CasedevClient {
 
     fun privilege(): PrivilegeService
 
+    fun mail(): MailService
+
+    fun operator(): OperatorService
+
     /** Search and read legal AI skills for agents */
     fun skills(): SkillService
 
@@ -142,6 +148,10 @@ interface CasedevClient {
         fun ocr(): OcrService.WithRawResponse
 
         fun privilege(): PrivilegeService.WithRawResponse
+
+        fun mail(): MailService.WithRawResponse
+
+        fun operator(): OperatorService.WithRawResponse
 
         /** Search and read legal AI skills for agents */
         fun skills(): SkillService.WithRawResponse
