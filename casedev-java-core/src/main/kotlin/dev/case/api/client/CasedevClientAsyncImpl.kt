@@ -18,10 +18,14 @@ import dev.case.api.services.async.LegalServiceAsync
 import dev.case.api.services.async.LegalServiceAsyncImpl
 import dev.case.api.services.async.LlmServiceAsync
 import dev.case.api.services.async.LlmServiceAsyncImpl
+import dev.case.api.services.async.MailServiceAsync
+import dev.case.api.services.async.MailServiceAsyncImpl
 import dev.case.api.services.async.MemoryServiceAsync
 import dev.case.api.services.async.MemoryServiceAsyncImpl
 import dev.case.api.services.async.OcrServiceAsync
 import dev.case.api.services.async.OcrServiceAsyncImpl
+import dev.case.api.services.async.OperatorServiceAsync
+import dev.case.api.services.async.OperatorServiceAsyncImpl
 import dev.case.api.services.async.PrivilegeServiceAsync
 import dev.case.api.services.async.PrivilegeServiceAsyncImpl
 import dev.case.api.services.async.SearchServiceAsync
@@ -97,6 +101,12 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         PrivilegeServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val mail: MailServiceAsync by lazy { MailServiceAsyncImpl(clientOptionsWithUserAgent) }
+
+    private val operator: OperatorServiceAsync by lazy {
+        OperatorServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val skills: SkillServiceAsync by lazy {
         SkillServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -151,6 +161,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
     override fun ocr(): OcrServiceAsync = ocr
 
     override fun privilege(): PrivilegeServiceAsync = privilege
+
+    override fun mail(): MailServiceAsync = mail
+
+    override fun operator(): OperatorServiceAsync = operator
 
     /** Search and read legal AI skills for agents */
     override fun skills(): SkillServiceAsync = skills
@@ -215,6 +229,14 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
             PrivilegeServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val mail: MailServiceAsync.WithRawResponse by lazy {
+            MailServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val operator: OperatorServiceAsync.WithRawResponse by lazy {
+            OperatorServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val skills: SkillServiceAsync.WithRawResponse by lazy {
             SkillServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -269,6 +291,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         override fun ocr(): OcrServiceAsync.WithRawResponse = ocr
 
         override fun privilege(): PrivilegeServiceAsync.WithRawResponse = privilege
+
+        override fun mail(): MailServiceAsync.WithRawResponse = mail
+
+        override fun operator(): OperatorServiceAsync.WithRawResponse = operator
 
         /** Search and read legal AI skills for agents */
         override fun skills(): SkillServiceAsync.WithRawResponse = skills
