@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.15.1 (2026-03-17)
+
+Full Changelog: [v0.15.0...v0.15.1](https://github.com/CaseMark/casedev-java/compare/v0.15.0...v0.15.1)
+
+### Chores
+
+* **internal:** tweak CI branches ([44310e3](https://github.com/CaseMark/casedev-java/commit/44310e3497f543052b9d85ceef16a29f5096af95))
+
 ## 0.15.0 (2026-03-16)
 
 Full Changelog: [v0.14.0...v0.15.0](https://github.com/CaseMark/casedev-java/compare/v0.14.0...v0.15.0)
