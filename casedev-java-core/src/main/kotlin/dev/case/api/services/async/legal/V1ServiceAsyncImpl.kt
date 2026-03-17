@@ -35,6 +35,8 @@ import dev.case.api.models.legal.v1.V1PatentSearchParams
 import dev.case.api.models.legal.v1.V1PatentSearchResponse
 import dev.case.api.models.legal.v1.V1ResearchParams
 import dev.case.api.models.legal.v1.V1ResearchResponse
+import dev.case.api.models.legal.v1.V1SecFilingParams
+import dev.case.api.models.legal.v1.V1SecFilingResponse
 import dev.case.api.models.legal.v1.V1SimilarParams
 import dev.case.api.models.legal.v1.V1SimilarResponse
 import dev.case.api.models.legal.v1.V1TrademarkSearchParams
@@ -126,6 +128,13 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
     ): CompletableFuture<V1ResearchResponse> =
         // post /legal/v1/research
         withRawResponse().research(params, requestOptions).thenApply { it.parse() }
+
+    override fun secFiling(
+        params: V1SecFilingParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<V1SecFilingResponse> =
+        // post /legal/v1/sec-filing
+        withRawResponse().secFiling(params, requestOptions).thenApply { it.parse() }
 
     override fun similar(
         params: V1SimilarParams,
@@ -462,6 +471,37 @@ class V1ServiceAsyncImpl internal constructor(private val clientOptions: ClientO
                     errorHandler.handle(response).parseable {
                         response
                             .use { researchHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val secFilingHandler: Handler<V1SecFilingResponse> =
+            jsonHandler<V1SecFilingResponse>(clientOptions.jsonMapper)
+
+        override fun secFiling(
+            params: V1SecFilingParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<V1SecFilingResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("legal", "v1", "sec-filing")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { secFilingHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
