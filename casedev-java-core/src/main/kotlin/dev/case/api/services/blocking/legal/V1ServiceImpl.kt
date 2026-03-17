@@ -35,6 +35,8 @@ import dev.case.api.models.legal.v1.V1PatentSearchParams
 import dev.case.api.models.legal.v1.V1PatentSearchResponse
 import dev.case.api.models.legal.v1.V1ResearchParams
 import dev.case.api.models.legal.v1.V1ResearchResponse
+import dev.case.api.models.legal.v1.V1SecFilingParams
+import dev.case.api.models.legal.v1.V1SecFilingResponse
 import dev.case.api.models.legal.v1.V1SimilarParams
 import dev.case.api.models.legal.v1.V1SimilarResponse
 import dev.case.api.models.legal.v1.V1TrademarkSearchParams
@@ -115,6 +117,13 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     ): V1ResearchResponse =
         // post /legal/v1/research
         withRawResponse().research(params, requestOptions).parse()
+
+    override fun secFiling(
+        params: V1SecFilingParams,
+        requestOptions: RequestOptions,
+    ): V1SecFilingResponse =
+        // post /legal/v1/sec-filing
+        withRawResponse().secFiling(params, requestOptions).parse()
 
     override fun similar(
         params: V1SimilarParams,
@@ -419,6 +428,34 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             return errorHandler.handle(response).parseable {
                 response
                     .use { researchHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val secFilingHandler: Handler<V1SecFilingResponse> =
+            jsonHandler<V1SecFilingResponse>(clientOptions.jsonMapper)
+
+        override fun secFiling(
+            params: V1SecFilingParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<V1SecFilingResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("legal", "v1", "sec-filing")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { secFilingHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

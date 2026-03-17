@@ -26,6 +26,8 @@ import dev.case.api.models.legal.v1.V1PatentSearchParams
 import dev.case.api.models.legal.v1.V1PatentSearchResponse
 import dev.case.api.models.legal.v1.V1ResearchParams
 import dev.case.api.models.legal.v1.V1ResearchResponse
+import dev.case.api.models.legal.v1.V1SecFilingParams
+import dev.case.api.models.legal.v1.V1SecFilingResponse
 import dev.case.api.models.legal.v1.V1SimilarParams
 import dev.case.api.models.legal.v1.V1SimilarResponse
 import dev.case.api.models.legal.v1.V1TrademarkSearchParams
@@ -184,6 +186,20 @@ interface V1Service {
         params: V1ResearchParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): V1ResearchResponse
+
+    /**
+     * Search SEC EDGAR full-text filings via efts.sec.gov or fetch a filer's structured filing
+     * history via data.sec.gov. Returns direct SEC archive URLs with filing metadata and match
+     * snippets when available.
+     */
+    fun secFiling(params: V1SecFilingParams): V1SecFilingResponse =
+        secFiling(params, RequestOptions.none())
+
+    /** @see secFiling */
+    fun secFiling(
+        params: V1SecFilingParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): V1SecFilingResponse
 
     /**
      * Find cases and documents similar to a given legal source. Useful for finding citing cases,
@@ -408,6 +424,21 @@ interface V1Service {
             params: V1ResearchParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<V1ResearchResponse>
+
+        /**
+         * Returns a raw HTTP response for `post /legal/v1/sec-filing`, but is otherwise the same as
+         * [V1Service.secFiling].
+         */
+        @MustBeClosed
+        fun secFiling(params: V1SecFilingParams): HttpResponseFor<V1SecFilingResponse> =
+            secFiling(params, RequestOptions.none())
+
+        /** @see secFiling */
+        @MustBeClosed
+        fun secFiling(
+            params: V1SecFilingParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<V1SecFilingResponse>
 
         /**
          * Returns a raw HTTP response for `post /legal/v1/similar`, but is otherwise the same as
