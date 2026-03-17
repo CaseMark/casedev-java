@@ -24,8 +24,6 @@ import dev.case.api.services.blocking.MemoryService
 import dev.case.api.services.blocking.MemoryServiceImpl
 import dev.case.api.services.blocking.OcrService
 import dev.case.api.services.blocking.OcrServiceImpl
-import dev.case.api.services.blocking.OperatorService
-import dev.case.api.services.blocking.OperatorServiceImpl
 import dev.case.api.services.blocking.PrivilegeService
 import dev.case.api.services.blocking.PrivilegeServiceImpl
 import dev.case.api.services.blocking.SearchService
@@ -91,10 +89,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
     private val mail: MailService by lazy { MailServiceImpl(clientOptionsWithUserAgent) }
 
-    private val operator: OperatorService by lazy {
-        OperatorServiceImpl(clientOptionsWithUserAgent)
-    }
-
     private val skills: SkillService by lazy { SkillServiceImpl(clientOptionsWithUserAgent) }
 
     private val search: SearchService by lazy { SearchServiceImpl(clientOptionsWithUserAgent) }
@@ -143,8 +137,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
     override fun privilege(): PrivilegeService = privilege
 
     override fun mail(): MailService = mail
-
-    override fun operator(): OperatorService = operator
 
     /** Search and read legal AI skills for agents */
     override fun skills(): SkillService = skills
@@ -213,10 +205,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
             MailServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val operator: OperatorService.WithRawResponse by lazy {
-            OperatorServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
         private val skills: SkillService.WithRawResponse by lazy {
             SkillServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -273,8 +261,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
         override fun privilege(): PrivilegeService.WithRawResponse = privilege
 
         override fun mail(): MailService.WithRawResponse = mail
-
-        override fun operator(): OperatorService.WithRawResponse = operator
 
         /** Search and read legal AI skills for agents */
         override fun skills(): SkillService.WithRawResponse = skills

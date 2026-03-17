@@ -14,6 +14,7 @@ import dev.case.api.models.legal.v1.V1ListCourtsParams
 import dev.case.api.models.legal.v1.V1ListJurisdictionsParams
 import dev.case.api.models.legal.v1.V1PatentSearchParams
 import dev.case.api.models.legal.v1.V1ResearchParams
+import dev.case.api.models.legal.v1.V1SecFilingParams
 import dev.case.api.models.legal.v1.V1SimilarParams
 import dev.case.api.models.legal.v1.V1TrademarkSearchParams
 import dev.case.api.models.legal.v1.V1VerifyParams
@@ -255,6 +256,35 @@ internal class V1ServiceAsyncTest {
                     .addAdditionalQuery("string")
                     .jurisdiction("jurisdiction")
                     .numResults(1L)
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Test
+    fun secFiling() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val v1ServiceAsync = client.legal().v1()
+
+        val responseFuture =
+            v1ServiceAsync.secFiling(
+                V1SecFilingParams.builder()
+                    .type(V1SecFilingParams.Type.SEARCH)
+                    .cik("cik")
+                    .dateAfter(LocalDate.parse("2019-12-27"))
+                    .dateBefore(LocalDate.parse("2019-12-27"))
+                    .entity("entity")
+                    .addFormType("string")
+                    .limit(1L)
+                    .offset(0L)
+                    .query("xx")
+                    .ticker("ticker")
                     .build()
             )
 
