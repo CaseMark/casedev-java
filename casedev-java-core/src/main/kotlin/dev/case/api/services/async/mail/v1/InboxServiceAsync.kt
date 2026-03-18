@@ -9,11 +9,13 @@ import dev.case.api.models.mail.v1.inboxes.InboxCreateParams
 import dev.case.api.models.mail.v1.inboxes.InboxDeleteParams
 import dev.case.api.models.mail.v1.inboxes.InboxGetAttachmentParams
 import dev.case.api.models.mail.v1.inboxes.InboxGetMessageParams
+import dev.case.api.models.mail.v1.inboxes.InboxGetPolicyParams
 import dev.case.api.models.mail.v1.inboxes.InboxListMessagesParams
 import dev.case.api.models.mail.v1.inboxes.InboxListParams
 import dev.case.api.models.mail.v1.inboxes.InboxReplyParams
 import dev.case.api.models.mail.v1.inboxes.InboxRetrieveParams
 import dev.case.api.models.mail.v1.inboxes.InboxSendParams
+import dev.case.api.models.mail.v1.inboxes.InboxSetPolicyParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -181,6 +183,41 @@ interface InboxServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
+    /**
+     * Get the sender allowlist and send/reply/read access rules for an inbox owned by the
+     * authenticated organization.
+     */
+    fun getPolicy(inboxId: String): CompletableFuture<Void?> =
+        getPolicy(inboxId, InboxGetPolicyParams.none())
+
+    /** @see getPolicy */
+    fun getPolicy(
+        inboxId: String,
+        params: InboxGetPolicyParams = InboxGetPolicyParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?> =
+        getPolicy(params.toBuilder().inboxId(inboxId).build(), requestOptions)
+
+    /** @see getPolicy */
+    fun getPolicy(
+        inboxId: String,
+        params: InboxGetPolicyParams = InboxGetPolicyParams.none(),
+    ): CompletableFuture<Void?> = getPolicy(inboxId, params, RequestOptions.none())
+
+    /** @see getPolicy */
+    fun getPolicy(
+        params: InboxGetPolicyParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?>
+
+    /** @see getPolicy */
+    fun getPolicy(params: InboxGetPolicyParams): CompletableFuture<Void?> =
+        getPolicy(params, RequestOptions.none())
+
+    /** @see getPolicy */
+    fun getPolicy(inboxId: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+        getPolicy(inboxId, InboxGetPolicyParams.none(), requestOptions)
+
     /** List messages for an inbox owned by the authenticated organization. */
     fun listMessages(inboxId: String): CompletableFuture<Void?> =
         listMessages(inboxId, InboxListMessagesParams.none())
@@ -264,6 +301,41 @@ interface InboxServiceAsync {
     /** @see send */
     fun send(inboxId: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
         send(inboxId, InboxSendParams.none(), requestOptions)
+
+    /**
+     * Set the sender allowlist and send/reply/read access rules for an inbox owned by the
+     * authenticated organization.
+     */
+    fun setPolicy(inboxId: String): CompletableFuture<Void?> =
+        setPolicy(inboxId, InboxSetPolicyParams.none())
+
+    /** @see setPolicy */
+    fun setPolicy(
+        inboxId: String,
+        params: InboxSetPolicyParams = InboxSetPolicyParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?> =
+        setPolicy(params.toBuilder().inboxId(inboxId).build(), requestOptions)
+
+    /** @see setPolicy */
+    fun setPolicy(
+        inboxId: String,
+        params: InboxSetPolicyParams = InboxSetPolicyParams.none(),
+    ): CompletableFuture<Void?> = setPolicy(inboxId, params, RequestOptions.none())
+
+    /** @see setPolicy */
+    fun setPolicy(
+        params: InboxSetPolicyParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?>
+
+    /** @see setPolicy */
+    fun setPolicy(params: InboxSetPolicyParams): CompletableFuture<Void?> =
+        setPolicy(params, RequestOptions.none())
+
+    /** @see setPolicy */
+    fun setPolicy(inboxId: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+        setPolicy(inboxId, InboxSetPolicyParams.none(), requestOptions)
 
     /** A view of [InboxServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -452,6 +524,44 @@ interface InboxServiceAsync {
         ): CompletableFuture<HttpResponse>
 
         /**
+         * Returns a raw HTTP response for `get /mail/v1/inboxes/{inboxId}/policy`, but is otherwise
+         * the same as [InboxServiceAsync.getPolicy].
+         */
+        fun getPolicy(inboxId: String): CompletableFuture<HttpResponse> =
+            getPolicy(inboxId, InboxGetPolicyParams.none())
+
+        /** @see getPolicy */
+        fun getPolicy(
+            inboxId: String,
+            params: InboxGetPolicyParams = InboxGetPolicyParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse> =
+            getPolicy(params.toBuilder().inboxId(inboxId).build(), requestOptions)
+
+        /** @see getPolicy */
+        fun getPolicy(
+            inboxId: String,
+            params: InboxGetPolicyParams = InboxGetPolicyParams.none(),
+        ): CompletableFuture<HttpResponse> = getPolicy(inboxId, params, RequestOptions.none())
+
+        /** @see getPolicy */
+        fun getPolicy(
+            params: InboxGetPolicyParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse>
+
+        /** @see getPolicy */
+        fun getPolicy(params: InboxGetPolicyParams): CompletableFuture<HttpResponse> =
+            getPolicy(params, RequestOptions.none())
+
+        /** @see getPolicy */
+        fun getPolicy(
+            inboxId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> =
+            getPolicy(inboxId, InboxGetPolicyParams.none(), requestOptions)
+
+        /**
          * Returns a raw HTTP response for `get /mail/v1/inboxes/{inboxId}/messages`, but is
          * otherwise the same as [InboxServiceAsync.listMessages].
          */
@@ -549,5 +659,43 @@ interface InboxServiceAsync {
         /** @see send */
         fun send(inboxId: String, requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
             send(inboxId, InboxSendParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `put /mail/v1/inboxes/{inboxId}/policy`, but is otherwise
+         * the same as [InboxServiceAsync.setPolicy].
+         */
+        fun setPolicy(inboxId: String): CompletableFuture<HttpResponse> =
+            setPolicy(inboxId, InboxSetPolicyParams.none())
+
+        /** @see setPolicy */
+        fun setPolicy(
+            inboxId: String,
+            params: InboxSetPolicyParams = InboxSetPolicyParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse> =
+            setPolicy(params.toBuilder().inboxId(inboxId).build(), requestOptions)
+
+        /** @see setPolicy */
+        fun setPolicy(
+            inboxId: String,
+            params: InboxSetPolicyParams = InboxSetPolicyParams.none(),
+        ): CompletableFuture<HttpResponse> = setPolicy(inboxId, params, RequestOptions.none())
+
+        /** @see setPolicy */
+        fun setPolicy(
+            params: InboxSetPolicyParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse>
+
+        /** @see setPolicy */
+        fun setPolicy(params: InboxSetPolicyParams): CompletableFuture<HttpResponse> =
+            setPolicy(params, RequestOptions.none())
+
+        /** @see setPolicy */
+        fun setPolicy(
+            inboxId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> =
+            setPolicy(inboxId, InboxSetPolicyParams.none(), requestOptions)
     }
 }

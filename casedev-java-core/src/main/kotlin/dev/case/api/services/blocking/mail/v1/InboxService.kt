@@ -10,11 +10,13 @@ import dev.case.api.models.mail.v1.inboxes.InboxCreateParams
 import dev.case.api.models.mail.v1.inboxes.InboxDeleteParams
 import dev.case.api.models.mail.v1.inboxes.InboxGetAttachmentParams
 import dev.case.api.models.mail.v1.inboxes.InboxGetMessageParams
+import dev.case.api.models.mail.v1.inboxes.InboxGetPolicyParams
 import dev.case.api.models.mail.v1.inboxes.InboxListMessagesParams
 import dev.case.api.models.mail.v1.inboxes.InboxListParams
 import dev.case.api.models.mail.v1.inboxes.InboxReplyParams
 import dev.case.api.models.mail.v1.inboxes.InboxRetrieveParams
 import dev.case.api.models.mail.v1.inboxes.InboxSendParams
+import dev.case.api.models.mail.v1.inboxes.InboxSetPolicyParams
 import java.util.function.Consumer
 
 /**
@@ -160,6 +162,36 @@ interface InboxService {
         requestOptions: RequestOptions = RequestOptions.none(),
     )
 
+    /**
+     * Get the sender allowlist and send/reply/read access rules for an inbox owned by the
+     * authenticated organization.
+     */
+    fun getPolicy(inboxId: String) = getPolicy(inboxId, InboxGetPolicyParams.none())
+
+    /** @see getPolicy */
+    fun getPolicy(
+        inboxId: String,
+        params: InboxGetPolicyParams = InboxGetPolicyParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ) = getPolicy(params.toBuilder().inboxId(inboxId).build(), requestOptions)
+
+    /** @see getPolicy */
+    fun getPolicy(inboxId: String, params: InboxGetPolicyParams = InboxGetPolicyParams.none()) =
+        getPolicy(inboxId, params, RequestOptions.none())
+
+    /** @see getPolicy */
+    fun getPolicy(
+        params: InboxGetPolicyParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    )
+
+    /** @see getPolicy */
+    fun getPolicy(params: InboxGetPolicyParams) = getPolicy(params, RequestOptions.none())
+
+    /** @see getPolicy */
+    fun getPolicy(inboxId: String, requestOptions: RequestOptions) =
+        getPolicy(inboxId, InboxGetPolicyParams.none(), requestOptions)
+
     /** List messages for an inbox owned by the authenticated organization. */
     fun listMessages(inboxId: String) = listMessages(inboxId, InboxListMessagesParams.none())
 
@@ -229,6 +261,36 @@ interface InboxService {
     /** @see send */
     fun send(inboxId: String, requestOptions: RequestOptions) =
         send(inboxId, InboxSendParams.none(), requestOptions)
+
+    /**
+     * Set the sender allowlist and send/reply/read access rules for an inbox owned by the
+     * authenticated organization.
+     */
+    fun setPolicy(inboxId: String) = setPolicy(inboxId, InboxSetPolicyParams.none())
+
+    /** @see setPolicy */
+    fun setPolicy(
+        inboxId: String,
+        params: InboxSetPolicyParams = InboxSetPolicyParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ) = setPolicy(params.toBuilder().inboxId(inboxId).build(), requestOptions)
+
+    /** @see setPolicy */
+    fun setPolicy(inboxId: String, params: InboxSetPolicyParams = InboxSetPolicyParams.none()) =
+        setPolicy(inboxId, params, RequestOptions.none())
+
+    /** @see setPolicy */
+    fun setPolicy(
+        params: InboxSetPolicyParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    )
+
+    /** @see setPolicy */
+    fun setPolicy(params: InboxSetPolicyParams) = setPolicy(params, RequestOptions.none())
+
+    /** @see setPolicy */
+    fun setPolicy(inboxId: String, requestOptions: RequestOptions) =
+        setPolicy(inboxId, InboxSetPolicyParams.none(), requestOptions)
 
     /** A view of [InboxService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -423,6 +485,46 @@ interface InboxService {
         ): HttpResponse
 
         /**
+         * Returns a raw HTTP response for `get /mail/v1/inboxes/{inboxId}/policy`, but is otherwise
+         * the same as [InboxService.getPolicy].
+         */
+        @MustBeClosed
+        fun getPolicy(inboxId: String): HttpResponse =
+            getPolicy(inboxId, InboxGetPolicyParams.none())
+
+        /** @see getPolicy */
+        @MustBeClosed
+        fun getPolicy(
+            inboxId: String,
+            params: InboxGetPolicyParams = InboxGetPolicyParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse = getPolicy(params.toBuilder().inboxId(inboxId).build(), requestOptions)
+
+        /** @see getPolicy */
+        @MustBeClosed
+        fun getPolicy(
+            inboxId: String,
+            params: InboxGetPolicyParams = InboxGetPolicyParams.none(),
+        ): HttpResponse = getPolicy(inboxId, params, RequestOptions.none())
+
+        /** @see getPolicy */
+        @MustBeClosed
+        fun getPolicy(
+            params: InboxGetPolicyParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse
+
+        /** @see getPolicy */
+        @MustBeClosed
+        fun getPolicy(params: InboxGetPolicyParams): HttpResponse =
+            getPolicy(params, RequestOptions.none())
+
+        /** @see getPolicy */
+        @MustBeClosed
+        fun getPolicy(inboxId: String, requestOptions: RequestOptions): HttpResponse =
+            getPolicy(inboxId, InboxGetPolicyParams.none(), requestOptions)
+
+        /**
          * Returns a raw HTTP response for `get /mail/v1/inboxes/{inboxId}/messages`, but is
          * otherwise the same as [InboxService.listMessages].
          */
@@ -525,5 +627,45 @@ interface InboxService {
         @MustBeClosed
         fun send(inboxId: String, requestOptions: RequestOptions): HttpResponse =
             send(inboxId, InboxSendParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `put /mail/v1/inboxes/{inboxId}/policy`, but is otherwise
+         * the same as [InboxService.setPolicy].
+         */
+        @MustBeClosed
+        fun setPolicy(inboxId: String): HttpResponse =
+            setPolicy(inboxId, InboxSetPolicyParams.none())
+
+        /** @see setPolicy */
+        @MustBeClosed
+        fun setPolicy(
+            inboxId: String,
+            params: InboxSetPolicyParams = InboxSetPolicyParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse = setPolicy(params.toBuilder().inboxId(inboxId).build(), requestOptions)
+
+        /** @see setPolicy */
+        @MustBeClosed
+        fun setPolicy(
+            inboxId: String,
+            params: InboxSetPolicyParams = InboxSetPolicyParams.none(),
+        ): HttpResponse = setPolicy(inboxId, params, RequestOptions.none())
+
+        /** @see setPolicy */
+        @MustBeClosed
+        fun setPolicy(
+            params: InboxSetPolicyParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse
+
+        /** @see setPolicy */
+        @MustBeClosed
+        fun setPolicy(params: InboxSetPolicyParams): HttpResponse =
+            setPolicy(params, RequestOptions.none())
+
+        /** @see setPolicy */
+        @MustBeClosed
+        fun setPolicy(inboxId: String, requestOptions: RequestOptions): HttpResponse =
+            setPolicy(inboxId, InboxSetPolicyParams.none(), requestOptions)
     }
 }

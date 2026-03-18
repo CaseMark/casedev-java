@@ -8,6 +8,7 @@ import dev.case.api.models.mail.v1.inboxes.InboxCreateParams
 import dev.case.api.models.mail.v1.inboxes.InboxGetAttachmentParams
 import dev.case.api.models.mail.v1.inboxes.InboxGetMessageParams
 import dev.case.api.models.mail.v1.inboxes.InboxReplyParams
+import dev.case.api.models.mail.v1.inboxes.InboxSetPolicyParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -112,6 +113,20 @@ internal class InboxServiceAsyncTest {
     }
 
     @Test
+    fun getPolicy() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val inboxServiceAsync = client.mail().v1().inboxes()
+
+        val future = inboxServiceAsync.getPolicy("inboxId")
+
+        val response = future.get()
+    }
+
+    @Test
     fun listMessages() {
         val client =
             CasedevOkHttpClientAsync.builder()
@@ -152,6 +167,30 @@ internal class InboxServiceAsyncTest {
         val inboxServiceAsync = client.mail().v1().inboxes()
 
         val future = inboxServiceAsync.send("inboxId")
+
+        val response = future.get()
+    }
+
+    @Test
+    fun setPolicy() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val inboxServiceAsync = client.mail().v1().inboxes()
+
+        val future =
+            inboxServiceAsync.setPolicy(
+                InboxSetPolicyParams.builder()
+                    .inboxId("inboxId")
+                    .addAllowedSenderPattern("string")
+                    .enforceSenderAllowlist(true)
+                    .addReadAccessRule("string")
+                    .addReplyAccessRule("string")
+                    .addSendAccessRule("string")
+                    .build()
+            )
 
         val response = future.get()
     }
