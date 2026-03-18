@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.16.1 (2026-03-18)
+
+Full Changelog: [v0.16.0...v0.16.1](https://github.com/CaseMark/casedev-java/compare/v0.16.0...v0.16.1)
+
+### Chores
+
+* **internal:** update retry delay tests ([5dae59a](https://github.com/CaseMark/casedev-java/commit/5dae59a5483e332d31842dd5260d8083d4e2f049))
+
 ## 0.16.0 (2026-03-17)
 
 Full Changelog: [v0.15.1...v0.16.0](https://github.com/CaseMark/casedev-java/compare/v0.15.1...v0.16.0)
