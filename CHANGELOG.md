@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.16.2 (2026-03-18)
+
+Full Changelog: [v0.16.1...v0.16.2](https://github.com/CaseMark/casedev-java/compare/v0.16.1...v0.16.2)
+
+### Bug Fixes
+
+* **client:** allow updating header/query affecting fields in `toBuilder()` ([6a0a202](https://github.com/CaseMark/casedev-java/commit/6a0a2024208ada57a95140cc4f5a81131ae731d5))
+
 ## 0.16.1 (2026-03-18)
 
 Full Changelog: [v0.16.0...v0.16.1](https://github.com/CaseMark/casedev-java/compare/v0.16.0...v0.16.1)
