@@ -19,11 +19,13 @@ import dev.case.api.models.mail.v1.inboxes.InboxCreateParams
 import dev.case.api.models.mail.v1.inboxes.InboxDeleteParams
 import dev.case.api.models.mail.v1.inboxes.InboxGetAttachmentParams
 import dev.case.api.models.mail.v1.inboxes.InboxGetMessageParams
+import dev.case.api.models.mail.v1.inboxes.InboxGetPolicyParams
 import dev.case.api.models.mail.v1.inboxes.InboxListMessagesParams
 import dev.case.api.models.mail.v1.inboxes.InboxListParams
 import dev.case.api.models.mail.v1.inboxes.InboxReplyParams
 import dev.case.api.models.mail.v1.inboxes.InboxRetrieveParams
 import dev.case.api.models.mail.v1.inboxes.InboxSendParams
+import dev.case.api.models.mail.v1.inboxes.InboxSetPolicyParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -86,6 +88,13 @@ class InboxServiceAsyncImpl internal constructor(private val clientOptions: Clie
         // get /mail/v1/inboxes/{inboxId}/messages/{messageId}
         withRawResponse().getMessage(params, requestOptions).thenAccept {}
 
+    override fun getPolicy(
+        params: InboxGetPolicyParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Void?> =
+        // get /mail/v1/inboxes/{inboxId}/policy
+        withRawResponse().getPolicy(params, requestOptions).thenAccept {}
+
     override fun listMessages(
         params: InboxListMessagesParams,
         requestOptions: RequestOptions,
@@ -106,6 +115,13 @@ class InboxServiceAsyncImpl internal constructor(private val clientOptions: Clie
     ): CompletableFuture<Void?> =
         // post /mail/v1/inboxes/{inboxId}/messages/send
         withRawResponse().send(params, requestOptions).thenAccept {}
+
+    override fun setPolicy(
+        params: InboxSetPolicyParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Void?> =
+        // put /mail/v1/inboxes/{inboxId}/policy
+        withRawResponse().setPolicy(params, requestOptions).thenAccept {}
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         InboxServiceAsync.WithRawResponse {
@@ -288,6 +304,32 @@ class InboxServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
+        private val getPolicyHandler: Handler<Void?> = emptyHandler()
+
+        override fun getPolicy(
+            params: InboxGetPolicyParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("inboxId", params.inboxId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("mail", "v1", "inboxes", params._pathParam(0), "policy")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response.use { getPolicyHandler.handle(it) }
+                    }
+                }
+        }
+
         private val listMessagesHandler: Handler<Void?> = emptyHandler()
 
         override fun listMessages(
@@ -379,6 +421,33 @@ class InboxServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response.use { sendHandler.handle(it) }
+                    }
+                }
+        }
+
+        private val setPolicyHandler: Handler<Void?> = emptyHandler()
+
+        override fun setPolicy(
+            params: InboxSetPolicyParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("inboxId", params.inboxId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PUT)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("mail", "v1", "inboxes", params._pathParam(0), "policy")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response.use { setPolicyHandler.handle(it) }
                     }
                 }
         }

@@ -19,11 +19,13 @@ import dev.case.api.models.mail.v1.inboxes.InboxCreateParams
 import dev.case.api.models.mail.v1.inboxes.InboxDeleteParams
 import dev.case.api.models.mail.v1.inboxes.InboxGetAttachmentParams
 import dev.case.api.models.mail.v1.inboxes.InboxGetMessageParams
+import dev.case.api.models.mail.v1.inboxes.InboxGetPolicyParams
 import dev.case.api.models.mail.v1.inboxes.InboxListMessagesParams
 import dev.case.api.models.mail.v1.inboxes.InboxListParams
 import dev.case.api.models.mail.v1.inboxes.InboxReplyParams
 import dev.case.api.models.mail.v1.inboxes.InboxRetrieveParams
 import dev.case.api.models.mail.v1.inboxes.InboxSendParams
+import dev.case.api.models.mail.v1.inboxes.InboxSetPolicyParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -73,6 +75,11 @@ class InboxServiceImpl internal constructor(private val clientOptions: ClientOpt
         withRawResponse().getMessage(params, requestOptions)
     }
 
+    override fun getPolicy(params: InboxGetPolicyParams, requestOptions: RequestOptions) {
+        // get /mail/v1/inboxes/{inboxId}/policy
+        withRawResponse().getPolicy(params, requestOptions)
+    }
+
     override fun listMessages(params: InboxListMessagesParams, requestOptions: RequestOptions) {
         // get /mail/v1/inboxes/{inboxId}/messages
         withRawResponse().listMessages(params, requestOptions)
@@ -86,6 +93,11 @@ class InboxServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun send(params: InboxSendParams, requestOptions: RequestOptions) {
         // post /mail/v1/inboxes/{inboxId}/messages/send
         withRawResponse().send(params, requestOptions)
+    }
+
+    override fun setPolicy(params: InboxSetPolicyParams, requestOptions: RequestOptions) {
+        // put /mail/v1/inboxes/{inboxId}/policy
+        withRawResponse().setPolicy(params, requestOptions)
     }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -248,6 +260,29 @@ class InboxServiceImpl internal constructor(private val clientOptions: ClientOpt
             }
         }
 
+        private val getPolicyHandler: Handler<Void?> = emptyHandler()
+
+        override fun getPolicy(
+            params: InboxGetPolicyParams,
+            requestOptions: RequestOptions,
+        ): HttpResponse {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("inboxId", params.inboxId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("mail", "v1", "inboxes", params._pathParam(0), "policy")
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response.use { getPolicyHandler.handle(it) }
+            }
+        }
+
         private val listMessagesHandler: Handler<Void?> = emptyHandler()
 
         override fun listMessages(
@@ -325,6 +360,30 @@ class InboxServiceImpl internal constructor(private val clientOptions: ClientOpt
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
                 response.use { sendHandler.handle(it) }
+            }
+        }
+
+        private val setPolicyHandler: Handler<Void?> = emptyHandler()
+
+        override fun setPolicy(
+            params: InboxSetPolicyParams,
+            requestOptions: RequestOptions,
+        ): HttpResponse {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("inboxId", params.inboxId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PUT)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("mail", "v1", "inboxes", params._pathParam(0), "policy")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response.use { setPolicyHandler.handle(it) }
             }
         }
     }
