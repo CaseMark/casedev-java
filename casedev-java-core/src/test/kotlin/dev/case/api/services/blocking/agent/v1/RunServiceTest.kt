@@ -8,7 +8,6 @@ import dev.case.api.models.agent.v1.run.RunCreateParams
 import dev.case.api.models.agent.v1.run.RunEventsParams
 import dev.case.api.models.agent.v1.run.RunListParams
 import dev.case.api.models.agent.v1.run.RunWatchParams
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -75,7 +74,6 @@ internal class RunServiceTest {
         response.validate()
     }
 
-    @Disabled("Mock server doesn't support text/event-stream responses")
     @Test
     fun eventsStreaming() {
         val client =
