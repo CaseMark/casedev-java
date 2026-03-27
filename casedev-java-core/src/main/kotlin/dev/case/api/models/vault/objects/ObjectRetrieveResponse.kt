@@ -30,6 +30,7 @@ private constructor(
     private val ingestionStatus: JsonField<String>,
     private val vaultId: JsonField<String>,
     private val chunkCount: JsonField<Long>,
+    private val ingestionError: JsonField<String>,
     private val metadata: JsonValue,
     private val pageCount: JsonField<Long>,
     private val path: JsonField<String>,
@@ -58,6 +59,9 @@ private constructor(
         ingestionStatus: JsonField<String> = JsonMissing.of(),
         @JsonProperty("vaultId") @ExcludeMissing vaultId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("chunkCount") @ExcludeMissing chunkCount: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("ingestionError")
+        @ExcludeMissing
+        ingestionError: JsonField<String> = JsonMissing.of(),
         @JsonProperty("metadata") @ExcludeMissing metadata: JsonValue = JsonMissing.of(),
         @JsonProperty("pageCount") @ExcludeMissing pageCount: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("path") @ExcludeMissing path: JsonField<String> = JsonMissing.of(),
@@ -74,6 +78,7 @@ private constructor(
         ingestionStatus,
         vaultId,
         chunkCount,
+        ingestionError,
         metadata,
         pageCount,
         path,
@@ -154,6 +159,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun chunkCount(): Optional<Long> = chunkCount.getOptional("chunkCount")
+
+    /**
+     * Error details when ingestion fails
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun ingestionError(): Optional<String> = ingestionError.getOptional("ingestionError")
 
     /**
      * Additional metadata
@@ -273,6 +286,15 @@ private constructor(
     @JsonProperty("chunkCount") @ExcludeMissing fun _chunkCount(): JsonField<Long> = chunkCount
 
     /**
+     * Returns the raw JSON value of [ingestionError].
+     *
+     * Unlike [ingestionError], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("ingestionError")
+    @ExcludeMissing
+    fun _ingestionError(): JsonField<String> = ingestionError
+
+    /**
      * Returns the raw JSON value of [pageCount].
      *
      * Unlike [pageCount], this method doesn't throw if the JSON field has an unexpected type.
@@ -351,6 +373,7 @@ private constructor(
         private var ingestionStatus: JsonField<String>? = null
         private var vaultId: JsonField<String>? = null
         private var chunkCount: JsonField<Long> = JsonMissing.of()
+        private var ingestionError: JsonField<String> = JsonMissing.of()
         private var metadata: JsonValue = JsonMissing.of()
         private var pageCount: JsonField<Long> = JsonMissing.of()
         private var path: JsonField<String> = JsonMissing.of()
@@ -370,6 +393,7 @@ private constructor(
             ingestionStatus = objectRetrieveResponse.ingestionStatus
             vaultId = objectRetrieveResponse.vaultId
             chunkCount = objectRetrieveResponse.chunkCount
+            ingestionError = objectRetrieveResponse.ingestionError
             metadata = objectRetrieveResponse.metadata
             pageCount = objectRetrieveResponse.pageCount
             path = objectRetrieveResponse.path
@@ -485,6 +509,25 @@ private constructor(
          */
         fun chunkCount(chunkCount: JsonField<Long>) = apply { this.chunkCount = chunkCount }
 
+        /** Error details when ingestion fails */
+        fun ingestionError(ingestionError: String?) =
+            ingestionError(JsonField.ofNullable(ingestionError))
+
+        /** Alias for calling [Builder.ingestionError] with `ingestionError.orElse(null)`. */
+        fun ingestionError(ingestionError: Optional<String>) =
+            ingestionError(ingestionError.getOrNull())
+
+        /**
+         * Sets [Builder.ingestionError] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.ingestionError] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun ingestionError(ingestionError: JsonField<String>) = apply {
+            this.ingestionError = ingestionError
+        }
+
         /** Additional metadata */
         fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
@@ -596,6 +639,7 @@ private constructor(
                 checkRequired("ingestionStatus", ingestionStatus),
                 checkRequired("vaultId", vaultId),
                 chunkCount,
+                ingestionError,
                 metadata,
                 pageCount,
                 path,
@@ -622,6 +666,7 @@ private constructor(
         ingestionStatus()
         vaultId()
         chunkCount()
+        ingestionError()
         pageCount()
         path()
         sizeBytes()
@@ -654,6 +699,7 @@ private constructor(
             (if (ingestionStatus.asKnown().isPresent) 1 else 0) +
             (if (vaultId.asKnown().isPresent) 1 else 0) +
             (if (chunkCount.asKnown().isPresent) 1 else 0) +
+            (if (ingestionError.asKnown().isPresent) 1 else 0) +
             (if (pageCount.asKnown().isPresent) 1 else 0) +
             (if (path.asKnown().isPresent) 1 else 0) +
             (if (sizeBytes.asKnown().isPresent) 1 else 0) +
@@ -675,6 +721,7 @@ private constructor(
             ingestionStatus == other.ingestionStatus &&
             vaultId == other.vaultId &&
             chunkCount == other.chunkCount &&
+            ingestionError == other.ingestionError &&
             metadata == other.metadata &&
             pageCount == other.pageCount &&
             path == other.path &&
@@ -695,6 +742,7 @@ private constructor(
             ingestionStatus,
             vaultId,
             chunkCount,
+            ingestionError,
             metadata,
             pageCount,
             path,
@@ -708,5 +756,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ObjectRetrieveResponse{id=$id, contentType=$contentType, createdAt=$createdAt, downloadUrl=$downloadUrl, expiresIn=$expiresIn, filename=$filename, ingestionStatus=$ingestionStatus, vaultId=$vaultId, chunkCount=$chunkCount, metadata=$metadata, pageCount=$pageCount, path=$path, sizeBytes=$sizeBytes, textLength=$textLength, vectorCount=$vectorCount, additionalProperties=$additionalProperties}"
+        "ObjectRetrieveResponse{id=$id, contentType=$contentType, createdAt=$createdAt, downloadUrl=$downloadUrl, expiresIn=$expiresIn, filename=$filename, ingestionStatus=$ingestionStatus, vaultId=$vaultId, chunkCount=$chunkCount, ingestionError=$ingestionError, metadata=$metadata, pageCount=$pageCount, path=$path, sizeBytes=$sizeBytes, textLength=$textLength, vectorCount=$vectorCount, additionalProperties=$additionalProperties}"
 }
