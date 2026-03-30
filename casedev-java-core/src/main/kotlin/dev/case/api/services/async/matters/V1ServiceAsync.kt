@@ -58,7 +58,7 @@ interface V1ServiceAsync {
     /** Matter-native legal workspaces and orchestration primitives */
     fun workItems(): WorkItemServiceAsync
 
-    /** Create a new legal matter and provision its primary vault. */
+    /** Create a new legal matter and optionally link an existing primary vault. */
     fun create(params: V1CreateParams): CompletableFuture<Void?> =
         create(params, RequestOptions.none())
 

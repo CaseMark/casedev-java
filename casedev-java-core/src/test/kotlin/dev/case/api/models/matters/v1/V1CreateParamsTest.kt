@@ -58,6 +58,7 @@ internal class V1CreateParamsTest {
                     )
                     .build()
             )
+            .vaultId("vault_id")
             .build()
     }
 
@@ -112,6 +113,7 @@ internal class V1CreateParamsTest {
                         )
                         .build()
                 )
+                .vaultId("vault_id")
                 .build()
 
         val body = params._body()
@@ -169,6 +171,7 @@ internal class V1CreateParamsTest {
                     )
                     .build()
             )
+        assertThat(body.vaultId()).contains("vault_id")
     }
 
     @Test
