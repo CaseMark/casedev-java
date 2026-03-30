@@ -73,6 +73,7 @@ internal class V1ServiceTest {
                         )
                         .build()
                 )
+                .vaultId("vault_id")
                 .build()
         )
     }

@@ -22,7 +22,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Create a new legal matter and provision its primary vault. */
+/** Create a new legal matter and optionally link an existing primary vault. */
 class V1CreateParams
 private constructor(
     private val body: Body,
@@ -125,6 +125,12 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun vault(): Optional<Vault> = body.vault()
+
+    /**
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun vaultId(): Optional<String> = body.vaultId()
 
     /**
      * Returns the raw JSON value of [title].
@@ -238,6 +244,13 @@ private constructor(
      * Unlike [vault], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _vault(): JsonField<Vault> = body._vault()
+
+    /**
+     * Returns the raw JSON value of [vaultId].
+     *
+     * Unlike [vaultId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _vaultId(): JsonField<String> = body._vaultId()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -481,6 +494,16 @@ private constructor(
          */
         fun vault(vault: JsonField<Vault>) = apply { body.vault(vault) }
 
+        fun vaultId(vaultId: String) = apply { body.vaultId(vaultId) }
+
+        /**
+         * Sets [Builder.vaultId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vaultId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun vaultId(vaultId: JsonField<String>) = apply { body.vaultId(vaultId) }
+
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -639,6 +662,7 @@ private constructor(
         private val status: JsonField<Status>,
         private val subtype: JsonField<String>,
         private val vault: JsonField<Vault>,
+        private val vaultId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -682,6 +706,7 @@ private constructor(
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
             @JsonProperty("subtype") @ExcludeMissing subtype: JsonField<String> = JsonMissing.of(),
             @JsonProperty("vault") @ExcludeMissing vault: JsonField<Vault> = JsonMissing.of(),
+            @JsonProperty("vault_id") @ExcludeMissing vaultId: JsonField<String> = JsonMissing.of(),
         ) : this(
             title,
             billing,
@@ -699,6 +724,7 @@ private constructor(
             status,
             subtype,
             vault,
+            vaultId,
             mutableMapOf(),
         )
 
@@ -799,6 +825,12 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun vault(): Optional<Vault> = vault.getOptional("vault")
+
+        /**
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun vaultId(): Optional<String> = vaultId.getOptional("vault_id")
 
         /**
          * Returns the raw JSON value of [title].
@@ -936,6 +968,13 @@ private constructor(
          */
         @JsonProperty("vault") @ExcludeMissing fun _vault(): JsonField<Vault> = vault
 
+        /**
+         * Returns the raw JSON value of [vaultId].
+         *
+         * Unlike [vaultId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("vault_id") @ExcludeMissing fun _vaultId(): JsonField<String> = vaultId
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -980,6 +1019,7 @@ private constructor(
             private var status: JsonField<Status> = JsonMissing.of()
             private var subtype: JsonField<String> = JsonMissing.of()
             private var vault: JsonField<Vault> = JsonMissing.of()
+            private var vaultId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1000,6 +1040,7 @@ private constructor(
                 status = body.status
                 subtype = body.subtype
                 vault = body.vault
+                vaultId = body.vaultId
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -1200,6 +1241,17 @@ private constructor(
              */
             fun vault(vault: JsonField<Vault>) = apply { this.vault = vault }
 
+            fun vaultId(vaultId: String) = vaultId(JsonField.of(vaultId))
+
+            /**
+             * Sets [Builder.vaultId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.vaultId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun vaultId(vaultId: JsonField<String>) = apply { this.vaultId = vaultId }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -1249,6 +1301,7 @@ private constructor(
                     status,
                     subtype,
                     vault,
+                    vaultId,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -1276,6 +1329,7 @@ private constructor(
             status().ifPresent { it.validate() }
             subtype()
             vault().ifPresent { it.validate() }
+            vaultId()
             validated = true
         }
 
@@ -1310,7 +1364,8 @@ private constructor(
                 (if (responsibleAttorneyId.asKnown().isPresent) 1 else 0) +
                 (status.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (subtype.asKnown().isPresent) 1 else 0) +
-                (vault.asKnown().getOrNull()?.validity() ?: 0)
+                (vault.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (vaultId.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1334,6 +1389,7 @@ private constructor(
                 status == other.status &&
                 subtype == other.subtype &&
                 vault == other.vault &&
+                vaultId == other.vaultId &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -1355,6 +1411,7 @@ private constructor(
                 status,
                 subtype,
                 vault,
+                vaultId,
                 additionalProperties,
             )
         }
@@ -1362,7 +1419,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{title=$title, billing=$billing, clientName=$clientName, clientPartyId=$clientPartyId, customFields=$customFields, description=$description, displayId=$displayId, importantDates=$importantDates, jurisdiction=$jurisdiction, matterType=$matterType, metadata=$metadata, practiceArea=$practiceArea, responsibleAttorneyId=$responsibleAttorneyId, status=$status, subtype=$subtype, vault=$vault, additionalProperties=$additionalProperties}"
+            "Body{title=$title, billing=$billing, clientName=$clientName, clientPartyId=$clientPartyId, customFields=$customFields, description=$description, displayId=$displayId, importantDates=$importantDates, jurisdiction=$jurisdiction, matterType=$matterType, metadata=$metadata, practiceArea=$practiceArea, responsibleAttorneyId=$responsibleAttorneyId, status=$status, subtype=$subtype, vault=$vault, vaultId=$vaultId, additionalProperties=$additionalProperties}"
     }
 
     class Billing

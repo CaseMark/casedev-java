@@ -74,6 +74,7 @@ internal class V1ServiceAsyncTest {
                             )
                             .build()
                     )
+                    .vaultId("vault_id")
                     .build()
             )
 

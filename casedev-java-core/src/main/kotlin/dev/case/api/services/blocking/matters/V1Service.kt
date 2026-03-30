@@ -58,7 +58,7 @@ interface V1Service {
     /** Matter-native legal workspaces and orchestration primitives */
     fun workItems(): WorkItemService
 
-    /** Create a new legal matter and provision its primary vault. */
+    /** Create a new legal matter and optionally link an existing primary vault. */
     fun create(params: V1CreateParams) = create(params, RequestOptions.none())
 
     /** @see create */
