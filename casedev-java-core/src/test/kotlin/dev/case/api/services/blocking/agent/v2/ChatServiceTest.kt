@@ -9,6 +9,7 @@ import dev.case.api.models.agent.v2.chat.ChatReplyToQuestionParams
 import dev.case.api.models.agent.v2.chat.ChatRespondParams
 import dev.case.api.models.agent.v2.chat.ChatSendMessageParams
 import dev.case.api.models.agent.v2.chat.ChatStreamParams
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -84,6 +85,7 @@ internal class ChatServiceTest {
     }
 
     @Test
+    @Disabled("Mock server doesn't support text/event-stream responses")
     fun respondStreaming() {
         val client =
             CasedevOkHttpClient.builder()
@@ -131,6 +133,7 @@ internal class ChatServiceTest {
     }
 
     @Test
+    @Disabled("Mock server doesn't support text/event-stream responses")
     fun streamStreaming() {
         val client =
             CasedevOkHttpClient.builder()

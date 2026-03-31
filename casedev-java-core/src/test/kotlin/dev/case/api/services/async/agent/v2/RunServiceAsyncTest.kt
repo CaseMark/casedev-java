@@ -6,6 +6,7 @@ import dev.case.api.TestServerExtension
 import dev.case.api.client.okhttp.CasedevOkHttpClientAsync
 import dev.case.api.models.agent.v2.run.RunCreateParams
 import dev.case.api.models.agent.v2.run.RunEventsParams
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -38,6 +39,7 @@ internal class RunServiceAsyncTest {
     }
 
     @Test
+    @Disabled("Mock server doesn't support text/event-stream responses")
     fun eventsStreaming() {
         val client =
             CasedevOkHttpClientAsync.builder()
