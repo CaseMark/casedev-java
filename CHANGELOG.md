@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.18.0 (2026-03-31)
+
+Full Changelog: [v0.17.0...v0.18.0](https://github.com/CaseMark/casedev-java/compare/v0.17.0...v0.18.0)
+
+### Features
+
+* **api:** api update ([b5078af](https://github.com/CaseMark/casedev-java/commit/b5078af81bf1b3bc81b57dbfd452730b4713efa5))
+* **api:** api update ([9743bb7](https://github.com/CaseMark/casedev-java/commit/9743bb74ac10748b198649d53992186200705357))
+* **api:** api update ([e0bb5f1](https://github.com/CaseMark/casedev-java/commit/e0bb5f1d6457016f571b352fe6299286a26b79ae))
+
+
+### Chores
+
+* **ci:** skip lint on metadata-only changes ([e3f7f4f](https://github.com/CaseMark/casedev-java/commit/e3f7f4f1175d7ff8b48cf4bc1bd7acff683f4655))
+* **internal:** bump ktfmt ([1df8039](https://github.com/CaseMark/casedev-java/commit/1df8039ac7f3a3342837c63212c43454540a58af))
+* **internal:** update gitignore ([aa7ce8f](https://github.com/CaseMark/casedev-java/commit/aa7ce8f061c05bf20f79dc8dbf5a1fe4a16d4261))
+* **internal:** update multipart form array serialization ([d280920](https://github.com/CaseMark/casedev-java/commit/d28092003f86d22da887840b7ea038e500988bae))
+* **tests:** bump steady to v0.19.4 ([f646a6a](https://github.com/CaseMark/casedev-java/commit/f646a6aaf0f4b110bd46a611eb1e8614af5efb92))
+* **tests:** bump steady to v0.19.5 ([71e2650](https://github.com/CaseMark/casedev-java/commit/71e265077e32f85eec0a1f46137aaaec81bd416b))
+* **tests:** bump steady to v0.19.6 ([cf51c7c](https://github.com/CaseMark/casedev-java/commit/cf51c7cb7122dcb12c25d66199b037926985ceb8))
+* **tests:** bump steady to v0.19.7 ([491ab4e](https://github.com/CaseMark/casedev-java/commit/491ab4e7e59a69fcafdcaa0ea7b5cc5b6214f541))
+
+
+### Refactors
+
+* **tests:** switch from prism to steady ([691c6c7](https://github.com/CaseMark/casedev-java/commit/691c6c76aafbec6a04b6c88eb607bbb40de71705))
+
 ## 0.17.0 (2026-03-18)
 
 Full Changelog: [v0.16.2...v0.17.0](https://github.com/CaseMark/casedev-java/compare/v0.16.2...v0.17.0)

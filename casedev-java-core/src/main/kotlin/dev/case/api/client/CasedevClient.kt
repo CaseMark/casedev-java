@@ -11,6 +11,7 @@ import dev.case.api.services.blocking.FormatService
 import dev.case.api.services.blocking.LegalService
 import dev.case.api.services.blocking.LlmService
 import dev.case.api.services.blocking.MailService
+import dev.case.api.services.blocking.MatterService
 import dev.case.api.services.blocking.MemoryService
 import dev.case.api.services.blocking.OcrService
 import dev.case.api.services.blocking.PrivilegeService
@@ -74,6 +75,8 @@ interface CasedevClient {
 
     fun legal(): LegalService
 
+    fun matters(): MatterService
+
     /** Access 40+ language models through a unified API */
     fun llm(): LlmService
 
@@ -136,6 +139,8 @@ interface CasedevClient {
         fun format(): FormatService.WithRawResponse
 
         fun legal(): LegalService.WithRawResponse
+
+        fun matters(): MatterService.WithRawResponse
 
         /** Access 40+ language models through a unified API */
         fun llm(): LlmService.WithRawResponse

@@ -20,6 +20,8 @@ import dev.case.api.services.async.LlmServiceAsync
 import dev.case.api.services.async.LlmServiceAsyncImpl
 import dev.case.api.services.async.MailServiceAsync
 import dev.case.api.services.async.MailServiceAsyncImpl
+import dev.case.api.services.async.MatterServiceAsync
+import dev.case.api.services.async.MatterServiceAsyncImpl
 import dev.case.api.services.async.MemoryServiceAsync
 import dev.case.api.services.async.MemoryServiceAsyncImpl
 import dev.case.api.services.async.OcrServiceAsync
@@ -87,6 +89,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         LegalServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val matters: MatterServiceAsync by lazy {
+        MatterServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val llm: LlmServiceAsync by lazy { LlmServiceAsyncImpl(clientOptionsWithUserAgent) }
 
     private val memory: MemoryServiceAsync by lazy {
@@ -147,6 +153,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     override fun legal(): LegalServiceAsync = legal
 
+    override fun matters(): MatterServiceAsync = matters
+
     /** Access 40+ language models through a unified API */
     override fun llm(): LlmServiceAsync = llm
 
@@ -203,6 +211,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         private val legal: LegalServiceAsync.WithRawResponse by lazy {
             LegalServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val matters: MatterServiceAsync.WithRawResponse by lazy {
+            MatterServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val llm: LlmServiceAsync.WithRawResponse by lazy {
@@ -270,6 +282,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         override fun format(): FormatServiceAsync.WithRawResponse = format
 
         override fun legal(): LegalServiceAsync.WithRawResponse = legal
+
+        override fun matters(): MatterServiceAsync.WithRawResponse = matters
 
         /** Access 40+ language models through a unified API */
         override fun llm(): LlmServiceAsync.WithRawResponse = llm

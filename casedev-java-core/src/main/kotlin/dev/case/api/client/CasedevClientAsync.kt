@@ -11,6 +11,7 @@ import dev.case.api.services.async.FormatServiceAsync
 import dev.case.api.services.async.LegalServiceAsync
 import dev.case.api.services.async.LlmServiceAsync
 import dev.case.api.services.async.MailServiceAsync
+import dev.case.api.services.async.MatterServiceAsync
 import dev.case.api.services.async.MemoryServiceAsync
 import dev.case.api.services.async.OcrServiceAsync
 import dev.case.api.services.async.PrivilegeServiceAsync
@@ -73,6 +74,8 @@ interface CasedevClientAsync {
     fun format(): FormatServiceAsync
 
     fun legal(): LegalServiceAsync
+
+    fun matters(): MatterServiceAsync
 
     /** Access 40+ language models through a unified API */
     fun llm(): LlmServiceAsync
@@ -140,6 +143,8 @@ interface CasedevClientAsync {
         fun format(): FormatServiceAsync.WithRawResponse
 
         fun legal(): LegalServiceAsync.WithRawResponse
+
+        fun matters(): MatterServiceAsync.WithRawResponse
 
         /** Access 40+ language models through a unified API */
         fun llm(): LlmServiceAsync.WithRawResponse

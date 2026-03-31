@@ -78,8 +78,8 @@ internal class RunServiceAsyncTest {
         response.validate()
     }
 
-    @Disabled("Mock server doesn't support text/event-stream responses")
     @Test
+    @Disabled("Mock server doesn't support text/event-stream responses")
     fun eventsStreaming() {
         val client =
             CasedevOkHttpClientAsync.builder()

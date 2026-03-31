@@ -84,8 +84,8 @@ internal class ChatServiceTest {
         )
     }
 
-    @Disabled("Mock server doesn't support text/event-stream responses")
     @Test
+    @Disabled("Mock server doesn't support text/event-stream responses")
     fun respondStreaming() {
         val client =
             CasedevOkHttpClient.builder()
@@ -132,8 +132,8 @@ internal class ChatServiceTest {
         )
     }
 
-    @Disabled("Mock server doesn't support text/event-stream responses")
     @Test
+    @Disabled("Mock server doesn't support text/event-stream responses")
     fun streamStreaming() {
         val client =
             CasedevOkHttpClient.builder()
