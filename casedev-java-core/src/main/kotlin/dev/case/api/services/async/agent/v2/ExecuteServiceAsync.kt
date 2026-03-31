@@ -28,7 +28,11 @@ interface ExecuteServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ExecuteServiceAsync
 
-    /** Creates an ephemeral agent and immediately executes a v2 run on the Daytona runtime. */
+    /**
+     * Creates an ephemeral agent and executes it immediately. By default this uses the lightweight
+     * synchronous linc runtime on Vercel Sandbox. Set `agentRuntime: true` to opt into the legacy
+     * Daytona-backed agent runtime.
+     */
     fun create(params: ExecuteCreateParams): CompletableFuture<ExecuteCreateResponse> =
         create(params, RequestOptions.none())
 
