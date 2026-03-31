@@ -12,6 +12,7 @@ internal class ExecuteCreateParamsTest {
     fun create() {
         ExecuteCreateParams.builder()
             .prompt("prompt")
+            .agentRuntime(true)
             .addDisabledTool("string")
             .addEnabledTool("string")
             .guidance("guidance")
@@ -28,6 +29,7 @@ internal class ExecuteCreateParamsTest {
         val params =
             ExecuteCreateParams.builder()
                 .prompt("prompt")
+                .agentRuntime(true)
                 .addDisabledTool("string")
                 .addEnabledTool("string")
                 .guidance("guidance")
@@ -41,6 +43,7 @@ internal class ExecuteCreateParamsTest {
         val body = params._body()
 
         assertThat(body.prompt()).isEqualTo("prompt")
+        assertThat(body.agentRuntime()).contains(true)
         assertThat(body.disabledTools().getOrNull()).containsExactly("string")
         assertThat(body.enabledTools().getOrNull()).containsExactly("string")
         assertThat(body.guidance()).contains("guidance")
