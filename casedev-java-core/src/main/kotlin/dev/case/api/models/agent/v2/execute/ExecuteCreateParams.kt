@@ -22,7 +22,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Creates an ephemeral agent and immediately executes a v2 run on the Daytona runtime. */
+/**
+ * Creates an ephemeral agent and executes it immediately. By default this uses the lightweight
+ * synchronous linc runtime on Vercel Sandbox. Set `agentRuntime: true` to opt into the legacy
+ * Daytona-backed agent runtime.
+ */
 class ExecuteCreateParams
 private constructor(
     private val body: Body,
@@ -35,6 +39,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun prompt(): String = body.prompt()
+
+    /**
+     * Set to true to opt into the legacy Daytona-backed agent runtime.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun agentRuntime(): Optional<Boolean> = body.agentRuntime()
 
     /**
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -90,6 +102,13 @@ private constructor(
      * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _prompt(): JsonField<String> = body._prompt()
+
+    /**
+     * Returns the raw JSON value of [agentRuntime].
+     *
+     * Unlike [agentRuntime], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _agentRuntime(): JsonField<Boolean> = body._agentRuntime()
 
     /**
      * Returns the raw JSON value of [disabledTools].
@@ -190,10 +209,10 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [prompt]
+         * - [agentRuntime]
          * - [disabledTools]
          * - [enabledTools]
          * - [guidance]
-         * - [instructions]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -207,6 +226,30 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun prompt(prompt: JsonField<String>) = apply { body.prompt(prompt) }
+
+        /** Set to true to opt into the legacy Daytona-backed agent runtime. */
+        fun agentRuntime(agentRuntime: Boolean?) = apply { body.agentRuntime(agentRuntime) }
+
+        /**
+         * Alias for [Builder.agentRuntime].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun agentRuntime(agentRuntime: Boolean) = agentRuntime(agentRuntime as Boolean?)
+
+        /** Alias for calling [Builder.agentRuntime] with `agentRuntime.orElse(null)`. */
+        fun agentRuntime(agentRuntime: Optional<Boolean>) = agentRuntime(agentRuntime.getOrNull())
+
+        /**
+         * Sets [Builder.agentRuntime] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.agentRuntime] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun agentRuntime(agentRuntime: JsonField<Boolean>) = apply {
+            body.agentRuntime(agentRuntime)
+        }
 
         fun disabledTools(disabledTools: List<String>?) = apply {
             body.disabledTools(disabledTools)
@@ -496,6 +539,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val prompt: JsonField<String>,
+        private val agentRuntime: JsonField<Boolean>,
         private val disabledTools: JsonField<List<String>>,
         private val enabledTools: JsonField<List<String>>,
         private val guidance: JsonField<String>,
@@ -510,6 +554,9 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("agentRuntime")
+            @ExcludeMissing
+            agentRuntime: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("disabledTools")
             @ExcludeMissing
             disabledTools: JsonField<List<String>> = JsonMissing.of(),
@@ -532,6 +579,7 @@ private constructor(
             vaultIds: JsonField<List<String>> = JsonMissing.of(),
         ) : this(
             prompt,
+            agentRuntime,
             disabledTools,
             enabledTools,
             guidance,
@@ -548,6 +596,14 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun prompt(): String = prompt.getRequired("prompt")
+
+        /**
+         * Set to true to opt into the legacy Daytona-backed agent runtime.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun agentRuntime(): Optional<Boolean> = agentRuntime.getOptional("agentRuntime")
 
         /**
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -603,6 +659,16 @@ private constructor(
          * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<String> = prompt
+
+        /**
+         * Returns the raw JSON value of [agentRuntime].
+         *
+         * Unlike [agentRuntime], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("agentRuntime")
+        @ExcludeMissing
+        fun _agentRuntime(): JsonField<Boolean> = agentRuntime
 
         /**
          * Returns the raw JSON value of [disabledTools].
@@ -702,6 +768,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var prompt: JsonField<String>? = null
+            private var agentRuntime: JsonField<Boolean> = JsonMissing.of()
             private var disabledTools: JsonField<MutableList<String>>? = null
             private var enabledTools: JsonField<MutableList<String>>? = null
             private var guidance: JsonField<String> = JsonMissing.of()
@@ -715,6 +782,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 prompt = body.prompt
+                agentRuntime = body.agentRuntime
                 disabledTools = body.disabledTools.map { it.toMutableList() }
                 enabledTools = body.enabledTools.map { it.toMutableList() }
                 guidance = body.guidance
@@ -736,6 +804,32 @@ private constructor(
              * supported value.
              */
             fun prompt(prompt: JsonField<String>) = apply { this.prompt = prompt }
+
+            /** Set to true to opt into the legacy Daytona-backed agent runtime. */
+            fun agentRuntime(agentRuntime: Boolean?) =
+                agentRuntime(JsonField.ofNullable(agentRuntime))
+
+            /**
+             * Alias for [Builder.agentRuntime].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun agentRuntime(agentRuntime: Boolean) = agentRuntime(agentRuntime as Boolean?)
+
+            /** Alias for calling [Builder.agentRuntime] with `agentRuntime.orElse(null)`. */
+            fun agentRuntime(agentRuntime: Optional<Boolean>) =
+                agentRuntime(agentRuntime.getOrNull())
+
+            /**
+             * Sets [Builder.agentRuntime] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.agentRuntime] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun agentRuntime(agentRuntime: JsonField<Boolean>) = apply {
+                this.agentRuntime = agentRuntime
+            }
 
             fun disabledTools(disabledTools: List<String>?) =
                 disabledTools(JsonField.ofNullable(disabledTools))
@@ -939,6 +1033,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     checkRequired("prompt", prompt),
+                    agentRuntime,
                     (disabledTools ?: JsonMissing.of()).map { it.toImmutable() },
                     (enabledTools ?: JsonMissing.of()).map { it.toImmutable() },
                     guidance,
@@ -959,6 +1054,7 @@ private constructor(
             }
 
             prompt()
+            agentRuntime()
             disabledTools()
             enabledTools()
             guidance()
@@ -987,6 +1083,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (prompt.asKnown().isPresent) 1 else 0) +
+                (if (agentRuntime.asKnown().isPresent) 1 else 0) +
                 (disabledTools.asKnown().getOrNull()?.size ?: 0) +
                 (enabledTools.asKnown().getOrNull()?.size ?: 0) +
                 (if (guidance.asKnown().isPresent) 1 else 0) +
@@ -1003,6 +1100,7 @@ private constructor(
 
             return other is Body &&
                 prompt == other.prompt &&
+                agentRuntime == other.agentRuntime &&
                 disabledTools == other.disabledTools &&
                 enabledTools == other.enabledTools &&
                 guidance == other.guidance &&
@@ -1017,6 +1115,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 prompt,
+                agentRuntime,
                 disabledTools,
                 enabledTools,
                 guidance,
@@ -1032,7 +1131,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{prompt=$prompt, disabledTools=$disabledTools, enabledTools=$enabledTools, guidance=$guidance, instructions=$instructions, model=$model, objectIds=$objectIds, sandbox=$sandbox, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
+            "Body{prompt=$prompt, agentRuntime=$agentRuntime, disabledTools=$disabledTools, enabledTools=$enabledTools, guidance=$guidance, instructions=$instructions, model=$model, objectIds=$objectIds, sandbox=$sandbox, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
     }
 
     class Sandbox

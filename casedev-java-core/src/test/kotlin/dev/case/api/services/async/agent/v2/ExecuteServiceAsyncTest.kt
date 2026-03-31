@@ -24,6 +24,7 @@ internal class ExecuteServiceAsyncTest {
             executeServiceAsync.create(
                 ExecuteCreateParams.builder()
                     .prompt("prompt")
+                    .agentRuntime(true)
                     .addDisabledTool("string")
                     .addEnabledTool("string")
                     .guidance("guidance")
