@@ -23,11 +23,12 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Analyzes text or vault documents for legal privilege. Detects attorney-client privilege, work
- * product doctrine, common interest privilege, and litigation hold materials.
+ * Analyzes text or vault documents for legal privilege review. Detects attorney-client privilege,
+ * work product doctrine, and common interest privilege.
  *
- * Returns structured privilege flags with confidence scores and policy-friendly rationale suitable
- * for discovery workflows and privilege logs.
+ * Returns structured review flags with confidence scores and policy-friendly rationale suitable for
+ * discovery workflows and privilege logs. This endpoint is an AI-assisted triage tool and does not
+ * replace attorney judgment.
  *
  * **Size Limit:** Maximum 200,000 characters (larger documents rejected).
  *
@@ -46,7 +47,7 @@ private constructor(
 
     /**
      * Privilege categories to check. Defaults to all: attorney_client, work_product,
-     * common_interest, litigation_hold
+     * common_interest
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -199,7 +200,7 @@ private constructor(
 
         /**
          * Privilege categories to check. Defaults to all: attorney_client, work_product,
-         * common_interest, litigation_hold
+         * common_interest
          */
         fun categories(categories: List<Category>) = apply { body.categories(categories) }
 
@@ -471,7 +472,7 @@ private constructor(
 
         /**
          * Privilege categories to check. Defaults to all: attorney_client, work_product,
-         * common_interest, litigation_hold
+         * common_interest
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -630,7 +631,7 @@ private constructor(
 
             /**
              * Privilege categories to check. Defaults to all: attorney_client, work_product,
-             * common_interest, litigation_hold
+             * common_interest
              */
             fun categories(categories: List<Category>) = categories(JsonField.of(categories))
 
@@ -867,8 +868,6 @@ private constructor(
 
             @JvmField val COMMON_INTEREST = of("common_interest")
 
-            @JvmField val LITIGATION_HOLD = of("litigation_hold")
-
             @JvmStatic fun of(value: String) = Category(JsonField.of(value))
         }
 
@@ -877,7 +876,6 @@ private constructor(
             ATTORNEY_CLIENT,
             WORK_PRODUCT,
             COMMON_INTEREST,
-            LITIGATION_HOLD,
         }
 
         /**
@@ -893,7 +891,6 @@ private constructor(
             ATTORNEY_CLIENT,
             WORK_PRODUCT,
             COMMON_INTEREST,
-            LITIGATION_HOLD,
             /** An enum member indicating that [Category] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -910,7 +907,6 @@ private constructor(
                 ATTORNEY_CLIENT -> Value.ATTORNEY_CLIENT
                 WORK_PRODUCT -> Value.WORK_PRODUCT
                 COMMON_INTEREST -> Value.COMMON_INTEREST
-                LITIGATION_HOLD -> Value.LITIGATION_HOLD
                 else -> Value._UNKNOWN
             }
 
@@ -928,7 +924,6 @@ private constructor(
                 ATTORNEY_CLIENT -> Known.ATTORNEY_CLIENT
                 WORK_PRODUCT -> Known.WORK_PRODUCT
                 COMMON_INTEREST -> Known.COMMON_INTEREST
-                LITIGATION_HOLD -> Known.LITIGATION_HOLD
                 else -> throw CasedevInvalidDataException("Unknown Category: $value")
             }
 
