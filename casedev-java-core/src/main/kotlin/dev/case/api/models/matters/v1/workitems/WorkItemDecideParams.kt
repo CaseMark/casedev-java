@@ -22,7 +22,10 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Allow a human to act as the orchestrator for a work item. */
+/**
+ * Approve, revise, block, or reassign a work item. Used by humans or agents to move work items
+ * through their lifecycle.
+ */
 class WorkItemDecideParams
 private constructor(
     private val id: String,
