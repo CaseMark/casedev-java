@@ -124,7 +124,10 @@ interface WorkItemServiceAsync {
     fun list(id: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
         list(id, WorkItemListParams.none(), requestOptions)
 
-    /** Allow a human to act as the orchestrator for a work item. */
+    /**
+     * Approve, revise, block, or reassign a work item. Used by humans or agents to move work items
+     * through their lifecycle.
+     */
     fun decide(workItemId: String, params: WorkItemDecideParams): CompletableFuture<Void?> =
         decide(workItemId, params, RequestOptions.none())
 
