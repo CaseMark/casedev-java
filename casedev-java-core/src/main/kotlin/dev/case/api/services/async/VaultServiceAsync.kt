@@ -26,6 +26,7 @@ import dev.case.api.models.vault.VaultUploadResponse
 import dev.case.api.services.async.vault.EventServiceAsync
 import dev.case.api.services.async.vault.GraphragServiceAsync
 import dev.case.api.services.async.vault.GroupServiceAsync
+import dev.case.api.services.async.vault.MemoryServiceAsync
 import dev.case.api.services.async.vault.MultipartServiceAsync
 import dev.case.api.services.async.vault.ObjectServiceAsync
 import java.util.concurrent.CompletableFuture
@@ -59,6 +60,9 @@ interface VaultServiceAsync {
 
     /** Secure document storage with semantic search and GraphRAG */
     fun objects(): ObjectServiceAsync
+
+    /** Secure document storage with semantic search and GraphRAG */
+    fun memory(): MemoryServiceAsync
 
     /**
      * Creates a new secure vault with dedicated S3 storage and vector search capabilities. Each
@@ -345,6 +349,9 @@ interface VaultServiceAsync {
 
         /** Secure document storage with semantic search and GraphRAG */
         fun objects(): ObjectServiceAsync.WithRawResponse
+
+        /** Secure document storage with semantic search and GraphRAG */
+        fun memory(): MemoryServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /vault`, but is otherwise the same as
