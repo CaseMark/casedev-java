@@ -12,6 +12,7 @@ internal class ChatRespondParamsTest {
     fun create() {
         ChatRespondParams.builder()
             .id("id")
+            .model("model")
             .addPart(
                 ChatRespondParams.Part.builder()
                     .text("text")
@@ -35,6 +36,7 @@ internal class ChatRespondParamsTest {
         val params =
             ChatRespondParams.builder()
                 .id("id")
+                .model("model")
                 .addPart(
                     ChatRespondParams.Part.builder()
                         .text("text")
@@ -45,6 +47,7 @@ internal class ChatRespondParamsTest {
 
         val body = params._body()
 
+        assertThat(body.model()).contains("model")
         assertThat(body.parts().getOrNull())
             .containsExactly(
                 ChatRespondParams.Part.builder()
