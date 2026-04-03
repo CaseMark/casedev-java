@@ -47,6 +47,15 @@ private constructor(
     fun id(): Optional<String> = Optional.ofNullable(id)
 
     /**
+     * Optional model override. When provided, the runtime bootstrap config is updated so subsequent
+     * turns use this model. Conversation history is preserved.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun model(): Optional<String> = body.model()
+
+    /**
      * Message content parts. Currently only "text" type is supported. Additional types (e.g. file,
      * image) may be added in future versions.
      *
@@ -54,6 +63,13 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun parts(): Optional<List<Part>> = body.parts()
+
+    /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _model(): JsonField<String> = body._model()
 
     /**
      * Returns the raw JSON value of [parts].
@@ -106,9 +122,27 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [model]
          * - [parts]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
+         * Optional model override. When provided, the runtime bootstrap config is updated so
+         * subsequent turns use this model. Conversation history is preserved.
+         */
+        fun model(model: String?) = apply { body.model(model) }
+
+        /** Alias for calling [Builder.model] with `model.orElse(null)`. */
+        fun model(model: Optional<String>) = model(model.getOrNull())
+
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(model: JsonField<String>) = apply { body.model(model) }
 
         /**
          * Message content parts. Currently only "text" type is supported. Additional types (e.g.
@@ -282,14 +316,25 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val model: JsonField<String>,
         private val parts: JsonField<List<Part>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("parts") @ExcludeMissing parts: JsonField<List<Part>> = JsonMissing.of()
-        ) : this(parts, mutableMapOf())
+            @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("parts") @ExcludeMissing parts: JsonField<List<Part>> = JsonMissing.of(),
+        ) : this(model, parts, mutableMapOf())
+
+        /**
+         * Optional model override. When provided, the runtime bootstrap config is updated so
+         * subsequent turns use this model. Conversation history is preserved.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun model(): Optional<String> = model.getOptional("model")
 
         /**
          * Message content parts. Currently only "text" type is supported. Additional types (e.g.
@@ -299,6 +344,13 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun parts(): Optional<List<Part>> = parts.getOptional("parts")
+
+        /**
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
         /**
          * Returns the raw JSON value of [parts].
@@ -328,14 +380,34 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
+            private var model: JsonField<String> = JsonMissing.of()
             private var parts: JsonField<MutableList<Part>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
+                model = body.model
                 parts = body.parts.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
+
+            /**
+             * Optional model override. When provided, the runtime bootstrap config is updated so
+             * subsequent turns use this model. Conversation history is preserved.
+             */
+            fun model(model: String?) = model(JsonField.ofNullable(model))
+
+            /** Alias for calling [Builder.model] with `model.orElse(null)`. */
+            fun model(model: Optional<String>) = model(model.getOrNull())
+
+            /**
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(model: JsonField<String>) = apply { this.model = model }
 
             /**
              * Message content parts. Currently only "text" type is supported. Additional types
@@ -392,6 +464,7 @@ private constructor(
              */
             fun build(): Body =
                 Body(
+                    model,
                     (parts ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
@@ -404,6 +477,7 @@ private constructor(
                 return@apply
             }
 
+            model()
             parts().ifPresent { it.forEach { it.validate() } }
             validated = true
         }
@@ -424,7 +498,8 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (parts.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+            (if (model.asKnown().isPresent) 1 else 0) +
+                (parts.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -432,15 +507,17 @@ private constructor(
             }
 
             return other is Body &&
+                model == other.model &&
                 parts == other.parts &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(parts, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(model, parts, additionalProperties) }
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Body{parts=$parts, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Body{model=$model, parts=$parts, additionalProperties=$additionalProperties}"
     }
 
     class Part
