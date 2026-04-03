@@ -40,6 +40,8 @@ import dev.case.api.services.blocking.vault.GraphragService
 import dev.case.api.services.blocking.vault.GraphragServiceImpl
 import dev.case.api.services.blocking.vault.GroupService
 import dev.case.api.services.blocking.vault.GroupServiceImpl
+import dev.case.api.services.blocking.vault.MemoryService
+import dev.case.api.services.blocking.vault.MemoryServiceImpl
 import dev.case.api.services.blocking.vault.MultipartService
 import dev.case.api.services.blocking.vault.MultipartServiceImpl
 import dev.case.api.services.blocking.vault.ObjectService
@@ -65,6 +67,8 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     private val objects: ObjectService by lazy { ObjectServiceImpl(clientOptions) }
 
+    private val memory: MemoryService by lazy { MemoryServiceImpl(clientOptions) }
+
     override fun withRawResponse(): VaultService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VaultService =
@@ -83,6 +87,9 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     /** Secure document storage with semantic search and GraphRAG */
     override fun objects(): ObjectService = objects
+
+    /** Secure document storage with semantic search and GraphRAG */
+    override fun memory(): MemoryService = memory
 
     override fun create(
         params: VaultCreateParams,
@@ -170,6 +177,10 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             ObjectServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val memory: MemoryService.WithRawResponse by lazy {
+            MemoryServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): VaultService.WithRawResponse =
@@ -190,6 +201,9 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         /** Secure document storage with semantic search and GraphRAG */
         override fun objects(): ObjectService.WithRawResponse = objects
+
+        /** Secure document storage with semantic search and GraphRAG */
+        override fun memory(): MemoryService.WithRawResponse = memory
 
         private val createHandler: Handler<VaultCreateResponse> =
             jsonHandler<VaultCreateResponse>(clientOptions.jsonMapper)

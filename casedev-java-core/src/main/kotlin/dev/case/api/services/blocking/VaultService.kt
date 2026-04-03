@@ -27,6 +27,7 @@ import dev.case.api.models.vault.VaultUploadResponse
 import dev.case.api.services.blocking.vault.EventService
 import dev.case.api.services.blocking.vault.GraphragService
 import dev.case.api.services.blocking.vault.GroupService
+import dev.case.api.services.blocking.vault.MemoryService
 import dev.case.api.services.blocking.vault.MultipartService
 import dev.case.api.services.blocking.vault.ObjectService
 import java.util.function.Consumer
@@ -59,6 +60,9 @@ interface VaultService {
 
     /** Secure document storage with semantic search and GraphRAG */
     fun objects(): ObjectService
+
+    /** Secure document storage with semantic search and GraphRAG */
+    fun memory(): MemoryService
 
     /**
      * Creates a new secure vault with dedicated S3 storage and vector search capabilities. Each
@@ -326,6 +330,9 @@ interface VaultService {
 
         /** Secure document storage with semantic search and GraphRAG */
         fun objects(): ObjectService.WithRawResponse
+
+        /** Secure document storage with semantic search and GraphRAG */
+        fun memory(): MemoryService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /vault`, but is otherwise the same as
