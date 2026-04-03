@@ -40,6 +40,8 @@ import dev.case.api.services.async.vault.GraphragServiceAsync
 import dev.case.api.services.async.vault.GraphragServiceAsyncImpl
 import dev.case.api.services.async.vault.GroupServiceAsync
 import dev.case.api.services.async.vault.GroupServiceAsyncImpl
+import dev.case.api.services.async.vault.MemoryServiceAsync
+import dev.case.api.services.async.vault.MemoryServiceAsyncImpl
 import dev.case.api.services.async.vault.MultipartServiceAsync
 import dev.case.api.services.async.vault.MultipartServiceAsyncImpl
 import dev.case.api.services.async.vault.ObjectServiceAsync
@@ -68,6 +70,8 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     private val objects: ObjectServiceAsync by lazy { ObjectServiceAsyncImpl(clientOptions) }
 
+    private val memory: MemoryServiceAsync by lazy { MemoryServiceAsyncImpl(clientOptions) }
+
     override fun withRawResponse(): VaultServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VaultServiceAsync =
@@ -86,6 +90,9 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     /** Secure document storage with semantic search and GraphRAG */
     override fun objects(): ObjectServiceAsync = objects
+
+    /** Secure document storage with semantic search and GraphRAG */
+    override fun memory(): MemoryServiceAsync = memory
 
     override fun create(
         params: VaultCreateParams,
@@ -176,6 +183,10 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
             ObjectServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val memory: MemoryServiceAsync.WithRawResponse by lazy {
+            MemoryServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): VaultServiceAsync.WithRawResponse =
@@ -196,6 +207,9 @@ class VaultServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         /** Secure document storage with semantic search and GraphRAG */
         override fun objects(): ObjectServiceAsync.WithRawResponse = objects
+
+        /** Secure document storage with semantic search and GraphRAG */
+        override fun memory(): MemoryServiceAsync.WithRawResponse = memory
 
         private val createHandler: Handler<VaultCreateResponse> =
             jsonHandler<VaultCreateResponse>(clientOptions.jsonMapper)
