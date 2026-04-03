@@ -96,6 +96,7 @@ internal class ChatServiceTest {
             chatService.respondStreaming(
                 ChatRespondParams.builder()
                     .id("id")
+                    .model("model")
                     .addPart(
                         ChatRespondParams.Part.builder()
                             .text("text")
@@ -120,6 +121,7 @@ internal class ChatServiceTest {
         chatService.sendMessage(
             ChatSendMessageParams.builder()
                 .id("id")
+                .model("model")
                 .addPart(
                     ChatSendMessageParams.Part.builder()
                         .text("text")

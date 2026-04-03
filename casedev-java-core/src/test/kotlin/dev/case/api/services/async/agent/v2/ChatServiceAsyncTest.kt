@@ -102,6 +102,7 @@ internal class ChatServiceAsyncTest {
             chatServiceAsync.respondStreaming(
                 ChatRespondParams.builder()
                     .id("id")
+                    .model("model")
                     .addPart(
                         ChatRespondParams.Part.builder()
                             .text("text")
@@ -128,6 +129,7 @@ internal class ChatServiceAsyncTest {
             chatServiceAsync.sendMessage(
                 ChatSendMessageParams.builder()
                     .id("id")
+                    .model("model")
                     .addPart(
                         ChatSendMessageParams.Part.builder()
                             .text("text")

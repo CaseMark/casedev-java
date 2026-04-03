@@ -12,6 +12,7 @@ internal class ChatSendMessageParamsTest {
     fun create() {
         ChatSendMessageParams.builder()
             .id("id")
+            .model("model")
             .addPart(
                 ChatSendMessageParams.Part.builder()
                     .text("text")
@@ -35,6 +36,7 @@ internal class ChatSendMessageParamsTest {
         val params =
             ChatSendMessageParams.builder()
                 .id("id")
+                .model("model")
                 .addPart(
                     ChatSendMessageParams.Part.builder()
                         .text("text")
@@ -45,6 +47,7 @@ internal class ChatSendMessageParamsTest {
 
         val body = params._body()
 
+        assertThat(body.model()).contains("model")
         assertThat(body.parts().getOrNull())
             .containsExactly(
                 ChatSendMessageParams.Part.builder()
