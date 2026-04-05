@@ -2,9 +2,13 @@
 
 package dev.case.api.models.voice.transcription
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import dev.case.api.core.Enum
+import dev.case.api.core.JsonField
 import dev.case.api.core.Params
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
+import dev.case.api.errors.CasedevInvalidDataException
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -17,11 +21,15 @@ import kotlin.jvm.optionals.getOrNull
 class TranscriptionRetrieveParams
 private constructor(
     private val id: String?,
+    private val includeText: IncludeText?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     fun id(): Optional<String> = Optional.ofNullable(id)
+
+    /** Include full transcript text in response for vault-based jobs (default: false) */
+    fun includeText(): Optional<IncludeText> = Optional.ofNullable(includeText)
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -45,12 +53,14 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: String? = null
+        private var includeText: IncludeText? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(transcriptionRetrieveParams: TranscriptionRetrieveParams) = apply {
             id = transcriptionRetrieveParams.id
+            includeText = transcriptionRetrieveParams.includeText
             additionalHeaders = transcriptionRetrieveParams.additionalHeaders.toBuilder()
             additionalQueryParams = transcriptionRetrieveParams.additionalQueryParams.toBuilder()
         }
@@ -59,6 +69,12 @@ private constructor(
 
         /** Alias for calling [Builder.id] with `id.orElse(null)`. */
         fun id(id: Optional<String>) = id(id.getOrNull())
+
+        /** Include full transcript text in response for vault-based jobs (default: false) */
+        fun includeText(includeText: IncludeText?) = apply { this.includeText = includeText }
+
+        /** Alias for calling [Builder.includeText] with `includeText.orElse(null)`. */
+        fun includeText(includeText: Optional<IncludeText>) = includeText(includeText.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -166,6 +182,7 @@ private constructor(
         fun build(): TranscriptionRetrieveParams =
             TranscriptionRetrieveParams(
                 id,
+                includeText,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -179,7 +196,142 @@ private constructor(
 
     override fun _headers(): Headers = additionalHeaders
 
-    override fun _queryParams(): QueryParams = additionalQueryParams
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                includeText?.let { put("include_text", it.toString()) }
+                putAll(additionalQueryParams)
+            }
+            .build()
+
+    /** Include full transcript text in response for vault-based jobs (default: false) */
+    class IncludeText @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val TRUE = of("true")
+
+            @JvmField val FALSE = of("false")
+
+            @JvmStatic fun of(value: String) = IncludeText(JsonField.of(value))
+        }
+
+        /** An enum containing [IncludeText]'s known values. */
+        enum class Known {
+            TRUE,
+            FALSE,
+        }
+
+        /**
+         * An enum containing [IncludeText]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [IncludeText] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            TRUE,
+            FALSE,
+            /**
+             * An enum member indicating that [IncludeText] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                TRUE -> Value.TRUE
+                FALSE -> Value.FALSE
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                TRUE -> Known.TRUE
+                FALSE -> Known.FALSE
+                else -> throw CasedevInvalidDataException("Unknown IncludeText: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { CasedevInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): IncludeText = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: CasedevInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is IncludeText && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -188,12 +340,14 @@ private constructor(
 
         return other is TranscriptionRetrieveParams &&
             id == other.id &&
+            includeText == other.includeText &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = Objects.hash(id, additionalHeaders, additionalQueryParams)
+    override fun hashCode(): Int =
+        Objects.hash(id, includeText, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "TranscriptionRetrieveParams{id=$id, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "TranscriptionRetrieveParams{id=$id, includeText=$includeText, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
