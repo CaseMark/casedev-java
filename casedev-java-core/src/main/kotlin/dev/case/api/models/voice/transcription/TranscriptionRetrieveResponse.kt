@@ -130,7 +130,8 @@ private constructor(
     fun sourceObjectId(): Optional<String> = sourceObjectId.getOptional("source_object_id")
 
     /**
-     * Full transcription text (legacy direct URL jobs only)
+     * Full transcription text (only included when include_text=true for vault-based jobs, or for
+     * legacy direct URL jobs)
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -390,7 +391,10 @@ private constructor(
             this.sourceObjectId = sourceObjectId
         }
 
-        /** Full transcription text (legacy direct URL jobs only) */
+        /**
+         * Full transcription text (only included when include_text=true for vault-based jobs, or
+         * for legacy direct URL jobs)
+         */
         fun text(text: String) = text(JsonField.of(text))
 
         /**

@@ -5,6 +5,7 @@ package dev.case.api.services.async.voice
 import dev.case.api.TestServerExtension
 import dev.case.api.client.okhttp.CasedevOkHttpClientAsync
 import dev.case.api.models.voice.transcription.TranscriptionCreateParams
+import dev.case.api.models.voice.transcription.TranscriptionRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -54,7 +55,13 @@ internal class TranscriptionServiceAsyncTest {
                 .build()
         val transcriptionServiceAsync = client.voice().transcription()
 
-        val transcriptionFuture = transcriptionServiceAsync.retrieve("tr_abc123def456")
+        val transcriptionFuture =
+            transcriptionServiceAsync.retrieve(
+                TranscriptionRetrieveParams.builder()
+                    .id("tr_abc123def456")
+                    .includeText(TranscriptionRetrieveParams.IncludeText.TRUE)
+                    .build()
+            )
 
         val transcription = transcriptionFuture.get()
         transcription.validate()
