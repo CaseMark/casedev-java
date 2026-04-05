@@ -5,6 +5,7 @@ package dev.case.api.services.blocking.voice
 import dev.case.api.TestServerExtension
 import dev.case.api.client.okhttp.CasedevOkHttpClient
 import dev.case.api.models.voice.transcription.TranscriptionCreateParams
+import dev.case.api.models.voice.transcription.TranscriptionRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -53,7 +54,13 @@ internal class TranscriptionServiceTest {
                 .build()
         val transcriptionService = client.voice().transcription()
 
-        val transcription = transcriptionService.retrieve("tr_abc123def456")
+        val transcription =
+            transcriptionService.retrieve(
+                TranscriptionRetrieveParams.builder()
+                    .id("tr_abc123def456")
+                    .includeText(TranscriptionRetrieveParams.IncludeText.TRUE)
+                    .build()
+            )
 
         transcription.validate()
     }
