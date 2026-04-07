@@ -30,6 +30,7 @@ internal class ObjectRetrieveResponseTest {
                 .path("path")
                 .sizeBytes(0L)
                 .textLength(0L)
+                .transcriptObjectId("transcript_object_id")
                 .vectorCount(0L)
                 .build()
 
@@ -50,6 +51,7 @@ internal class ObjectRetrieveResponseTest {
         assertThat(objectRetrieveResponse.path()).contains("path")
         assertThat(objectRetrieveResponse.sizeBytes()).contains(0L)
         assertThat(objectRetrieveResponse.textLength()).contains(0L)
+        assertThat(objectRetrieveResponse.transcriptObjectId()).contains("transcript_object_id")
         assertThat(objectRetrieveResponse.vectorCount()).contains(0L)
     }
 
@@ -73,6 +75,7 @@ internal class ObjectRetrieveResponseTest {
                 .path("path")
                 .sizeBytes(0L)
                 .textLength(0L)
+                .transcriptObjectId("transcript_object_id")
                 .vectorCount(0L)
                 .build()
 
