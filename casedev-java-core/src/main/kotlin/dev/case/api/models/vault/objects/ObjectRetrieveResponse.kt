@@ -36,6 +36,7 @@ private constructor(
     private val path: JsonField<String>,
     private val sizeBytes: JsonField<Long>,
     private val textLength: JsonField<Long>,
+    private val transcriptObjectId: JsonField<String>,
     private val vectorCount: JsonField<Long>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -67,6 +68,9 @@ private constructor(
         @JsonProperty("path") @ExcludeMissing path: JsonField<String> = JsonMissing.of(),
         @JsonProperty("sizeBytes") @ExcludeMissing sizeBytes: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("textLength") @ExcludeMissing textLength: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("transcript_object_id")
+        @ExcludeMissing
+        transcriptObjectId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("vectorCount") @ExcludeMissing vectorCount: JsonField<Long> = JsonMissing.of(),
     ) : this(
         id,
@@ -84,6 +88,7 @@ private constructor(
         path,
         sizeBytes,
         textLength,
+        transcriptObjectId,
         vectorCount,
         mutableMapOf(),
     )
@@ -211,6 +216,15 @@ private constructor(
     fun textLength(): Optional<Long> = textLength.getOptional("textLength")
 
     /**
+     * Object ID of the completed transcript (if available)
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun transcriptObjectId(): Optional<String> =
+        transcriptObjectId.getOptional("transcript_object_id")
+
+    /**
      * Number of embedding vectors generated
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -323,6 +337,16 @@ private constructor(
     @JsonProperty("textLength") @ExcludeMissing fun _textLength(): JsonField<Long> = textLength
 
     /**
+     * Returns the raw JSON value of [transcriptObjectId].
+     *
+     * Unlike [transcriptObjectId], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("transcript_object_id")
+    @ExcludeMissing
+    fun _transcriptObjectId(): JsonField<String> = transcriptObjectId
+
+    /**
      * Returns the raw JSON value of [vectorCount].
      *
      * Unlike [vectorCount], this method doesn't throw if the JSON field has an unexpected type.
@@ -379,6 +403,7 @@ private constructor(
         private var path: JsonField<String> = JsonMissing.of()
         private var sizeBytes: JsonField<Long> = JsonMissing.of()
         private var textLength: JsonField<Long> = JsonMissing.of()
+        private var transcriptObjectId: JsonField<String> = JsonMissing.of()
         private var vectorCount: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -399,6 +424,7 @@ private constructor(
             path = objectRetrieveResponse.path
             sizeBytes = objectRetrieveResponse.sizeBytes
             textLength = objectRetrieveResponse.textLength
+            transcriptObjectId = objectRetrieveResponse.transcriptObjectId
             vectorCount = objectRetrieveResponse.vectorCount
             additionalProperties = objectRetrieveResponse.additionalProperties.toMutableMap()
         }
@@ -578,6 +604,27 @@ private constructor(
          */
         fun textLength(textLength: JsonField<Long>) = apply { this.textLength = textLength }
 
+        /** Object ID of the completed transcript (if available) */
+        fun transcriptObjectId(transcriptObjectId: String?) =
+            transcriptObjectId(JsonField.ofNullable(transcriptObjectId))
+
+        /**
+         * Alias for calling [Builder.transcriptObjectId] with `transcriptObjectId.orElse(null)`.
+         */
+        fun transcriptObjectId(transcriptObjectId: Optional<String>) =
+            transcriptObjectId(transcriptObjectId.getOrNull())
+
+        /**
+         * Sets [Builder.transcriptObjectId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.transcriptObjectId] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun transcriptObjectId(transcriptObjectId: JsonField<String>) = apply {
+            this.transcriptObjectId = transcriptObjectId
+        }
+
         /** Number of embedding vectors generated */
         fun vectorCount(vectorCount: Long) = vectorCount(JsonField.of(vectorCount))
 
@@ -645,6 +692,7 @@ private constructor(
                 path,
                 sizeBytes,
                 textLength,
+                transcriptObjectId,
                 vectorCount,
                 additionalProperties.toMutableMap(),
             )
@@ -671,6 +719,7 @@ private constructor(
         path()
         sizeBytes()
         textLength()
+        transcriptObjectId()
         vectorCount()
         validated = true
     }
@@ -704,6 +753,7 @@ private constructor(
             (if (path.asKnown().isPresent) 1 else 0) +
             (if (sizeBytes.asKnown().isPresent) 1 else 0) +
             (if (textLength.asKnown().isPresent) 1 else 0) +
+            (if (transcriptObjectId.asKnown().isPresent) 1 else 0) +
             (if (vectorCount.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
@@ -727,6 +777,7 @@ private constructor(
             path == other.path &&
             sizeBytes == other.sizeBytes &&
             textLength == other.textLength &&
+            transcriptObjectId == other.transcriptObjectId &&
             vectorCount == other.vectorCount &&
             additionalProperties == other.additionalProperties
     }
@@ -748,6 +799,7 @@ private constructor(
             path,
             sizeBytes,
             textLength,
+            transcriptObjectId,
             vectorCount,
             additionalProperties,
         )
@@ -756,5 +808,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ObjectRetrieveResponse{id=$id, contentType=$contentType, createdAt=$createdAt, downloadUrl=$downloadUrl, expiresIn=$expiresIn, filename=$filename, ingestionStatus=$ingestionStatus, vaultId=$vaultId, chunkCount=$chunkCount, ingestionError=$ingestionError, metadata=$metadata, pageCount=$pageCount, path=$path, sizeBytes=$sizeBytes, textLength=$textLength, vectorCount=$vectorCount, additionalProperties=$additionalProperties}"
+        "ObjectRetrieveResponse{id=$id, contentType=$contentType, createdAt=$createdAt, downloadUrl=$downloadUrl, expiresIn=$expiresIn, filename=$filename, ingestionStatus=$ingestionStatus, vaultId=$vaultId, chunkCount=$chunkCount, ingestionError=$ingestionError, metadata=$metadata, pageCount=$pageCount, path=$path, sizeBytes=$sizeBytes, textLength=$textLength, transcriptObjectId=$transcriptObjectId, vectorCount=$vectorCount, additionalProperties=$additionalProperties}"
 }
