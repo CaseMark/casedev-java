@@ -65,6 +65,7 @@ internal class ProGuardCompatibilityTest {
         assertThat(client.search()).isNotNull()
         assertThat(client.superdoc()).isNotNull()
         assertThat(client.translate()).isNotNull()
+        assertThat(client.usage()).isNotNull()
         assertThat(client.vault()).isNotNull()
         assertThat(client.voice()).isNotNull()
     }

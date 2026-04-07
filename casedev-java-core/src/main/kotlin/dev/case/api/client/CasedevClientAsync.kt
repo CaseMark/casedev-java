@@ -20,6 +20,7 @@ import dev.case.api.services.async.SkillServiceAsync
 import dev.case.api.services.async.SuperdocServiceAsync
 import dev.case.api.services.async.SystemServiceAsync
 import dev.case.api.services.async.TranslateServiceAsync
+import dev.case.api.services.async.UsageServiceAsync
 import dev.case.api.services.async.VaultServiceAsync
 import dev.case.api.services.async.VoiceServiceAsync
 import java.util.function.Consumer
@@ -97,6 +98,8 @@ interface CasedevClientAsync {
 
     fun translate(): TranslateServiceAsync
 
+    fun usage(): UsageServiceAsync
+
     /** Secure document storage with semantic search and GraphRAG */
     fun vault(): VaultServiceAsync
 
@@ -165,6 +168,8 @@ interface CasedevClientAsync {
         fun superdoc(): SuperdocServiceAsync.WithRawResponse
 
         fun translate(): TranslateServiceAsync.WithRawResponse
+
+        fun usage(): UsageServiceAsync.WithRawResponse
 
         /** Secure document storage with semantic search and GraphRAG */
         fun vault(): VaultServiceAsync.WithRawResponse
