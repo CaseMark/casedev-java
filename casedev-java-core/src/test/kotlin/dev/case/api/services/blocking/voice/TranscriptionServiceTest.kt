@@ -27,7 +27,7 @@ internal class TranscriptionServiceTest {
                     .audioUrl("audio_url")
                     .autoHighlights(true)
                     .boostParam(TranscriptionCreateParams.BoostParam.LOW)
-                    .contentSafetyLabels(true)
+                    .contentSafety(true)
                     .format(TranscriptionCreateParams.Format.JSON)
                     .formatText(true)
                     .languageCode("language_code")
