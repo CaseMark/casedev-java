@@ -38,6 +38,8 @@ import dev.case.api.services.async.SystemServiceAsync
 import dev.case.api.services.async.SystemServiceAsyncImpl
 import dev.case.api.services.async.TranslateServiceAsync
 import dev.case.api.services.async.TranslateServiceAsyncImpl
+import dev.case.api.services.async.UsageServiceAsync
+import dev.case.api.services.async.UsageServiceAsyncImpl
 import dev.case.api.services.async.VaultServiceAsync
 import dev.case.api.services.async.VaultServiceAsyncImpl
 import dev.case.api.services.async.VoiceServiceAsync
@@ -123,6 +125,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         TranslateServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val usage: UsageServiceAsync by lazy {
+        UsageServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val vault: VaultServiceAsync by lazy {
         VaultServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -174,6 +180,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
     override fun superdoc(): SuperdocServiceAsync = superdoc
 
     override fun translate(): TranslateServiceAsync = translate
+
+    override fun usage(): UsageServiceAsync = usage
 
     /** Secure document storage with semantic search and GraphRAG */
     override fun vault(): VaultServiceAsync = vault
@@ -253,6 +261,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
             TranslateServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val usage: UsageServiceAsync.WithRawResponse by lazy {
+            UsageServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val vault: VaultServiceAsync.WithRawResponse by lazy {
             VaultServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -304,6 +316,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         override fun superdoc(): SuperdocServiceAsync.WithRawResponse = superdoc
 
         override fun translate(): TranslateServiceAsync.WithRawResponse = translate
+
+        override fun usage(): UsageServiceAsync.WithRawResponse = usage
 
         /** Secure document storage with semantic search and GraphRAG */
         override fun vault(): VaultServiceAsync.WithRawResponse = vault

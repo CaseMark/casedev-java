@@ -20,6 +20,7 @@ import dev.case.api.services.blocking.SkillService
 import dev.case.api.services.blocking.SuperdocService
 import dev.case.api.services.blocking.SystemService
 import dev.case.api.services.blocking.TranslateService
+import dev.case.api.services.blocking.UsageService
 import dev.case.api.services.blocking.VaultService
 import dev.case.api.services.blocking.VoiceService
 import java.util.function.Consumer
@@ -97,6 +98,8 @@ interface CasedevClient {
 
     fun translate(): TranslateService
 
+    fun usage(): UsageService
+
     /** Secure document storage with semantic search and GraphRAG */
     fun vault(): VaultService
 
@@ -161,6 +164,8 @@ interface CasedevClient {
         fun superdoc(): SuperdocService.WithRawResponse
 
         fun translate(): TranslateService.WithRawResponse
+
+        fun usage(): UsageService.WithRawResponse
 
         /** Secure document storage with semantic search and GraphRAG */
         fun vault(): VaultService.WithRawResponse
