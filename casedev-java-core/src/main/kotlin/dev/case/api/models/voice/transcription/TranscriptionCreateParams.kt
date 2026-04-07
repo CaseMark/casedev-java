@@ -67,7 +67,7 @@ private constructor(
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun contentSafetyLabels(): Optional<Boolean> = body.contentSafetyLabels()
+    fun contentSafety(): Optional<Boolean> = body.contentSafety()
 
     /**
      * Output format for the transcript when using vault mode
@@ -179,12 +179,11 @@ private constructor(
     fun _boostParam(): JsonField<BoostParam> = body._boostParam()
 
     /**
-     * Returns the raw JSON value of [contentSafetyLabels].
+     * Returns the raw JSON value of [contentSafety].
      *
-     * Unlike [contentSafetyLabels], this method doesn't throw if the JSON field has an unexpected
-     * type.
+     * Unlike [contentSafety], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _contentSafetyLabels(): JsonField<Boolean> = body._contentSafetyLabels()
+    fun _contentSafety(): JsonField<Boolean> = body._contentSafety()
 
     /**
      * Returns the raw JSON value of [format].
@@ -307,7 +306,7 @@ private constructor(
          * - [audioUrl]
          * - [autoHighlights]
          * - [boostParam]
-         * - [contentSafetyLabels]
+         * - [contentSafety]
          * - [format]
          * - etc.
          */
@@ -351,19 +350,17 @@ private constructor(
         fun boostParam(boostParam: JsonField<BoostParam>) = apply { body.boostParam(boostParam) }
 
         /** Enable content moderation and safety labeling */
-        fun contentSafetyLabels(contentSafetyLabels: Boolean) = apply {
-            body.contentSafetyLabels(contentSafetyLabels)
-        }
+        fun contentSafety(contentSafety: Boolean) = apply { body.contentSafety(contentSafety) }
 
         /**
-         * Sets [Builder.contentSafetyLabels] to an arbitrary JSON value.
+         * Sets [Builder.contentSafety] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.contentSafetyLabels] with a well-typed [Boolean] value
+         * You should usually call [Builder.contentSafety] with a well-typed [Boolean] value
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
-        fun contentSafetyLabels(contentSafetyLabels: JsonField<Boolean>) = apply {
-            body.contentSafetyLabels(contentSafetyLabels)
+        fun contentSafety(contentSafety: JsonField<Boolean>) = apply {
+            body.contentSafety(contentSafety)
         }
 
         /** Output format for the transcript when using vault mode */
@@ -668,7 +665,7 @@ private constructor(
         private val audioUrl: JsonField<String>,
         private val autoHighlights: JsonField<Boolean>,
         private val boostParam: JsonField<BoostParam>,
-        private val contentSafetyLabels: JsonField<Boolean>,
+        private val contentSafety: JsonField<Boolean>,
         private val format: JsonField<Format>,
         private val formatText: JsonField<Boolean>,
         private val languageCode: JsonField<String>,
@@ -694,9 +691,9 @@ private constructor(
             @JsonProperty("boost_param")
             @ExcludeMissing
             boostParam: JsonField<BoostParam> = JsonMissing.of(),
-            @JsonProperty("content_safety_labels")
+            @JsonProperty("content_safety")
             @ExcludeMissing
-            contentSafetyLabels: JsonField<Boolean> = JsonMissing.of(),
+            contentSafety: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("format") @ExcludeMissing format: JsonField<Format> = JsonMissing.of(),
             @JsonProperty("format_text")
             @ExcludeMissing
@@ -730,7 +727,7 @@ private constructor(
             audioUrl,
             autoHighlights,
             boostParam,
-            contentSafetyLabels,
+            contentSafety,
             format,
             formatText,
             languageCode,
@@ -775,8 +772,7 @@ private constructor(
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun contentSafetyLabels(): Optional<Boolean> =
-            contentSafetyLabels.getOptional("content_safety_labels")
+        fun contentSafety(): Optional<Boolean> = contentSafety.getOptional("content_safety")
 
         /**
          * Output format for the transcript when using vault mode
@@ -895,14 +891,14 @@ private constructor(
         fun _boostParam(): JsonField<BoostParam> = boostParam
 
         /**
-         * Returns the raw JSON value of [contentSafetyLabels].
+         * Returns the raw JSON value of [contentSafety].
          *
-         * Unlike [contentSafetyLabels], this method doesn't throw if the JSON field has an
-         * unexpected type.
+         * Unlike [contentSafety], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
-        @JsonProperty("content_safety_labels")
+        @JsonProperty("content_safety")
         @ExcludeMissing
-        fun _contentSafetyLabels(): JsonField<Boolean> = contentSafetyLabels
+        fun _contentSafety(): JsonField<Boolean> = contentSafety
 
         /**
          * Returns the raw JSON value of [format].
@@ -1024,7 +1020,7 @@ private constructor(
             private var audioUrl: JsonField<String> = JsonMissing.of()
             private var autoHighlights: JsonField<Boolean> = JsonMissing.of()
             private var boostParam: JsonField<BoostParam> = JsonMissing.of()
-            private var contentSafetyLabels: JsonField<Boolean> = JsonMissing.of()
+            private var contentSafety: JsonField<Boolean> = JsonMissing.of()
             private var format: JsonField<Format> = JsonMissing.of()
             private var formatText: JsonField<Boolean> = JsonMissing.of()
             private var languageCode: JsonField<String> = JsonMissing.of()
@@ -1043,7 +1039,7 @@ private constructor(
                 audioUrl = body.audioUrl
                 autoHighlights = body.autoHighlights
                 boostParam = body.boostParam
-                contentSafetyLabels = body.contentSafetyLabels
+                contentSafety = body.contentSafety
                 format = body.format
                 formatText = body.formatText
                 languageCode = body.languageCode
@@ -1100,18 +1096,17 @@ private constructor(
             }
 
             /** Enable content moderation and safety labeling */
-            fun contentSafetyLabels(contentSafetyLabels: Boolean) =
-                contentSafetyLabels(JsonField.of(contentSafetyLabels))
+            fun contentSafety(contentSafety: Boolean) = contentSafety(JsonField.of(contentSafety))
 
             /**
-             * Sets [Builder.contentSafetyLabels] to an arbitrary JSON value.
+             * Sets [Builder.contentSafety] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.contentSafetyLabels] with a well-typed [Boolean]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
+             * You should usually call [Builder.contentSafety] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun contentSafetyLabels(contentSafetyLabels: JsonField<Boolean>) = apply {
-                this.contentSafetyLabels = contentSafetyLabels
+            fun contentSafety(contentSafety: JsonField<Boolean>) = apply {
+                this.contentSafety = contentSafety
             }
 
             /** Output format for the transcript when using vault mode */
@@ -1316,7 +1311,7 @@ private constructor(
                     audioUrl,
                     autoHighlights,
                     boostParam,
-                    contentSafetyLabels,
+                    contentSafety,
                     format,
                     formatText,
                     languageCode,
@@ -1342,7 +1337,7 @@ private constructor(
             audioUrl()
             autoHighlights()
             boostParam().ifPresent { it.validate() }
-            contentSafetyLabels()
+            contentSafety()
             format().ifPresent { it.validate() }
             formatText()
             languageCode()
@@ -1376,7 +1371,7 @@ private constructor(
             (if (audioUrl.asKnown().isPresent) 1 else 0) +
                 (if (autoHighlights.asKnown().isPresent) 1 else 0) +
                 (boostParam.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (contentSafetyLabels.asKnown().isPresent) 1 else 0) +
+                (if (contentSafety.asKnown().isPresent) 1 else 0) +
                 (format.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (formatText.asKnown().isPresent) 1 else 0) +
                 (if (languageCode.asKnown().isPresent) 1 else 0) +
@@ -1398,7 +1393,7 @@ private constructor(
                 audioUrl == other.audioUrl &&
                 autoHighlights == other.autoHighlights &&
                 boostParam == other.boostParam &&
-                contentSafetyLabels == other.contentSafetyLabels &&
+                contentSafety == other.contentSafety &&
                 format == other.format &&
                 formatText == other.formatText &&
                 languageCode == other.languageCode &&
@@ -1418,7 +1413,7 @@ private constructor(
                 audioUrl,
                 autoHighlights,
                 boostParam,
-                contentSafetyLabels,
+                contentSafety,
                 format,
                 formatText,
                 languageCode,
@@ -1437,7 +1432,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{audioUrl=$audioUrl, autoHighlights=$autoHighlights, boostParam=$boostParam, contentSafetyLabels=$contentSafetyLabels, format=$format, formatText=$formatText, languageCode=$languageCode, languageDetection=$languageDetection, objectId=$objectId, punctuate=$punctuate, speakerLabels=$speakerLabels, speakersExpected=$speakersExpected, speechModels=$speechModels, vaultId=$vaultId, wordBoost=$wordBoost, additionalProperties=$additionalProperties}"
+            "Body{audioUrl=$audioUrl, autoHighlights=$autoHighlights, boostParam=$boostParam, contentSafety=$contentSafety, format=$format, formatText=$formatText, languageCode=$languageCode, languageDetection=$languageDetection, objectId=$objectId, punctuate=$punctuate, speakerLabels=$speakerLabels, speakersExpected=$speakersExpected, speechModels=$speechModels, vaultId=$vaultId, wordBoost=$wordBoost, additionalProperties=$additionalProperties}"
     }
 
     /** How much to boost custom vocabulary */
