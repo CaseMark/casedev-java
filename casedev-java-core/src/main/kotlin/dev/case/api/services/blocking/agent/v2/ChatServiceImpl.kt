@@ -24,6 +24,8 @@ import dev.case.api.models.agent.v2.chat.ChatCancelParams
 import dev.case.api.models.agent.v2.chat.ChatCancelResponse
 import dev.case.api.models.agent.v2.chat.ChatCreateParams
 import dev.case.api.models.agent.v2.chat.ChatCreateResponse
+import dev.case.api.models.agent.v2.chat.ChatCreateStreamTokenParams
+import dev.case.api.models.agent.v2.chat.ChatCreateStreamTokenResponse
 import dev.case.api.models.agent.v2.chat.ChatDeleteParams
 import dev.case.api.models.agent.v2.chat.ChatDeleteResponse
 import dev.case.api.models.agent.v2.chat.ChatReplyToQuestionParams
@@ -78,6 +80,13 @@ class ChatServiceImpl internal constructor(private val clientOptions: ClientOpti
     ): ChatCancelResponse =
         // post /agent/v2/chat/{id}/cancel
         withRawResponse().cancel(params, requestOptions).parse()
+
+    override fun createStreamToken(
+        params: ChatCreateStreamTokenParams,
+        requestOptions: RequestOptions,
+    ): ChatCreateStreamTokenResponse =
+        // post /agent/v2/chat/{id}/stream-token
+        withRawResponse().createStreamToken(params, requestOptions).parse()
 
     override fun replyToQuestion(
         params: ChatReplyToQuestionParams,
@@ -211,6 +220,37 @@ class ChatServiceImpl internal constructor(private val clientOptions: ClientOpti
             return errorHandler.handle(response).parseable {
                 response
                     .use { cancelHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val createStreamTokenHandler: Handler<ChatCreateStreamTokenResponse> =
+            jsonHandler<ChatCreateStreamTokenResponse>(clientOptions.jsonMapper)
+
+        override fun createStreamToken(
+            params: ChatCreateStreamTokenParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ChatCreateStreamTokenResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("agent", "v2", "chat", params._pathParam(0), "stream-token")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { createStreamTokenHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

@@ -2,38 +2,31 @@
 
 package dev.case.api.models.agent.v2.chat
 
+import dev.case.api.core.JsonValue
 import dev.case.api.core.Params
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
+import dev.case.api.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Relays OpenCode SSE events for this Daytona-backed chat runtime. Supports replay from buffered
- * events using Last-Event-ID and transparently reconnects stopped or archived runtimes. Accepts
- * either Bearer token auth or a short-lived stream token via query parameter. When both are
- * provided, Bearer auth takes precedence.
+ * Returns a short-lived token that allows browser clients to connect directly to the agent chat SSE
+ * stream without exposing the underlying org API key.
  */
-class ChatStreamParams
+class ChatCreateStreamTokenParams
 private constructor(
     private val id: String?,
-    private val token: String?,
-    private val lastEventId: Long?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
+    private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     fun id(): Optional<String> = Optional.ofNullable(id)
 
-    /**
-     * Short-lived stream token from POST /agent/v2/chat/:id/stream-token. If provided, Bearer auth
-     * is not required.
-     */
-    fun token(): Optional<String> = Optional.ofNullable(token)
-
-    /** Replay events after this sequence number */
-    fun lastEventId(): Optional<Long> = Optional.ofNullable(lastEventId)
+    /** Additional body properties to send with the request. */
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -45,56 +38,35 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): ChatStreamParams = builder().build()
+        @JvmStatic fun none(): ChatCreateStreamTokenParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [ChatStreamParams]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [ChatCreateStreamTokenParams].
+         */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ChatStreamParams]. */
+    /** A builder for [ChatCreateStreamTokenParams]. */
     class Builder internal constructor() {
 
         private var id: String? = null
-        private var token: String? = null
-        private var lastEventId: Long? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(chatStreamParams: ChatStreamParams) = apply {
-            id = chatStreamParams.id
-            token = chatStreamParams.token
-            lastEventId = chatStreamParams.lastEventId
-            additionalHeaders = chatStreamParams.additionalHeaders.toBuilder()
-            additionalQueryParams = chatStreamParams.additionalQueryParams.toBuilder()
+        internal fun from(chatCreateStreamTokenParams: ChatCreateStreamTokenParams) = apply {
+            id = chatCreateStreamTokenParams.id
+            additionalHeaders = chatCreateStreamTokenParams.additionalHeaders.toBuilder()
+            additionalQueryParams = chatCreateStreamTokenParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                chatCreateStreamTokenParams.additionalBodyProperties.toMutableMap()
         }
 
         fun id(id: String?) = apply { this.id = id }
 
         /** Alias for calling [Builder.id] with `id.orElse(null)`. */
         fun id(id: Optional<String>) = id(id.getOrNull())
-
-        /**
-         * Short-lived stream token from POST /agent/v2/chat/:id/stream-token. If provided, Bearer
-         * auth is not required.
-         */
-        fun token(token: String?) = apply { this.token = token }
-
-        /** Alias for calling [Builder.token] with `token.orElse(null)`. */
-        fun token(token: Optional<String>) = token(token.getOrNull())
-
-        /** Replay events after this sequence number */
-        fun lastEventId(lastEventId: Long?) = apply { this.lastEventId = lastEventId }
-
-        /**
-         * Alias for [Builder.lastEventId].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun lastEventId(lastEventId: Long) = lastEventId(lastEventId as Long?)
-
-        /** Alias for calling [Builder.lastEventId] with `lastEventId.orElse(null)`. */
-        fun lastEventId(lastEventId: Optional<Long>) = lastEventId(lastEventId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -194,20 +166,44 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            this.additionalBodyProperties.clear()
+            putAllAdditionalBodyProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            additionalBodyProperties.put(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalBodyProperties.putAll(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply {
+            additionalBodyProperties.remove(key)
+        }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalBodyProperty)
+        }
+
         /**
-         * Returns an immutable instance of [ChatStreamParams].
+         * Returns an immutable instance of [ChatCreateStreamTokenParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): ChatStreamParams =
-            ChatStreamParams(
+        fun build(): ChatCreateStreamTokenParams =
+            ChatCreateStreamTokenParams(
                 id,
-                token,
-                lastEventId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
+                additionalBodyProperties.toImmutable(),
             )
     }
+
+    fun _body(): Optional<Map<String, JsonValue>> =
+        Optional.ofNullable(additionalBodyProperties.ifEmpty { null })
 
     fun _pathParam(index: Int): String =
         when (index) {
@@ -217,31 +213,23 @@ private constructor(
 
     override fun _headers(): Headers = additionalHeaders
 
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                token?.let { put("token", it) }
-                lastEventId?.let { put("lastEventId", it.toString()) }
-                putAll(additionalQueryParams)
-            }
-            .build()
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return other is ChatStreamParams &&
+        return other is ChatCreateStreamTokenParams &&
             id == other.id &&
-            token == other.token &&
-            lastEventId == other.lastEventId &&
             additionalHeaders == other.additionalHeaders &&
-            additionalQueryParams == other.additionalQueryParams
+            additionalQueryParams == other.additionalQueryParams &&
+            additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int =
-        Objects.hash(id, token, lastEventId, additionalHeaders, additionalQueryParams)
+        Objects.hash(id, additionalHeaders, additionalQueryParams, additionalBodyProperties)
 
     override fun toString() =
-        "ChatStreamParams{id=$id, token=$token, lastEventId=$lastEventId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "ChatCreateStreamTokenParams{id=$id, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

@@ -67,6 +67,20 @@ internal class ChatServiceTest {
     }
 
     @Test
+    fun createStreamToken() {
+        val client =
+            CasedevOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val chatService = client.agent().v2().chat()
+
+        val response = chatService.createStreamToken("id")
+
+        response.validate()
+    }
+
+    @Test
     fun replyToQuestion() {
         val client =
             CasedevOkHttpClient.builder()
@@ -145,7 +159,9 @@ internal class ChatServiceTest {
         val chatService = client.agent().v2().chat()
 
         val responseStreamResponse =
-            chatService.streamStreaming(ChatStreamParams.builder().id("id").lastEventId(0L).build())
+            chatService.streamStreaming(
+                ChatStreamParams.builder().id("id").token("token").lastEventId(0L).build()
+            )
 
         responseStreamResponse.use { responseStreamResponse.stream().forEach {} }
     }
