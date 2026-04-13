@@ -10,7 +10,7 @@ internal class ChatStreamParamsTest {
 
     @Test
     fun create() {
-        ChatStreamParams.builder().id("id").lastEventId(0L).build()
+        ChatStreamParams.builder().id("id").token("token").lastEventId(0L).build()
     }
 
     @Test
@@ -24,11 +24,12 @@ internal class ChatStreamParamsTest {
 
     @Test
     fun queryParams() {
-        val params = ChatStreamParams.builder().id("id").lastEventId(0L).build()
+        val params = ChatStreamParams.builder().id("id").token("token").lastEventId(0L).build()
 
         val queryParams = params._queryParams()
 
-        assertThat(queryParams).isEqualTo(QueryParams.builder().put("lastEventId", "0").build())
+        assertThat(queryParams)
+            .isEqualTo(QueryParams.builder().put("token", "token").put("lastEventId", "0").build())
     }
 
     @Test

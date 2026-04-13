@@ -26,6 +26,8 @@ import dev.case.api.models.agent.v2.chat.ChatCancelParams
 import dev.case.api.models.agent.v2.chat.ChatCancelResponse
 import dev.case.api.models.agent.v2.chat.ChatCreateParams
 import dev.case.api.models.agent.v2.chat.ChatCreateResponse
+import dev.case.api.models.agent.v2.chat.ChatCreateStreamTokenParams
+import dev.case.api.models.agent.v2.chat.ChatCreateStreamTokenResponse
 import dev.case.api.models.agent.v2.chat.ChatDeleteParams
 import dev.case.api.models.agent.v2.chat.ChatDeleteResponse
 import dev.case.api.models.agent.v2.chat.ChatReplyToQuestionParams
@@ -82,6 +84,13 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
     ): CompletableFuture<ChatCancelResponse> =
         // post /agent/v2/chat/{id}/cancel
         withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
+
+    override fun createStreamToken(
+        params: ChatCreateStreamTokenParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ChatCreateStreamTokenResponse> =
+        // post /agent/v2/chat/{id}/stream-token
+        withRawResponse().createStreamToken(params, requestOptions).thenApply { it.parse() }
 
     override fun replyToQuestion(
         params: ChatReplyToQuestionParams,
@@ -230,6 +239,40 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     errorHandler.handle(response).parseable {
                         response
                             .use { cancelHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val createStreamTokenHandler: Handler<ChatCreateStreamTokenResponse> =
+            jsonHandler<ChatCreateStreamTokenResponse>(clientOptions.jsonMapper)
+
+        override fun createStreamToken(
+            params: ChatCreateStreamTokenParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ChatCreateStreamTokenResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("agent", "v2", "chat", params._pathParam(0), "stream-token")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { createStreamTokenHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

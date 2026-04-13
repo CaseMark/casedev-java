@@ -12,6 +12,8 @@ import dev.case.api.models.agent.v2.chat.ChatCancelParams
 import dev.case.api.models.agent.v2.chat.ChatCancelResponse
 import dev.case.api.models.agent.v2.chat.ChatCreateParams
 import dev.case.api.models.agent.v2.chat.ChatCreateResponse
+import dev.case.api.models.agent.v2.chat.ChatCreateStreamTokenParams
+import dev.case.api.models.agent.v2.chat.ChatCreateStreamTokenResponse
 import dev.case.api.models.agent.v2.chat.ChatDeleteParams
 import dev.case.api.models.agent.v2.chat.ChatDeleteResponse
 import dev.case.api.models.agent.v2.chat.ChatReplyToQuestionParams
@@ -118,6 +120,44 @@ interface ChatService {
     /** @see cancel */
     fun cancel(id: String, requestOptions: RequestOptions): ChatCancelResponse =
         cancel(id, ChatCancelParams.none(), requestOptions)
+
+    /**
+     * Returns a short-lived token that allows browser clients to connect directly to the agent chat
+     * SSE stream without exposing the underlying org API key.
+     */
+    fun createStreamToken(id: String): ChatCreateStreamTokenResponse =
+        createStreamToken(id, ChatCreateStreamTokenParams.none())
+
+    /** @see createStreamToken */
+    fun createStreamToken(
+        id: String,
+        params: ChatCreateStreamTokenParams = ChatCreateStreamTokenParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ChatCreateStreamTokenResponse =
+        createStreamToken(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see createStreamToken */
+    fun createStreamToken(
+        id: String,
+        params: ChatCreateStreamTokenParams = ChatCreateStreamTokenParams.none(),
+    ): ChatCreateStreamTokenResponse = createStreamToken(id, params, RequestOptions.none())
+
+    /** @see createStreamToken */
+    fun createStreamToken(
+        params: ChatCreateStreamTokenParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ChatCreateStreamTokenResponse
+
+    /** @see createStreamToken */
+    fun createStreamToken(params: ChatCreateStreamTokenParams): ChatCreateStreamTokenResponse =
+        createStreamToken(params, RequestOptions.none())
+
+    /** @see createStreamToken */
+    fun createStreamToken(
+        id: String,
+        requestOptions: RequestOptions,
+    ): ChatCreateStreamTokenResponse =
+        createStreamToken(id, ChatCreateStreamTokenParams.none(), requestOptions)
 
     /**
      * Answers a pending OpenCode question for the Daytona-backed chat session and resumes or
@@ -232,7 +272,8 @@ interface ChatService {
     /**
      * Relays OpenCode SSE events for this Daytona-backed chat runtime. Supports replay from
      * buffered events using Last-Event-ID and transparently reconnects stopped or archived
-     * runtimes.
+     * runtimes. Accepts either Bearer token auth or a short-lived stream token via query parameter.
+     * When both are provided, Bearer auth takes precedence.
      */
     @MustBeClosed
     fun streamStreaming(id: String): StreamResponse<String> =
@@ -396,6 +437,53 @@ interface ChatService {
             id: String,
             requestOptions: RequestOptions,
         ): HttpResponseFor<ChatCancelResponse> = cancel(id, ChatCancelParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /agent/v2/chat/{id}/stream-token`, but is otherwise
+         * the same as [ChatService.createStreamToken].
+         */
+        @MustBeClosed
+        fun createStreamToken(id: String): HttpResponseFor<ChatCreateStreamTokenResponse> =
+            createStreamToken(id, ChatCreateStreamTokenParams.none())
+
+        /** @see createStreamToken */
+        @MustBeClosed
+        fun createStreamToken(
+            id: String,
+            params: ChatCreateStreamTokenParams = ChatCreateStreamTokenParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatCreateStreamTokenResponse> =
+            createStreamToken(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see createStreamToken */
+        @MustBeClosed
+        fun createStreamToken(
+            id: String,
+            params: ChatCreateStreamTokenParams = ChatCreateStreamTokenParams.none(),
+        ): HttpResponseFor<ChatCreateStreamTokenResponse> =
+            createStreamToken(id, params, RequestOptions.none())
+
+        /** @see createStreamToken */
+        @MustBeClosed
+        fun createStreamToken(
+            params: ChatCreateStreamTokenParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatCreateStreamTokenResponse>
+
+        /** @see createStreamToken */
+        @MustBeClosed
+        fun createStreamToken(
+            params: ChatCreateStreamTokenParams
+        ): HttpResponseFor<ChatCreateStreamTokenResponse> =
+            createStreamToken(params, RequestOptions.none())
+
+        /** @see createStreamToken */
+        @MustBeClosed
+        fun createStreamToken(
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ChatCreateStreamTokenResponse> =
+            createStreamToken(id, ChatCreateStreamTokenParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /agent/v2/chat/{id}/question/{requestID}/reply`,
