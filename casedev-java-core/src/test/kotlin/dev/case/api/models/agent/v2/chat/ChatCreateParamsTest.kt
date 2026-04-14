@@ -12,6 +12,7 @@ internal class ChatCreateParamsTest {
     fun create() {
         ChatCreateParams.builder()
             .idleTimeoutMs(0L)
+            .instructions("instructions")
             .model("model")
             .title("title")
             .addVaultId("string")
@@ -23,6 +24,7 @@ internal class ChatCreateParamsTest {
         val params =
             ChatCreateParams.builder()
                 .idleTimeoutMs(0L)
+                .instructions("instructions")
                 .model("model")
                 .title("title")
                 .addVaultId("string")
@@ -31,6 +33,7 @@ internal class ChatCreateParamsTest {
         val body = params._body()
 
         assertThat(body.idleTimeoutMs()).contains(0L)
+        assertThat(body.instructions()).contains("instructions")
         assertThat(body.model()).contains("model")
         assertThat(body.title()).contains("title")
         assertThat(body.vaultIds().getOrNull()).containsExactly("string")

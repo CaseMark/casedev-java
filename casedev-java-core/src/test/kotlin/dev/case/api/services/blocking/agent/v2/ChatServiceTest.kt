@@ -29,6 +29,7 @@ internal class ChatServiceTest {
             chatService.create(
                 ChatCreateParams.builder()
                     .idleTimeoutMs(0L)
+                    .instructions("instructions")
                     .model("model")
                     .title("title")
                     .addVaultId("string")
