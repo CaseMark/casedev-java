@@ -53,8 +53,8 @@ interface ProjectServiceAsync {
 
     /**
      * Returns project details, domains, and recent deployment information for one application
-     * project or deployed Thurgood app. Use this endpoint when you need a single record with
-     * hosting metadata for a details view.
+     * project. Use this endpoint when you need a single record with hosting metadata for a details
+     * view.
      */
     fun retrieve(id: String): CompletableFuture<Void?> = retrieve(id, ProjectRetrieveParams.none())
 
@@ -86,8 +86,8 @@ interface ProjectServiceAsync {
         retrieve(id, ProjectRetrieveParams.none(), requestOptions)
 
     /**
-     * Lists application projects and deployed Thurgood apps for the authenticated organization. Use
-     * enrich=true to include additional hosting metadata for projects linked to Vercel.
+     * Lists application projects for the authenticated organization. Use enrich=true to include
+     * additional hosting metadata for projects linked to Vercel.
      */
     fun list(): CompletableFuture<ProjectListResponse> = list(ProjectListParams.none())
 
@@ -107,9 +107,8 @@ interface ProjectServiceAsync {
         list(ProjectListParams.none(), requestOptions)
 
     /**
-     * Soft-deletes an application project or deployed Thurgood app from Case.dev. By default it
-     * also removes the linked hosting project; set deleteFromHosting=false to keep the external
-     * hosting resources intact.
+     * Soft-deletes an application project from Case.dev. By default it also removes the linked
+     * hosting project; set deleteFromHosting=false to keep the external hosting resources intact.
      */
     fun delete(id: String): CompletableFuture<Void?> = delete(id, ProjectDeleteParams.none())
 

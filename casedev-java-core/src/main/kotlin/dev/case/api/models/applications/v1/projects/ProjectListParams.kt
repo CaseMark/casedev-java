@@ -10,8 +10,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Lists application projects and deployed Thurgood apps for the authenticated organization. Use
- * enrich=true to include additional hosting metadata for projects linked to Vercel.
+ * Lists application projects for the authenticated organization. Use enrich=true to include
+ * additional hosting metadata for projects linked to Vercel.
  */
 class ProjectListParams
 private constructor(

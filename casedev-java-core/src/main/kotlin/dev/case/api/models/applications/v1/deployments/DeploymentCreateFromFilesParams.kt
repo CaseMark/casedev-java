@@ -10,7 +10,7 @@ import dev.case.api.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
-/** Create a deployment from raw file contents (for Thurgood sandbox deployments) */
+/** Create a deployment from raw file contents for application deployments */
 class DeploymentCreateFromFilesParams
 private constructor(
     private val additionalHeaders: Headers,
