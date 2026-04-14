@@ -41,6 +41,15 @@ private constructor(
     fun idleTimeoutMs(): Optional<Long> = body.idleTimeoutMs()
 
     /**
+     * Optional hidden app instructions merged into the chat runtime bootstrap and never exposed as
+     * a user message. Only accepted for privileged C3 system keys.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun instructions(): Optional<String> = body.instructions()
+
+    /**
      * Optional model override for the OpenCode session
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -70,6 +79,13 @@ private constructor(
      * Unlike [idleTimeoutMs], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _idleTimeoutMs(): JsonField<Long> = body._idleTimeoutMs()
+
+    /**
+     * Returns the raw JSON value of [instructions].
+     *
+     * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _instructions(): JsonField<String> = body._instructions()
 
     /**
      * Returns the raw JSON value of [model].
@@ -130,9 +146,11 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [idleTimeoutMs]
+         * - [instructions]
          * - [model]
          * - [title]
          * - [vaultIds]
+         * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -158,6 +176,26 @@ private constructor(
          */
         fun idleTimeoutMs(idleTimeoutMs: JsonField<Long>) = apply {
             body.idleTimeoutMs(idleTimeoutMs)
+        }
+
+        /**
+         * Optional hidden app instructions merged into the chat runtime bootstrap and never exposed
+         * as a user message. Only accepted for privileged C3 system keys.
+         */
+        fun instructions(instructions: String?) = apply { body.instructions(instructions) }
+
+        /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
+        fun instructions(instructions: Optional<String>) = instructions(instructions.getOrNull())
+
+        /**
+         * Sets [Builder.instructions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.instructions] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun instructions(instructions: JsonField<String>) = apply {
+            body.instructions(instructions)
         }
 
         /** Optional model override for the OpenCode session */
@@ -343,6 +381,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val idleTimeoutMs: JsonField<Long>,
+        private val instructions: JsonField<String>,
         private val model: JsonField<String>,
         private val title: JsonField<String>,
         private val vaultIds: JsonField<List<String>>,
@@ -354,12 +393,15 @@ private constructor(
             @JsonProperty("idleTimeoutMs")
             @ExcludeMissing
             idleTimeoutMs: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("instructions")
+            @ExcludeMissing
+            instructions: JsonField<String> = JsonMissing.of(),
             @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
             @JsonProperty("title") @ExcludeMissing title: JsonField<String> = JsonMissing.of(),
             @JsonProperty("vaultIds")
             @ExcludeMissing
             vaultIds: JsonField<List<String>> = JsonMissing.of(),
-        ) : this(idleTimeoutMs, model, title, vaultIds, mutableMapOf())
+        ) : this(idleTimeoutMs, instructions, model, title, vaultIds, mutableMapOf())
 
         /**
          * Idle timeout before the runtime is eligible to stop. Defaults to 15 minutes.
@@ -368,6 +410,15 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun idleTimeoutMs(): Optional<Long> = idleTimeoutMs.getOptional("idleTimeoutMs")
+
+        /**
+         * Optional hidden app instructions merged into the chat runtime bootstrap and never exposed
+         * as a user message. Only accepted for privileged C3 system keys.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun instructions(): Optional<String> = instructions.getOptional("instructions")
 
         /**
          * Optional model override for the OpenCode session
@@ -402,6 +453,16 @@ private constructor(
         @JsonProperty("idleTimeoutMs")
         @ExcludeMissing
         fun _idleTimeoutMs(): JsonField<Long> = idleTimeoutMs
+
+        /**
+         * Returns the raw JSON value of [instructions].
+         *
+         * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        fun _instructions(): JsonField<String> = instructions
 
         /**
          * Returns the raw JSON value of [model].
@@ -448,6 +509,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var idleTimeoutMs: JsonField<Long> = JsonMissing.of()
+            private var instructions: JsonField<String> = JsonMissing.of()
             private var model: JsonField<String> = JsonMissing.of()
             private var title: JsonField<String> = JsonMissing.of()
             private var vaultIds: JsonField<MutableList<String>>? = null
@@ -456,6 +518,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 idleTimeoutMs = body.idleTimeoutMs
+                instructions = body.instructions
                 model = body.model
                 title = body.title
                 vaultIds = body.vaultIds.map { it.toMutableList() }
@@ -486,6 +549,28 @@ private constructor(
              */
             fun idleTimeoutMs(idleTimeoutMs: JsonField<Long>) = apply {
                 this.idleTimeoutMs = idleTimeoutMs
+            }
+
+            /**
+             * Optional hidden app instructions merged into the chat runtime bootstrap and never
+             * exposed as a user message. Only accepted for privileged C3 system keys.
+             */
+            fun instructions(instructions: String?) =
+                instructions(JsonField.ofNullable(instructions))
+
+            /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
+            fun instructions(instructions: Optional<String>) =
+                instructions(instructions.getOrNull())
+
+            /**
+             * Sets [Builder.instructions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.instructions] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun instructions(instructions: JsonField<String>) = apply {
+                this.instructions = instructions
             }
 
             /** Optional model override for the OpenCode session */
@@ -571,6 +656,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     idleTimeoutMs,
+                    instructions,
                     model,
                     title,
                     (vaultIds ?: JsonMissing.of()).map { it.toImmutable() },
@@ -586,6 +672,7 @@ private constructor(
             }
 
             idleTimeoutMs()
+            instructions()
             model()
             title()
             vaultIds()
@@ -609,6 +696,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (idleTimeoutMs.asKnown().isPresent) 1 else 0) +
+                (if (instructions.asKnown().isPresent) 1 else 0) +
                 (if (model.asKnown().isPresent) 1 else 0) +
                 (if (title.asKnown().isPresent) 1 else 0) +
                 (vaultIds.asKnown().getOrNull()?.size ?: 0)
@@ -620,6 +708,7 @@ private constructor(
 
             return other is Body &&
                 idleTimeoutMs == other.idleTimeoutMs &&
+                instructions == other.instructions &&
                 model == other.model &&
                 title == other.title &&
                 vaultIds == other.vaultIds &&
@@ -627,13 +716,13 @@ private constructor(
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(idleTimeoutMs, model, title, vaultIds, additionalProperties)
+            Objects.hash(idleTimeoutMs, instructions, model, title, vaultIds, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{idleTimeoutMs=$idleTimeoutMs, model=$model, title=$title, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
+            "Body{idleTimeoutMs=$idleTimeoutMs, instructions=$instructions, model=$model, title=$title, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
