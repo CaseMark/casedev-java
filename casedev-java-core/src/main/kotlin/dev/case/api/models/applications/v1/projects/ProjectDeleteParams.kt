@@ -12,9 +12,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Soft-deletes an application project or deployed Thurgood app from Case.dev. By default it also
- * removes the linked hosting project; set deleteFromHosting=false to keep the external hosting
- * resources intact.
+ * Soft-deletes an application project from Case.dev. By default it also removes the linked hosting
+ * project; set deleteFromHosting=false to keep the external hosting resources intact.
  */
 class ProjectDeleteParams
 private constructor(

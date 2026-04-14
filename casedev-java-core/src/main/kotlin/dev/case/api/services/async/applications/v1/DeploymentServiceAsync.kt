@@ -107,7 +107,7 @@ interface DeploymentServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
-    /** Create a deployment from raw file contents (for Thurgood sandbox deployments) */
+    /** Create a deployment from raw file contents for application deployments */
     fun createFromFiles(): CompletableFuture<Void?> =
         createFromFiles(DeploymentCreateFromFilesParams.none())
 

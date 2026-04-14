@@ -762,7 +762,7 @@ private constructor(
             fun type(): Optional<Type> = type.getOptional("type")
 
             /**
-             * Deployment URL (for Thurgood apps)
+             * Deployment URL
              *
              * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -869,7 +869,7 @@ private constructor(
                  */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
-                /** Deployment URL (for Thurgood apps) */
+                /** Deployment URL */
                 fun url(url: String) = url(JsonField.of(url))
 
                 /**
@@ -963,8 +963,6 @@ private constructor(
 
                 companion object {
 
-                    @JvmField val THURGOOD = of("thurgood")
-
                     @JvmField val COMPUTE = of("compute")
 
                     @JvmStatic fun of(value: String) = Type(JsonField.of(value))
@@ -972,8 +970,7 @@ private constructor(
 
                 /** An enum containing [Type]'s known values. */
                 enum class Known {
-                    THURGOOD,
-                    COMPUTE,
+                    COMPUTE
                 }
 
                 /**
@@ -986,7 +983,6 @@ private constructor(
                  * - It was constructed with an arbitrary value using the [of] method.
                  */
                 enum class Value {
-                    THURGOOD,
                     COMPUTE,
                     /**
                      * An enum member indicating that [Type] was instantiated with an unknown value.
@@ -1003,7 +999,6 @@ private constructor(
                  */
                 fun value(): Value =
                     when (this) {
-                        THURGOOD -> Value.THURGOOD
                         COMPUTE -> Value.COMPUTE
                         else -> Value._UNKNOWN
                     }
@@ -1019,7 +1014,6 @@ private constructor(
                  */
                 fun known(): Known =
                     when (this) {
-                        THURGOOD -> Known.THURGOOD
                         COMPUTE -> Known.COMPUTE
                         else -> throw CasedevInvalidDataException("Unknown Type: $value")
                     }

@@ -100,7 +100,7 @@ interface DeploymentService {
         requestOptions: RequestOptions = RequestOptions.none(),
     )
 
-    /** Create a deployment from raw file contents (for Thurgood sandbox deployments) */
+    /** Create a deployment from raw file contents for application deployments */
     fun createFromFiles() = createFromFiles(DeploymentCreateFromFilesParams.none())
 
     /** @see createFromFiles */
