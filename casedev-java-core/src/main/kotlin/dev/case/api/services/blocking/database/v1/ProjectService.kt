@@ -88,7 +88,7 @@ interface ProjectService {
 
     /**
      * Retrieves all serverless Postgres database projects for the authenticated organization.
-     * Includes storage and compute metrics, plus linked deployments from Thurgood apps and Compute
+     * Includes storage and compute metrics, plus linked application deployments and Compute
      * instances.
      */
     fun list(): ProjectListResponse = list(ProjectListParams.none())
