@@ -13,6 +13,7 @@ import dev.case.api.client.okhttp.CasedevOkHttpClientAsync
 import dev.case.api.core.JsonValue
 import dev.case.api.models.ocr.v1.V1DownloadParams
 import dev.case.api.models.ocr.v1.V1ProcessParams
+import dev.case.api.models.ocr.v1.V1RetrieveParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -32,7 +33,13 @@ internal class V1ServiceAsyncTest {
                 .build()
         val v1ServiceAsync = client.ocr().v1()
 
-        val v1Future = v1ServiceAsync.retrieve("id")
+        val v1Future =
+            v1ServiceAsync.retrieve(
+                V1RetrieveParams.builder()
+                    .id("id")
+                    .includeText(V1RetrieveParams.IncludeText.TRUE)
+                    .build()
+            )
 
         val v1 = v1Future.get()
         v1.validate()

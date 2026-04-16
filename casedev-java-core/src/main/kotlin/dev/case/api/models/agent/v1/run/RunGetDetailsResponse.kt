@@ -31,7 +31,10 @@ private constructor(
     private val modalSandboxId: JsonField<String>,
     private val model: JsonField<String>,
     private val prompt: JsonField<String>,
+    private val provider: JsonField<Provider>,
     private val result: JsonField<Result>,
+    private val runtimeId: JsonField<String>,
+    private val runtimeState: JsonField<RuntimeState>,
     private val startedAt: JsonField<OffsetDateTime>,
     private val status: JsonField<Status>,
     private val steps: JsonField<List<Step>>,
@@ -56,7 +59,12 @@ private constructor(
         modalSandboxId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
         @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("provider") @ExcludeMissing provider: JsonField<Provider> = JsonMissing.of(),
         @JsonProperty("result") @ExcludeMissing result: JsonField<Result> = JsonMissing.of(),
+        @JsonProperty("runtimeId") @ExcludeMissing runtimeId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("runtimeState")
+        @ExcludeMissing
+        runtimeState: JsonField<RuntimeState> = JsonMissing.of(),
         @JsonProperty("startedAt")
         @ExcludeMissing
         startedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
@@ -73,7 +81,10 @@ private constructor(
         modalSandboxId,
         model,
         prompt,
+        provider,
         result,
+        runtimeId,
+        runtimeState,
         startedAt,
         status,
         steps,
@@ -113,11 +124,12 @@ private constructor(
     fun guidance(): Optional<String> = guidance.getOptional("guidance")
 
     /**
-     * Modal sandbox ID (available once sandbox is created)
+     * Deprecated legacy Modal sandbox ID. Prefer `provider` and `runtimeId`.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
+    @Deprecated("deprecated")
     fun modalSandboxId(): Optional<String> = modalSandboxId.getOptional("modalSandboxId")
 
     /**
@@ -133,12 +145,36 @@ private constructor(
     fun prompt(): Optional<String> = prompt.getOptional("prompt")
 
     /**
+     * Runtime provider for this run
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun provider(): Optional<Provider> = provider.getOptional("provider")
+
+    /**
      * Final output from the agent
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun result(): Optional<Result> = result.getOptional("result")
+
+    /**
+     * Provider-specific runtime identifier
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun runtimeId(): Optional<String> = runtimeId.getOptional("runtimeId")
+
+    /**
+     * Current runtime state, when available
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun runtimeState(): Optional<RuntimeState> = runtimeState.getOptional("runtimeState")
 
     /**
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -218,6 +254,7 @@ private constructor(
      *
      * Unlike [modalSandboxId], this method doesn't throw if the JSON field has an unexpected type.
      */
+    @Deprecated("deprecated")
     @JsonProperty("modalSandboxId")
     @ExcludeMissing
     fun _modalSandboxId(): JsonField<String> = modalSandboxId
@@ -237,11 +274,34 @@ private constructor(
     @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<String> = prompt
 
     /**
+     * Returns the raw JSON value of [provider].
+     *
+     * Unlike [provider], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("provider") @ExcludeMissing fun _provider(): JsonField<Provider> = provider
+
+    /**
      * Returns the raw JSON value of [result].
      *
      * Unlike [result], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("result") @ExcludeMissing fun _result(): JsonField<Result> = result
+
+    /**
+     * Returns the raw JSON value of [runtimeId].
+     *
+     * Unlike [runtimeId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("runtimeId") @ExcludeMissing fun _runtimeId(): JsonField<String> = runtimeId
+
+    /**
+     * Returns the raw JSON value of [runtimeState].
+     *
+     * Unlike [runtimeState], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("runtimeState")
+    @ExcludeMissing
+    fun _runtimeState(): JsonField<RuntimeState> = runtimeState
 
     /**
      * Returns the raw JSON value of [startedAt].
@@ -309,7 +369,10 @@ private constructor(
         private var modalSandboxId: JsonField<String> = JsonMissing.of()
         private var model: JsonField<String> = JsonMissing.of()
         private var prompt: JsonField<String> = JsonMissing.of()
+        private var provider: JsonField<Provider> = JsonMissing.of()
         private var result: JsonField<Result> = JsonMissing.of()
+        private var runtimeId: JsonField<String> = JsonMissing.of()
+        private var runtimeState: JsonField<RuntimeState> = JsonMissing.of()
         private var startedAt: JsonField<OffsetDateTime> = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()
         private var steps: JsonField<MutableList<Step>>? = null
@@ -327,7 +390,10 @@ private constructor(
             modalSandboxId = runGetDetailsResponse.modalSandboxId
             model = runGetDetailsResponse.model
             prompt = runGetDetailsResponse.prompt
+            provider = runGetDetailsResponse.provider
             result = runGetDetailsResponse.result
+            runtimeId = runGetDetailsResponse.runtimeId
+            runtimeState = runGetDetailsResponse.runtimeState
             startedAt = runGetDetailsResponse.startedAt
             status = runGetDetailsResponse.status
             steps = runGetDetailsResponse.steps.map { it.toMutableList() }
@@ -398,11 +464,13 @@ private constructor(
          */
         fun guidance(guidance: JsonField<String>) = apply { this.guidance = guidance }
 
-        /** Modal sandbox ID (available once sandbox is created) */
+        /** Deprecated legacy Modal sandbox ID. Prefer `provider` and `runtimeId`. */
+        @Deprecated("deprecated")
         fun modalSandboxId(modalSandboxId: String?) =
             modalSandboxId(JsonField.ofNullable(modalSandboxId))
 
         /** Alias for calling [Builder.modalSandboxId] with `modalSandboxId.orElse(null)`. */
+        @Deprecated("deprecated")
         fun modalSandboxId(modalSandboxId: Optional<String>) =
             modalSandboxId(modalSandboxId.getOrNull())
 
@@ -413,6 +481,7 @@ private constructor(
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
+        @Deprecated("deprecated")
         fun modalSandboxId(modalSandboxId: JsonField<String>) = apply {
             this.modalSandboxId = modalSandboxId
         }
@@ -440,6 +509,21 @@ private constructor(
          */
         fun prompt(prompt: JsonField<String>) = apply { this.prompt = prompt }
 
+        /** Runtime provider for this run */
+        fun provider(provider: Provider?) = provider(JsonField.ofNullable(provider))
+
+        /** Alias for calling [Builder.provider] with `provider.orElse(null)`. */
+        fun provider(provider: Optional<Provider>) = provider(provider.getOrNull())
+
+        /**
+         * Sets [Builder.provider] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.provider] with a well-typed [Provider] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun provider(provider: JsonField<Provider>) = apply { this.provider = provider }
+
         /** Final output from the agent */
         fun result(result: Result?) = result(JsonField.ofNullable(result))
 
@@ -453,6 +537,40 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun result(result: JsonField<Result>) = apply { this.result = result }
+
+        /** Provider-specific runtime identifier */
+        fun runtimeId(runtimeId: String?) = runtimeId(JsonField.ofNullable(runtimeId))
+
+        /** Alias for calling [Builder.runtimeId] with `runtimeId.orElse(null)`. */
+        fun runtimeId(runtimeId: Optional<String>) = runtimeId(runtimeId.getOrNull())
+
+        /**
+         * Sets [Builder.runtimeId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.runtimeId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun runtimeId(runtimeId: JsonField<String>) = apply { this.runtimeId = runtimeId }
+
+        /** Current runtime state, when available */
+        fun runtimeState(runtimeState: RuntimeState?) =
+            runtimeState(JsonField.ofNullable(runtimeState))
+
+        /** Alias for calling [Builder.runtimeState] with `runtimeState.orElse(null)`. */
+        fun runtimeState(runtimeState: Optional<RuntimeState>) =
+            runtimeState(runtimeState.getOrNull())
+
+        /**
+         * Sets [Builder.runtimeState] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.runtimeState] with a well-typed [RuntimeState] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun runtimeState(runtimeState: JsonField<RuntimeState>) = apply {
+            this.runtimeState = runtimeState
+        }
 
         fun startedAt(startedAt: OffsetDateTime?) = startedAt(JsonField.ofNullable(startedAt))
 
@@ -564,7 +682,10 @@ private constructor(
                 modalSandboxId,
                 model,
                 prompt,
+                provider,
                 result,
+                runtimeId,
+                runtimeState,
                 startedAt,
                 status,
                 (steps ?: JsonMissing.of()).map { it.toImmutable() },
@@ -589,7 +710,10 @@ private constructor(
         modalSandboxId()
         model()
         prompt()
+        provider().ifPresent { it.validate() }
         result().ifPresent { it.validate() }
+        runtimeId()
+        runtimeState().ifPresent { it.validate() }
         startedAt()
         status().ifPresent { it.validate() }
         steps().ifPresent { it.forEach { it.validate() } }
@@ -621,12 +745,141 @@ private constructor(
             (if (modalSandboxId.asKnown().isPresent) 1 else 0) +
             (if (model.asKnown().isPresent) 1 else 0) +
             (if (prompt.asKnown().isPresent) 1 else 0) +
+            (provider.asKnown().getOrNull()?.validity() ?: 0) +
             (result.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (runtimeId.asKnown().isPresent) 1 else 0) +
+            (runtimeState.asKnown().getOrNull()?.validity() ?: 0) +
             (if (startedAt.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (steps.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0) +
             (if (workflowId.asKnown().isPresent) 1 else 0)
+
+    /** Runtime provider for this run */
+    class Provider @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val DAYTONA = of("daytona")
+
+            @JvmField val VERCEL = of("vercel")
+
+            @JvmStatic fun of(value: String) = Provider(JsonField.of(value))
+        }
+
+        /** An enum containing [Provider]'s known values. */
+        enum class Known {
+            DAYTONA,
+            VERCEL,
+        }
+
+        /**
+         * An enum containing [Provider]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Provider] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            DAYTONA,
+            VERCEL,
+            /** An enum member indicating that [Provider] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                DAYTONA -> Value.DAYTONA
+                VERCEL -> Value.VERCEL
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                DAYTONA -> Known.DAYTONA
+                VERCEL -> Known.VERCEL
+                else -> throw CasedevInvalidDataException("Unknown Provider: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { CasedevInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Provider = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: CasedevInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Provider && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     /** Final output from the agent */
     class Result
@@ -1350,6 +1603,153 @@ private constructor(
 
         override fun toString() =
             "Result{finalResponse=$finalResponse, logs=$logs, output=$output, outputObjectIds=$outputObjectIds, additionalProperties=$additionalProperties}"
+    }
+
+    /** Current runtime state, when available */
+    class RuntimeState @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val RUNNING = of("running")
+
+            @JvmField val STOPPED = of("stopped")
+
+            @JvmField val ARCHIVED = of("archived")
+
+            @JvmField val ENDED = of("ended")
+
+            @JvmField val ERROR = of("error")
+
+            @JvmStatic fun of(value: String) = RuntimeState(JsonField.of(value))
+        }
+
+        /** An enum containing [RuntimeState]'s known values. */
+        enum class Known {
+            RUNNING,
+            STOPPED,
+            ARCHIVED,
+            ENDED,
+            ERROR,
+        }
+
+        /**
+         * An enum containing [RuntimeState]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [RuntimeState] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            RUNNING,
+            STOPPED,
+            ARCHIVED,
+            ENDED,
+            ERROR,
+            /**
+             * An enum member indicating that [RuntimeState] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                RUNNING -> Value.RUNNING
+                STOPPED -> Value.STOPPED
+                ARCHIVED -> Value.ARCHIVED
+                ENDED -> Value.ENDED
+                ERROR -> Value.ERROR
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                RUNNING -> Known.RUNNING
+                STOPPED -> Known.STOPPED
+                ARCHIVED -> Known.ARCHIVED
+                ENDED -> Known.ENDED
+                ERROR -> Known.ERROR
+                else -> throw CasedevInvalidDataException("Unknown RuntimeState: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { CasedevInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): RuntimeState = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: CasedevInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is RuntimeState && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -3483,7 +3883,10 @@ private constructor(
             modalSandboxId == other.modalSandboxId &&
             model == other.model &&
             prompt == other.prompt &&
+            provider == other.provider &&
             result == other.result &&
+            runtimeId == other.runtimeId &&
+            runtimeState == other.runtimeState &&
             startedAt == other.startedAt &&
             status == other.status &&
             steps == other.steps &&
@@ -3502,7 +3905,10 @@ private constructor(
             modalSandboxId,
             model,
             prompt,
+            provider,
             result,
+            runtimeId,
+            runtimeState,
             startedAt,
             status,
             steps,
@@ -3515,5 +3921,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RunGetDetailsResponse{id=$id, agentId=$agentId, completedAt=$completedAt, createdAt=$createdAt, guidance=$guidance, modalSandboxId=$modalSandboxId, model=$model, prompt=$prompt, result=$result, startedAt=$startedAt, status=$status, steps=$steps, usage=$usage, workflowId=$workflowId, additionalProperties=$additionalProperties}"
+        "RunGetDetailsResponse{id=$id, agentId=$agentId, completedAt=$completedAt, createdAt=$createdAt, guidance=$guidance, modalSandboxId=$modalSandboxId, model=$model, prompt=$prompt, provider=$provider, result=$result, runtimeId=$runtimeId, runtimeState=$runtimeState, startedAt=$startedAt, status=$status, steps=$steps, usage=$usage, workflowId=$workflowId, additionalProperties=$additionalProperties}"
 }
