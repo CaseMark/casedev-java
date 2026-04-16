@@ -2,6 +2,7 @@
 
 package dev.case.api.models.ocr.v1
 
+import dev.case.api.core.http.QueryParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -9,7 +10,7 @@ internal class V1RetrieveParamsTest {
 
     @Test
     fun create() {
-        V1RetrieveParams.builder().id("id").build()
+        V1RetrieveParams.builder().id("id").includeText(V1RetrieveParams.IncludeText.TRUE).build()
     }
 
     @Test
@@ -19,5 +20,27 @@ internal class V1RetrieveParamsTest {
         assertThat(params._pathParam(0)).isEqualTo("id")
         // out-of-bound path param
         assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
+    fun queryParams() {
+        val params =
+            V1RetrieveParams.builder()
+                .id("id")
+                .includeText(V1RetrieveParams.IncludeText.TRUE)
+                .build()
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().put("include_text", "true").build())
+    }
+
+    @Test
+    fun queryParamsWithoutOptionalFields() {
+        val params = V1RetrieveParams.builder().id("id").build()
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().build())
     }
 }

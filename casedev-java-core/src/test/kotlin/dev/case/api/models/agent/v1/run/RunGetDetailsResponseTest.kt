@@ -24,6 +24,7 @@ internal class RunGetDetailsResponseTest {
                 .modalSandboxId("modalSandboxId")
                 .model("model")
                 .prompt("prompt")
+                .provider(RunGetDetailsResponse.Provider.DAYTONA)
                 .result(
                     RunGetDetailsResponse.Result.builder()
                         .finalResponse(
@@ -43,6 +44,8 @@ internal class RunGetDetailsResponseTest {
                         .addOutputObjectId("string")
                         .build()
                 )
+                .runtimeId("runtimeId")
+                .runtimeState(RunGetDetailsResponse.RuntimeState.RUNNING)
                 .startedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .status(RunGetDetailsResponse.Status.QUEUED)
                 .addStep(
@@ -104,6 +107,8 @@ internal class RunGetDetailsResponseTest {
         assertThat(runGetDetailsResponse.modalSandboxId()).contains("modalSandboxId")
         assertThat(runGetDetailsResponse.model()).contains("model")
         assertThat(runGetDetailsResponse.prompt()).contains("prompt")
+        assertThat(runGetDetailsResponse.provider())
+            .contains(RunGetDetailsResponse.Provider.DAYTONA)
         assertThat(runGetDetailsResponse.result())
             .contains(
                 RunGetDetailsResponse.Result.builder()
@@ -124,6 +129,9 @@ internal class RunGetDetailsResponseTest {
                     .addOutputObjectId("string")
                     .build()
             )
+        assertThat(runGetDetailsResponse.runtimeId()).contains("runtimeId")
+        assertThat(runGetDetailsResponse.runtimeState())
+            .contains(RunGetDetailsResponse.RuntimeState.RUNNING)
         assertThat(runGetDetailsResponse.startedAt())
             .contains(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(runGetDetailsResponse.status()).contains(RunGetDetailsResponse.Status.QUEUED)
@@ -191,6 +199,7 @@ internal class RunGetDetailsResponseTest {
                 .modalSandboxId("modalSandboxId")
                 .model("model")
                 .prompt("prompt")
+                .provider(RunGetDetailsResponse.Provider.DAYTONA)
                 .result(
                     RunGetDetailsResponse.Result.builder()
                         .finalResponse(
@@ -210,6 +219,8 @@ internal class RunGetDetailsResponseTest {
                         .addOutputObjectId("string")
                         .build()
                 )
+                .runtimeId("runtimeId")
+                .runtimeState(RunGetDetailsResponse.RuntimeState.RUNNING)
                 .startedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .status(RunGetDetailsResponse.Status.QUEUED)
                 .addStep(
