@@ -48,8 +48,8 @@ interface ChatServiceAsync {
     fun files(): FileServiceAsync
 
     /**
-     * Creates a persistent OpenCode chat session in a Modal sandbox. Session state is retained and
-     * can be resumed across requests.
+     * Creates a persistent OpenCode chat session backed by a Daytona or Vercel runtime. Session
+     * state is retained and can be resumed or recovered across requests.
      */
     fun create(): CompletableFuture<ChatCreateResponse> = create(ChatCreateParams.none())
 
