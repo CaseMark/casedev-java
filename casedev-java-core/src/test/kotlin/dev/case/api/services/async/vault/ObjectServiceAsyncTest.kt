@@ -14,6 +14,7 @@ import dev.case.api.core.JsonValue
 import dev.case.api.models.vault.objects.ObjectCreatePresignedUrlParams
 import dev.case.api.models.vault.objects.ObjectDeleteParams
 import dev.case.api.models.vault.objects.ObjectDownloadParams
+import dev.case.api.models.vault.objects.ObjectGetChunksParams
 import dev.case.api.models.vault.objects.ObjectGetOcrWordsParams
 import dev.case.api.models.vault.objects.ObjectGetSummarizeJobParams
 import dev.case.api.models.vault.objects.ObjectGetTextParams
@@ -150,6 +151,29 @@ internal class ObjectServiceAsyncTest {
 
         val response = responseFuture.get()
         assertThat(response.body()).hasContent("abc")
+    }
+
+    @Test
+    fun getChunks() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val objectServiceAsync = client.vault().objects()
+
+        val responseFuture =
+            objectServiceAsync.getChunks(
+                ObjectGetChunksParams.builder()
+                    .id("id")
+                    .objectId("objectId")
+                    .end(0L)
+                    .start(0L)
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
     }
 
     @Test
