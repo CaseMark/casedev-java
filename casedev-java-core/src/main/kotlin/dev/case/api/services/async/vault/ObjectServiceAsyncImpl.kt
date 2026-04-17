@@ -21,6 +21,8 @@ import dev.case.api.models.vault.objects.ObjectCreatePresignedUrlResponse
 import dev.case.api.models.vault.objects.ObjectDeleteParams
 import dev.case.api.models.vault.objects.ObjectDeleteResponse
 import dev.case.api.models.vault.objects.ObjectDownloadParams
+import dev.case.api.models.vault.objects.ObjectGetChunksParams
+import dev.case.api.models.vault.objects.ObjectGetChunksResponse
 import dev.case.api.models.vault.objects.ObjectGetOcrWordsParams
 import dev.case.api.models.vault.objects.ObjectGetOcrWordsResponse
 import dev.case.api.models.vault.objects.ObjectGetSummarizeJobParams
@@ -91,6 +93,13 @@ class ObjectServiceAsyncImpl internal constructor(private val clientOptions: Cli
     ): CompletableFuture<HttpResponse> =
         // get /vault/{id}/objects/{objectId}/download
         withRawResponse().download(params, requestOptions)
+
+    override fun getChunks(
+        params: ObjectGetChunksParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ObjectGetChunksResponse> =
+        // get /vault/{id}/objects/{objectId}/chunks
+        withRawResponse().getChunks(params, requestOptions).thenApply { it.parse() }
 
     override fun getOcrWords(
         params: ObjectGetOcrWordsParams,
@@ -325,6 +334,45 @@ class ObjectServiceAsyncImpl internal constructor(private val clientOptions: Cli
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response -> errorHandler.handle(response) }
+        }
+
+        private val getChunksHandler: Handler<ObjectGetChunksResponse> =
+            jsonHandler<ObjectGetChunksResponse>(clientOptions.jsonMapper)
+
+        override fun getChunks(
+            params: ObjectGetChunksParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ObjectGetChunksResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("objectId", params.objectId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "vault",
+                        params._pathParam(0),
+                        "objects",
+                        params._pathParam(1),
+                        "chunks",
+                    )
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { getChunksHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
 
         private val getOcrWordsHandler: Handler<ObjectGetOcrWordsResponse> =
