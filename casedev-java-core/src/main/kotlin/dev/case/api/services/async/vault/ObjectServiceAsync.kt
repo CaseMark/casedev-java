@@ -11,6 +11,8 @@ import dev.case.api.models.vault.objects.ObjectCreatePresignedUrlResponse
 import dev.case.api.models.vault.objects.ObjectDeleteParams
 import dev.case.api.models.vault.objects.ObjectDeleteResponse
 import dev.case.api.models.vault.objects.ObjectDownloadParams
+import dev.case.api.models.vault.objects.ObjectGetChunksParams
+import dev.case.api.models.vault.objects.ObjectGetChunksResponse
 import dev.case.api.models.vault.objects.ObjectGetOcrWordsParams
 import dev.case.api.models.vault.objects.ObjectGetOcrWordsResponse
 import dev.case.api.models.vault.objects.ObjectGetSummarizeJobParams
@@ -214,6 +216,35 @@ interface ObjectServiceAsync {
         params: ObjectDownloadParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<HttpResponse>
+
+    /**
+     * Retrieves full extracted chunk text for a processed vault object. Use this after search when
+     * a truncated preview is not enough and you need the exact chunk text or adjacent chunks for
+     * surrounding context such as tables, exhibit lists, or multi-part passages.
+     */
+    fun getChunks(
+        objectId: String,
+        params: ObjectGetChunksParams,
+    ): CompletableFuture<ObjectGetChunksResponse> =
+        getChunks(objectId, params, RequestOptions.none())
+
+    /** @see getChunks */
+    fun getChunks(
+        objectId: String,
+        params: ObjectGetChunksParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectGetChunksResponse> =
+        getChunks(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+    /** @see getChunks */
+    fun getChunks(params: ObjectGetChunksParams): CompletableFuture<ObjectGetChunksResponse> =
+        getChunks(params, RequestOptions.none())
+
+    /** @see getChunks */
+    fun getChunks(
+        params: ObjectGetChunksParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectGetChunksResponse>
 
     /**
      * Retrieves word-level OCR bounding box data for a processed PDF document. Each word includes
@@ -499,6 +530,36 @@ interface ObjectServiceAsync {
             params: ObjectDownloadParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse>
+
+        /**
+         * Returns a raw HTTP response for `get /vault/{id}/objects/{objectId}/chunks`, but is
+         * otherwise the same as [ObjectServiceAsync.getChunks].
+         */
+        fun getChunks(
+            objectId: String,
+            params: ObjectGetChunksParams,
+        ): CompletableFuture<HttpResponseFor<ObjectGetChunksResponse>> =
+            getChunks(objectId, params, RequestOptions.none())
+
+        /** @see getChunks */
+        fun getChunks(
+            objectId: String,
+            params: ObjectGetChunksParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectGetChunksResponse>> =
+            getChunks(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+        /** @see getChunks */
+        fun getChunks(
+            params: ObjectGetChunksParams
+        ): CompletableFuture<HttpResponseFor<ObjectGetChunksResponse>> =
+            getChunks(params, RequestOptions.none())
+
+        /** @see getChunks */
+        fun getChunks(
+            params: ObjectGetChunksParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectGetChunksResponse>>
 
         /**
          * Returns a raw HTTP response for `get /vault/{id}/objects/{objectId}/ocr-words`, but is
