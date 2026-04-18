@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.32.1 (2026-04-18)
+
+Full Changelog: [v0.32.0...v0.32.1](https://github.com/CaseMark/casedev-java/compare/v0.32.0...v0.32.1)
+
+### Chores
+
+* **tests:** bump steady to v0.22.1 ([4b12929](https://github.com/CaseMark/casedev-java/commit/4b129291c5de4e216f6cbf46dd8b763ef9e2cd4e))
+
 ## 0.32.0 (2026-04-17)
 
 Full Changelog: [v0.31.0...v0.32.0](https://github.com/CaseMark/casedev-java/compare/v0.31.0...v0.32.0)
