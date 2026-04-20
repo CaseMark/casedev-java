@@ -79,7 +79,7 @@ internal class ServiceParamsTest {
                 .casemarkShowReasoning(false)
                 .frequencyPenalty(0.0)
                 .maxTokens(1000L)
-                .model("casemark/casemark-core-6")
+                .model("casemark/core-large")
                 .presencePenalty(0.0)
                 .stream(false)
                 .temperature(0.7)
