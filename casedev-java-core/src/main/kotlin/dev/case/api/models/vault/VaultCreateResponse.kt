@@ -23,6 +23,7 @@ private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<OffsetDateTime>,
     private val description: JsonField<String>,
+    private val embeddingProfile: JsonField<EmbeddingProfile>,
     private val enableIndexing: JsonField<Boolean>,
     private val filesBucket: JsonField<String>,
     private val indexName: JsonField<String>,
@@ -41,6 +42,9 @@ private constructor(
         @JsonProperty("description")
         @ExcludeMissing
         description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("embeddingProfile")
+        @ExcludeMissing
+        embeddingProfile: JsonField<EmbeddingProfile> = JsonMissing.of(),
         @JsonProperty("enableIndexing")
         @ExcludeMissing
         enableIndexing: JsonField<Boolean> = JsonMissing.of(),
@@ -57,6 +61,7 @@ private constructor(
         id,
         createdAt,
         description,
+        embeddingProfile,
         enableIndexing,
         filesBucket,
         indexName,
@@ -89,6 +94,15 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun description(): Optional<String> = description.getOptional("description")
+
+    /**
+     * The resolved embedding profile for this vault. Null for storage-only vaults.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun embeddingProfile(): Optional<EmbeddingProfile> =
+        embeddingProfile.getOptional("embeddingProfile")
 
     /**
      * Whether vector indexing is enabled for this vault
@@ -162,6 +176,16 @@ private constructor(
     @JsonProperty("description") @ExcludeMissing fun _description(): JsonField<String> = description
 
     /**
+     * Returns the raw JSON value of [embeddingProfile].
+     *
+     * Unlike [embeddingProfile], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("embeddingProfile")
+    @ExcludeMissing
+    fun _embeddingProfile(): JsonField<EmbeddingProfile> = embeddingProfile
+
+    /**
      * Returns the raw JSON value of [enableIndexing].
      *
      * Unlike [enableIndexing], this method doesn't throw if the JSON field has an unexpected type.
@@ -231,6 +255,7 @@ private constructor(
         private var id: JsonField<String> = JsonMissing.of()
         private var createdAt: JsonField<OffsetDateTime> = JsonMissing.of()
         private var description: JsonField<String> = JsonMissing.of()
+        private var embeddingProfile: JsonField<EmbeddingProfile> = JsonMissing.of()
         private var enableIndexing: JsonField<Boolean> = JsonMissing.of()
         private var filesBucket: JsonField<String> = JsonMissing.of()
         private var indexName: JsonField<String> = JsonMissing.of()
@@ -244,6 +269,7 @@ private constructor(
             id = vaultCreateResponse.id
             createdAt = vaultCreateResponse.createdAt
             description = vaultCreateResponse.description
+            embeddingProfile = vaultCreateResponse.embeddingProfile
             enableIndexing = vaultCreateResponse.enableIndexing
             filesBucket = vaultCreateResponse.filesBucket
             indexName = vaultCreateResponse.indexName
@@ -287,6 +313,25 @@ private constructor(
          * value.
          */
         fun description(description: JsonField<String>) = apply { this.description = description }
+
+        /** The resolved embedding profile for this vault. Null for storage-only vaults. */
+        fun embeddingProfile(embeddingProfile: EmbeddingProfile?) =
+            embeddingProfile(JsonField.ofNullable(embeddingProfile))
+
+        /** Alias for calling [Builder.embeddingProfile] with `embeddingProfile.orElse(null)`. */
+        fun embeddingProfile(embeddingProfile: Optional<EmbeddingProfile>) =
+            embeddingProfile(embeddingProfile.getOrNull())
+
+        /**
+         * Sets [Builder.embeddingProfile] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.embeddingProfile] with a well-typed [EmbeddingProfile]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun embeddingProfile(embeddingProfile: JsonField<EmbeddingProfile>) = apply {
+            this.embeddingProfile = embeddingProfile
+        }
 
         /** Whether vector indexing is enabled for this vault */
         fun enableIndexing(enableIndexing: Boolean) = enableIndexing(JsonField.of(enableIndexing))
@@ -397,6 +442,7 @@ private constructor(
                 id,
                 createdAt,
                 description,
+                embeddingProfile,
                 enableIndexing,
                 filesBucket,
                 indexName,
@@ -417,6 +463,7 @@ private constructor(
         id()
         createdAt()
         description()
+        embeddingProfile().ifPresent { it.validate() }
         enableIndexing()
         filesBucket()
         indexName()
@@ -444,12 +491,230 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (if (description.asKnown().isPresent) 1 else 0) +
+            (embeddingProfile.asKnown().getOrNull()?.validity() ?: 0) +
             (if (enableIndexing.asKnown().isPresent) 1 else 0) +
             (if (filesBucket.asKnown().isPresent) 1 else 0) +
             (if (indexName.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
             (if (region.asKnown().isPresent) 1 else 0) +
             (if (vectorBucket.asKnown().isPresent) 1 else 0)
+
+    /** The resolved embedding profile for this vault. Null for storage-only vaults. */
+    class EmbeddingProfile
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val dimensions: JsonField<Long>,
+        private val model: JsonField<String>,
+        private val provider: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("dimensions")
+            @ExcludeMissing
+            dimensions: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("provider") @ExcludeMissing provider: JsonField<String> = JsonMissing.of(),
+        ) : this(dimensions, model, provider, mutableMapOf())
+
+        /**
+         * Vector dimension used by this vault
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun dimensions(): Optional<Long> = dimensions.getOptional("dimensions")
+
+        /**
+         * Embedding model catalog key
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun model(): Optional<String> = model.getOptional("model")
+
+        /**
+         * Embedding provider
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun provider(): Optional<String> = provider.getOptional("provider")
+
+        /**
+         * Returns the raw JSON value of [dimensions].
+         *
+         * Unlike [dimensions], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("dimensions") @ExcludeMissing fun _dimensions(): JsonField<Long> = dimensions
+
+        /**
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+        /**
+         * Returns the raw JSON value of [provider].
+         *
+         * Unlike [provider], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("provider") @ExcludeMissing fun _provider(): JsonField<String> = provider
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [EmbeddingProfile]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [EmbeddingProfile]. */
+        class Builder internal constructor() {
+
+            private var dimensions: JsonField<Long> = JsonMissing.of()
+            private var model: JsonField<String> = JsonMissing.of()
+            private var provider: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(embeddingProfile: EmbeddingProfile) = apply {
+                dimensions = embeddingProfile.dimensions
+                model = embeddingProfile.model
+                provider = embeddingProfile.provider
+                additionalProperties = embeddingProfile.additionalProperties.toMutableMap()
+            }
+
+            /** Vector dimension used by this vault */
+            fun dimensions(dimensions: Long) = dimensions(JsonField.of(dimensions))
+
+            /**
+             * Sets [Builder.dimensions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.dimensions] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun dimensions(dimensions: JsonField<Long>) = apply { this.dimensions = dimensions }
+
+            /** Embedding model catalog key */
+            fun model(model: String) = model(JsonField.of(model))
+
+            /**
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(model: JsonField<String>) = apply { this.model = model }
+
+            /** Embedding provider */
+            fun provider(provider: String) = provider(JsonField.of(provider))
+
+            /**
+             * Sets [Builder.provider] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.provider] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun provider(provider: JsonField<String>) = apply { this.provider = provider }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [EmbeddingProfile].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): EmbeddingProfile =
+                EmbeddingProfile(dimensions, model, provider, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): EmbeddingProfile = apply {
+            if (validated) {
+                return@apply
+            }
+
+            dimensions()
+            model()
+            provider()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: CasedevInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (dimensions.asKnown().isPresent) 1 else 0) +
+                (if (model.asKnown().isPresent) 1 else 0) +
+                (if (provider.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is EmbeddingProfile &&
+                dimensions == other.dimensions &&
+                model == other.model &&
+                provider == other.provider &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(dimensions, model, provider, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "EmbeddingProfile{dimensions=$dimensions, model=$model, provider=$provider, additionalProperties=$additionalProperties}"
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -460,6 +725,7 @@ private constructor(
             id == other.id &&
             createdAt == other.createdAt &&
             description == other.description &&
+            embeddingProfile == other.embeddingProfile &&
             enableIndexing == other.enableIndexing &&
             filesBucket == other.filesBucket &&
             indexName == other.indexName &&
@@ -474,6 +740,7 @@ private constructor(
             id,
             createdAt,
             description,
+            embeddingProfile,
             enableIndexing,
             filesBucket,
             indexName,
@@ -487,5 +754,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "VaultCreateResponse{id=$id, createdAt=$createdAt, description=$description, enableIndexing=$enableIndexing, filesBucket=$filesBucket, indexName=$indexName, name=$name, region=$region, vectorBucket=$vectorBucket, additionalProperties=$additionalProperties}"
+        "VaultCreateResponse{id=$id, createdAt=$createdAt, description=$description, embeddingProfile=$embeddingProfile, enableIndexing=$enableIndexing, filesBucket=$filesBucket, indexName=$indexName, name=$name, region=$region, vectorBucket=$vectorBucket, additionalProperties=$additionalProperties}"
 }

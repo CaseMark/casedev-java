@@ -12,18 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 internal class V1ServiceTest {
 
     @Test
-    fun getPricing() {
-        val client =
-            CasedevOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .build()
-        val v1Service = client.compute().v1()
-
-        v1Service.getPricing()
-    }
-
-    @Test
     fun getUsage() {
         val client =
             CasedevOkHttpClient.builder()

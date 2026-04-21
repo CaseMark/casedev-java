@@ -4,7 +4,6 @@ package dev.case.api.services.blocking.compute
 
 import dev.case.api.core.ClientOptions
 import dev.case.api.core.RequestOptions
-import dev.case.api.core.handlers.emptyHandler
 import dev.case.api.core.handlers.errorBodyHandler
 import dev.case.api.core.handlers.errorHandler
 import dev.case.api.core.handlers.jsonHandler
@@ -15,15 +14,10 @@ import dev.case.api.core.http.HttpResponse.Handler
 import dev.case.api.core.http.HttpResponseFor
 import dev.case.api.core.http.parseable
 import dev.case.api.core.prepare
-import dev.case.api.models.compute.v1.V1GetPricingParams
 import dev.case.api.models.compute.v1.V1GetUsageParams
 import dev.case.api.models.compute.v1.V1GetUsageResponse
 import dev.case.api.services.blocking.compute.v1.EnvironmentService
 import dev.case.api.services.blocking.compute.v1.EnvironmentServiceImpl
-import dev.case.api.services.blocking.compute.v1.InstanceService
-import dev.case.api.services.blocking.compute.v1.InstanceServiceImpl
-import dev.case.api.services.blocking.compute.v1.InstanceTypeService
-import dev.case.api.services.blocking.compute.v1.InstanceTypeServiceImpl
 import dev.case.api.services.blocking.compute.v1.SecretService
 import dev.case.api.services.blocking.compute.v1.SecretServiceImpl
 import java.util.function.Consumer
@@ -37,12 +31,6 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
 
     private val environments: EnvironmentService by lazy { EnvironmentServiceImpl(clientOptions) }
 
-    private val instanceTypes: InstanceTypeService by lazy {
-        InstanceTypeServiceImpl(clientOptions)
-    }
-
-    private val instances: InstanceService by lazy { InstanceServiceImpl(clientOptions) }
-
     private val secrets: SecretService by lazy { SecretServiceImpl(clientOptions) }
 
     override fun withRawResponse(): V1Service.WithRawResponse = withRawResponse
@@ -54,18 +42,7 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     override fun environments(): EnvironmentService = environments
 
     /** Serverless GPU and CPU infrastructure */
-    override fun instanceTypes(): InstanceTypeService = instanceTypes
-
-    /** Serverless GPU and CPU infrastructure */
-    override fun instances(): InstanceService = instances
-
-    /** Serverless GPU and CPU infrastructure */
     override fun secrets(): SecretService = secrets
-
-    override fun getPricing(params: V1GetPricingParams, requestOptions: RequestOptions) {
-        // get /compute/v1/pricing
-        withRawResponse().getPricing(params, requestOptions)
-    }
 
     override fun getUsage(
         params: V1GetUsageParams,
@@ -84,14 +61,6 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             EnvironmentServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val instanceTypes: InstanceTypeService.WithRawResponse by lazy {
-            InstanceTypeServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val instances: InstanceService.WithRawResponse by lazy {
-            InstanceServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
         private val secrets: SecretService.WithRawResponse by lazy {
             SecretServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -107,33 +76,7 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
         override fun environments(): EnvironmentService.WithRawResponse = environments
 
         /** Serverless GPU and CPU infrastructure */
-        override fun instanceTypes(): InstanceTypeService.WithRawResponse = instanceTypes
-
-        /** Serverless GPU and CPU infrastructure */
-        override fun instances(): InstanceService.WithRawResponse = instances
-
-        /** Serverless GPU and CPU infrastructure */
         override fun secrets(): SecretService.WithRawResponse = secrets
-
-        private val getPricingHandler: Handler<Void?> = emptyHandler()
-
-        override fun getPricing(
-            params: V1GetPricingParams,
-            requestOptions: RequestOptions,
-        ): HttpResponse {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments("compute", "v1", "pricing")
-                    .build()
-                    .prepare(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.execute(request, requestOptions)
-            return errorHandler.handle(response).parseable {
-                response.use { getPricingHandler.handle(it) }
-            }
-        }
 
         private val getUsageHandler: Handler<V1GetUsageResponse> =
             jsonHandler<V1GetUsageResponse>(clientOptions.jsonMapper)
