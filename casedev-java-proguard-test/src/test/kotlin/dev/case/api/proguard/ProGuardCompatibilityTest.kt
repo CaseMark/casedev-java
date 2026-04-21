@@ -78,6 +78,13 @@ internal class ProGuardCompatibilityTest {
                 .id("id")
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .description("description")
+                .embeddingProfile(
+                    VaultCreateResponse.EmbeddingProfile.builder()
+                        .dimensions(0L)
+                        .model("model")
+                        .provider("provider")
+                        .build()
+                )
                 .enableIndexing(true)
                 .filesBucket("filesBucket")
                 .indexName("indexName")

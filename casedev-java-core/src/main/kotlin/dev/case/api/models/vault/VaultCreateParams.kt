@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.case.api.core.Enum
 import dev.case.api.core.ExcludeMissing
 import dev.case.api.core.JsonField
 import dev.case.api.core.JsonMissing
@@ -18,6 +19,7 @@ import dev.case.api.errors.CasedevInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Creates a new secure vault with dedicated S3 storage and vector search capabilities. Each vault
@@ -46,6 +48,17 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun description(): Optional<String> = body.description()
+
+    /**
+     * Optional embedding model for this vault. Defaults to openai/text-embedding-3-small.
+     * Determines the S3 Vectors index dimension and which model is used at both ingest and search
+     * time. The vault is locked to this model after creation — use a re-embed flow to change later.
+     * Ignored when enableIndexing is false.
+     *
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun embeddingModel(): Optional<EmbeddingModel> = body.embeddingModel()
 
     /**
      * Enable knowledge graph for entity relationship mapping. Only applies when enableIndexing is
@@ -97,6 +110,13 @@ private constructor(
      * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _description(): JsonField<String> = body._description()
+
+    /**
+     * Returns the raw JSON value of [embeddingModel].
+     *
+     * Unlike [embeddingModel], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _embeddingModel(): JsonField<EmbeddingModel> = body._embeddingModel()
 
     /**
      * Returns the raw JSON value of [enableGraph].
@@ -163,9 +183,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [name]
          * - [description]
+         * - [embeddingModel]
          * - [enableGraph]
          * - [enableIndexing]
-         * - [groupId]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -192,6 +212,27 @@ private constructor(
          * value.
          */
         fun description(description: JsonField<String>) = apply { body.description(description) }
+
+        /**
+         * Optional embedding model for this vault. Defaults to openai/text-embedding-3-small.
+         * Determines the S3 Vectors index dimension and which model is used at both ingest and
+         * search time. The vault is locked to this model after creation — use a re-embed flow to
+         * change later. Ignored when enableIndexing is false.
+         */
+        fun embeddingModel(embeddingModel: EmbeddingModel) = apply {
+            body.embeddingModel(embeddingModel)
+        }
+
+        /**
+         * Sets [Builder.embeddingModel] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.embeddingModel] with a well-typed [EmbeddingModel] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun embeddingModel(embeddingModel: JsonField<EmbeddingModel>) = apply {
+            body.embeddingModel(embeddingModel)
+        }
 
         /**
          * Enable knowledge graph for entity relationship mapping. Only applies when enableIndexing
@@ -390,6 +431,7 @@ private constructor(
     private constructor(
         private val name: JsonField<String>,
         private val description: JsonField<String>,
+        private val embeddingModel: JsonField<EmbeddingModel>,
         private val enableGraph: JsonField<Boolean>,
         private val enableIndexing: JsonField<Boolean>,
         private val groupId: JsonField<String>,
@@ -403,6 +445,9 @@ private constructor(
             @JsonProperty("description")
             @ExcludeMissing
             description: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("embeddingModel")
+            @ExcludeMissing
+            embeddingModel: JsonField<EmbeddingModel> = JsonMissing.of(),
             @JsonProperty("enableGraph")
             @ExcludeMissing
             enableGraph: JsonField<Boolean> = JsonMissing.of(),
@@ -411,7 +456,16 @@ private constructor(
             enableIndexing: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("groupId") @ExcludeMissing groupId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("metadata") @ExcludeMissing metadata: JsonValue = JsonMissing.of(),
-        ) : this(name, description, enableGraph, enableIndexing, groupId, metadata, mutableMapOf())
+        ) : this(
+            name,
+            description,
+            embeddingModel,
+            enableGraph,
+            enableIndexing,
+            groupId,
+            metadata,
+            mutableMapOf(),
+        )
 
         /**
          * Display name for the vault
@@ -428,6 +482,18 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun description(): Optional<String> = description.getOptional("description")
+
+        /**
+         * Optional embedding model for this vault. Defaults to openai/text-embedding-3-small.
+         * Determines the S3 Vectors index dimension and which model is used at both ingest and
+         * search time. The vault is locked to this model after creation — use a re-embed flow to
+         * change later. Ignored when enableIndexing is false.
+         *
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun embeddingModel(): Optional<EmbeddingModel> =
+            embeddingModel.getOptional("embeddingModel")
 
         /**
          * Enable knowledge graph for entity relationship mapping. Only applies when enableIndexing
@@ -481,6 +547,16 @@ private constructor(
         @JsonProperty("description")
         @ExcludeMissing
         fun _description(): JsonField<String> = description
+
+        /**
+         * Returns the raw JSON value of [embeddingModel].
+         *
+         * Unlike [embeddingModel], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("embeddingModel")
+        @ExcludeMissing
+        fun _embeddingModel(): JsonField<EmbeddingModel> = embeddingModel
 
         /**
          * Returns the raw JSON value of [enableGraph].
@@ -538,6 +614,7 @@ private constructor(
 
             private var name: JsonField<String>? = null
             private var description: JsonField<String> = JsonMissing.of()
+            private var embeddingModel: JsonField<EmbeddingModel> = JsonMissing.of()
             private var enableGraph: JsonField<Boolean> = JsonMissing.of()
             private var enableIndexing: JsonField<Boolean> = JsonMissing.of()
             private var groupId: JsonField<String> = JsonMissing.of()
@@ -548,6 +625,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 name = body.name
                 description = body.description
+                embeddingModel = body.embeddingModel
                 enableGraph = body.enableGraph
                 enableIndexing = body.enableIndexing
                 groupId = body.groupId
@@ -579,6 +657,26 @@ private constructor(
              */
             fun description(description: JsonField<String>) = apply {
                 this.description = description
+            }
+
+            /**
+             * Optional embedding model for this vault. Defaults to openai/text-embedding-3-small.
+             * Determines the S3 Vectors index dimension and which model is used at both ingest and
+             * search time. The vault is locked to this model after creation — use a re-embed flow
+             * to change later. Ignored when enableIndexing is false.
+             */
+            fun embeddingModel(embeddingModel: EmbeddingModel) =
+                embeddingModel(JsonField.of(embeddingModel))
+
+            /**
+             * Sets [Builder.embeddingModel] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.embeddingModel] with a well-typed [EmbeddingModel]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun embeddingModel(embeddingModel: JsonField<EmbeddingModel>) = apply {
+                this.embeddingModel = embeddingModel
             }
 
             /**
@@ -671,6 +769,7 @@ private constructor(
                 Body(
                     checkRequired("name", name),
                     description,
+                    embeddingModel,
                     enableGraph,
                     enableIndexing,
                     groupId,
@@ -688,6 +787,7 @@ private constructor(
 
             name()
             description()
+            embeddingModel().ifPresent { it.validate() }
             enableGraph()
             enableIndexing()
             groupId()
@@ -712,6 +812,7 @@ private constructor(
         internal fun validity(): Int =
             (if (name.asKnown().isPresent) 1 else 0) +
                 (if (description.asKnown().isPresent) 1 else 0) +
+                (embeddingModel.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (enableGraph.asKnown().isPresent) 1 else 0) +
                 (if (enableIndexing.asKnown().isPresent) 1 else 0) +
                 (if (groupId.asKnown().isPresent) 1 else 0)
@@ -724,6 +825,7 @@ private constructor(
             return other is Body &&
                 name == other.name &&
                 description == other.description &&
+                embeddingModel == other.embeddingModel &&
                 enableGraph == other.enableGraph &&
                 enableIndexing == other.enableIndexing &&
                 groupId == other.groupId &&
@@ -735,6 +837,7 @@ private constructor(
             Objects.hash(
                 name,
                 description,
+                embeddingModel,
                 enableGraph,
                 enableIndexing,
                 groupId,
@@ -746,7 +849,176 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{name=$name, description=$description, enableGraph=$enableGraph, enableIndexing=$enableIndexing, groupId=$groupId, metadata=$metadata, additionalProperties=$additionalProperties}"
+            "Body{name=$name, description=$description, embeddingModel=$embeddingModel, enableGraph=$enableGraph, enableIndexing=$enableIndexing, groupId=$groupId, metadata=$metadata, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Optional embedding model for this vault. Defaults to openai/text-embedding-3-small.
+     * Determines the S3 Vectors index dimension and which model is used at both ingest and search
+     * time. The vault is locked to this model after creation — use a re-embed flow to change later.
+     * Ignored when enableIndexing is false.
+     */
+    class EmbeddingModel @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val OPENAI_TEXT_EMBEDDING_3_SMALL = of("openai/text-embedding-3-small")
+
+            @JvmField val OPENAI_TEXT_EMBEDDING_3_LARGE = of("openai/text-embedding-3-large")
+
+            @JvmField val VOYAGE_VOYAGE_3_5 = of("voyage/voyage-3.5")
+
+            @JvmField val VOYAGE_VOYAGE_LAW_2 = of("voyage/voyage-law-2")
+
+            @JvmField val COHERE_EMBED_V4_0 = of("cohere/embed-v4.0")
+
+            @JvmField val GOOGLE_GEMINI_EMBEDDING_2 = of("google/gemini-embedding-2")
+
+            @JvmField
+            val CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2 =
+                of("casemark/llama-nemotron-embed-vl-1b-v2")
+
+            @JvmStatic fun of(value: String) = EmbeddingModel(JsonField.of(value))
+        }
+
+        /** An enum containing [EmbeddingModel]'s known values. */
+        enum class Known {
+            OPENAI_TEXT_EMBEDDING_3_SMALL,
+            OPENAI_TEXT_EMBEDDING_3_LARGE,
+            VOYAGE_VOYAGE_3_5,
+            VOYAGE_VOYAGE_LAW_2,
+            COHERE_EMBED_V4_0,
+            GOOGLE_GEMINI_EMBEDDING_2,
+            CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2,
+        }
+
+        /**
+         * An enum containing [EmbeddingModel]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [EmbeddingModel] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            OPENAI_TEXT_EMBEDDING_3_SMALL,
+            OPENAI_TEXT_EMBEDDING_3_LARGE,
+            VOYAGE_VOYAGE_3_5,
+            VOYAGE_VOYAGE_LAW_2,
+            COHERE_EMBED_V4_0,
+            GOOGLE_GEMINI_EMBEDDING_2,
+            CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2,
+            /**
+             * An enum member indicating that [EmbeddingModel] was instantiated with an unknown
+             * value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                OPENAI_TEXT_EMBEDDING_3_SMALL -> Value.OPENAI_TEXT_EMBEDDING_3_SMALL
+                OPENAI_TEXT_EMBEDDING_3_LARGE -> Value.OPENAI_TEXT_EMBEDDING_3_LARGE
+                VOYAGE_VOYAGE_3_5 -> Value.VOYAGE_VOYAGE_3_5
+                VOYAGE_VOYAGE_LAW_2 -> Value.VOYAGE_VOYAGE_LAW_2
+                COHERE_EMBED_V4_0 -> Value.COHERE_EMBED_V4_0
+                GOOGLE_GEMINI_EMBEDDING_2 -> Value.GOOGLE_GEMINI_EMBEDDING_2
+                CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2 ->
+                    Value.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                OPENAI_TEXT_EMBEDDING_3_SMALL -> Known.OPENAI_TEXT_EMBEDDING_3_SMALL
+                OPENAI_TEXT_EMBEDDING_3_LARGE -> Known.OPENAI_TEXT_EMBEDDING_3_LARGE
+                VOYAGE_VOYAGE_3_5 -> Known.VOYAGE_VOYAGE_3_5
+                VOYAGE_VOYAGE_LAW_2 -> Known.VOYAGE_VOYAGE_LAW_2
+                COHERE_EMBED_V4_0 -> Known.COHERE_EMBED_V4_0
+                GOOGLE_GEMINI_EMBEDDING_2 -> Known.GOOGLE_GEMINI_EMBEDDING_2
+                CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2 ->
+                    Known.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
+                else -> throw CasedevInvalidDataException("Unknown EmbeddingModel: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws CasedevInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { CasedevInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): EmbeddingModel = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: CasedevInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is EmbeddingModel && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {
