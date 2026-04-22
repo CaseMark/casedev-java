@@ -13,7 +13,7 @@ internal class VaultCreateParamsTest {
         VaultCreateParams.builder()
             .name("Contract Review Archive")
             .description("Repository for all client contract reviews and analysis")
-            .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2)
+            .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
             .enableGraph(true)
             .enableIndexing(true)
             .groupId("grp_abc123")
@@ -27,9 +27,7 @@ internal class VaultCreateParamsTest {
             VaultCreateParams.builder()
                 .name("Contract Review Archive")
                 .description("Repository for all client contract reviews and analysis")
-                .embeddingModel(
-                    VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                )
+                .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                 .enableGraph(true)
                 .enableIndexing(true)
                 .groupId("grp_abc123")
@@ -42,7 +40,7 @@ internal class VaultCreateParamsTest {
         assertThat(body.description())
             .contains("Repository for all client contract reviews and analysis")
         assertThat(body.embeddingModel())
-            .contains(VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2)
+            .contains(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
         assertThat(body.enableGraph()).contains(true)
         assertThat(body.enableIndexing()).contains(true)
         assertThat(body.groupId()).contains("grp_abc123")
