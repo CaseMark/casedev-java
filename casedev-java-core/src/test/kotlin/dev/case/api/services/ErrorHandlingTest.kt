@@ -74,9 +74,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -108,9 +106,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -142,9 +138,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -176,9 +170,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -210,9 +202,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -244,9 +234,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -278,9 +266,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -312,9 +298,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -346,9 +330,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -380,9 +362,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -414,9 +394,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -448,9 +426,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -482,9 +458,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -516,9 +490,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -550,9 +522,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -584,9 +554,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
@@ -616,9 +584,7 @@ internal class ErrorHandlingTest {
                     VaultCreateParams.builder()
                         .name("Contract Review Archive")
                         .description("Repository for all client contract reviews and analysis")
-                        .embeddingModel(
-                            VaultCreateParams.EmbeddingModel.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
-                        )
+                        .embeddingModel(VaultCreateParams.EmbeddingModel.CASEMARK_EMBED_V1)
                         .enableGraph(true)
                         .enableIndexing(true)
                         .groupId("grp_abc123")
