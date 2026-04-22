@@ -53,7 +53,9 @@ private constructor(
      * Optional embedding model for this vault. Defaults to openai/text-embedding-3-small.
      * Determines the S3 Vectors index dimension and which model is used at both ingest and search
      * time. The vault is locked to this model after creation — use a re-embed flow to change later.
-     * Ignored when enableIndexing is false.
+     * Ignored when enableIndexing is false. Note: `casemark/llama-nemotron-embed-vl-1b-v2` is a
+     * deprecated alias for `casemark/embed-v1` (retained for SDK backward compatibility); new
+     * integrations should use `casemark/embed-v1` directly.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -217,7 +219,10 @@ private constructor(
          * Optional embedding model for this vault. Defaults to openai/text-embedding-3-small.
          * Determines the S3 Vectors index dimension and which model is used at both ingest and
          * search time. The vault is locked to this model after creation — use a re-embed flow to
-         * change later. Ignored when enableIndexing is false.
+         * change later. Ignored when enableIndexing is false. Note:
+         * `casemark/llama-nemotron-embed-vl-1b-v2` is a deprecated alias for `casemark/embed-v1`
+         * (retained for SDK backward compatibility); new integrations should use
+         * `casemark/embed-v1` directly.
          */
         fun embeddingModel(embeddingModel: EmbeddingModel) = apply {
             body.embeddingModel(embeddingModel)
@@ -487,7 +492,10 @@ private constructor(
          * Optional embedding model for this vault. Defaults to openai/text-embedding-3-small.
          * Determines the S3 Vectors index dimension and which model is used at both ingest and
          * search time. The vault is locked to this model after creation — use a re-embed flow to
-         * change later. Ignored when enableIndexing is false.
+         * change later. Ignored when enableIndexing is false. Note:
+         * `casemark/llama-nemotron-embed-vl-1b-v2` is a deprecated alias for `casemark/embed-v1`
+         * (retained for SDK backward compatibility); new integrations should use
+         * `casemark/embed-v1` directly.
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -663,7 +671,10 @@ private constructor(
              * Optional embedding model for this vault. Defaults to openai/text-embedding-3-small.
              * Determines the S3 Vectors index dimension and which model is used at both ingest and
              * search time. The vault is locked to this model after creation — use a re-embed flow
-             * to change later. Ignored when enableIndexing is false.
+             * to change later. Ignored when enableIndexing is false. Note:
+             * `casemark/llama-nemotron-embed-vl-1b-v2` is a deprecated alias for
+             * `casemark/embed-v1` (retained for SDK backward compatibility); new integrations
+             * should use `casemark/embed-v1` directly.
              */
             fun embeddingModel(embeddingModel: EmbeddingModel) =
                 embeddingModel(JsonField.of(embeddingModel))
@@ -856,7 +867,9 @@ private constructor(
      * Optional embedding model for this vault. Defaults to openai/text-embedding-3-small.
      * Determines the S3 Vectors index dimension and which model is used at both ingest and search
      * time. The vault is locked to this model after creation — use a re-embed flow to change later.
-     * Ignored when enableIndexing is false.
+     * Ignored when enableIndexing is false. Note: `casemark/llama-nemotron-embed-vl-1b-v2` is a
+     * deprecated alias for `casemark/embed-v1` (retained for SDK backward compatibility); new
+     * integrations should use `casemark/embed-v1` directly.
      */
     class EmbeddingModel @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -885,6 +898,8 @@ private constructor(
 
             @JvmField val GOOGLE_GEMINI_EMBEDDING_2 = of("google/gemini-embedding-2")
 
+            @JvmField val CASEMARK_EMBED_V1 = of("casemark/embed-v1")
+
             @JvmField
             val CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2 =
                 of("casemark/llama-nemotron-embed-vl-1b-v2")
@@ -900,6 +915,7 @@ private constructor(
             VOYAGE_VOYAGE_LAW_2,
             COHERE_EMBED_V4_0,
             GOOGLE_GEMINI_EMBEDDING_2,
+            CASEMARK_EMBED_V1,
             CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2,
         }
 
@@ -919,6 +935,7 @@ private constructor(
             VOYAGE_VOYAGE_LAW_2,
             COHERE_EMBED_V4_0,
             GOOGLE_GEMINI_EMBEDDING_2,
+            CASEMARK_EMBED_V1,
             CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2,
             /**
              * An enum member indicating that [EmbeddingModel] was instantiated with an unknown
@@ -942,6 +959,7 @@ private constructor(
                 VOYAGE_VOYAGE_LAW_2 -> Value.VOYAGE_VOYAGE_LAW_2
                 COHERE_EMBED_V4_0 -> Value.COHERE_EMBED_V4_0
                 GOOGLE_GEMINI_EMBEDDING_2 -> Value.GOOGLE_GEMINI_EMBEDDING_2
+                CASEMARK_EMBED_V1 -> Value.CASEMARK_EMBED_V1
                 CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2 ->
                     Value.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
                 else -> Value._UNKNOWN
@@ -964,6 +982,7 @@ private constructor(
                 VOYAGE_VOYAGE_LAW_2 -> Known.VOYAGE_VOYAGE_LAW_2
                 COHERE_EMBED_V4_0 -> Known.COHERE_EMBED_V4_0
                 GOOGLE_GEMINI_EMBEDDING_2 -> Known.GOOGLE_GEMINI_EMBEDDING_2
+                CASEMARK_EMBED_V1 -> Known.CASEMARK_EMBED_V1
                 CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2 ->
                     Known.CASEMARK_LLAMA_NEMOTRON_EMBED_VL_1B_V2
                 else -> throw CasedevInvalidDataException("Unknown EmbeddingModel: $value")
