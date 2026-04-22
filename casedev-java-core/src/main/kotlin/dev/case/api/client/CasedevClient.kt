@@ -4,7 +4,6 @@ package dev.case.api.client
 
 import dev.case.api.core.ClientOptions
 import dev.case.api.services.blocking.AgentService
-import dev.case.api.services.blocking.ApplicationService
 import dev.case.api.services.blocking.ComputeService
 import dev.case.api.services.blocking.DatabaseService
 import dev.case.api.services.blocking.FormatService
@@ -65,8 +64,6 @@ interface CasedevClient {
 
     /** Public system metadata and discovery endpoints */
     fun system(): SystemService
-
-    fun applications(): ApplicationService
 
     fun compute(): ComputeService
 
@@ -132,8 +129,6 @@ interface CasedevClient {
 
         /** Public system metadata and discovery endpoints */
         fun system(): SystemService.WithRawResponse
-
-        fun applications(): ApplicationService.WithRawResponse
 
         fun compute(): ComputeService.WithRawResponse
 

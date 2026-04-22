@@ -6,8 +6,6 @@ import dev.case.api.core.ClientOptions
 import dev.case.api.core.getPackageVersion
 import dev.case.api.services.blocking.AgentService
 import dev.case.api.services.blocking.AgentServiceImpl
-import dev.case.api.services.blocking.ApplicationService
-import dev.case.api.services.blocking.ApplicationServiceImpl
 import dev.case.api.services.blocking.ComputeService
 import dev.case.api.services.blocking.ComputeServiceImpl
 import dev.case.api.services.blocking.DatabaseService
@@ -67,10 +65,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
     private val system: SystemService by lazy { SystemServiceImpl(clientOptionsWithUserAgent) }
 
-    private val applications: ApplicationService by lazy {
-        ApplicationServiceImpl(clientOptionsWithUserAgent)
-    }
-
     private val compute: ComputeService by lazy { ComputeServiceImpl(clientOptionsWithUserAgent) }
 
     private val database: DatabaseService by lazy {
@@ -125,8 +119,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
     /** Public system metadata and discovery endpoints */
     override fun system(): SystemService = system
 
-    override fun applications(): ApplicationService = applications
-
     override fun compute(): ComputeService = compute
 
     override fun database(): DatabaseService = database
@@ -175,10 +167,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
         private val system: SystemService.WithRawResponse by lazy {
             SystemServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val applications: ApplicationService.WithRawResponse by lazy {
-            ApplicationServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val compute: ComputeService.WithRawResponse by lazy {
@@ -260,8 +248,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
         /** Public system metadata and discovery endpoints */
         override fun system(): SystemService.WithRawResponse = system
-
-        override fun applications(): ApplicationService.WithRawResponse = applications
 
         override fun compute(): ComputeService.WithRawResponse = compute
 

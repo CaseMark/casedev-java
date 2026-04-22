@@ -4,7 +4,6 @@ package dev.case.api.client
 
 import dev.case.api.core.ClientOptions
 import dev.case.api.services.async.AgentServiceAsync
-import dev.case.api.services.async.ApplicationServiceAsync
 import dev.case.api.services.async.ComputeServiceAsync
 import dev.case.api.services.async.DatabaseServiceAsync
 import dev.case.api.services.async.FormatServiceAsync
@@ -65,8 +64,6 @@ interface CasedevClientAsync {
 
     /** Public system metadata and discovery endpoints */
     fun system(): SystemServiceAsync
-
-    fun applications(): ApplicationServiceAsync
 
     fun compute(): ComputeServiceAsync
 
@@ -136,8 +133,6 @@ interface CasedevClientAsync {
 
         /** Public system metadata and discovery endpoints */
         fun system(): SystemServiceAsync.WithRawResponse
-
-        fun applications(): ApplicationServiceAsync.WithRawResponse
 
         fun compute(): ComputeServiceAsync.WithRawResponse
 

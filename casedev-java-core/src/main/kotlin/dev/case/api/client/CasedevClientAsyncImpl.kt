@@ -6,8 +6,6 @@ import dev.case.api.core.ClientOptions
 import dev.case.api.core.getPackageVersion
 import dev.case.api.services.async.AgentServiceAsync
 import dev.case.api.services.async.AgentServiceAsyncImpl
-import dev.case.api.services.async.ApplicationServiceAsync
-import dev.case.api.services.async.ApplicationServiceAsyncImpl
 import dev.case.api.services.async.ComputeServiceAsync
 import dev.case.api.services.async.ComputeServiceAsyncImpl
 import dev.case.api.services.async.DatabaseServiceAsync
@@ -69,10 +67,6 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     private val system: SystemServiceAsync by lazy {
         SystemServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
-    private val applications: ApplicationServiceAsync by lazy {
-        ApplicationServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
     private val compute: ComputeServiceAsync by lazy {
@@ -149,8 +143,6 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
     /** Public system metadata and discovery endpoints */
     override fun system(): SystemServiceAsync = system
 
-    override fun applications(): ApplicationServiceAsync = applications
-
     override fun compute(): ComputeServiceAsync = compute
 
     override fun database(): DatabaseServiceAsync = database
@@ -199,10 +191,6 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         private val system: SystemServiceAsync.WithRawResponse by lazy {
             SystemServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val applications: ApplicationServiceAsync.WithRawResponse by lazy {
-            ApplicationServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val compute: ComputeServiceAsync.WithRawResponse by lazy {
@@ -284,8 +272,6 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         /** Public system metadata and discovery endpoints */
         override fun system(): SystemServiceAsync.WithRawResponse = system
-
-        override fun applications(): ApplicationServiceAsync.WithRawResponse = applications
 
         override fun compute(): ComputeServiceAsync.WithRawResponse = compute
 
