@@ -1,41 +1,22 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package dev.case.api.models.vault
+package dev.case.api.models.compute.v1.instances
 
-import dev.case.api.core.JsonValue
 import dev.case.api.core.Params
-import dev.case.api.core.checkRequired
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
-import dev.case.api.core.toImmutable
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /**
- * Triggers ingestion workflow for a vault object to extract text, generate chunks, and create
- * embeddings. For supported file types (PDF, DOCX, PPTX, TXT, RTF, XML, HTML, Markdown, CSV/TSV,
- * JSON/YAML/TOML, common source code files, ZIP, audio, video), processing happens asynchronously.
- * ZIP archives are unpacked recursively up to 5 levels, and each extracted file is created as an
- * independent vault object and ingested via the normal pipeline. For unsupported types (images,
- * etc.), the file is marked as completed immediately without text extraction. GraphRAG indexing
- * must be triggered separately via POST /vault/:id/graphrag/:objectId.
+ * Retrieves all GPU compute instances for your organization with real-time status updates from
+ * Lambda Labs. Includes pricing, runtime metrics, and auto-shutdown configuration. Perfect for
+ * monitoring AI workloads, document processing jobs, and cost tracking.
  */
-class VaultIngestParams
+class InstanceListParams
 private constructor(
-    private val id: String,
-    private val objectId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-    private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
-
-    fun id(): String = id
-
-    fun objectId(): Optional<String> = Optional.ofNullable(objectId)
-
-    /** Additional body properties to send with the request. */
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -47,41 +28,23 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [VaultIngestParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .id()
-         * ```
-         */
+        @JvmStatic fun none(): InstanceListParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [InstanceListParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [VaultIngestParams]. */
+    /** A builder for [InstanceListParams]. */
     class Builder internal constructor() {
 
-        private var id: String? = null
-        private var objectId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(vaultIngestParams: VaultIngestParams) = apply {
-            id = vaultIngestParams.id
-            objectId = vaultIngestParams.objectId
-            additionalHeaders = vaultIngestParams.additionalHeaders.toBuilder()
-            additionalQueryParams = vaultIngestParams.additionalQueryParams.toBuilder()
-            additionalBodyProperties = vaultIngestParams.additionalBodyProperties.toMutableMap()
+        internal fun from(instanceListParams: InstanceListParams) = apply {
+            additionalHeaders = instanceListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = instanceListParams.additionalQueryParams.toBuilder()
         }
-
-        fun id(id: String) = apply { this.id = id }
-
-        fun objectId(objectId: String?) = apply { this.objectId = objectId }
-
-        /** Alias for calling [Builder.objectId] with `objectId.orElse(null)`. */
-        fun objectId(objectId: Optional<String>) = objectId(objectId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -181,59 +144,14 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            putAllAdditionalBodyProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply {
-            additionalBodyProperties.remove(key)
-        }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalBodyProperty)
-        }
-
         /**
-         * Returns an immutable instance of [VaultIngestParams].
+         * Returns an immutable instance of [InstanceListParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .id()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): VaultIngestParams =
-            VaultIngestParams(
-                checkRequired("id", id),
-                objectId,
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-                additionalBodyProperties.toImmutable(),
-            )
+        fun build(): InstanceListParams =
+            InstanceListParams(additionalHeaders.build(), additionalQueryParams.build())
     }
-
-    fun _body(): Optional<Map<String, JsonValue>> =
-        Optional.ofNullable(additionalBodyProperties.ifEmpty { null })
-
-    fun _pathParam(index: Int): String =
-        when (index) {
-            0 -> id
-            1 -> objectId ?: ""
-            else -> ""
-        }
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -244,23 +162,13 @@ private constructor(
             return true
         }
 
-        return other is VaultIngestParams &&
-            id == other.id &&
-            objectId == other.objectId &&
+        return other is InstanceListParams &&
             additionalHeaders == other.additionalHeaders &&
-            additionalQueryParams == other.additionalQueryParams &&
-            additionalBodyProperties == other.additionalBodyProperties
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int =
-        Objects.hash(
-            id,
-            objectId,
-            additionalHeaders,
-            additionalQueryParams,
-            additionalBodyProperties,
-        )
+    override fun hashCode(): Int = Objects.hash(additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "VaultIngestParams{id=$id, objectId=$objectId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "InstanceListParams{additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

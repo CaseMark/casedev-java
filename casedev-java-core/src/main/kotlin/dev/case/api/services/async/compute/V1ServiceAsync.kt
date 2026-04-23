@@ -4,10 +4,14 @@ package dev.case.api.services.async.compute
 
 import dev.case.api.core.ClientOptions
 import dev.case.api.core.RequestOptions
+import dev.case.api.core.http.HttpResponse
 import dev.case.api.core.http.HttpResponseFor
+import dev.case.api.models.compute.v1.V1GetPricingParams
 import dev.case.api.models.compute.v1.V1GetUsageParams
 import dev.case.api.models.compute.v1.V1GetUsageResponse
 import dev.case.api.services.async.compute.v1.EnvironmentServiceAsync
+import dev.case.api.services.async.compute.v1.InstanceServiceAsync
+import dev.case.api.services.async.compute.v1.InstanceTypeServiceAsync
 import dev.case.api.services.async.compute.v1.SecretServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -31,7 +35,35 @@ interface V1ServiceAsync {
     fun environments(): EnvironmentServiceAsync
 
     /** Serverless GPU and CPU infrastructure */
+    fun instanceTypes(): InstanceTypeServiceAsync
+
+    /** Serverless GPU and CPU infrastructure */
+    fun instances(): InstanceServiceAsync
+
+    /** Serverless GPU and CPU infrastructure */
     fun secrets(): SecretServiceAsync
+
+    /**
+     * Returns current pricing for GPU instances. Prices are fetched in real-time and include a 20%
+     * platform fee. For detailed instance types and availability, use GET
+     * /compute/v1/instance-types.
+     */
+    fun getPricing(): CompletableFuture<Void?> = getPricing(V1GetPricingParams.none())
+
+    /** @see getPricing */
+    fun getPricing(
+        params: V1GetPricingParams = V1GetPricingParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?>
+
+    /** @see getPricing */
+    fun getPricing(
+        params: V1GetPricingParams = V1GetPricingParams.none()
+    ): CompletableFuture<Void?> = getPricing(params, RequestOptions.none())
+
+    /** @see getPricing */
+    fun getPricing(requestOptions: RequestOptions): CompletableFuture<Void?> =
+        getPricing(V1GetPricingParams.none(), requestOptions)
 
     /**
      * Returns detailed compute usage statistics and billing information for your organization.
@@ -69,7 +101,34 @@ interface V1ServiceAsync {
         fun environments(): EnvironmentServiceAsync.WithRawResponse
 
         /** Serverless GPU and CPU infrastructure */
+        fun instanceTypes(): InstanceTypeServiceAsync.WithRawResponse
+
+        /** Serverless GPU and CPU infrastructure */
+        fun instances(): InstanceServiceAsync.WithRawResponse
+
+        /** Serverless GPU and CPU infrastructure */
         fun secrets(): SecretServiceAsync.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `get /compute/v1/pricing`, but is otherwise the same as
+         * [V1ServiceAsync.getPricing].
+         */
+        fun getPricing(): CompletableFuture<HttpResponse> = getPricing(V1GetPricingParams.none())
+
+        /** @see getPricing */
+        fun getPricing(
+            params: V1GetPricingParams = V1GetPricingParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse>
+
+        /** @see getPricing */
+        fun getPricing(
+            params: V1GetPricingParams = V1GetPricingParams.none()
+        ): CompletableFuture<HttpResponse> = getPricing(params, RequestOptions.none())
+
+        /** @see getPricing */
+        fun getPricing(requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
+            getPricing(V1GetPricingParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /compute/v1/usage`, but is otherwise the same as
