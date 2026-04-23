@@ -42,6 +42,8 @@ import dev.case.api.services.async.VaultServiceAsync
 import dev.case.api.services.async.VaultServiceAsyncImpl
 import dev.case.api.services.async.VoiceServiceAsync
 import dev.case.api.services.async.VoiceServiceAsyncImpl
+import dev.case.api.services.async.WebhookServiceAsync
+import dev.case.api.services.async.WebhookServiceAsyncImpl
 import java.util.function.Consumer
 
 class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : CasedevClientAsync {
@@ -131,6 +133,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         VoiceServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val webhooks: WebhookServiceAsync by lazy {
+        WebhookServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     override fun sync(): CasedevClient = sync
 
     override fun withRawResponse(): CasedevClientAsync.WithRawResponse = withRawResponse
@@ -179,6 +185,8 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
     override fun vault(): VaultServiceAsync = vault
 
     override fun voice(): VoiceServiceAsync = voice
+
+    override fun webhooks(): WebhookServiceAsync = webhooks
 
     override fun close() = clientOptions.close()
 
@@ -261,6 +269,10 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
             VoiceServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val webhooks: WebhookServiceAsync.WithRawResponse by lazy {
+            WebhookServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): CasedevClientAsync.WithRawResponse =
@@ -309,5 +321,7 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
         override fun vault(): VaultServiceAsync.WithRawResponse = vault
 
         override fun voice(): VoiceServiceAsync.WithRawResponse = voice
+
+        override fun webhooks(): WebhookServiceAsync.WithRawResponse = webhooks
     }
 }

@@ -22,6 +22,7 @@ import dev.case.api.services.async.TranslateServiceAsync
 import dev.case.api.services.async.UsageServiceAsync
 import dev.case.api.services.async.VaultServiceAsync
 import dev.case.api.services.async.VoiceServiceAsync
+import dev.case.api.services.async.WebhookServiceAsync
 import java.util.function.Consumer
 
 /**
@@ -102,6 +103,8 @@ interface CasedevClientAsync {
 
     fun voice(): VoiceServiceAsync
 
+    fun webhooks(): WebhookServiceAsync
+
     /**
      * Closes this client, relinquishing any underlying resources.
      *
@@ -170,5 +173,7 @@ interface CasedevClientAsync {
         fun vault(): VaultServiceAsync.WithRawResponse
 
         fun voice(): VoiceServiceAsync.WithRawResponse
+
+        fun webhooks(): WebhookServiceAsync.WithRawResponse
     }
 }
