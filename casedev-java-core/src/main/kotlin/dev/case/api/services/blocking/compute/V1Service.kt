@@ -5,10 +5,14 @@ package dev.case.api.services.blocking.compute
 import com.google.errorprone.annotations.MustBeClosed
 import dev.case.api.core.ClientOptions
 import dev.case.api.core.RequestOptions
+import dev.case.api.core.http.HttpResponse
 import dev.case.api.core.http.HttpResponseFor
+import dev.case.api.models.compute.v1.V1GetPricingParams
 import dev.case.api.models.compute.v1.V1GetUsageParams
 import dev.case.api.models.compute.v1.V1GetUsageResponse
 import dev.case.api.services.blocking.compute.v1.EnvironmentService
+import dev.case.api.services.blocking.compute.v1.InstanceService
+import dev.case.api.services.blocking.compute.v1.InstanceTypeService
 import dev.case.api.services.blocking.compute.v1.SecretService
 import java.util.function.Consumer
 
@@ -31,7 +35,34 @@ interface V1Service {
     fun environments(): EnvironmentService
 
     /** Serverless GPU and CPU infrastructure */
+    fun instanceTypes(): InstanceTypeService
+
+    /** Serverless GPU and CPU infrastructure */
+    fun instances(): InstanceService
+
+    /** Serverless GPU and CPU infrastructure */
     fun secrets(): SecretService
+
+    /**
+     * Returns current pricing for GPU instances. Prices are fetched in real-time and include a 20%
+     * platform fee. For detailed instance types and availability, use GET
+     * /compute/v1/instance-types.
+     */
+    fun getPricing() = getPricing(V1GetPricingParams.none())
+
+    /** @see getPricing */
+    fun getPricing(
+        params: V1GetPricingParams = V1GetPricingParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    )
+
+    /** @see getPricing */
+    fun getPricing(params: V1GetPricingParams = V1GetPricingParams.none()) =
+        getPricing(params, RequestOptions.none())
+
+    /** @see getPricing */
+    fun getPricing(requestOptions: RequestOptions) =
+        getPricing(V1GetPricingParams.none(), requestOptions)
 
     /**
      * Returns detailed compute usage statistics and billing information for your organization.
@@ -68,7 +99,36 @@ interface V1Service {
         fun environments(): EnvironmentService.WithRawResponse
 
         /** Serverless GPU and CPU infrastructure */
+        fun instanceTypes(): InstanceTypeService.WithRawResponse
+
+        /** Serverless GPU and CPU infrastructure */
+        fun instances(): InstanceService.WithRawResponse
+
+        /** Serverless GPU and CPU infrastructure */
         fun secrets(): SecretService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `get /compute/v1/pricing`, but is otherwise the same as
+         * [V1Service.getPricing].
+         */
+        @MustBeClosed fun getPricing(): HttpResponse = getPricing(V1GetPricingParams.none())
+
+        /** @see getPricing */
+        @MustBeClosed
+        fun getPricing(
+            params: V1GetPricingParams = V1GetPricingParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse
+
+        /** @see getPricing */
+        @MustBeClosed
+        fun getPricing(params: V1GetPricingParams = V1GetPricingParams.none()): HttpResponse =
+            getPricing(params, RequestOptions.none())
+
+        /** @see getPricing */
+        @MustBeClosed
+        fun getPricing(requestOptions: RequestOptions): HttpResponse =
+            getPricing(V1GetPricingParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /compute/v1/usage`, but is otherwise the same as
