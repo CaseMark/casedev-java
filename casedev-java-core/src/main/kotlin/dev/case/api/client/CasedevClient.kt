@@ -22,6 +22,7 @@ import dev.case.api.services.blocking.TranslateService
 import dev.case.api.services.blocking.UsageService
 import dev.case.api.services.blocking.VaultService
 import dev.case.api.services.blocking.VoiceService
+import dev.case.api.services.blocking.WebhookService
 import java.util.function.Consumer
 
 /**
@@ -102,6 +103,8 @@ interface CasedevClient {
 
     fun voice(): VoiceService
 
+    fun webhooks(): WebhookService
+
     /**
      * Closes this client, relinquishing any underlying resources.
      *
@@ -166,5 +169,7 @@ interface CasedevClient {
         fun vault(): VaultService.WithRawResponse
 
         fun voice(): VoiceService.WithRawResponse
+
+        fun webhooks(): WebhookService.WithRawResponse
     }
 }
