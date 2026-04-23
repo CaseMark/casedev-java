@@ -67,6 +67,7 @@ internal class ProGuardCompatibilityTest {
         assertThat(client.usage()).isNotNull()
         assertThat(client.vault()).isNotNull()
         assertThat(client.voice()).isNotNull()
+        assertThat(client.webhooks()).isNotNull()
     }
 
     @Test

@@ -42,6 +42,8 @@ import dev.case.api.services.blocking.VaultService
 import dev.case.api.services.blocking.VaultServiceImpl
 import dev.case.api.services.blocking.VoiceService
 import dev.case.api.services.blocking.VoiceServiceImpl
+import dev.case.api.services.blocking.WebhookService
+import dev.case.api.services.blocking.WebhookServiceImpl
 import java.util.function.Consumer
 
 class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClient {
@@ -107,6 +109,8 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
     private val voice: VoiceService by lazy { VoiceServiceImpl(clientOptionsWithUserAgent) }
 
+    private val webhooks: WebhookService by lazy { WebhookServiceImpl(clientOptionsWithUserAgent) }
+
     override fun async(): CasedevClientAsync = async
 
     override fun withRawResponse(): CasedevClient.WithRawResponse = withRawResponse
@@ -155,6 +159,8 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
     override fun vault(): VaultService = vault
 
     override fun voice(): VoiceService = voice
+
+    override fun webhooks(): WebhookService = webhooks
 
     override fun close() = clientOptions.close()
 
@@ -237,6 +243,10 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
             VoiceServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val webhooks: WebhookService.WithRawResponse by lazy {
+            WebhookServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): CasedevClient.WithRawResponse =
@@ -285,5 +295,7 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
         override fun vault(): VaultService.WithRawResponse = vault
 
         override fun voice(): VoiceService.WithRawResponse = voice
+
+        override fun webhooks(): WebhookService.WithRawResponse = webhooks
     }
 }
