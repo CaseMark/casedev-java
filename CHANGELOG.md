@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.39.0 (2026-04-28)
+
+Full Changelog: [v0.38.0...v0.39.0](https://github.com/CaseMark/casedev-java/compare/v0.38.0...v0.39.0)
+
+### Features
+
+* **api:** api update ([e477669](https://github.com/CaseMark/casedev-java/commit/e477669989f7a542c7add12ec6a5f3127af2f2cf))
+* **api:** api update ([e496377](https://github.com/CaseMark/casedev-java/commit/e496377dba5db238b16cddf0cd6599616f8d8dc2))
+* support setting headers via env ([e964767](https://github.com/CaseMark/casedev-java/commit/e964767fb38941f1fae5d863335b823548ef0ded))
+
 ## 0.38.0 (2026-04-23)
 
 Full Changelog: [v0.37.0...v0.38.0](https://github.com/CaseMark/casedev-java/compare/v0.37.0...v0.38.0)
