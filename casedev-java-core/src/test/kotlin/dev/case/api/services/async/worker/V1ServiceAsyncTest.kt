@@ -58,6 +58,20 @@ internal class V1ServiceAsyncTest {
     }
 
     @Test
+    fun boot() {
+        val client =
+            CasedevOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val v1ServiceAsync = client.worker().v1()
+
+        val future = v1ServiceAsync.boot("id")
+
+        val response = future.get()
+    }
+
+    @Test
     fun proxyDelete() {
         val client =
             CasedevOkHttpClientAsync.builder()

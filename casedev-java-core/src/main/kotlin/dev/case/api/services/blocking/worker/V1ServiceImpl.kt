@@ -15,6 +15,7 @@ import dev.case.api.core.http.HttpResponse.Handler
 import dev.case.api.core.http.json
 import dev.case.api.core.http.parseable
 import dev.case.api.core.prepare
+import dev.case.api.models.worker.v1.V1BootParams
 import dev.case.api.models.worker.v1.V1CreateParams
 import dev.case.api.models.worker.v1.V1DeleteParams
 import dev.case.api.models.worker.v1.V1ProxyDeleteParams
@@ -50,6 +51,11 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
     override fun delete(params: V1DeleteParams, requestOptions: RequestOptions) {
         // delete /worker/v1/{id}
         withRawResponse().delete(params, requestOptions)
+    }
+
+    override fun boot(params: V1BootParams, requestOptions: RequestOptions) {
+        // post /worker/v1/{id}/boot
+        withRawResponse().boot(params, requestOptions)
     }
 
     override fun proxyDelete(params: V1ProxyDeleteParams, requestOptions: RequestOptions) {
@@ -149,6 +155,27 @@ class V1ServiceImpl internal constructor(private val clientOptions: ClientOption
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
                 response.use { deleteHandler.handle(it) }
+            }
+        }
+
+        private val bootHandler: Handler<Void?> = emptyHandler()
+
+        override fun boot(params: V1BootParams, requestOptions: RequestOptions): HttpResponse {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("id", params.id().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("worker", "v1", params._pathParam(0), "boot")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response.use { bootHandler.handle(it) }
             }
         }
 
