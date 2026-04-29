@@ -46,8 +46,8 @@ interface ChatService {
     fun files(): FileService
 
     /**
-     * Creates a persistent OpenCode chat session backed by a Daytona or Vercel runtime. Session
-     * state is retained and can be resumed or recovered across requests.
+     * Creates a persistent chat session backed by a Daytona or Vercel runtime. Session state is
+     * retained and can be resumed or recovered across requests.
      */
     fun create(): ChatCreateResponse = create(ChatCreateParams.none())
 
@@ -92,7 +92,7 @@ interface ChatService {
     fun delete(id: String, requestOptions: RequestOptions): ChatDeleteResponse =
         delete(id, ChatDeleteParams.none(), requestOptions)
 
-    /** Aborts the active OpenCode generation for this chat session. */
+    /** Aborts the active generation for this chat session. */
     fun cancel(id: String): ChatCancelResponse = cancel(id, ChatCancelParams.none())
 
     /** @see cancel */
@@ -119,7 +119,7 @@ interface ChatService {
     fun cancel(id: String, requestOptions: RequestOptions): ChatCancelResponse =
         cancel(id, ChatCancelParams.none(), requestOptions)
 
-    /** Answers a pending OpenCode question for the chat session bound to this agent chat. */
+    /** Answers a pending runtime question for the chat session bound to this agent chat. */
     fun replyToQuestion(requestId: String, params: ChatReplyToQuestionParams) =
         replyToQuestion(requestId, params, RequestOptions.none())
 
@@ -226,7 +226,7 @@ interface ChatService {
         sendMessage(id, ChatSendMessageParams.none(), requestOptions)
 
     /**
-     * Relays OpenCode SSE events for this chat. Supports replay from buffered events using
+     * Relays runtime SSE events for this chat. Supports replay from buffered events using
      * Last-Event-ID.
      */
     @MustBeClosed

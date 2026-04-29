@@ -1,8 +1,9 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package dev.case.api.models.agent.v1.chat
+package dev.case.api.models.worker.v1
 
 import dev.case.api.core.Params
+import dev.case.api.core.checkRequired
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
 import java.util.Objects
@@ -10,21 +11,19 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Relays runtime SSE events for this chat. Supports replay from buffered events using
- * Last-Event-ID.
+ * Forwards a GET request to the worker runtime without translating response or SSE event shapes.
  */
-class ChatStreamParams
+class V1ProxyGetParams
 private constructor(
-    private val id: String?,
-    private val lastEventId: Long?,
+    private val id: String,
+    private val workerPath: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun id(): Optional<String> = Optional.ofNullable(id)
+    fun id(): String = id
 
-    /** Replay events after this sequence number */
-    fun lastEventId(): Optional<Long> = Optional.ofNullable(lastEventId)
+    fun workerPath(): Optional<String> = Optional.ofNullable(workerPath)
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -36,45 +35,39 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): ChatStreamParams = builder().build()
-
-        /** Returns a mutable builder for constructing an instance of [ChatStreamParams]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [V1ProxyGetParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ChatStreamParams]. */
+    /** A builder for [V1ProxyGetParams]. */
     class Builder internal constructor() {
 
         private var id: String? = null
-        private var lastEventId: Long? = null
+        private var workerPath: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(chatStreamParams: ChatStreamParams) = apply {
-            id = chatStreamParams.id
-            lastEventId = chatStreamParams.lastEventId
-            additionalHeaders = chatStreamParams.additionalHeaders.toBuilder()
-            additionalQueryParams = chatStreamParams.additionalQueryParams.toBuilder()
+        internal fun from(v1ProxyGetParams: V1ProxyGetParams) = apply {
+            id = v1ProxyGetParams.id
+            workerPath = v1ProxyGetParams.workerPath
+            additionalHeaders = v1ProxyGetParams.additionalHeaders.toBuilder()
+            additionalQueryParams = v1ProxyGetParams.additionalQueryParams.toBuilder()
         }
 
-        fun id(id: String?) = apply { this.id = id }
+        fun id(id: String) = apply { this.id = id }
 
-        /** Alias for calling [Builder.id] with `id.orElse(null)`. */
-        fun id(id: Optional<String>) = id(id.getOrNull())
+        fun workerPath(workerPath: String?) = apply { this.workerPath = workerPath }
 
-        /** Replay events after this sequence number */
-        fun lastEventId(lastEventId: Long?) = apply { this.lastEventId = lastEventId }
-
-        /**
-         * Alias for [Builder.lastEventId].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun lastEventId(lastEventId: Long) = lastEventId(lastEventId as Long?)
-
-        /** Alias for calling [Builder.lastEventId] with `lastEventId.orElse(null)`. */
-        fun lastEventId(lastEventId: Optional<Long>) = lastEventId(lastEventId.getOrNull())
+        /** Alias for calling [Builder.workerPath] with `workerPath.orElse(null)`. */
+        fun workerPath(workerPath: Optional<String>) = workerPath(workerPath.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -175,14 +168,21 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [ChatStreamParams].
+         * Returns an immutable instance of [V1ProxyGetParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): ChatStreamParams =
-            ChatStreamParams(
-                id,
-                lastEventId,
+        fun build(): V1ProxyGetParams =
+            V1ProxyGetParams(
+                checkRequired("id", id),
+                workerPath,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -190,35 +190,30 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> id ?: ""
+            0 -> id
+            1 -> workerPath ?: ""
             else -> ""
         }
 
     override fun _headers(): Headers = additionalHeaders
 
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                lastEventId?.let { put("lastEventId", it.toString()) }
-                putAll(additionalQueryParams)
-            }
-            .build()
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return other is ChatStreamParams &&
+        return other is V1ProxyGetParams &&
             id == other.id &&
-            lastEventId == other.lastEventId &&
+            workerPath == other.workerPath &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
     override fun hashCode(): Int =
-        Objects.hash(id, lastEventId, additionalHeaders, additionalQueryParams)
+        Objects.hash(id, workerPath, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "ChatStreamParams{id=$id, lastEventId=$lastEventId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "V1ProxyGetParams{id=$id, workerPath=$workerPath, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

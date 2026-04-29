@@ -22,7 +22,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Answers a pending OpenCode question for the chat session bound to this agent chat. */
+/** Answers a pending runtime question for the chat session bound to this agent chat. */
 class ChatReplyToQuestionParams
 private constructor(
     private val id: String,
