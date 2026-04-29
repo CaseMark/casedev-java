@@ -16,6 +16,19 @@ internal class SkillReadResponseTest {
         val skillReadResponse =
             SkillReadResponse.builder()
                 .authorName("author_name")
+                .bundle(
+                    SkillReadResponse.Bundle.UnionMember0.builder()
+                        .addFile(
+                            SkillReadResponse.Bundle.UnionMember0.File.builder()
+                                .path("path")
+                                .slug("slug")
+                                .contentType("content_type")
+                                .name("name")
+                                .build()
+                        )
+                        .role(SkillReadResponse.Bundle.UnionMember0.Role.ROOT)
+                        .build()
+                )
                 .content("content")
                 .license("license")
                 .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -28,6 +41,22 @@ internal class SkillReadResponseTest {
                 .build()
 
         assertThat(skillReadResponse.authorName()).contains("author_name")
+        assertThat(skillReadResponse.bundle())
+            .contains(
+                SkillReadResponse.Bundle.ofUnionMember0(
+                    SkillReadResponse.Bundle.UnionMember0.builder()
+                        .addFile(
+                            SkillReadResponse.Bundle.UnionMember0.File.builder()
+                                .path("path")
+                                .slug("slug")
+                                .contentType("content_type")
+                                .name("name")
+                                .build()
+                        )
+                        .role(SkillReadResponse.Bundle.UnionMember0.Role.ROOT)
+                        .build()
+                )
+            )
         assertThat(skillReadResponse.content()).contains("content")
         assertThat(skillReadResponse.license()).contains("license")
         assertThat(skillReadResponse._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
@@ -45,6 +74,19 @@ internal class SkillReadResponseTest {
         val skillReadResponse =
             SkillReadResponse.builder()
                 .authorName("author_name")
+                .bundle(
+                    SkillReadResponse.Bundle.UnionMember0.builder()
+                        .addFile(
+                            SkillReadResponse.Bundle.UnionMember0.File.builder()
+                                .path("path")
+                                .slug("slug")
+                                .contentType("content_type")
+                                .name("name")
+                                .build()
+                        )
+                        .role(SkillReadResponse.Bundle.UnionMember0.Role.ROOT)
+                        .build()
+                )
                 .content("content")
                 .license("license")
                 .metadata(JsonValue.from(mapOf<String, Any>()))
