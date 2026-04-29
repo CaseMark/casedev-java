@@ -1,30 +1,29 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package dev.case.api.models.agent.v1.chat
+package dev.case.api.models.worker.v1
 
+import dev.case.api.core.JsonValue
 import dev.case.api.core.Params
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
+import dev.case.api.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * Relays runtime SSE events for this chat. Supports replay from buffered events using
- * Last-Event-ID.
- */
-class ChatStreamParams
+/** End worker */
+class V1DeleteParams
 private constructor(
     private val id: String?,
-    private val lastEventId: Long?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
+    private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     fun id(): Optional<String> = Optional.ofNullable(id)
 
-    /** Replay events after this sequence number */
-    fun lastEventId(): Optional<Long> = Optional.ofNullable(lastEventId)
+    /** Additional body properties to send with the request. */
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -36,45 +35,32 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): ChatStreamParams = builder().build()
+        @JvmStatic fun none(): V1DeleteParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [ChatStreamParams]. */
+        /** Returns a mutable builder for constructing an instance of [V1DeleteParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ChatStreamParams]. */
+    /** A builder for [V1DeleteParams]. */
     class Builder internal constructor() {
 
         private var id: String? = null
-        private var lastEventId: Long? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(chatStreamParams: ChatStreamParams) = apply {
-            id = chatStreamParams.id
-            lastEventId = chatStreamParams.lastEventId
-            additionalHeaders = chatStreamParams.additionalHeaders.toBuilder()
-            additionalQueryParams = chatStreamParams.additionalQueryParams.toBuilder()
+        internal fun from(v1DeleteParams: V1DeleteParams) = apply {
+            id = v1DeleteParams.id
+            additionalHeaders = v1DeleteParams.additionalHeaders.toBuilder()
+            additionalQueryParams = v1DeleteParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = v1DeleteParams.additionalBodyProperties.toMutableMap()
         }
 
         fun id(id: String?) = apply { this.id = id }
 
         /** Alias for calling [Builder.id] with `id.orElse(null)`. */
         fun id(id: Optional<String>) = id(id.getOrNull())
-
-        /** Replay events after this sequence number */
-        fun lastEventId(lastEventId: Long?) = apply { this.lastEventId = lastEventId }
-
-        /**
-         * Alias for [Builder.lastEventId].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun lastEventId(lastEventId: Long) = lastEventId(lastEventId as Long?)
-
-        /** Alias for calling [Builder.lastEventId] with `lastEventId.orElse(null)`. */
-        fun lastEventId(lastEventId: Optional<Long>) = lastEventId(lastEventId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -174,19 +160,44 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            this.additionalBodyProperties.clear()
+            putAllAdditionalBodyProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            additionalBodyProperties.put(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalBodyProperties.putAll(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply {
+            additionalBodyProperties.remove(key)
+        }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalBodyProperty)
+        }
+
         /**
-         * Returns an immutable instance of [ChatStreamParams].
+         * Returns an immutable instance of [V1DeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): ChatStreamParams =
-            ChatStreamParams(
+        fun build(): V1DeleteParams =
+            V1DeleteParams(
                 id,
-                lastEventId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
+                additionalBodyProperties.toImmutable(),
             )
     }
+
+    fun _body(): Optional<Map<String, JsonValue>> =
+        Optional.ofNullable(additionalBodyProperties.ifEmpty { null })
 
     fun _pathParam(index: Int): String =
         when (index) {
@@ -196,29 +207,23 @@ private constructor(
 
     override fun _headers(): Headers = additionalHeaders
 
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                lastEventId?.let { put("lastEventId", it.toString()) }
-                putAll(additionalQueryParams)
-            }
-            .build()
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return other is ChatStreamParams &&
+        return other is V1DeleteParams &&
             id == other.id &&
-            lastEventId == other.lastEventId &&
             additionalHeaders == other.additionalHeaders &&
-            additionalQueryParams == other.additionalQueryParams
+            additionalQueryParams == other.additionalQueryParams &&
+            additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int =
-        Objects.hash(id, lastEventId, additionalHeaders, additionalQueryParams)
+        Objects.hash(id, additionalHeaders, additionalQueryParams, additionalBodyProperties)
 
     override fun toString() =
-        "ChatStreamParams{id=$id, lastEventId=$lastEventId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "V1DeleteParams{id=$id, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

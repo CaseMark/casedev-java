@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package dev.case.api.models.agent.v1.chat
+package dev.case.api.models.worker.v1
 
 import dev.case.api.core.Params
 import dev.case.api.core.http.Headers
@@ -9,22 +9,15 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * Relays runtime SSE events for this chat. Supports replay from buffered events using
- * Last-Event-ID.
- */
-class ChatStreamParams
+/** Get worker */
+class V1RetrieveParams
 private constructor(
     private val id: String?,
-    private val lastEventId: Long?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     fun id(): Optional<String> = Optional.ofNullable(id)
-
-    /** Replay events after this sequence number */
-    fun lastEventId(): Optional<Long> = Optional.ofNullable(lastEventId)
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -36,45 +29,30 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): ChatStreamParams = builder().build()
+        @JvmStatic fun none(): V1RetrieveParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [ChatStreamParams]. */
+        /** Returns a mutable builder for constructing an instance of [V1RetrieveParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ChatStreamParams]. */
+    /** A builder for [V1RetrieveParams]. */
     class Builder internal constructor() {
 
         private var id: String? = null
-        private var lastEventId: Long? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(chatStreamParams: ChatStreamParams) = apply {
-            id = chatStreamParams.id
-            lastEventId = chatStreamParams.lastEventId
-            additionalHeaders = chatStreamParams.additionalHeaders.toBuilder()
-            additionalQueryParams = chatStreamParams.additionalQueryParams.toBuilder()
+        internal fun from(v1RetrieveParams: V1RetrieveParams) = apply {
+            id = v1RetrieveParams.id
+            additionalHeaders = v1RetrieveParams.additionalHeaders.toBuilder()
+            additionalQueryParams = v1RetrieveParams.additionalQueryParams.toBuilder()
         }
 
         fun id(id: String?) = apply { this.id = id }
 
         /** Alias for calling [Builder.id] with `id.orElse(null)`. */
         fun id(id: Optional<String>) = id(id.getOrNull())
-
-        /** Replay events after this sequence number */
-        fun lastEventId(lastEventId: Long?) = apply { this.lastEventId = lastEventId }
-
-        /**
-         * Alias for [Builder.lastEventId].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun lastEventId(lastEventId: Long) = lastEventId(lastEventId as Long?)
-
-        /** Alias for calling [Builder.lastEventId] with `lastEventId.orElse(null)`. */
-        fun lastEventId(lastEventId: Optional<Long>) = lastEventId(lastEventId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -175,17 +153,12 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [ChatStreamParams].
+         * Returns an immutable instance of [V1RetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): ChatStreamParams =
-            ChatStreamParams(
-                id,
-                lastEventId,
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
+        fun build(): V1RetrieveParams =
+            V1RetrieveParams(id, additionalHeaders.build(), additionalQueryParams.build())
     }
 
     fun _pathParam(index: Int): String =
@@ -196,29 +169,21 @@ private constructor(
 
     override fun _headers(): Headers = additionalHeaders
 
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                lastEventId?.let { put("lastEventId", it.toString()) }
-                putAll(additionalQueryParams)
-            }
-            .build()
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return other is ChatStreamParams &&
+        return other is V1RetrieveParams &&
             id == other.id &&
-            lastEventId == other.lastEventId &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int =
-        Objects.hash(id, lastEventId, additionalHeaders, additionalQueryParams)
+    override fun hashCode(): Int = Objects.hash(id, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "ChatStreamParams{id=$id, lastEventId=$lastEventId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "V1RetrieveParams{id=$id, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

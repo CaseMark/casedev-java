@@ -913,7 +913,7 @@ private constructor(
         fun finalResponse(): Optional<FinalResponse> = finalResponse.getOptional("finalResponse")
 
         /**
-         * Sandbox execution logs (OpenCode server + runner script)
+         * Sandbox execution logs (runtime server + runner script)
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1022,7 +1022,7 @@ private constructor(
                 this.finalResponse = finalResponse
             }
 
-            /** Sandbox execution logs (OpenCode server + runner script) */
+            /** Sandbox execution logs (runtime server + runner script) */
             fun logs(logs: Logs?) = logs(JsonField.ofNullable(logs))
 
             /** Alias for calling [Builder.logs] with `logs.orElse(null)`. */
@@ -1396,12 +1396,13 @@ private constructor(
                 "FinalResponse{createdObjectIds=$createdObjectIds, issues=$issues, summary=$summary, additionalProperties=$additionalProperties}"
         }
 
-        /** Sandbox execution logs (OpenCode server + runner script) */
+        /** Sandbox execution logs (runtime server + runner script) */
         class Logs
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val opencode: JsonField<String>,
             private val runner: JsonField<String>,
+            private val runtime: JsonField<String>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -1410,11 +1411,16 @@ private constructor(
                 @JsonProperty("opencode")
                 @ExcludeMissing
                 opencode: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("runner") @ExcludeMissing runner: JsonField<String> = JsonMissing.of(),
-            ) : this(opencode, runner, mutableMapOf())
+                @JsonProperty("runner")
+                @ExcludeMissing
+                runner: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("runtime")
+                @ExcludeMissing
+                runtime: JsonField<String> = JsonMissing.of(),
+            ) : this(opencode, runner, runtime, mutableMapOf())
 
             /**
-             * OpenCode server stdout/stderr
+             * Legacy runtime server stdout/stderr
              *
              * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -1430,6 +1436,14 @@ private constructor(
             fun runner(): Optional<String> = runner.getOptional("runner")
 
             /**
+             * Runtime server stdout/stderr
+             *
+             * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun runtime(): Optional<String> = runtime.getOptional("runtime")
+
+            /**
              * Returns the raw JSON value of [opencode].
              *
              * Unlike [opencode], this method doesn't throw if the JSON field has an unexpected
@@ -1443,6 +1457,13 @@ private constructor(
              * Unlike [runner], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("runner") @ExcludeMissing fun _runner(): JsonField<String> = runner
+
+            /**
+             * Returns the raw JSON value of [runtime].
+             *
+             * Unlike [runtime], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("runtime") @ExcludeMissing fun _runtime(): JsonField<String> = runtime
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1467,16 +1488,18 @@ private constructor(
 
                 private var opencode: JsonField<String> = JsonMissing.of()
                 private var runner: JsonField<String> = JsonMissing.of()
+                private var runtime: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(logs: Logs) = apply {
                     opencode = logs.opencode
                     runner = logs.runner
+                    runtime = logs.runtime
                     additionalProperties = logs.additionalProperties.toMutableMap()
                 }
 
-                /** OpenCode server stdout/stderr */
+                /** Legacy runtime server stdout/stderr */
                 fun opencode(opencode: String) = opencode(JsonField.of(opencode))
 
                 /**
@@ -1499,6 +1522,18 @@ private constructor(
                  * yet supported value.
                  */
                 fun runner(runner: JsonField<String>) = apply { this.runner = runner }
+
+                /** Runtime server stdout/stderr */
+                fun runtime(runtime: String) = runtime(JsonField.of(runtime))
+
+                /**
+                 * Sets [Builder.runtime] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.runtime] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun runtime(runtime: JsonField<String>) = apply { this.runtime = runtime }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -1527,7 +1562,8 @@ private constructor(
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
-                fun build(): Logs = Logs(opencode, runner, additionalProperties.toMutableMap())
+                fun build(): Logs =
+                    Logs(opencode, runner, runtime, additionalProperties.toMutableMap())
             }
 
             private var validated: Boolean = false
@@ -1539,6 +1575,7 @@ private constructor(
 
                 opencode()
                 runner()
+                runtime()
                 validated = true
             }
 
@@ -1559,7 +1596,8 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (if (opencode.asKnown().isPresent) 1 else 0) +
-                    (if (runner.asKnown().isPresent) 1 else 0)
+                    (if (runner.asKnown().isPresent) 1 else 0) +
+                    (if (runtime.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1569,17 +1607,18 @@ private constructor(
                 return other is Logs &&
                     opencode == other.opencode &&
                     runner == other.runner &&
+                    runtime == other.runtime &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(opencode, runner, additionalProperties)
+                Objects.hash(opencode, runner, runtime, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Logs{opencode=$opencode, runner=$runner, additionalProperties=$additionalProperties}"
+                "Logs{opencode=$opencode, runner=$runner, runtime=$runtime, additionalProperties=$additionalProperties}"
         }
 
         override fun equals(other: Any?): Boolean {

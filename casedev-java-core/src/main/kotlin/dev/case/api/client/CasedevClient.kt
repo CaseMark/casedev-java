@@ -23,6 +23,7 @@ import dev.case.api.services.blocking.UsageService
 import dev.case.api.services.blocking.VaultService
 import dev.case.api.services.blocking.VoiceService
 import dev.case.api.services.blocking.WebhookService
+import dev.case.api.services.blocking.WorkerService
 import java.util.function.Consumer
 
 /**
@@ -65,6 +66,8 @@ interface CasedevClient {
 
     /** Public system metadata and discovery endpoints */
     fun system(): SystemService
+
+    fun worker(): WorkerService
 
     fun compute(): ComputeService
 
@@ -132,6 +135,8 @@ interface CasedevClient {
 
         /** Public system metadata and discovery endpoints */
         fun system(): SystemService.WithRawResponse
+
+        fun worker(): WorkerService.WithRawResponse
 
         fun compute(): ComputeService.WithRawResponse
 
