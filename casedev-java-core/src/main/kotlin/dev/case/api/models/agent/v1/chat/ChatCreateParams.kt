@@ -22,8 +22,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Creates a persistent OpenCode chat session backed by a Daytona or Vercel runtime. Session state
- * is retained and can be resumed or recovered across requests.
+ * Creates a persistent chat session backed by a Daytona or Vercel runtime. Session state is
+ * retained and can be resumed or recovered across requests.
  */
 class ChatCreateParams
 private constructor(
@@ -41,7 +41,7 @@ private constructor(
     fun idleTimeoutMs(): Optional<Long> = body.idleTimeoutMs()
 
     /**
-     * Optional model override for the OpenCode session
+     * Optional model override for the chat runtime session
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -162,7 +162,7 @@ private constructor(
             body.idleTimeoutMs(idleTimeoutMs)
         }
 
-        /** Optional model override for the OpenCode session */
+        /** Optional model override for the chat runtime session */
         fun model(model: String?) = apply { body.model(model) }
 
         /** Alias for calling [Builder.model] with `model.orElse(null)`. */
@@ -372,7 +372,7 @@ private constructor(
         fun idleTimeoutMs(): Optional<Long> = idleTimeoutMs.getOptional("idleTimeoutMs")
 
         /**
-         * Optional model override for the OpenCode session
+         * Optional model override for the chat runtime session
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -493,7 +493,7 @@ private constructor(
                 this.idleTimeoutMs = idleTimeoutMs
             }
 
-            /** Optional model override for the OpenCode session */
+            /** Optional model override for the chat runtime session */
             fun model(model: String?) = model(JsonField.ofNullable(model))
 
             /** Alias for calling [Builder.model] with `model.orElse(null)`. */

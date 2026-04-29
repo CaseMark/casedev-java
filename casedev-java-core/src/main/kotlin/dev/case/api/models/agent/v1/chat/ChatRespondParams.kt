@@ -276,7 +276,7 @@ private constructor(
 
     /**
      * Message payload following the AI SDK UIMessage format. The body is passed through 1:1 to the
-     * underlying OpenCode session. Currently only text parts are supported.
+     * underlying chat runtime session. Currently only text parts are supported.
      */
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)

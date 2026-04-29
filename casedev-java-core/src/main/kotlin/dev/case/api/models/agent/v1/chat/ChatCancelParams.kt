@@ -11,7 +11,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Aborts the active OpenCode generation for this chat session. */
+/** Aborts the active generation for this chat session. */
 class ChatCancelParams
 private constructor(
     private val id: String?,
