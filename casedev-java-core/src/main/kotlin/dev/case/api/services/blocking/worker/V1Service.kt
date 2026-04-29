@@ -6,6 +6,7 @@ import com.google.errorprone.annotations.MustBeClosed
 import dev.case.api.core.ClientOptions
 import dev.case.api.core.RequestOptions
 import dev.case.api.core.http.HttpResponse
+import dev.case.api.models.worker.v1.V1BootParams
 import dev.case.api.models.worker.v1.V1CreateParams
 import dev.case.api.models.worker.v1.V1DeleteParams
 import dev.case.api.models.worker.v1.V1ProxyDeleteParams
@@ -96,6 +97,33 @@ interface V1Service {
     /** @see delete */
     fun delete(id: String, requestOptions: RequestOptions) =
         delete(id, V1DeleteParams.none(), requestOptions)
+
+    /**
+     * Starts or resumes the worker sandbox and OpenCode server. Native /worker/v1/:id&#47;* proxy
+     * routes require this lifecycle primitive to have completed first.
+     */
+    fun boot(id: String) = boot(id, V1BootParams.none())
+
+    /** @see boot */
+    fun boot(
+        id: String,
+        params: V1BootParams = V1BootParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ) = boot(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see boot */
+    fun boot(id: String, params: V1BootParams = V1BootParams.none()) =
+        boot(id, params, RequestOptions.none())
+
+    /** @see boot */
+    fun boot(params: V1BootParams, requestOptions: RequestOptions = RequestOptions.none())
+
+    /** @see boot */
+    fun boot(params: V1BootParams) = boot(params, RequestOptions.none())
+
+    /** @see boot */
+    fun boot(id: String, requestOptions: RequestOptions) =
+        boot(id, V1BootParams.none(), requestOptions)
 
     /** Forwards a DELETE request to the worker runtime without translating response shapes. */
     fun proxyDelete(workerPath: String, params: V1ProxyDeleteParams) =
@@ -302,6 +330,41 @@ interface V1Service {
         @MustBeClosed
         fun delete(id: String, requestOptions: RequestOptions): HttpResponse =
             delete(id, V1DeleteParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /worker/v1/{id}/boot`, but is otherwise the same as
+         * [V1Service.boot].
+         */
+        @MustBeClosed fun boot(id: String): HttpResponse = boot(id, V1BootParams.none())
+
+        /** @see boot */
+        @MustBeClosed
+        fun boot(
+            id: String,
+            params: V1BootParams = V1BootParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse = boot(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see boot */
+        @MustBeClosed
+        fun boot(id: String, params: V1BootParams = V1BootParams.none()): HttpResponse =
+            boot(id, params, RequestOptions.none())
+
+        /** @see boot */
+        @MustBeClosed
+        fun boot(
+            params: V1BootParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse
+
+        /** @see boot */
+        @MustBeClosed
+        fun boot(params: V1BootParams): HttpResponse = boot(params, RequestOptions.none())
+
+        /** @see boot */
+        @MustBeClosed
+        fun boot(id: String, requestOptions: RequestOptions): HttpResponse =
+            boot(id, V1BootParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete /worker/v1/{id}/{workerPath}`, but is otherwise
