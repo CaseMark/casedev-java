@@ -15,6 +15,8 @@ import dev.case.api.models.vault.objects.ObjectGetChunksParams
 import dev.case.api.models.vault.objects.ObjectGetChunksResponse
 import dev.case.api.models.vault.objects.ObjectGetOcrWordsParams
 import dev.case.api.models.vault.objects.ObjectGetOcrWordsResponse
+import dev.case.api.models.vault.objects.ObjectGetPagesParams
+import dev.case.api.models.vault.objects.ObjectGetPagesResponse
 import dev.case.api.models.vault.objects.ObjectGetSummarizeJobParams
 import dev.case.api.models.vault.objects.ObjectGetSummarizeJobResponse
 import dev.case.api.models.vault.objects.ObjectGetTextParams
@@ -275,6 +277,41 @@ interface ObjectServiceAsync {
         params: ObjectGetOcrWordsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ObjectGetOcrWordsResponse>
+
+    /**
+     * Retrieves the raw text of a processed vault object split by page. The object must have
+     * completed ingestion before pages can be retrieved — for PDFs this requires the OCR pipeline
+     * to have finished writing the per-page sidecar, so freshly uploaded PDFs return 400 with the
+     * current `ingestionStatus` until processing completes. For PDFs this returns the per-page OCR
+     * text. For plain text files (txt, md, source code, court reporter transcripts) the text is
+     * split using right-aligned page-number markers when present (preserving the original document
+     * numbering, including continuations like Volume 2 starting at page 234), falling back to
+     * form-feed (\f) page-break characters, and finally a single page if neither signal is present.
+     * Use the optional `start` and `end` query parameters to fetch a specific inclusive page range.
+     * Pages with no text are omitted.
+     */
+    fun getPages(
+        objectId: String,
+        params: ObjectGetPagesParams,
+    ): CompletableFuture<ObjectGetPagesResponse> = getPages(objectId, params, RequestOptions.none())
+
+    /** @see getPages */
+    fun getPages(
+        objectId: String,
+        params: ObjectGetPagesParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectGetPagesResponse> =
+        getPages(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+    /** @see getPages */
+    fun getPages(params: ObjectGetPagesParams): CompletableFuture<ObjectGetPagesResponse> =
+        getPages(params, RequestOptions.none())
+
+    /** @see getPages */
+    fun getPages(
+        params: ObjectGetPagesParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ObjectGetPagesResponse>
 
     /** Get the status of a CaseMark summary workflow job. */
     fun getSummarizeJob(
@@ -590,6 +627,36 @@ interface ObjectServiceAsync {
             params: ObjectGetOcrWordsParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ObjectGetOcrWordsResponse>>
+
+        /**
+         * Returns a raw HTTP response for `get /vault/{id}/objects/{objectId}/pages`, but is
+         * otherwise the same as [ObjectServiceAsync.getPages].
+         */
+        fun getPages(
+            objectId: String,
+            params: ObjectGetPagesParams,
+        ): CompletableFuture<HttpResponseFor<ObjectGetPagesResponse>> =
+            getPages(objectId, params, RequestOptions.none())
+
+        /** @see getPages */
+        fun getPages(
+            objectId: String,
+            params: ObjectGetPagesParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectGetPagesResponse>> =
+            getPages(params.toBuilder().objectId(objectId).build(), requestOptions)
+
+        /** @see getPages */
+        fun getPages(
+            params: ObjectGetPagesParams
+        ): CompletableFuture<HttpResponseFor<ObjectGetPagesResponse>> =
+            getPages(params, RequestOptions.none())
+
+        /** @see getPages */
+        fun getPages(
+            params: ObjectGetPagesParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ObjectGetPagesResponse>>
 
         /**
          * Returns a raw HTTP response for `get /vault/{id}/objects/{objectId}/summarize/{jobId}`,
