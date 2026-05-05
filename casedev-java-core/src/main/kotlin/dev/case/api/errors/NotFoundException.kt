@@ -5,12 +5,16 @@ package dev.case.api.errors
 import dev.case.api.core.JsonValue
 import dev.case.api.core.checkRequired
 import dev.case.api.core.http.Headers
+import dev.case.api.core.jsonMapper
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class NotFoundException
 private constructor(private val headers: Headers, private val body: JsonValue, cause: Throwable?) :
-    CasedevServiceException("404: $body", cause) {
+    CasedevServiceException(
+        "404: ${if (body.isMissing()) "Unknown" else jsonMapper().writeValueAsString(body)}",
+        cause,
+    ) {
 
     override fun statusCode(): Int = 404
 
