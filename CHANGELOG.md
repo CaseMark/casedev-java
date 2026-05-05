@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.43.0 (2026-05-05)
+
+Full Changelog: [v0.42.0...v0.43.0](https://github.com/CaseMark/casedev-java/compare/v0.42.0...v0.43.0)
+
+### Features
+
+* **client:** more robust error parsing ([840ae99](https://github.com/CaseMark/casedev-java/commit/840ae990c109bd98a8651561e4f04a1010decc68))
+
+
+### Performance Improvements
+
+* **client:** create one json mapper ([13fbb78](https://github.com/CaseMark/casedev-java/commit/13fbb78c33aa76b58cf13978e2969c2a865fc211))
+
+
+### Chores
+
+* remove duplicated dokka setup ([69cea42](https://github.com/CaseMark/casedev-java/commit/69cea4215240b01b6f30023bf375a1bcba133286))
+
+
+### Documentation
+
+* clarify forwards compat behavior ([e0c29bf](https://github.com/CaseMark/casedev-java/commit/e0c29bfcb3f884881e8a30789304a5fd1e3c15d5))
+
 ## 0.42.0 (2026-04-29)
 
 Full Changelog: [v0.41.0...v0.42.0](https://github.com/CaseMark/casedev-java/compare/v0.41.0...v0.42.0)

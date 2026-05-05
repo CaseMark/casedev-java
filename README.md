@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/dev.case.api/casedev-java)](https://central.sonatype.com/artifact/dev.case.api/casedev-java/0.42.0)
-[![javadoc](https://javadoc.io/badge2/dev.case.api/casedev-java/0.42.0/javadoc.svg)](https://javadoc.io/doc/dev.case.api/casedev-java/0.42.0)
+[![Maven Central](https://img.shields.io/maven-central/v/dev.case.api/casedev-java)](https://central.sonatype.com/artifact/dev.case.api/casedev-java/0.43.0)
+[![javadoc](https://javadoc.io/badge2/dev.case.api/casedev-java/0.43.0/javadoc.svg)](https://javadoc.io/doc/dev.case.api/casedev-java/0.43.0)
 
 <!-- x-release-please-end -->
 
@@ -13,7 +13,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [docs.case.dev](https://docs.case.dev). Javadocs are available on [javadoc.io](https://javadoc.io/doc/dev.case.api/casedev-java/0.42.0).
+The REST API documentation can be found on [docs.case.dev](https://docs.case.dev). Javadocs are available on [javadoc.io](https://javadoc.io/doc/dev.case.api/casedev-java/0.43.0).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +24,7 @@ The REST API documentation can be found on [docs.case.dev](https://docs.case.dev
 ### Gradle
 
 ```kotlin
-implementation("dev.case.api:casedev-java:0.42.0")
+implementation("dev.case.api:casedev-java:0.43.0")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ implementation("dev.case.api:casedev-java:0.42.0")
 <dependency>
   <groupId>dev.case.api</groupId>
   <artifactId>casedev-java</artifactId>
-  <version>0.42.0</version>
+  <version>0.43.0</version>
 </dependency>
 ```
 
@@ -660,7 +660,9 @@ In rare cases, the API may return a response that doesn't match the expected typ
 
 By default, the SDK will not throw an exception in this case. It will throw [`CasedevInvalidDataException`](casedev-java-core/src/main/kotlin/dev/case/api/errors/CasedevInvalidDataException.kt) only if you directly access the property.
 
-If you would prefer to check that the response is completely well-typed upfront, then either call `validate()`:
+Validating the response is _not_ forwards compatible with new types from the API for existing fields.
+
+If you would still prefer to check that the response is completely well-typed upfront, then either call `validate()`:
 
 ```java
 import dev.case.api.models.llm.v1.chat.ChatCreateCompletionResponse;
