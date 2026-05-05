@@ -25,6 +25,8 @@ import dev.case.api.models.vault.objects.ObjectGetChunksParams
 import dev.case.api.models.vault.objects.ObjectGetChunksResponse
 import dev.case.api.models.vault.objects.ObjectGetOcrWordsParams
 import dev.case.api.models.vault.objects.ObjectGetOcrWordsResponse
+import dev.case.api.models.vault.objects.ObjectGetPagesParams
+import dev.case.api.models.vault.objects.ObjectGetPagesResponse
 import dev.case.api.models.vault.objects.ObjectGetSummarizeJobParams
 import dev.case.api.models.vault.objects.ObjectGetSummarizeJobResponse
 import dev.case.api.models.vault.objects.ObjectGetTextParams
@@ -106,6 +108,13 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
     ): ObjectGetOcrWordsResponse =
         // get /vault/{id}/objects/{objectId}/ocr-words
         withRawResponse().getOcrWords(params, requestOptions).parse()
+
+    override fun getPages(
+        params: ObjectGetPagesParams,
+        requestOptions: RequestOptions,
+    ): ObjectGetPagesResponse =
+        // get /vault/{id}/objects/{objectId}/pages
+        withRawResponse().getPages(params, requestOptions).parse()
 
     override fun getSummarizeJob(
         params: ObjectGetSummarizeJobParams,
@@ -383,6 +392,42 @@ class ObjectServiceImpl internal constructor(private val clientOptions: ClientOp
             return errorHandler.handle(response).parseable {
                 response
                     .use { getOcrWordsHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val getPagesHandler: Handler<ObjectGetPagesResponse> =
+            jsonHandler<ObjectGetPagesResponse>(clientOptions.jsonMapper)
+
+        override fun getPages(
+            params: ObjectGetPagesParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ObjectGetPagesResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("objectId", params.objectId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "vault",
+                        params._pathParam(0),
+                        "objects",
+                        params._pathParam(1),
+                        "pages",
+                    )
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { getPagesHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
