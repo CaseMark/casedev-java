@@ -16,6 +16,7 @@ import dev.case.api.models.vault.objects.ObjectDeleteParams
 import dev.case.api.models.vault.objects.ObjectDownloadParams
 import dev.case.api.models.vault.objects.ObjectGetChunksParams
 import dev.case.api.models.vault.objects.ObjectGetOcrWordsParams
+import dev.case.api.models.vault.objects.ObjectGetPagesParams
 import dev.case.api.models.vault.objects.ObjectGetSummarizeJobParams
 import dev.case.api.models.vault.objects.ObjectGetTextParams
 import dev.case.api.models.vault.objects.ObjectRetrieveParams
@@ -186,6 +187,28 @@ internal class ObjectServiceTest {
                     .page(0L)
                     .wordEnd(0L)
                     .wordStart(0L)
+                    .build()
+            )
+
+        response.validate()
+    }
+
+    @Test
+    fun getPages() {
+        val client =
+            CasedevOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val objectService = client.vault().objects()
+
+        val response =
+            objectService.getPages(
+                ObjectGetPagesParams.builder()
+                    .id("id")
+                    .objectId("objectId")
+                    .end(0L)
+                    .start(0L)
                     .build()
             )
 
