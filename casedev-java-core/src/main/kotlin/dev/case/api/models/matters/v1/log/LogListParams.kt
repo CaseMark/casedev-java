@@ -361,6 +361,9 @@ private constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 string != null -> visitor.visitString(string)
