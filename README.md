@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/dev.case.api/casedev-java)](https://central.sonatype.com/artifact/dev.case.api/casedev-java/0.44.0)
-[![javadoc](https://javadoc.io/badge2/dev.case.api/casedev-java/0.44.0/javadoc.svg)](https://javadoc.io/doc/dev.case.api/casedev-java/0.44.0)
+[![Maven Central](https://img.shields.io/maven-central/v/dev.case.api/casedev-java)](https://central.sonatype.com/artifact/dev.case.api/casedev-java/0.45.0)
+[![javadoc](https://javadoc.io/badge2/dev.case.api/casedev-java/0.45.0/javadoc.svg)](https://javadoc.io/doc/dev.case.api/casedev-java/0.45.0)
 
 <!-- x-release-please-end -->
 
@@ -13,7 +13,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [docs.case.dev](https://docs.case.dev). Javadocs are available on [javadoc.io](https://javadoc.io/doc/dev.case.api/casedev-java/0.44.0).
+The REST API documentation can be found on [docs.case.dev](https://docs.case.dev). Javadocs are available on [javadoc.io](https://javadoc.io/doc/dev.case.api/casedev-java/0.45.0).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +24,7 @@ The REST API documentation can be found on [docs.case.dev](https://docs.case.dev
 ### Gradle
 
 ```kotlin
-implementation("dev.case.api:casedev-java:0.44.0")
+implementation("dev.case.api:casedev-java:0.45.0")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ implementation("dev.case.api:casedev-java:0.44.0")
 <dependency>
   <groupId>dev.case.api</groupId>
   <artifactId>casedev-java</artifactId>
-  <version>0.44.0</version>
+  <version>0.45.0</version>
 </dependency>
 ```
 
@@ -407,6 +407,21 @@ CasedevClient client = CasedevOkHttpClient.builder()
         "https://example.com", 8080
       )
     ))
+    .build();
+```
+
+If the proxy responds with `407 Proxy Authentication Required`, supply credentials by also configuring `proxyAuthenticator`:
+
+```java
+import dev.case.api.client.CasedevClient;
+import dev.case.api.client.okhttp.CasedevOkHttpClient;
+import dev.case.api.core.http.ProxyAuthenticator;
+
+CasedevClient client = CasedevOkHttpClient.builder()
+    .fromEnv()
+    .proxy(...)
+    // Or a custom implementation of `ProxyAuthenticator`.
+    .proxyAuthenticator(ProxyAuthenticator.basic("username", "password"))
     .build();
 ```
 

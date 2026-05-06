@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.45.0 (2026-05-06)
+
+Full Changelog: [v0.44.0...v0.45.0](https://github.com/CaseMark/casedev-java/compare/v0.44.0...v0.45.0)
+
+### Features
+
+* **client:** support proxy authentication ([99510f0](https://github.com/CaseMark/casedev-java/commit/99510f060aa011d67c012e0a43112db004b82559))
+
 ## 0.44.0 (2026-05-05)
 
 Full Changelog: [v0.43.0...v0.44.0](https://github.com/CaseMark/casedev-java/compare/v0.43.0...v0.44.0)
