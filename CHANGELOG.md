@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.46.0 (2026-05-07)
+
+Full Changelog: [v0.45.0...v0.46.0](https://github.com/CaseMark/casedev-java/compare/v0.45.0...v0.46.0)
+
+### Features
+
+* **client:** improve logging ([b3cb19c](https://github.com/CaseMark/casedev-java/commit/b3cb19ceb9dd89785a932e7b31dc6015a62305bc))
+
 ## 0.45.0 (2026-05-06)
 
 Full Changelog: [v0.44.0...v0.45.0](https://github.com/CaseMark/casedev-java/compare/v0.44.0...v0.45.0)

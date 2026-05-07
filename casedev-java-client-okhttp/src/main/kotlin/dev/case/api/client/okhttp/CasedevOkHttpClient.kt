@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import dev.case.api.client.CasedevClient
 import dev.case.api.client.CasedevClientImpl
 import dev.case.api.core.ClientOptions
+import dev.case.api.core.LogLevel
 import dev.case.api.core.Sleeper
 import dev.case.api.core.Timeout
 import dev.case.api.core.http.AsyncStreamResponse
@@ -295,6 +296,15 @@ class CasedevOkHttpClient private constructor() {
          * Defaults to 2.
          */
         fun maxRetries(maxRetries: Int) = apply { clientOptions.maxRetries(maxRetries) }
+
+        /**
+         * The level at which to log request and response information.
+         *
+         * [fromEnv] will set the level from environment variables. See [LogLevel.fromEnv].
+         *
+         * Defaults to [LogLevel.fromEnv].
+         */
+        fun logLevel(logLevel: LogLevel) = apply { clientOptions.logLevel(logLevel) }
 
         /** API key authentication. Use your case.dev API key (e.g., sk_case_your_api_key_here) */
         fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
