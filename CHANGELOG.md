@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.47.0 (2026-05-07)
+
+Full Changelog: [v0.46.0...v0.47.0](https://github.com/CaseMark/casedev-java/compare/v0.46.0...v0.47.0)
+
+### Features
+
+* **api:** api update ([b161c23](https://github.com/CaseMark/casedev-java/commit/b161c237d4fed631c9ac7c16c952649309cee036))
+
 ## 0.46.0 (2026-05-07)
 
 Full Changelog: [v0.45.0...v0.46.0](https://github.com/CaseMark/casedev-java/compare/v0.45.0...v0.46.0)
