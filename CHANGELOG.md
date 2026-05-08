@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.49.1 (2026-05-08)
+
+Full Changelog: [v0.49.0...v0.49.1](https://github.com/CaseMark/casedev-java/compare/v0.49.0...v0.49.1)
+
+### Chores
+
+* redact api-key headers in debug logs ([e38c473](https://github.com/CaseMark/casedev-java/commit/e38c4737592f71e0d1388500c1e7b0bd7d8db6ab))
+
 ## 0.49.0 (2026-05-07)
 
 Full Changelog: [v0.48.0...v0.49.0](https://github.com/CaseMark/casedev-java/compare/v0.48.0...v0.49.0)
