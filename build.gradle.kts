@@ -8,7 +8,7 @@ repositories {
 
 allprojects {
     group = "dev.case.api"
-    version = "0.49.2" // x-release-please-version
+    version = "0.50.0" // x-release-please-version
 }
 
 subprojects {
