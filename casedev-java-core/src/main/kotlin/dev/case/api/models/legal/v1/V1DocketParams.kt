@@ -84,8 +84,7 @@ private constructor(
     fun docketId(): Optional<String> = body.docketId()
 
     /**
-     * Include docket entries/filings in lookup responses. Coming soon — currently returns 501. The
-     * parameter is accepted for forward compatibility.
+     * Include docket entries/filings in lookup responses.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -342,10 +341,7 @@ private constructor(
          */
         fun docketId(docketId: JsonField<String>) = apply { body.docketId(docketId) }
 
-        /**
-         * Include docket entries/filings in lookup responses. Coming soon — currently returns 501.
-         * The parameter is accepted for forward compatibility.
-         */
+        /** Include docket entries/filings in lookup responses. */
         fun includeEntries(includeEntries: Boolean) = apply { body.includeEntries(includeEntries) }
 
         /**
@@ -653,8 +649,7 @@ private constructor(
         fun docketId(): Optional<String> = docketId.getOptional("docketId")
 
         /**
-         * Include docket entries/filings in lookup responses. Coming soon — currently returns 501.
-         * The parameter is accepted for forward compatibility.
+         * Include docket entries/filings in lookup responses.
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -928,10 +923,7 @@ private constructor(
              */
             fun docketId(docketId: JsonField<String>) = apply { this.docketId = docketId }
 
-            /**
-             * Include docket entries/filings in lookup responses. Coming soon — currently
-             * returns 501. The parameter is accepted for forward compatibility.
-             */
+            /** Include docket entries/filings in lookup responses. */
             fun includeEntries(includeEntries: Boolean) =
                 includeEntries(JsonField.of(includeEntries))
 
