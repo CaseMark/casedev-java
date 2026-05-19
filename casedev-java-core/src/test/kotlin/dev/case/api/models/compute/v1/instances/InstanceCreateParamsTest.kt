@@ -14,7 +14,6 @@ internal class InstanceCreateParamsTest {
             .instanceType("gpu_1x_a10")
             .name("ocr-batch-job")
             .region("us-west-1")
-            .autoShutdownMinutes(120L)
             .addVaultId("vault_abc123")
             .build()
     }
@@ -26,7 +25,6 @@ internal class InstanceCreateParamsTest {
                 .instanceType("gpu_1x_a10")
                 .name("ocr-batch-job")
                 .region("us-west-1")
-                .autoShutdownMinutes(120L)
                 .addVaultId("vault_abc123")
                 .build()
 
@@ -35,7 +33,6 @@ internal class InstanceCreateParamsTest {
         assertThat(body.instanceType()).isEqualTo("gpu_1x_a10")
         assertThat(body.name()).isEqualTo("ocr-batch-job")
         assertThat(body.region()).isEqualTo("us-west-1")
-        assertThat(body.autoShutdownMinutes()).contains(120L)
         assertThat(body.vaultIds().getOrNull()).containsExactly("vault_abc123")
     }
 

@@ -26,7 +26,6 @@ internal class InstanceServiceAsyncTest {
                     .instanceType("gpu_1x_a10")
                     .name("ocr-batch-job")
                     .region("us-west-1")
-                    .autoShutdownMinutes(120L)
                     .addVaultId("vault_abc123")
                     .build()
             )

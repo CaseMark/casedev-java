@@ -1,22 +1,26 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package dev.case.api.models.compute.v1.instances
+package dev.case.api.models.agent.skills.namespaces
 
 import dev.case.api.core.Params
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
- * Retrieves all GPU compute instances for your organization with real-time status updates from
- * Lambda Labs. Includes pricing and runtime metrics. Perfect for monitoring AI workloads, document
- * processing jobs, and cost tracking.
+ * Returns the active version's file manifest with short-lived presigned S3 URLs. Sandboxes use this
+ * to materialize the tree at /workspace/.agents/skills/ before opencode boots.
  */
-class InstanceListParams
+class NamespacePullParams
 private constructor(
+    private val id: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
+
+    fun id(): Optional<String> = Optional.ofNullable(id)
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -28,23 +32,30 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): InstanceListParams = builder().build()
+        @JvmStatic fun none(): NamespacePullParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [InstanceListParams]. */
+        /** Returns a mutable builder for constructing an instance of [NamespacePullParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [InstanceListParams]. */
+    /** A builder for [NamespacePullParams]. */
     class Builder internal constructor() {
 
+        private var id: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(instanceListParams: InstanceListParams) = apply {
-            additionalHeaders = instanceListParams.additionalHeaders.toBuilder()
-            additionalQueryParams = instanceListParams.additionalQueryParams.toBuilder()
+        internal fun from(namespacePullParams: NamespacePullParams) = apply {
+            id = namespacePullParams.id
+            additionalHeaders = namespacePullParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespacePullParams.additionalQueryParams.toBuilder()
         }
+
+        fun id(id: String?) = apply { this.id = id }
+
+        /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+        fun id(id: Optional<String>) = id(id.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -145,13 +156,19 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [InstanceListParams].
+         * Returns an immutable instance of [NamespacePullParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): InstanceListParams =
-            InstanceListParams(additionalHeaders.build(), additionalQueryParams.build())
+        fun build(): NamespacePullParams =
+            NamespacePullParams(id, additionalHeaders.build(), additionalQueryParams.build())
     }
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> id ?: ""
+            else -> ""
+        }
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -162,13 +179,14 @@ private constructor(
             return true
         }
 
-        return other is InstanceListParams &&
+        return other is NamespacePullParams &&
+            id == other.id &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = Objects.hash(additionalHeaders, additionalQueryParams)
+    override fun hashCode(): Int = Objects.hash(id, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "InstanceListParams{additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespacePullParams{id=$id, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

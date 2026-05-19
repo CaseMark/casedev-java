@@ -1,18 +1,14 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package dev.case.api.models.compute.v1.instances
+package dev.case.api.models.agent.skills.namespaces
 
 import dev.case.api.core.Params
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
 import java.util.Objects
 
-/**
- * Retrieves all GPU compute instances for your organization with real-time status updates from
- * Lambda Labs. Includes pricing and runtime metrics. Perfect for monitoring AI workloads, document
- * processing jobs, and cost tracking.
- */
-class InstanceListParams
+/** List all active skill namespaces owned by the authenticated organization. */
+class NamespaceListParams
 private constructor(
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -28,22 +24,22 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): InstanceListParams = builder().build()
+        @JvmStatic fun none(): NamespaceListParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [InstanceListParams]. */
+        /** Returns a mutable builder for constructing an instance of [NamespaceListParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [InstanceListParams]. */
+    /** A builder for [NamespaceListParams]. */
     class Builder internal constructor() {
 
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(instanceListParams: InstanceListParams) = apply {
-            additionalHeaders = instanceListParams.additionalHeaders.toBuilder()
-            additionalQueryParams = instanceListParams.additionalQueryParams.toBuilder()
+        internal fun from(namespaceListParams: NamespaceListParams) = apply {
+            additionalHeaders = namespaceListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespaceListParams.additionalQueryParams.toBuilder()
         }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
@@ -145,12 +141,12 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [InstanceListParams].
+         * Returns an immutable instance of [NamespaceListParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): InstanceListParams =
-            InstanceListParams(additionalHeaders.build(), additionalQueryParams.build())
+        fun build(): NamespaceListParams =
+            NamespaceListParams(additionalHeaders.build(), additionalQueryParams.build())
     }
 
     override fun _headers(): Headers = additionalHeaders
@@ -162,7 +158,7 @@ private constructor(
             return true
         }
 
-        return other is InstanceListParams &&
+        return other is NamespaceListParams &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
@@ -170,5 +166,5 @@ private constructor(
     override fun hashCode(): Int = Objects.hash(additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "InstanceListParams{additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceListParams{additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

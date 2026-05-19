@@ -44,8 +44,6 @@ import dev.case.api.services.blocking.VoiceService
 import dev.case.api.services.blocking.VoiceServiceImpl
 import dev.case.api.services.blocking.WebhookService
 import dev.case.api.services.blocking.WebhookServiceImpl
-import dev.case.api.services.blocking.WorkerService
-import dev.case.api.services.blocking.WorkerServiceImpl
 import java.util.function.Consumer
 
 class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClient {
@@ -68,8 +66,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
     private val agent: AgentService by lazy { AgentServiceImpl(clientOptionsWithUserAgent) }
 
     private val system: SystemService by lazy { SystemServiceImpl(clientOptionsWithUserAgent) }
-
-    private val worker: WorkerService by lazy { WorkerServiceImpl(clientOptionsWithUserAgent) }
 
     private val compute: ComputeService by lazy { ComputeServiceImpl(clientOptionsWithUserAgent) }
 
@@ -127,8 +123,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
     /** Public system metadata and discovery endpoints */
     override fun system(): SystemService = system
 
-    override fun worker(): WorkerService = worker
-
     override fun compute(): ComputeService = compute
 
     override fun database(): DatabaseService = database
@@ -179,10 +173,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
         private val system: SystemService.WithRawResponse by lazy {
             SystemServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val worker: WorkerService.WithRawResponse by lazy {
-            WorkerServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val compute: ComputeService.WithRawResponse by lazy {
@@ -268,8 +258,6 @@ class CasedevClientImpl(private val clientOptions: ClientOptions) : CasedevClien
 
         /** Public system metadata and discovery endpoints */
         override fun system(): SystemService.WithRawResponse = system
-
-        override fun worker(): WorkerService.WithRawResponse = worker
 
         override fun compute(): ComputeService.WithRawResponse = compute
 
