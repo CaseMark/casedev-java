@@ -44,8 +44,6 @@ import dev.case.api.services.async.VoiceServiceAsync
 import dev.case.api.services.async.VoiceServiceAsyncImpl
 import dev.case.api.services.async.WebhookServiceAsync
 import dev.case.api.services.async.WebhookServiceAsyncImpl
-import dev.case.api.services.async.WorkerServiceAsync
-import dev.case.api.services.async.WorkerServiceAsyncImpl
 import java.util.function.Consumer
 
 class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : CasedevClientAsync {
@@ -71,10 +69,6 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
     private val system: SystemServiceAsync by lazy {
         SystemServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
-    private val worker: WorkerServiceAsync by lazy {
-        WorkerServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
     private val compute: ComputeServiceAsync by lazy {
@@ -155,8 +149,6 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
     /** Public system metadata and discovery endpoints */
     override fun system(): SystemServiceAsync = system
 
-    override fun worker(): WorkerServiceAsync = worker
-
     override fun compute(): ComputeServiceAsync = compute
 
     override fun database(): DatabaseServiceAsync = database
@@ -207,10 +199,6 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         private val system: SystemServiceAsync.WithRawResponse by lazy {
             SystemServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val worker: WorkerServiceAsync.WithRawResponse by lazy {
-            WorkerServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val compute: ComputeServiceAsync.WithRawResponse by lazy {
@@ -296,8 +284,6 @@ class CasedevClientAsyncImpl(private val clientOptions: ClientOptions) : Casedev
 
         /** Public system metadata and discovery endpoints */
         override fun system(): SystemServiceAsync.WithRawResponse = system
-
-        override fun worker(): WorkerServiceAsync.WithRawResponse = worker
 
         override fun compute(): ComputeServiceAsync.WithRawResponse = compute
 

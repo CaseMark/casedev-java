@@ -16,7 +16,6 @@ internal class InstanceCreateResponseTest {
         val instanceCreateResponse =
             InstanceCreateResponse.builder()
                 .id("id")
-                .autoShutdownMinutes(0L)
                 .createdAt("createdAt")
                 .gpu("gpu")
                 .instanceType("instanceType")
@@ -30,7 +29,6 @@ internal class InstanceCreateResponseTest {
                 .build()
 
         assertThat(instanceCreateResponse.id()).contains("id")
-        assertThat(instanceCreateResponse.autoShutdownMinutes()).contains(0L)
         assertThat(instanceCreateResponse.createdAt()).contains("createdAt")
         assertThat(instanceCreateResponse.gpu()).contains("gpu")
         assertThat(instanceCreateResponse.instanceType()).contains("instanceType")
@@ -50,7 +48,6 @@ internal class InstanceCreateResponseTest {
         val instanceCreateResponse =
             InstanceCreateResponse.builder()
                 .id("id")
-                .autoShutdownMinutes(0L)
                 .createdAt("createdAt")
                 .gpu("gpu")
                 .instanceType("instanceType")

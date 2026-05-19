@@ -19,7 +19,6 @@ internal class InstanceListResponseTest {
                 .addInstance(
                     InstanceListResponse.Instance.builder()
                         .id("id")
-                        .autoShutdownMinutes(0L)
                         .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                         .gpu("gpu")
                         .instanceType("instanceType")
@@ -40,7 +39,6 @@ internal class InstanceListResponseTest {
             .containsExactly(
                 InstanceListResponse.Instance.builder()
                     .id("id")
-                    .autoShutdownMinutes(0L)
                     .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                     .gpu("gpu")
                     .instanceType("instanceType")
@@ -65,7 +63,6 @@ internal class InstanceListResponseTest {
                 .addInstance(
                     InstanceListResponse.Instance.builder()
                         .id("id")
-                        .autoShutdownMinutes(0L)
                         .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                         .gpu("gpu")
                         .instanceType("instanceType")

@@ -23,7 +23,6 @@ import dev.case.api.services.async.UsageServiceAsync
 import dev.case.api.services.async.VaultServiceAsync
 import dev.case.api.services.async.VoiceServiceAsync
 import dev.case.api.services.async.WebhookServiceAsync
-import dev.case.api.services.async.WorkerServiceAsync
 import java.util.function.Consumer
 
 /**
@@ -66,8 +65,6 @@ interface CasedevClientAsync {
 
     /** Public system metadata and discovery endpoints */
     fun system(): SystemServiceAsync
-
-    fun worker(): WorkerServiceAsync
 
     fun compute(): ComputeServiceAsync
 
@@ -139,8 +136,6 @@ interface CasedevClientAsync {
 
         /** Public system metadata and discovery endpoints */
         fun system(): SystemServiceAsync.WithRawResponse
-
-        fun worker(): WorkerServiceAsync.WithRawResponse
 
         fun compute(): ComputeServiceAsync.WithRawResponse
 

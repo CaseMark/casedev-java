@@ -15,7 +15,6 @@ internal class InstanceRetrieveResponseTest {
         val instanceRetrieveResponse =
             InstanceRetrieveResponse.builder()
                 .id("id")
-                .autoShutdownMinutes(0L)
                 .createdAt("createdAt")
                 .currentCost("currentCost")
                 .currentRuntimeSeconds(0L)
@@ -41,7 +40,6 @@ internal class InstanceRetrieveResponseTest {
                 .build()
 
         assertThat(instanceRetrieveResponse.id()).contains("id")
-        assertThat(instanceRetrieveResponse.autoShutdownMinutes()).contains(0L)
         assertThat(instanceRetrieveResponse.createdAt()).contains("createdAt")
         assertThat(instanceRetrieveResponse.currentCost()).contains("currentCost")
         assertThat(instanceRetrieveResponse.currentRuntimeSeconds()).contains(0L)
@@ -75,7 +73,6 @@ internal class InstanceRetrieveResponseTest {
         val instanceRetrieveResponse =
             InstanceRetrieveResponse.builder()
                 .id("id")
-                .autoShutdownMinutes(0L)
                 .createdAt("createdAt")
                 .currentCost("currentCost")
                 .currentRuntimeSeconds(0L)
