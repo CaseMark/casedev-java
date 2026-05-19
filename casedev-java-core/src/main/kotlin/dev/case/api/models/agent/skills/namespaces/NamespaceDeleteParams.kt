@@ -1,22 +1,29 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package dev.case.api.models.compute.v1.instances
+package dev.case.api.models.agent.skills.namespaces
 
+import dev.case.api.core.JsonValue
 import dev.case.api.core.Params
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
+import dev.case.api.core.toImmutable
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
-/**
- * Retrieves all GPU compute instances for your organization with real-time status updates from
- * Lambda Labs. Includes pricing and runtime metrics. Perfect for monitoring AI workloads, document
- * processing jobs, and cost tracking.
- */
-class InstanceListParams
+/** Delete skill namespace */
+class NamespaceDeleteParams
 private constructor(
+    private val id: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
+    private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
+
+    fun id(): Optional<String> = Optional.ofNullable(id)
+
+    /** Additional body properties to send with the request. */
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -28,23 +35,32 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): InstanceListParams = builder().build()
+        @JvmStatic fun none(): NamespaceDeleteParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [InstanceListParams]. */
+        /** Returns a mutable builder for constructing an instance of [NamespaceDeleteParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [InstanceListParams]. */
+    /** A builder for [NamespaceDeleteParams]. */
     class Builder internal constructor() {
 
+        private var id: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(instanceListParams: InstanceListParams) = apply {
-            additionalHeaders = instanceListParams.additionalHeaders.toBuilder()
-            additionalQueryParams = instanceListParams.additionalQueryParams.toBuilder()
+        internal fun from(namespaceDeleteParams: NamespaceDeleteParams) = apply {
+            id = namespaceDeleteParams.id
+            additionalHeaders = namespaceDeleteParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespaceDeleteParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = namespaceDeleteParams.additionalBodyProperties.toMutableMap()
         }
+
+        fun id(id: String?) = apply { this.id = id }
+
+        /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+        fun id(id: Optional<String>) = id(id.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -144,14 +160,50 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            this.additionalBodyProperties.clear()
+            putAllAdditionalBodyProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            additionalBodyProperties.put(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalBodyProperties.putAll(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply {
+            additionalBodyProperties.remove(key)
+        }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalBodyProperty)
+        }
+
         /**
-         * Returns an immutable instance of [InstanceListParams].
+         * Returns an immutable instance of [NamespaceDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): InstanceListParams =
-            InstanceListParams(additionalHeaders.build(), additionalQueryParams.build())
+        fun build(): NamespaceDeleteParams =
+            NamespaceDeleteParams(
+                id,
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+                additionalBodyProperties.toImmutable(),
+            )
     }
+
+    fun _body(): Optional<Map<String, JsonValue>> =
+        Optional.ofNullable(additionalBodyProperties.ifEmpty { null })
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> id ?: ""
+            else -> ""
+        }
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -162,13 +214,16 @@ private constructor(
             return true
         }
 
-        return other is InstanceListParams &&
+        return other is NamespaceDeleteParams &&
+            id == other.id &&
             additionalHeaders == other.additionalHeaders &&
-            additionalQueryParams == other.additionalQueryParams
+            additionalQueryParams == other.additionalQueryParams &&
+            additionalBodyProperties == other.additionalBodyProperties
     }
 
-    override fun hashCode(): Int = Objects.hash(additionalHeaders, additionalQueryParams)
+    override fun hashCode(): Int =
+        Objects.hash(id, additionalHeaders, additionalQueryParams, additionalBodyProperties)
 
     override fun toString() =
-        "InstanceListParams{additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceDeleteParams{id=$id, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

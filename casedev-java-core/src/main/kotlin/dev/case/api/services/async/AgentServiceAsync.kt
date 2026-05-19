@@ -3,6 +3,7 @@
 package dev.case.api.services.async
 
 import dev.case.api.core.ClientOptions
+import dev.case.api.services.async.agent.SkillServiceAsync
 import dev.case.api.services.async.agent.V1ServiceAsync
 import java.util.function.Consumer
 
@@ -20,6 +21,8 @@ interface AgentServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AgentServiceAsync
 
+    fun skills(): SkillServiceAsync
+
     fun v1(): V1ServiceAsync
 
     /** A view of [AgentServiceAsync] that provides access to raw HTTP responses for each method. */
@@ -33,6 +36,8 @@ interface AgentServiceAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): AgentServiceAsync.WithRawResponse
+
+        fun skills(): SkillServiceAsync.WithRawResponse
 
         fun v1(): V1ServiceAsync.WithRawResponse
     }

@@ -205,7 +205,6 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
-        private val autoShutdownMinutes: JsonField<Long>,
         private val createdAt: JsonField<OffsetDateTime>,
         private val gpu: JsonField<String>,
         private val instanceType: JsonField<String>,
@@ -223,9 +222,6 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("autoShutdownMinutes")
-            @ExcludeMissing
-            autoShutdownMinutes: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("createdAt")
             @ExcludeMissing
             createdAt: JsonField<OffsetDateTime> = JsonMissing.of(),
@@ -251,7 +247,6 @@ private constructor(
             totalRuntimeSeconds: JsonField<Long> = JsonMissing.of(),
         ) : this(
             id,
-            autoShutdownMinutes,
             createdAt,
             gpu,
             instanceType,
@@ -271,13 +266,6 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun id(): Optional<String> = id.getOptional("id")
-
-        /**
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun autoShutdownMinutes(): Optional<Long> =
-            autoShutdownMinutes.getOptional("autoShutdownMinutes")
 
         /**
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -352,16 +340,6 @@ private constructor(
          * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
-
-        /**
-         * Returns the raw JSON value of [autoShutdownMinutes].
-         *
-         * Unlike [autoShutdownMinutes], this method doesn't throw if the JSON field has an
-         * unexpected type.
-         */
-        @JsonProperty("autoShutdownMinutes")
-        @ExcludeMissing
-        fun _autoShutdownMinutes(): JsonField<Long> = autoShutdownMinutes
 
         /**
          * Returns the raw JSON value of [createdAt].
@@ -475,7 +453,6 @@ private constructor(
         class Builder internal constructor() {
 
             private var id: JsonField<String> = JsonMissing.of()
-            private var autoShutdownMinutes: JsonField<Long> = JsonMissing.of()
             private var createdAt: JsonField<OffsetDateTime> = JsonMissing.of()
             private var gpu: JsonField<String> = JsonMissing.of()
             private var instanceType: JsonField<String> = JsonMissing.of()
@@ -492,7 +469,6 @@ private constructor(
             @JvmSynthetic
             internal fun from(instance: Instance) = apply {
                 id = instance.id
-                autoShutdownMinutes = instance.autoShutdownMinutes
                 createdAt = instance.createdAt
                 gpu = instance.gpu
                 instanceType = instance.instanceType
@@ -517,35 +493,6 @@ private constructor(
              * value.
              */
             fun id(id: JsonField<String>) = apply { this.id = id }
-
-            fun autoShutdownMinutes(autoShutdownMinutes: Long?) =
-                autoShutdownMinutes(JsonField.ofNullable(autoShutdownMinutes))
-
-            /**
-             * Alias for [Builder.autoShutdownMinutes].
-             *
-             * This unboxed primitive overload exists for backwards compatibility.
-             */
-            fun autoShutdownMinutes(autoShutdownMinutes: Long) =
-                autoShutdownMinutes(autoShutdownMinutes as Long?)
-
-            /**
-             * Alias for calling [Builder.autoShutdownMinutes] with
-             * `autoShutdownMinutes.orElse(null)`.
-             */
-            fun autoShutdownMinutes(autoShutdownMinutes: Optional<Long>) =
-                autoShutdownMinutes(autoShutdownMinutes.getOrNull())
-
-            /**
-             * Sets [Builder.autoShutdownMinutes] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.autoShutdownMinutes] with a well-typed [Long] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun autoShutdownMinutes(autoShutdownMinutes: JsonField<Long>) = apply {
-                this.autoShutdownMinutes = autoShutdownMinutes
-            }
 
             fun createdAt(createdAt: OffsetDateTime) = createdAt(JsonField.of(createdAt))
 
@@ -712,7 +659,6 @@ private constructor(
             fun build(): Instance =
                 Instance(
                     id,
-                    autoShutdownMinutes,
                     createdAt,
                     gpu,
                     instanceType,
@@ -745,7 +691,6 @@ private constructor(
             }
 
             id()
-            autoShutdownMinutes()
             createdAt()
             gpu()
             instanceType()
@@ -777,7 +722,6 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (id.asKnown().isPresent) 1 else 0) +
-                (if (autoShutdownMinutes.asKnown().isPresent) 1 else 0) +
                 (if (createdAt.asKnown().isPresent) 1 else 0) +
                 (if (gpu.asKnown().isPresent) 1 else 0) +
                 (if (instanceType.asKnown().isPresent) 1 else 0) +
@@ -960,7 +904,6 @@ private constructor(
 
             return other is Instance &&
                 id == other.id &&
-                autoShutdownMinutes == other.autoShutdownMinutes &&
                 createdAt == other.createdAt &&
                 gpu == other.gpu &&
                 instanceType == other.instanceType &&
@@ -978,7 +921,6 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 id,
-                autoShutdownMinutes,
                 createdAt,
                 gpu,
                 instanceType,
@@ -997,7 +939,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Instance{id=$id, autoShutdownMinutes=$autoShutdownMinutes, createdAt=$createdAt, gpu=$gpu, instanceType=$instanceType, ip=$ip, name=$name, pricePerHour=$pricePerHour, region=$region, startedAt=$startedAt, status=$status, totalCost=$totalCost, totalRuntimeSeconds=$totalRuntimeSeconds, additionalProperties=$additionalProperties}"
+            "Instance{id=$id, createdAt=$createdAt, gpu=$gpu, instanceType=$instanceType, ip=$ip, name=$name, pricePerHour=$pricePerHour, region=$region, startedAt=$startedAt, status=$status, totalCost=$totalCost, totalRuntimeSeconds=$totalRuntimeSeconds, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

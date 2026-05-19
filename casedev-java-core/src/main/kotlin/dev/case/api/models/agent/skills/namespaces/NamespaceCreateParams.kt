@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package dev.case.api.models.compute.v1.instances
+package dev.case.api.models.agent.skills.namespaces
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -11,11 +11,9 @@ import dev.case.api.core.JsonField
 import dev.case.api.core.JsonMissing
 import dev.case.api.core.JsonValue
 import dev.case.api.core.Params
-import dev.case.api.core.checkKnown
 import dev.case.api.core.checkRequired
 import dev.case.api.core.http.Headers
 import dev.case.api.core.http.QueryParams
-import dev.case.api.core.toImmutable
 import dev.case.api.errors.CasedevInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -23,11 +21,10 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Launches a new GPU compute instance with automatic SSH key generation. Supports mounting Case.dev
- * Vaults as filesystems. Instance boots in ~2-5 minutes. Perfect for batch OCR processing, AI model
- * training, and intensive document analysis workloads.
+ * Create a private skill namespace owned by the authenticated org and receive a one-time bearer
+ * token used by the case-skills publisher.
  */
-class InstanceCreateParams
+class NamespaceCreateParams
 private constructor(
     private val body: Body,
     private val additionalHeaders: Headers,
@@ -35,64 +32,54 @@ private constructor(
 ) : Params {
 
     /**
-     * GPU type (e.g., 'gpu_1x_h100_sxm5')
+     * URL-safe slug, e.g. "curi" or "client-firm-abc". Lowercase alphanumeric with single hyphens,
+     * 2-64 chars.
      *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun instanceType(): String = body.instanceType()
+    fun namespaceId(): String = body.namespaceId()
 
     /**
-     * Instance name
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = body.name()
-
-    /**
-     * Region (e.g., 'us-west-1')
-     *
-     * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun region(): String = body.region()
-
-    /**
-     * Vault IDs to mount
-     *
      * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun vaultIds(): Optional<List<String>> = body.vaultIds()
+    fun description(): Optional<String> = body.description()
 
     /**
-     * Returns the raw JSON value of [instanceType].
-     *
-     * Unlike [instanceType], this method doesn't throw if the JSON field has an unexpected type.
+     * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun _instanceType(): JsonField<String> = body._instanceType()
+    fun label(): Optional<String> = body.label()
 
     /**
-     * Returns the raw JSON value of [name].
-     *
-     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceCreateParams.metadata().convert(MyClass.class);
+     * ```
      */
-    fun _name(): JsonField<String> = body._name()
+    fun _metadata(): JsonValue = body._metadata()
 
     /**
-     * Returns the raw JSON value of [region].
+     * Returns the raw JSON value of [namespaceId].
      *
-     * Unlike [region], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [namespaceId], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _region(): JsonField<String> = body._region()
+    fun _namespaceId(): JsonField<String> = body._namespaceId()
 
     /**
-     * Returns the raw JSON value of [vaultIds].
+     * Returns the raw JSON value of [description].
      *
-     * Unlike [vaultIds], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _vaultIds(): JsonField<List<String>> = body._vaultIds()
+    fun _description(): JsonField<String> = body._description()
+
+    /**
+     * Returns the raw JSON value of [label].
+     *
+     * Unlike [label], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _label(): JsonField<String> = body._label()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -107,19 +94,17 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [InstanceCreateParams].
+         * Returns a mutable builder for constructing an instance of [NamespaceCreateParams].
          *
          * The following fields are required:
          * ```java
-         * .instanceType()
-         * .name()
-         * .region()
+         * .namespaceId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [InstanceCreateParams]. */
+    /** A builder for [NamespaceCreateParams]. */
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -127,10 +112,10 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(instanceCreateParams: InstanceCreateParams) = apply {
-            body = instanceCreateParams.body.toBuilder()
-            additionalHeaders = instanceCreateParams.additionalHeaders.toBuilder()
-            additionalQueryParams = instanceCreateParams.additionalQueryParams.toBuilder()
+        internal fun from(namespaceCreateParams: NamespaceCreateParams) = apply {
+            body = namespaceCreateParams.body.toBuilder()
+            additionalHeaders = namespaceCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespaceCreateParams.additionalQueryParams.toBuilder()
         }
 
         /**
@@ -138,67 +123,56 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
-         * - [instanceType]
-         * - [name]
-         * - [region]
-         * - [vaultIds]
+         * - [namespaceId]
+         * - [description]
+         * - [label]
+         * - [metadata]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** GPU type (e.g., 'gpu_1x_h100_sxm5') */
-        fun instanceType(instanceType: String) = apply { body.instanceType(instanceType) }
+        /**
+         * URL-safe slug, e.g. "curi" or "client-firm-abc". Lowercase alphanumeric with single
+         * hyphens, 2-64 chars.
+         */
+        fun namespaceId(namespaceId: String) = apply { body.namespaceId(namespaceId) }
 
         /**
-         * Sets [Builder.instanceType] to an arbitrary JSON value.
+         * Sets [Builder.namespaceId] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.instanceType] with a well-typed [String] value instead.
+         * You should usually call [Builder.namespaceId] with a well-typed [String] value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun instanceType(instanceType: JsonField<String>) = apply {
-            body.instanceType(instanceType)
-        }
+        fun namespaceId(namespaceId: JsonField<String>) = apply { body.namespaceId(namespaceId) }
 
-        /** Instance name */
-        fun name(name: String) = apply { body.name(name) }
+        fun description(description: String?) = apply { body.description(description) }
+
+        /** Alias for calling [Builder.description] with `description.orElse(null)`. */
+        fun description(description: Optional<String>) = description(description.getOrNull())
 
         /**
-         * Sets [Builder.name] to an arbitrary JSON value.
+         * Sets [Builder.description] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun description(description: JsonField<String>) = apply { body.description(description) }
+
+        fun label(label: String?) = apply { body.label(label) }
+
+        /** Alias for calling [Builder.label] with `label.orElse(null)`. */
+        fun label(label: Optional<String>) = label(label.getOrNull())
+
+        /**
+         * Sets [Builder.label] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.label] with a well-typed [String] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun name(name: JsonField<String>) = apply { body.name(name) }
+        fun label(label: JsonField<String>) = apply { body.label(label) }
 
-        /** Region (e.g., 'us-west-1') */
-        fun region(region: String) = apply { body.region(region) }
-
-        /**
-         * Sets [Builder.region] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.region] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun region(region: JsonField<String>) = apply { body.region(region) }
-
-        /** Vault IDs to mount */
-        fun vaultIds(vaultIds: List<String>) = apply { body.vaultIds(vaultIds) }
-
-        /**
-         * Sets [Builder.vaultIds] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.vaultIds] with a well-typed `List<String>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun vaultIds(vaultIds: JsonField<List<String>>) = apply { body.vaultIds(vaultIds) }
-
-        /**
-         * Adds a single [String] to [vaultIds].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addVaultId(vaultId: String) = apply { body.addVaultId(vaultId) }
+        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -318,21 +292,19 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [InstanceCreateParams].
+         * Returns an immutable instance of [NamespaceCreateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
          * The following fields are required:
          * ```java
-         * .instanceType()
-         * .name()
-         * .region()
+         * .namespaceId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): InstanceCreateParams =
-            InstanceCreateParams(
+        fun build(): NamespaceCreateParams =
+            NamespaceCreateParams(
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -348,89 +320,78 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val instanceType: JsonField<String>,
-        private val name: JsonField<String>,
-        private val region: JsonField<String>,
-        private val vaultIds: JsonField<List<String>>,
+        private val namespaceId: JsonField<String>,
+        private val description: JsonField<String>,
+        private val label: JsonField<String>,
+        private val metadata: JsonValue,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("instanceType")
+            @JsonProperty("namespaceId")
             @ExcludeMissing
-            instanceType: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("region") @ExcludeMissing region: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("vaultIds")
+            namespaceId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("description")
             @ExcludeMissing
-            vaultIds: JsonField<List<String>> = JsonMissing.of(),
-        ) : this(instanceType, name, region, vaultIds, mutableMapOf())
+            description: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("label") @ExcludeMissing label: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("metadata") @ExcludeMissing metadata: JsonValue = JsonMissing.of(),
+        ) : this(namespaceId, description, label, metadata, mutableMapOf())
 
         /**
-         * GPU type (e.g., 'gpu_1x_h100_sxm5')
+         * URL-safe slug, e.g. "curi" or "client-firm-abc". Lowercase alphanumeric with single
+         * hyphens, 2-64 chars.
          *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun instanceType(): String = instanceType.getRequired("instanceType")
+        fun namespaceId(): String = namespaceId.getRequired("namespaceId")
 
         /**
-         * Instance name
-         *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun name(): String = name.getRequired("name")
-
-        /**
-         * Region (e.g., 'us-west-1')
-         *
-         * @throws CasedevInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun region(): String = region.getRequired("region")
-
-        /**
-         * Vault IDs to mount
-         *
          * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun vaultIds(): Optional<List<String>> = vaultIds.getOptional("vaultIds")
+        fun description(): Optional<String> = description.getOptional("description")
 
         /**
-         * Returns the raw JSON value of [instanceType].
-         *
-         * Unlike [instanceType], this method doesn't throw if the JSON field has an unexpected
-         * type.
+         * @throws CasedevInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
-        @JsonProperty("instanceType")
+        fun label(): Optional<String> = label.getOptional("label")
+
+        /**
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.metadata().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
+        /**
+         * Returns the raw JSON value of [namespaceId].
+         *
+         * Unlike [namespaceId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("namespaceId")
         @ExcludeMissing
-        fun _instanceType(): JsonField<String> = instanceType
+        fun _namespaceId(): JsonField<String> = namespaceId
 
         /**
-         * Returns the raw JSON value of [name].
+         * Returns the raw JSON value of [description].
          *
-         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
-
-        /**
-         * Returns the raw JSON value of [region].
-         *
-         * Unlike [region], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("region") @ExcludeMissing fun _region(): JsonField<String> = region
-
-        /**
-         * Returns the raw JSON value of [vaultIds].
-         *
-         * Unlike [vaultIds], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("vaultIds")
+        @JsonProperty("description")
         @ExcludeMissing
-        fun _vaultIds(): JsonField<List<String>> = vaultIds
+        fun _description(): JsonField<String> = description
+
+        /**
+         * Returns the raw JSON value of [label].
+         *
+         * Unlike [label], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("label") @ExcludeMissing fun _label(): JsonField<String> = label
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -451,9 +412,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .instanceType()
-             * .name()
-             * .region()
+             * .namespaceId()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -462,84 +421,69 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var instanceType: JsonField<String>? = null
-            private var name: JsonField<String>? = null
-            private var region: JsonField<String>? = null
-            private var vaultIds: JsonField<MutableList<String>>? = null
+            private var namespaceId: JsonField<String>? = null
+            private var description: JsonField<String> = JsonMissing.of()
+            private var label: JsonField<String> = JsonMissing.of()
+            private var metadata: JsonValue = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
-                instanceType = body.instanceType
-                name = body.name
-                region = body.region
-                vaultIds = body.vaultIds.map { it.toMutableList() }
+                namespaceId = body.namespaceId
+                description = body.description
+                label = body.label
+                metadata = body.metadata
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** GPU type (e.g., 'gpu_1x_h100_sxm5') */
-            fun instanceType(instanceType: String) = instanceType(JsonField.of(instanceType))
+            /**
+             * URL-safe slug, e.g. "curi" or "client-firm-abc". Lowercase alphanumeric with single
+             * hyphens, 2-64 chars.
+             */
+            fun namespaceId(namespaceId: String) = namespaceId(JsonField.of(namespaceId))
 
             /**
-             * Sets [Builder.instanceType] to an arbitrary JSON value.
+             * Sets [Builder.namespaceId] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.instanceType] with a well-typed [String] value
+             * You should usually call [Builder.namespaceId] with a well-typed [String] value
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun instanceType(instanceType: JsonField<String>) = apply {
-                this.instanceType = instanceType
+            fun namespaceId(namespaceId: JsonField<String>) = apply {
+                this.namespaceId = namespaceId
             }
 
-            /** Instance name */
-            fun name(name: String) = name(JsonField.of(name))
+            fun description(description: String?) = description(JsonField.ofNullable(description))
+
+            /** Alias for calling [Builder.description] with `description.orElse(null)`. */
+            fun description(description: Optional<String>) = description(description.getOrNull())
 
             /**
-             * Sets [Builder.name] to an arbitrary JSON value.
+             * Sets [Builder.description] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.name] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
+             * You should usually call [Builder.description] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun name(name: JsonField<String>) = apply { this.name = name }
+            fun description(description: JsonField<String>) = apply {
+                this.description = description
+            }
 
-            /** Region (e.g., 'us-west-1') */
-            fun region(region: String) = region(JsonField.of(region))
+            fun label(label: String?) = label(JsonField.ofNullable(label))
+
+            /** Alias for calling [Builder.label] with `label.orElse(null)`. */
+            fun label(label: Optional<String>) = label(label.getOrNull())
 
             /**
-             * Sets [Builder.region] to an arbitrary JSON value.
+             * Sets [Builder.label] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.region] with a well-typed [String] value instead.
+             * You should usually call [Builder.label] with a well-typed [String] value instead.
              * This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun region(region: JsonField<String>) = apply { this.region = region }
+            fun label(label: JsonField<String>) = apply { this.label = label }
 
-            /** Vault IDs to mount */
-            fun vaultIds(vaultIds: List<String>) = vaultIds(JsonField.of(vaultIds))
-
-            /**
-             * Sets [Builder.vaultIds] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.vaultIds] with a well-typed `List<String>` value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun vaultIds(vaultIds: JsonField<List<String>>) = apply {
-                this.vaultIds = vaultIds.map { it.toMutableList() }
-            }
-
-            /**
-             * Adds a single [String] to [vaultIds].
-             *
-             * @throws IllegalStateException if the field was previously set to a non-list.
-             */
-            fun addVaultId(vaultId: String) = apply {
-                vaultIds =
-                    (vaultIds ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("vaultIds", it).add(vaultId)
-                    }
-            }
+            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -567,19 +511,17 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .instanceType()
-             * .name()
-             * .region()
+             * .namespaceId()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
                 Body(
-                    checkRequired("instanceType", instanceType),
-                    checkRequired("name", name),
-                    checkRequired("region", region),
-                    (vaultIds ?: JsonMissing.of()).map { it.toImmutable() },
+                    checkRequired("namespaceId", namespaceId),
+                    description,
+                    label,
+                    metadata,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -600,10 +542,9 @@ private constructor(
                 return@apply
             }
 
-            instanceType()
-            name()
-            region()
-            vaultIds()
+            namespaceId()
+            description()
+            label()
             validated = true
         }
 
@@ -623,10 +564,9 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (instanceType.asKnown().isPresent) 1 else 0) +
-                (if (name.asKnown().isPresent) 1 else 0) +
-                (if (region.asKnown().isPresent) 1 else 0) +
-                (vaultIds.asKnown().getOrNull()?.size ?: 0)
+            (if (namespaceId.asKnown().isPresent) 1 else 0) +
+                (if (description.asKnown().isPresent) 1 else 0) +
+                (if (label.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -634,21 +574,21 @@ private constructor(
             }
 
             return other is Body &&
-                instanceType == other.instanceType &&
-                name == other.name &&
-                region == other.region &&
-                vaultIds == other.vaultIds &&
+                namespaceId == other.namespaceId &&
+                description == other.description &&
+                label == other.label &&
+                metadata == other.metadata &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(instanceType, name, region, vaultIds, additionalProperties)
+            Objects.hash(namespaceId, description, label, metadata, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{instanceType=$instanceType, name=$name, region=$region, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
+            "Body{namespaceId=$namespaceId, description=$description, label=$label, metadata=$metadata, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -656,7 +596,7 @@ private constructor(
             return true
         }
 
-        return other is InstanceCreateParams &&
+        return other is NamespaceCreateParams &&
             body == other.body &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
@@ -665,5 +605,5 @@ private constructor(
     override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "InstanceCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

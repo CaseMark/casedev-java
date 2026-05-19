@@ -3,6 +3,8 @@
 package dev.case.api.services.blocking
 
 import dev.case.api.core.ClientOptions
+import dev.case.api.services.blocking.agent.SkillService
+import dev.case.api.services.blocking.agent.SkillServiceImpl
 import dev.case.api.services.blocking.agent.V1Service
 import dev.case.api.services.blocking.agent.V1ServiceImpl
 import java.util.function.Consumer
@@ -14,6 +16,8 @@ class AgentServiceImpl internal constructor(private val clientOptions: ClientOpt
         WithRawResponseImpl(clientOptions)
     }
 
+    private val skills: SkillService by lazy { SkillServiceImpl(clientOptions) }
+
     private val v1: V1Service by lazy { V1ServiceImpl(clientOptions) }
 
     override fun withRawResponse(): AgentService.WithRawResponse = withRawResponse
@@ -21,10 +25,16 @@ class AgentServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AgentService =
         AgentServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun skills(): SkillService = skills
+
     override fun v1(): V1Service = v1
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         AgentService.WithRawResponse {
+
+        private val skills: SkillService.WithRawResponse by lazy {
+            SkillServiceImpl.WithRawResponseImpl(clientOptions)
+        }
 
         private val v1: V1Service.WithRawResponse by lazy {
             V1ServiceImpl.WithRawResponseImpl(clientOptions)
@@ -36,6 +46,8 @@ class AgentServiceImpl internal constructor(private val clientOptions: ClientOpt
             AgentServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun skills(): SkillService.WithRawResponse = skills
 
         override fun v1(): V1Service.WithRawResponse = v1
     }

@@ -33,9 +33,8 @@ interface InstanceServiceAsync {
 
     /**
      * Launches a new GPU compute instance with automatic SSH key generation. Supports mounting
-     * Case.dev Vaults as filesystems and configurable auto-shutdown. Instance boots in ~2-5
-     * minutes. Perfect for batch OCR processing, AI model training, and intensive document analysis
-     * workloads.
+     * Case.dev Vaults as filesystems. Instance boots in ~2-5 minutes. Perfect for batch OCR
+     * processing, AI model training, and intensive document analysis workloads.
      */
     fun create(params: InstanceCreateParams): CompletableFuture<InstanceCreateResponse> =
         create(params, RequestOptions.none())
@@ -87,8 +86,8 @@ interface InstanceServiceAsync {
 
     /**
      * Retrieves all GPU compute instances for your organization with real-time status updates from
-     * Lambda Labs. Includes pricing, runtime metrics, and auto-shutdown configuration. Perfect for
-     * monitoring AI workloads, document processing jobs, and cost tracking.
+     * Lambda Labs. Includes pricing and runtime metrics. Perfect for monitoring AI workloads,
+     * document processing jobs, and cost tracking.
      */
     fun list(): CompletableFuture<InstanceListResponse> = list(InstanceListParams.none())
 
